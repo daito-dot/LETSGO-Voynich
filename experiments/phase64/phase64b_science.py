@@ -1,46 +1,101 @@
 #!/usr/bin/env python3
 """Official Phase64B first-reveal entrypoint.
 
-Uses the frozen phase64b_naibbe adapter and differs only in the B1 external
-source validation documented in PREFLIGHT_AMENDMENT_B1.md: all 468 source-
-defined placeholder codes must exist, but exact total CSV mapping length is not
-assumed. No scientific rule or cipher behavior changes.
+Uses the frozen phase64b_naibbe adapter with the pre-result B2 corrections
+recorded in PREFLIGHT_AMENDMENT_B2.md:
+- exact 414 reachable published codebook cells are required;
+- no normalized-away j/k/w cells are synthesized;
+- permutation controls score only their preregistered primary respaced view;
+- external-module stdout is captured so the scientific artifact is valid JSON.
+
+No scientific candidate, seed, metric, aggregation, threshold, or result-based
+selection is changed.
 """
 from __future__ import annotations
 
+import contextlib
+import hashlib
+import io
 import json
 import sys
 from pathlib import Path
+from typing import Dict, Sequence
+
+import numpy as np
 
 import phase64b_naibbe as core
 
 
-def main() -> int:
-    if len(sys.argv) != 4:
-        print(
-            f"usage: {sys.argv[0]} ZL3b-n.txt /path/to/CREMMA-Medieval-LAT /path/to/naibbe-cipher",
-            file=sys.stderr,
+def run_mapping_primary_only(
+    module,
+    mapping_name: str,
+    glyph_map: Dict[str, str],
+    raw_sources: Dict[str, Sequence[core.b.Item]],
+    contexts: Sequence[dict],
+) -> dict:
+    """Run a frozen mapping permutation and score only the planned primary view.
+
+    encrypt_manuscript still computes/calls published respacing in the exact
+    paired RNG sequence; its raw-token return value is simply not scored.
+    """
+    per_ms_primary = {}
+    diagnostics = {}
+    for mi, manuscript in enumerate(core.MANUSCRIPTS):
+        primary_reps = {}
+        rep_diag = {}
+        for r in range(core.CIPHER_REPS):
+            seed = 6480000 + 100 * mi + r
+            primary_items, _raw_items, diag = core.encrypt_manuscript(
+                module, raw_sources[manuscript], manuscript, glyph_map, seed
+            )
+            label = f"Phase64B:{mapping_name}:{manuscript}:rep{r}:published-view"
+            primary_reps[f"rep{r}"] = core.output_metrics(primary_items, label, contexts)
+            rep_diag[f"rep{r}"] = diag
+        per_ms_primary[manuscript] = core.aggregate_realizations(
+            primary_reps, f"Phase64B:{mapping_name}:{manuscript}:published-view"
         )
-        return 2
+        diagnostics[manuscript] = rep_diag
 
-    voynich_path = Path(sys.argv[1]).resolve()
-    cremma_root = Path(sys.argv[2]).resolve()
-    naibbe_root = Path(sys.argv[3]).resolve()
+    return {
+        "mapping": mapping_name,
+        "primary_published_output": {
+            "per_manuscript": per_ms_primary,
+            "aggregate": core.aggregate_manuscripts(
+                per_ms_primary, f"Phase64B:{mapping_name}:published-view"
+            ),
+        },
+        "raw_token_sensitivity": "NOT_SCORED_FOR_MAPPING_PERMUTATIONS_BY_FROZEN_B2_COMPUTATIONAL_CLARIFICATION",
+        "encryption_diagnostics": diagnostics,
+    }
 
+
+def compute(voynich_path: Path, cremma_root: Path, naibbe_root: Path) -> dict:
     ccommit = core.b.verify_cremma_commit(cremma_root)
     module = core.load_naibbe(naibbe_root)
     original_map = dict(module.placeholder_to_glyph)
 
-    required_codes = {
+    effective_required_codes = {
+        f"{state}_{table}_{letter}"
+        for state in module.STATES
+        for table in module.TABLES
+        for letter in core.EFFECTIVE_LETTERS
+    }
+    if set(original_map) != effective_required_codes:
+        missing = sorted(effective_required_codes - set(original_map))
+        extras = sorted(set(original_map) - effective_required_codes)
+        raise RuntimeError(
+            f"published Naibbe effective codebook mismatch: missing={missing[:10]} extras={extras[:10]}"
+        )
+
+    theoretical_full_grid = {
         f"{state}_{table}_{letter}"
         for state in module.STATES
         for table in module.TABLES
         for letter in module.ALPHABET
     }
-    missing = sorted(required_codes - set(original_map))
-    if missing:
-        raise RuntimeError(f"published Naibbe mapping missing required cells: {missing[:10]}")
-    extras = sorted(set(original_map) - required_codes)
+    normalized_away_codes = sorted(theoretical_full_grid - effective_required_codes)
+    if len(effective_required_codes) != 414 or len(normalized_away_codes) != 54:
+        raise RuntimeError("Naibbe B2 effective/full-grid cardinality mismatch")
 
     phase62c_path = core.PHASE62 / "phase62c_c0_a1_results.json"
     phase62p_path = core.PHASE62 / "phase62p_h62p1_results.json"
@@ -63,6 +118,8 @@ def main() -> int:
         for name, rel in core.b.PRIMARY_MANUSCRIPTS.items()
     }
 
+    # Published mapping: score both the primary published output and the frozen
+    # paired raw-token sensitivity.
     published = core.run_mapping(module, "published", original_map, raw_sources, contexts)
     published_eval = core.evaluate_aggregate(
         published["primary_published_output"]["aggregate"], contexts, phase63a, "published"
@@ -71,12 +128,14 @@ def main() -> int:
         published["raw_token_sensitivity"]["aggregate"], contexts, phase63a, "published-raw-token"
     )
 
+    # Mapping controls: score only the preregistered primary published-output
+    # view; raw-token permutation scoring is redundant and was never a rescue.
     permutations = {}
     for pi in range(core.MAPPING_PERMS):
         pseed = 6490000 + pi
         pmap = core.permuted_mapping(module, original_map, pseed)
         name = f"perm{pi}"
-        row = core.run_mapping(module, name, pmap, raw_sources, contexts)
+        row = run_mapping_primary_only(module, name, pmap, raw_sources, contexts)
         row["mapping_permutation_seed"] = pseed
         row["primary_evaluation"] = core.evaluate_aggregate(
             row["primary_published_output"]["aggregate"], contexts, phase63a, name
@@ -123,7 +182,7 @@ def main() -> int:
     ])
 
     core.set_glyph_map(module, original_map)
-    out = {
+    return {
         "phase": "64B",
         "hypothesis": "P64-C1-E0 published Naibbe external meaningful-text cipher challenge",
         "scope_firewall": "exact published Naibbe v2 only; no reuse variant, no Voynich-selected parameter, no A2, no post-result locality repair",
@@ -136,8 +195,10 @@ def main() -> int:
             "naibbe_tables_blob": core.NAIBBE_TABLE_BLOB,
             "naibbe_readme_blob": core.NAIBBE_README_BLOB,
             "loaded_codebook_entries": len(original_map),
-            "source_defined_required_code_cells": len(required_codes),
-            "extra_pinned_csv_codes": extras,
+            "effective_required_code_cells": len(effective_required_codes),
+            "theoretical_26_letter_grid_cells": len(theoretical_full_grid),
+            "normalized_away_jkw_cells": len(normalized_away_codes),
+            "normalized_away_jkw_code_names": normalized_away_codes,
             "effective_plaintext_letters": list(core.EFFECTIVE_LETTERS),
             "effective_reachable_codebook_cells": 6 * 3 * len(core.EFFECTIVE_LETTERS),
             "cipher_realizations_per_manuscript": core.CIPHER_REPS,
@@ -168,6 +229,33 @@ def main() -> int:
         "codebook_specificity": codebook_specificity,
         "frozen_primary_classification": published_eval["classification"],
         "claim_limit": "external C-family mechanism challenge only; no historical identification, semantic recovery, family-wide acceptance/rejection, or decipherment",
+    }
+
+
+def main() -> int:
+    if len(sys.argv) != 4:
+        print(
+            f"usage: {sys.argv[0]} ZL3b-n.txt /path/to/CREMMA-Medieval-LAT /path/to/naibbe-cipher",
+            file=sys.stderr,
+        )
+        return 2
+
+    voynich_path = Path(sys.argv[1]).resolve()
+    cremma_root = Path(sys.argv[2]).resolve()
+    naibbe_root = Path(sys.argv[3]).resolve()
+
+    # The pinned external module prints a diagnostic on import. Capture all
+    # internal stdout so the first-reveal file contains exactly one JSON object.
+    captured = io.StringIO()
+    with contextlib.redirect_stdout(captured):
+        out = compute(voynich_path, cremma_root, naibbe_root)
+
+    external_stdout = captured.getvalue()
+    out["execution_stdout_audit"] = {
+        "captured_characters": len(external_stdout),
+        "sha256": hashlib.sha256(external_stdout.encode("utf-8")).hexdigest(),
+        "sample_first_500_characters": external_stdout[:500],
+        "used_for_scoring": False,
     }
     print(json.dumps(out, ensure_ascii=False, indent=2))
     return 0
