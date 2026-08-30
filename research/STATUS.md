@@ -2,25 +2,13 @@
 
 ## Accepted high-level state
 
-Voynichese has strong internal grammar, positional structure, document-role effects, page-local token-family organization, and paragraph/line state dynamics. What is not yet established is whether the remaining variation preserves semantic information from a natural language or cipher, or can be generated without meaning by a sufficiently constrained formal process.
+Voynichese has strong internal grammar, positional structure, document-role effects, page-local token-family organization, and paragraph/line state dynamics. What is not yet established is whether the remaining robust variation preserves independently grounded content information.
 
 Structural equivalence is not cipher equivalence. A pattern is promoted toward decipherment only when it predicts independently grounded content or transfers under a constrained encoder/mapping.
 
-## Current evidence frontier — through Phase 56
+## Structural state established through Phase 56
 
-### Token and line structure
-
-Strong token-internal positional constraints and line-position effects are reproducible. Removing within-slot token values can still preserve useful structural/document-role information in some tests. This supports a formal role/state interpretation but does not identify plaintext values.
-
-### Local token families
-
-Voynich tokens form unusually dense edit-distance-1 / near-neighbor families. Local activation of related token families occurs at short scales. Literal online copy-and-modify is weakened: edit geometry is largely inventory-driven and there is no clear earlier-source directional asymmetry.
-
-### Audited multiscale hierarchy
-
-Phase56 established a canonical substrate that keeps physical leaf, page-side, paragraph, line and token units distinct. It reproduces the overlapping Phase55 page fingerprints exactly under shared definitions.
-
-The earlier simple hierarchy has been refined to:
+The audited hierarchy is currently:
 
 `broad document constraints`
 
@@ -32,63 +20,41 @@ The earlier simple hierarchy has been refined to:
 
 `+ token morphology / edge entropy / {k,t}-related dimensions`
 
-Hand and Currier cut across this hierarchy but remain heavily confounded with section in parts of the manuscript.
+Physical locality remains after exact section+Currier+hand matching, but is not one simple smooth drift. Matched-token structural variation is moderately low-dimensional: ~64% in 3 PCs and ~79% in 5. Similar leading directions recur across page and paragraph scales. Linear PCA currently beats nonlinear kernel compression.
 
-### Physical locality: real but not one smooth drift
+The paragraph-entry/recovery transition is multivariate and transfers positively to held-out H/B/P/S/T sections when learned from the others. This is internal manuscript evidence, not external replication.
 
-After exact matching on section + Currier + hand, structural fingerprint distance increases with physical separation. However, smooth-distance and explicit changepoint models do not yield a single adequate one-dimensional physical trajectory inside the largest continuous Herbal-A block.
+## Phase 57 residual robustness gate — PASS WITH NARROW TARGET
 
-H56-2 is therefore refined: physical locality is real, but the current description is broad state/block differences plus local similarity rather than one globally smooth drift or a few sharp regimes.
+Phase56D's paragraph residual was stress-tested before semantic use.
 
-### Latent dimensionality: moderately low-dimensional
+The result is deliberately narrow: **only the leading approximately two-dimensional consensus residual is promoted**.
 
-A critical Phase56C audit found that unmatched full-page PCA was contaminated by page token count (original PC1 r=-0.886 with n_tokens). The previous interpretation of that PC1 as a dominant section axis is withdrawn.
+- reasonable EVA unit-definition changes rotate the residual somewhat, but retain a moderately aligned leading space;
+- on a fixed eligible paragraph set, the top-2 residual subspace is stable across 15–40 token windows, while PC3+ is more scale-sensitive;
+- richer leakage-safe same-page/opposite-side/adjacent-leaf context does not explain the residual away in the tested models;
+- explicit cross-fitted section/Currier/hand removal leaves only small broad-label association in residual PC1/PC2 (eta² roughly .01–.03);
+- physical-leaf bootstrap gives stable top-2 subspace orientation.
 
-With matched-token windows, page-side variation is distributed over several structural dimensions:
+Higher residual axes are **not eligible** for post-hoc semantic rescue.
 
-- first 3 PCs: ~63.7%
-- first 5 PCs: ~78.7%
-- first 7 PCs: ~90.0%
+## Phase 58A nuisance transfer control — COMPLETE
 
-The leading matched axis is primarily near-family activation / local continuity rather than section. Similar leading directions recur at paragraph scale. Linear PCA outperforms RBF kernel PCA in grouped held-out reconstruction; no nonlinear-manifold advantage is established for these matched fingerprints.
+Before content testing, the promoted 2D residual was tested against document/physical labels not explicitly removed.
 
-### Paragraph entry is a transferable multivariate state transition
+Using physical-leaf-grouped CV and matched permutations within section|Currier|hand:
 
-The corrected paragraph-entry effect is not only a drop in one continuity statistic.
+- recto/verso balanced accuracy **.445**, matched-null mean ~.498, upper-tail p=.978;
+- coarse physical leaf bin balanced accuracy **.180**, matched-null mean ~.186, upper-tail p=.597;
+- quire prediction is near nominal inverse-class-count performance but is high-cardinality and poorly supported across grouped folds, so it is descriptive only.
 
-Using a 5D matched paragraph-trained latent basis and centering line states within page-side, the line0 -> line2 transition learned from other major sections transfers positively to every held-out H/B/P/S/T section. Held-out cosine similarity to the trained direction ranges from ~0.74 to ~0.97; page-bootstrap projection intervals remain above zero in all five sections.
+Thus there is no evidence that the promoted 2D residual is mainly a recto/verso or coarse physical-order nuisance code. This clears the tested nuisance gate but is **not positive semantic evidence**.
 
-Biological is weaker but still positive.
+## Current semantic/content evidence
 
-Thus a shared paragraph-entry/recovery dynamic is supported within the manuscript. This remains internal development evidence, not external replication.
+Earlier pharmaceutical item-specific/state-invariant mapping tests were negative. They predate the new robust residual and cannot be reinterpreted as tests of it.
 
-### Structural residual target now exists
-
-Phase56D constructed 635 matched paragraph fingerprints (>=20 body tokens). Independent resampling gives median split-half reliability ~0.964.
-
-In physical-leaf-grouped cross-validation, section + Currier + hand + paragraph ordinal yields standardized MSE ~0.919. Adding leakage-safe page context from other paragraphs on the same page improves this to ~0.885.
-
-Therefore known broad metadata and page-local context explain a real but minority share of stable paragraph variation. Substantial reliable paragraph-specific variation remains.
-
-The leading cross-fitted residual axis has very little remaining association with broad labels (section eta2 ~0.005, Currier ~0.002, hand ~0.002). A modest page-local residual similarity remains, so the residual is not yet nuisance-free.
-
-This residual is a **candidate future information-bearing target**, not evidence for semantics or cipher information.
-
-### Paragraph-boundary audit correction retained
-
-Phase53/54 accidentally collapsed recto and verso page-side IDs to common leaf IDs. Corrected analysis gives true-boundary gap ~+0.0899 across 206 eligible page-sides, with section dependence. The universal-reset interpretation remains withdrawn.
-
-### Periodicity
-
-Apparent fixed/drifting periodicities can be generated by token and boundary architecture. Stronger structure-preserving nulls remove the earlier periodic signal. Numerical/symbolic interpretations based on those recurrences are not supported.
-
-### Semantic/content tests
-
-Current pharmaceutical item-specific matching tests have not established a state-invariant mapping from structural token classes to item content. This is a negative result for the tested domain, not proof that the manuscript lacks meaning.
-
-## Formal-generator branch status
-
-The frozen simple DSL remains insufficient. Generator development remains paused until the new residual target passes robustness checks.
+The next content test must use labels defined independently of Voynichese and frozen before comparison. Same-state/matched permutation controls remain mandatory.
 
 ## Competing explanation families still open
 
@@ -98,26 +64,36 @@ The frozen simple DSL remains insufficient. Generator development remains paused
 4. hierarchical formal generator with physical, paragraph and line state
 5. mixed mechanisms
 
-Deceptive-cipher explanations receive no credit merely because semantic tests fail. They must specify bounded nuisance mechanisms and outperform simpler alternatives after complexity charge.
+Deceptive-cipher explanations receive no credit from failed semantic tests alone. A deception mechanism must be bounded and complexity-charged.
 
-## Immediate frontier: Phase 57 residual robustness gate
+## Immediate frontier: Phase 58B independently grounded content relation
 
-Before exposing Phase56 residuals to semantic/content/cipher hypotheses, test whether they survive reasonable analysis perturbations:
+The eligible predictor is fixed: the Phase57-promoted leading ~2D paragraph residual.
 
-- alternative token-unit/collapse definitions
-- matched-window length sensitivity
-- richer but leakage-safe local structural predictors
-- transcription/source sensitivity where feasible
-- stability of residual axes and paragraph relationships across resampling
+Before comparing it with content:
 
-Only residual structure that survives this gate becomes the legitimate target for renewed content/cipher testing.
+- define visual/content labels without reading Voynichese;
+- document the annotation/data-selection rule;
+- freeze labels before residual comparison;
+- prefer within-page or same section+hand+Currier matching;
+- compare against structure-only baselines and matched label permutations;
+- do not reinterpret residual axis orientation after seeing labels.
+
+A positive Phase58B result would establish an information-bearing relation only. It would not identify plaintext or constitute decipherment.
+
+## Important corrections retained
+
+- Phase3 plant-label result: 2 total 4-gram hits; exact permutation p=.725; binary pair-hit p=.667. NOT SUPPORTED.
+- Phase53/54 recto/verso collapse corrected in Phase55; universal paragraph-reset claim withdrawn.
+- Phase56 unmatched full-page PC1 was contaminated by token count (r≈-.886); matched-token results supersede it.
 
 ## Methodological rules
 
 - Observation -> Structure -> Mechanism -> Content relation -> Decipherment.
 - Preserve relevant known structure in nulls.
 - Keep exploratory/model-selection/held-out/prospective/external-replication labels distinct.
-- Audit unit definitions explicitly.
-- Equalize or explicitly model estimator sample-size effects.
+- Audit page-side vs physical leaf explicitly.
+- Equalize or model estimator sample-size effects.
+- Search freedom belongs inside null/model-selection folds.
 - Negative results and corrections remain recorded.
-- Decipherment requires an executable mapping/generation rule, substantial unseen prediction, fixed interpretable output, strong competitors/nulls, and documented errors.
+- Decipherment requires executable mapping, substantial unseen prediction, fixed interpretable output, strong competitors/nulls, and prospective/external replication.
