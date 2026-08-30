@@ -1,0 +1,11 @@
+{
+  "phase":"61B",
+  "status":"A0 FAILS joint scorecard",
+  "model":"Phase61A A0 with one paragraph-line0 entry mixture; global strength fixed at 1.5 for this first joint diagnostic; no new repair mechanism added.",
+  "metrics":{"Voynich":{"edit1_type_density":0.80374,"local_prev10_fraction":0.09778,"line_position_eta2_mean":0.03115,"line_position_eta2_max":0.08810,"entry_pseudo_norm":1.28505},"A0":{"edit1_type_density":0.80063,"local_prev10_fraction":0.00659,"line_position_eta2_mean":0.10368,"line_position_eta2_max":0.42930,"entry_pseudo_norm":3.55376}},
+  "A0_to_Voynich_ratio":{"edit1_type_density":0.996,"local_prev10_fraction":0.067,"line_position_eta2_mean":3.328,"line_position_eta2_max":4.873,"entry_pseudo_norm":2.765},
+  "decision":"A0 passes the narrow Phase61A entry-direction gate but fails when multiple constraints are inspected together. It trivially inherits high global edit1 type density from the empirical Voynich token inventory, yet produces only ~6.7% of Voynich local-prev10 near-family activation, overstates line-position dependence by roughly 3.3x on the mean eta2 proxy, and overshoots the multivariate entry-vs-pseudo norm by ~2.8x at the fixed strength.",
+  "important_caveat":"The edit1-type result is not an independent success because A0 samples from an empirical Voynich vocabulary. The present body generator was deliberately simple; repairing local family activation would require adding an explicit local-copy/family-state mechanism, which is exactly the complexity accounting Phase61 is designed to expose.",
+  "hypothesis_update":"A0 as frozen is rejected as a joint model. A boundary-aware meaningless generator remains viable only as a more complex A1 that combines at least boundary-conditioned entry mixture with a separate local token-family activation mechanism and must then be retested against line-position and section constraints.",
+  "next":"Freeze A1 before implementation. Compare its added complexity and joint fit against B0 structured medieval plaintext + global encoding. Do not tune A0 further post hoc."
+}
