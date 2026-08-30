@@ -1,6 +1,6 @@
 # LETSGO-Voynich research roadmap
 
-Last updated: 2026-08-30
+Last updated: 2026-08-31
 
 This file tracks progress and decision points. Exact numerical authority remains with phase-specific plans/results; `research/STATUS.md` controls accepted interpretation; `research/hypothesis-ledger.md` controls hypothesis history. Reproducibility caveats in `research/REPRODUCIBILITY_AUDIT.md` and `research/AUDIT_PHASE51_61C_20260830.md` remain binding.
 
@@ -40,7 +40,7 @@ Structural fit is not decipherment.
 | Phases 1–43 | ✅ | direct semantic cribs and weak periodic interpretations repeatedly failed; structural invariants accumulated |
 | Phases 44–52 | ✅ | mechanism tests and document/genre confounding became explicit |
 | Phases 53–57 | ✅ | audits corrected page/leaf/sample-size issues and narrowed robust residual opportunities |
-| Phase 58 | ✅ negative / ⛔ localized content | page-level visual relations negative; defensible object/paragraph mapping unavailable |
+| Phase 58 | ✅ negative / formerly ⛔ localized content | page-level visual relations negative; object-local mapping was unavailable at that time |
 | Phase 59 | ✅ development | broad entry transition partly overlaps medieval structured-document entry grammar, with Voynich-specific remainder |
 | Phase 60 | ✅ with audit caveats | paragraph entry genuine, transferable and short-lived; exact 60B/60E replay debts remain |
 | Phase 61A | ✅ narrow | boundary-aware A0 can reproduce scalar entry direction |
@@ -55,6 +55,8 @@ Structural fit is not decipherment.
 | **Phase 63B** | **✅ strong external replication** | entry/recurrence effects survive GC v101 and IT EvaT; frozen A1-R1 transfers to IT without retuning and passes W1/W2 criteria |
 | **Phase 64A** | **✅ mixed / strict autonomy fail** | synthetic-vocabulary A1 preserves core H62 geometry, but canonical ZL fails frozen S3 gate at `0.468×`; IT arm passes |
 | **Phase 64B / C1** | **✅ partial / not A1 rival** | published Naibbe materially beats C0 on H62 but fails S1/S2, short-range concentration vs N0, and all frozen A1-rival criteria |
+| **Phase 65A / M8 anchor audit** | **✅ `M8-ANCHOR READY`** | V1-P25 fixes 25 object-local Pharma plant-fragment ↔ adjacent-label pairs without Voynichese-based selection; no content score yet |
+| **Phase 65B / M8-B1** | **🟡 frozen / not yet executed** | sealed f102v2 image↔label test with exact row permutation, followed by unchanged-code f100v replication |
 
 ## Evidence staircase for the current A1 mechanism
 
@@ -68,7 +70,7 @@ The strongest current support is now sequential rather than a single fit result:
 6. **Phase64A — inventory autonomy stress:** exact empirical training-token membership is not needed for H62, although canonical ZL fails the strict aggregate S3 autonomy gate.
 7. **Phase64B — serious C1 fairness challenge:** published Naibbe improves substantially over C0 on recurrence-profile distance but fails the core entry/local-recurrence gates and does not rival A1.
 
-This is materially stronger evidence for a real formal generation layer. It still does not identify that layer as nonsemantic or historically identical to A1.
+This is materially stronger evidence for a real formal generation layer. It still does not identify that layer as nonsemantic or historically identical to A1. Phase65 now asks whether an independently grounded external content relation can be detected at object resolution rather than improving A1 further.
 
 ## Phase62 exposed tournament
 
@@ -228,44 +230,113 @@ This closes the immediate fairness objection that A1 had only been compared with
 
 First successful reveal: head `1e80c41f0e502a7dacb593723dbf9d81f9f84add`, run `33338000172`, artifact `9739776686`, raw SHA-256 `f88954c2efa2ec69e4bee0cd6fb1c70b49f08b1f44206c7f70bd540ad538d35d`.
 
+Exact replay under the frozen scientific head and dependency versions reproduces the archived result JSON byte-for-byte; see `experiments/phase64/REPLAY_AUDIT_B.md`.
+
 See `experiments/phase64/REPORT_B.md`.
 
-## 🟡 Phase65A — independently grounded localized content-anchor audit
+## Phase65A — independently grounded localized content-anchor audit: COMPLETE / READY
 
-### Question
+### Frozen question
 
 > Is there an external object/label/paragraph-level mapping that can be fixed independently of Voynichese structure and used for a genuinely prospective content-relation test?
 
-### Why now
+Before candidate audit, Phase65A froze six noncompensating admission gates covering source independence, physical localization, mapping ambiguity, content specificity, prospective population size and contamination.
 
-The structural mechanism has survived a prospective discriminator, held-out vocabulary restriction, independent transcription and an inventory-autonomy stress; a serious published C1 has also been tested. More generator/cipher tuning now has lower information gain than attempting to cross the **Mechanism → Content relation** boundary.
+### Admitted primary anchor: V1-P25
 
-### Freeze requirements
+- f100v: **13** plant-fragment ↔ adjacent-label pairs (`4 + 5 + 4` rows);
+- f102v2: **12** pairs from lower rows (`7 + 5`);
+- f102v2 top row: **excluded before science** because an independent layout source flags its first three label attachments as ambiguous.
 
-1. candidate anchors come from independent catalog, iconographic, manuscript or scholarly evidence, not Voynichese similarity;
-2. mapping is localized to label/object/paragraph level, not only broad section/page class;
-3. disputed identifications are scored for independence/confidence before text analysis;
-4. source identities and mapping decisions are frozen before any textual prediction is evaluated;
-5. at least one unseen-item/content prediction and explicit null are preregistered;
-6. if no source passes these requirements, mark the content lane blocked instead of lowering the bar.
+Total primary population: **25 localized pairs**.
 
-### Fallback if externally blocked
+The content side is text-blinded image morphology, not a guessed plant name. The mapping therefore does not require a proposed Voynichese reading. V1-P25 passes all A1–A6 admission gates and exceeds the frozen `n>=20` prospective-population floor.
 
-Freeze one historically motivated residual C hypothesis that predicts a feature A1 and published Naibbe separate on. It must have an external motivation, explicit complexity charge and a prediction fixed before output; do not add locality/reuse merely because Phase64B showed that Naibbe lacks it.
+Negative/secondary audit outcomes are retained:
+
+- zodiac degree-property designs are not primary because exact degree-number start/order/direction is not independently fixed enough;
+- named botanical-species ground truth remains too disputed for a sufficiently independent primary population.
+
+Frozen classification:
+
+> **`M8-ANCHOR READY`**
+
+This only means a clean content-relation experiment can now be preregistered. It is not a positive content result.
+
+See `experiments/phase65/ANCHOR_AUDIT_A.md`.
+
+## 🟡 Phase65B — sealed local image↔label content-relation test
+
+### Primary question
+
+> Among physically attached pharmaceutical labels, are labels on visually more similar plant fragments themselves more similar under a generic frozen string distance than expected under row-constrained reassignment?
+
+### Frozen primary / replication split
+
+- **Primary:** f102v2 lower rows L2 (7) and L3 (5).
+- **Independent unchanged-code replication:** f100v rows 4/5/4.
+- f100v cannot be used for visual↔text fitting or score selection before the f102v2 primary reveal.
+
+### Frozen representations
+
+- visual: external Meta DINOv2 ViT-S/14, pretrained LVD-142M, no fine-tuning;
+- primary text: pinned ZL3b Basic EVA, generic normalized unit-cost Levenshtein;
+- IT2a/EvaT: independent-transcription sensitivity;
+- no species dictionary, semantic label, A1 parameter, Naibbe mapping, Voynich-specific edit weight or learned metric.
+
+### Frozen statistic and null
+
+Within each physical row only:
+
+1. compute all pairwise DINO visual distances;
+2. compute all pairwise normalized Levenshtein label distances;
+3. Spearman-correlate the distance matrices per row;
+4. pair-count-weight the row correlations into `T`;
+5. enumerate every within-row label reassignment exactly.
+
+Intact exact null sizes:
+
+- f102v2: `7! × 5! = 604,800`;
+- f100v: `4! × 5! × 4! = 69,120`.
+
+A page passes only if:
+
+- `T >= 0.20`; and
+- exact one-sided `p <= 0.05`.
+
+### Execution firewall
+
+Before the first association reveal, Phase65B0 must freeze:
+
+- Yale image/canvas/service IDs and exact image hashes;
+- text-blind crop rectangles and crop hashes;
+- pinned ZL/IT source identities and confidence exclusions;
+- exact DINOv2 code/weight hash;
+- deterministic executable and a synthetic-only preflight.
+
+If input-quality coverage falls below the frozen floor, classify `M8-B1 BLOCKED_BY_INPUT_QUALITY` before scoring rather than repairing the population.
+
+After the f102v2 reveal, scientific code/parameters cannot change before f100v replication.
+
+### Claim boundary
+
+Even a replicated positive means only that attached label form covaries with an independently measured visual property of the attached drawing. It does not identify plant names, plaintext, language, cipher key, N/C/G family truth or decipherment.
+
+See `experiments/phase65/PLAN_B.md`.
 
 ## Later model-family work
 
 ### G family
 
-Do **not** add A2 merely to repair known B4/B5, fold2 or line-profile residuals. The next G challenge is autonomy, not better fit.
+Do **not** add A2 merely to repair known B4/B5, fold2 or line-profile residuals. Resolve the frozen content-relation frontier first.
 
 ### C family
 
-C0 is useful but insufficient. C1 is legitimate only as a separately frozen historically/mathematically motivated model with explicit complexity cost. It should receive enough model-development budget to make the N/C/G comparison scientifically fair.
+C0 is useful but insufficient; published Naibbe C1 is a serious PARTIAL challenger but not an A1 rival. Any later C extension must be separately frozen, historically/mathematically motivated and complexity-charged. Do not add locality/reuse merely because Phase64B revealed that Naibbe lacks it.
 
 ### N/content lane
 
-Simple N0 is disfavored, not all meaningful-text families. Strong semantic promotion still requires independently grounded object/paragraph mapping and unseen content prediction.
+Simple N0 is disfavored, not all meaningful-text families. Phase65A has now removed the external-mapping blocker for one object-local test; semantic promotion still requires the unseen Phase65B result and stronger follow-up if positive.
 
 ## Reproducibility debt
 
@@ -286,7 +357,7 @@ These debts limit fine historical claims but do not erase the newer prospectivel
 - **M5 independent transcription robustness:** ✅ Phase63B strong replication.
 - **M6 mechanism autonomy:** ✅ Phase64A mixed — strict full autonomy not supported; core H62 survives inventory removal.
 - **M7 fair strong C competitor:** ✅ Phase64B published Naibbe tested; partial, not A1 rival.
-- **M8 content relation:** 🟡 Phase65A anchor feasibility/audit current; relation itself not established.
+- **M8 content relation:** ✅ Phase65A anchor feasibility READY; 🟡 Phase65B relation test frozen and unexecuted.
 - **M9 decipherment threshold:** ⛔ not reached.
 
 ## Stop / pivot rules
@@ -302,8 +373,9 @@ Pause or pivot rather than endlessly repair when:
 
 ## What to do when asked simply to "continue"
 
-1. finish Phase64B result/replay integration and exact-head merge if not yet on main;
-2. begin **Phase65A** by auditing independently grounded localized content anchors before any semantic/textual test;
-3. freeze source identity, localization, confidence rules, prediction and null before inspecting target text outcomes;
-4. do not repair A1-R2 S3, add A2, or add post-result locality/reuse to Naibbe;
-5. if no content anchor meets the frozen standard, record the external blocker and pivot only to a separately motivated residual C prediction.
+1. finish Phase65A/Phase65B-plan PR integration and exact-head merge if not yet on main;
+2. create a fresh Phase65B implementation branch from post-merge main;
+3. run **source/model/image/crop/transcription preflight only** and freeze exact manifests/hashes before any P25 association score;
+4. run a synthetic-only implementation preflight that proves DINO/parser/permutation machinery without reading P25 outcomes;
+5. authorize f102v2 first reveal only after the preflight freeze, archive it, then run unchanged-code f100v replication regardless of outcome;
+6. do not repair A1-R2 S3, add A2, alter Naibbe, expand the P25 population or tune image/text representations from Phase65B outcomes.
