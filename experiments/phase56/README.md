@@ -6,124 +6,107 @@ The execution plan was frozen in `PLAN.md` before implementation.
 
 `phase56_build_state_matrix.py` parses the actual ZL3b page-header metadata and preserves physical leaf and page-side separately.
 
-Audited substrate:
-
-- 226 page headers in source
-- 4,087 included P-coded prose lines
-- **206 page-sides**
-- **99 physical leaves**
-- **736 paragraphs**
-- recto 104 / verso 102
-
-The 197 page-sides overlapping the earlier Phase55 folio-feature map were regression-checked on TTR, token-unit length, edit-1 family coverage, previous-10 locality, line-position MI, and first/final entropy. Maximum absolute difference was **0.0** for every checked feature.
+Audited substrate: 226 page headers, 4,087 included P-coded prose lines, **206 page-sides**, **99 physical leaves**, **736 paragraphs**. The 197 page-sides overlapping Phase55 were regression-checked on the shared fingerprint definitions; maximum absolute difference was **0.0**.
 
 ## Phase 56B — drift versus regimes: COMPLETE AS DEVELOPMENT DIAGNOSTIC
 
-After exact matching on section + Currier + hand, physical locality remains real: same-leaf / adjacent-leaf fingerprints are closer than distant leaves. However, neither one globally smooth trajectory nor a small set of sharp changepoints adequately describes the full pattern. The best current description is broad state/block differences plus local physical similarity.
+Physical locality survives exact matching on section + Currier + hand, but neither one globally smooth trajectory nor a small set of sharp changepoints adequately describes it. The best current description is broad state/block differences plus local physical similarity.
 
-See `phase56b_results.json` for the full model comparison.
+## Phase 56C — latent dimensionality: COMPLETE AS DEVELOPMENT DIAGNOSTIC
 
-## Phase 56C — latent dimensionality and cross-scale state: COMPLETE AS DEVELOPMENT DIAGNOSTIC
+A critical sample-size audit withdrew the original unmatched-PC1 section interpretation: full-page PC1 correlated **r=-0.886** with page token count.
 
-### Critical sample-size correction
+After matched-token reconstruction, the leading direction is instead a near-family activation / local-continuity axis. Matched page fingerprints require several dimensions rather than one or two: first 3 PCs explain **63.7%**, first 5 **78.7%**, first 7 **90.0%**. Similar leading directions recur at paragraph scale. Linear PCA beats RBF kernel PCA in grouped held-out reconstruction, so no nonlinear-manifold advantage is currently established.
 
-The first page-side PCA used page fingerprints computed from each page's full available text. Its PC1 correlated **r=-0.886 with page token count**. The apparent dominant `section` axis was therefore substantially contaminated by sample-size-sensitive features such as TTR and inventory size.
+## Phase 56D — paragraph transition transfer: COMPLETE AS DEVELOPMENT EVIDENCE
 
-That interpretation is withdrawn.
+The paragraph-entry transient is multivariate and transfers across sections.
 
-Phase56C rebuilt page fingerprints from **30 random contiguous 40-token windows per page-side**, averaged within page-side. Paragraph fingerprints were independently built from **20 random contiguous 20-token windows per paragraph**.
+Using a 5D matched paragraph-trained basis, line states were centered within page-side. For each paragraph with both entry and third line available, the line0 -> line2 delta was measured. A transition direction was learned from all but one major section and tested on the held-out section.
 
-### Matched page-side latent structure
+Held-out results:
 
-197 page-sides, 11 matched features.
+| section | paragraphs | cosine to trained direction | mean projection | page-bootstrap 95% |
+|---|---:|---:|---:|---:|
+| H | 176 | .862 | 1.569 | [1.106, 2.022] |
+| B | 74 | .738 | .635 | [.119, 1.085] |
+| P | 41 | .876 | 2.073 | [1.305, 2.740] |
+| S | 199 | .899 | 1.391 | [1.072, 1.716] |
+| T | 27 | .966 | 2.102 | [1.331, 2.845] |
 
-PCA variance:
+All held-out sections project positively onto a transition learned without them. Biological is weaker but remains positive.
 
-- PC1 31.9%
-- PC2 21.4%
-- PC3 10.4%
-- first 3 cumulative **63.7%**
-- first 5 cumulative **78.7%**
-- first 7 cumulative **90.0%**
+Therefore the Phase54 paragraph-entry effect is no longer just a single continuity statistic. It is a transferable multivariate state transition within this manuscript.
 
-The dominant matched PC1 is no longer a section axis. Its largest loadings are:
+This remains internal/development evidence, not external replication.
 
-- local previous-10 near-family continuity +0.450
-- edit-1 family coverage +0.434
-- TTR -0.371
-- unit inventory -0.342
-- token-length dispersion -0.333
+## Phase 56D — structural residualization
 
-This is best described provisionally as a **near-family activation / local-continuity axis**.
+A first leakage-safe paragraph residual target was constructed.
 
-PC2 emphasizes mean token length, first/final entropy, and `k/t` mass. PC3 emphasizes `k/t` mass and the balance within `{k,t}`.
+Substrate:
 
-Metadata effects are distributed across several dimensions rather than dominated by one axis.
+- 635 paragraphs with >=20 body tokens
+- fingerprint = mean of 10 random contiguous 20-token windows
+- split-half reliability across independent window draws: median **r=.964**, range about .944-.983
+- 5-fold CV grouped by physical leaf
 
-### Cross-scale replication at paragraph level
+Predictors were intentionally conservative:
 
-635 paragraphs with >=20 body tokens were analyzed using matched 20-token windows.
+1. section + Currier + hand + paragraph ordinal;
+2. the same metadata plus a leave-one-paragraph-out mean fingerprint from other paragraphs on the same page-side.
 
-The first paragraph PC is again dominated by local near-family continuity and edit-1 family coverage; the second is again dominated by mean length, final/initial entropy and `k/t` mass.
+Mean standardized held-out MSE:
 
-The top two page-side and paragraph subspaces have principal angles about **5.8° and 22.2°**, indicating substantial recurrence of the same low-order structural directions across scales.
+- metadata model: **.919**
+- metadata + page context: **.885**
 
-In the paragraph 5D latent space:
+Thus page-local context adds real predictive information, but most stable paragraph variation remains unexplained.
 
-- same page-side mean distance: **3.244**
-- same section+hand but different page: **3.567**
-- broadly unrelated: **3.910**
+Feature-level cross-fitted R2 with page context ranges from essentially zero for unit inventory to about:
 
-Thus a page-local state exists below broad section/hand labels.
+- mean token length **.369**
+- final entropy **.220**
+- `k/t` mass **.187**
+- within-`{k,t}` balance **.140**
 
-### Physical locality decomposed by latent axis
+The residual's largest PCA axis has almost no remaining broad-label association:
 
-After exact section+Currier+hand matching, mean absolute difference on matched PC1 rises from about **1.54** for same/adjacent leaves to **2.46** at leaf gap >=11. The corresponding increase is smaller on PCs 2-5.
+- section eta2 **.0052**
+- Currier eta2 **.0016**
+- hand eta2 **.0020**
 
-Therefore much of the physical-locality effect is concentrated in the near-family/local-continuity dimension: nearby physical units tend to activate more similar token-family topology.
+A modest page-local residual similarity remains, so this is not yet a final nuisance-free residual.
 
-### Linear versus nonlinear compression
+## Phase 56 decision
 
-Five-fold grouped held-out reconstruction by physical leaf:
+The manuscript-internal mapping has now answered the main questions posed in the frozen plan well enough to define the next research object:
 
-| dimensions | PCA MSE | RBF kernel-PCA MSE |
-|---:|---:|---:|
-| 2 | 0.492 | 0.592 |
-| 3 | 0.390 | 0.533 |
-| 4 | 0.325 | 0.441 |
-| 5 | 0.250 | 0.373 |
-| 6 | 0.163 | 0.321 |
+1. **structural scales:** broad document constraints, page-local family activation, paragraph-entry transition, line/token morphology;
+2. **physical order:** real locality, but not one simple smooth drift or a few sharp changepoints;
+3. **latent dimensionality:** moderately low-dimensional, roughly several axes rather than one/two or eleven independent dimensions;
+4. **metadata:** important but heavily confounded, and no longer dominant after matched-token correction;
+5. **residual target:** reliable paragraph-specific structural variation remains after conservative cross-fitted metadata + page-context prediction.
 
-Kernel-gamma sensitivity can approach the linear result but does not beat it. There is currently **no evidence that nonlinear manifold compression improves on the linear latent basis** for these audited matched page features.
+### Hypothesis status
 
-## Phase 56C decision
+- H56-1 compact latent state: **QUALIFIED SUPPORT**
+- H56-2 smooth physical drift: **PARTIAL / REFINED** — locality yes, globally smooth drift no
+- H56-3 shared grammar plus local state: **SUPPORTED RELATIVE TO SEPARATE-GRAMMAR DESCRIPTION**, especially by cross-scale basis recurrence and cross-section paragraph-transition transfer
+- H56-4 stable residual opportunity: **OPEN, candidate residual now defined**
 
-**H56-1: QUALIFIED SUPPORT / REFINED.**
+## Immediate next frontier
 
-The manuscript's matched structural variation is moderately low-dimensional, but not a one- or two-axis system. Roughly 3 dimensions capture ~64% and 5 capture ~79% of page-side variance, with similar leading directions recurring at paragraph scale.
+Do **not** interpret the residual semantically yet.
 
-The important correction is that raw page-level sample size can manufacture a seemingly dominant section axis. Future latent/residual analyses must use matched token counts or explicitly model estimator/sample-size effects.
+First perform a residual robustness gate:
 
-Current structural picture:
+- alternative token-unit/collapse definitions;
+- matched-window length sensitivity;
+- richer but leakage-safe local structural predictors;
+- transcription/source sensitivity where feasible;
+- verify that residual axes and paragraph-level relationships reproduce under these perturbations.
 
-`broad document/section constraints`
+Only residual structure that survives that gate should be exposed to illustration/content/cipher tests. This prevents a new round of semantic fishing on estimator artifacts.
 
-`+ page-local token-family activation state`
-
-`+ morphology / edge-entropy / {k,t} dimensions`
-
-`+ paragraph and line-position dynamics`
-
-rather than one global section axis or one smooth physical drift.
-
-## Phase 56D frontier — transitions and residualization
-
-Before semantic/cipher testing:
-
-1. project paragraph/line transitions into the matched latent basis;
-2. test whether paragraph entry follows a reproducible multivariate trajectory rather than only the original near-family metric;
-3. test transfer of that trajectory across positive-reset sections;
-4. predict structural state from broad metadata + local page state + paragraph-relative line position;
-5. retain grouped held-out residuals as the candidate future information-bearing target.
-
-Detailed numeric results are in `phase56c_results.json`.
+Detailed numeric results: `phase56b_results.json`, `phase56c_results.json`, `phase56d_results.json`.
