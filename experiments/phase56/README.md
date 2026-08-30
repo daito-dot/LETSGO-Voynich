@@ -4,7 +4,7 @@ The execution plan was frozen in `PLAN.md` before implementation.
 
 ## Phase 56A — canonical substrate: COMPLETE
 
-`phase56_build_state_matrix.py` now parses the actual ZL3b page-header metadata and preserves physical leaf and page-side separately.
+`phase56_build_state_matrix.py` parses the actual ZL3b page-header metadata and preserves physical leaf and page-side separately.
 
 Audited substrate:
 
@@ -15,49 +15,67 @@ Audited substrate:
 - **736 paragraphs**
 - recto 104 / verso 102
 
-Section counts among included page-sides:
+The 197 page-sides overlapping the earlier Phase55 folio-feature map were regression-checked on TTR, token-unit length, edit-1 family coverage, previous-10 locality, line-position MI, and first/final entropy. Maximum absolute difference was **0.0** for every checked feature.
 
-- H 128
-- S 25
-- B 19
-- P 16
-- C 7
-- T 6
-- A 5
+## Phase 56B — drift versus regimes: COMPLETE AS DEVELOPMENT DIAGNOSTIC
 
-Currier is absent from the ZL3b source header on 10 included page-sides; this is not a parser failure. `f115r` has hand `$H=@` in the source and is retained literally.
+The initial global contiguous-block test suggested a smooth-neighbor advantage, but stronger follow-up tests changed the interpretation.
 
-### Regression audit
+### Exact metadata-matched physical-distance gradient
 
-The 197 page-sides overlapping the earlier Phase55 folio-feature map were compared on:
+Conditioning on identical **section + Currier + hand**, mean standardized fingerprint distance is:
 
-- TTR
-- mean/sd token-unit length
-- edit-1 family coverage
-- previous-10 locality
-- line-position MI
-- first/final entropy
+- same physical leaf: **3.231** (106 pairs)
+- leaf gap 1: **3.295** (233)
+- gap 2: **3.534** (203)
+- gap 3–5: **3.620** (530)
+- gap 6–10: **3.637** (740)
+- gap 11+: **4.340** (3219)
 
-Maximum absolute difference was **0.0** on every checked feature. Phase56A-v1 is therefore frozen as the canonical substrate for 56B-D.
+Therefore physical locality is not just a section/Currier/hand artifact.
 
-### Parser correction during audit
+### Largest exact stratum: Herbal / Currier A / hand 1
 
-The first GitHub implementation incorrectly looked for `$I/$L/$H` on comment records. Actual ZL3b stores them on page-header records such as `<f1r> <! ...>`. This was caught before any Phase56 model result was accepted and the builder was replaced.
+93 page-sides / 47 physical leaves. Interleaved leaf holdout:
 
-## Phase 56B — drift versus regimes: IN PROGRESS
+- stratum mean MSE: **1.058**
+- smooth distance predictor: **0.947**
+- optimized dynamic-programming changepoint: **0.985**
+- changepoint + smooth residual: **0.977**
 
-Initial predictive comparison used 197 sufficiently populated page-sides, an 11-feature standardized structural fingerprint, and five contiguous physical-leaf held-out blocks.
+Smooth interpolation is about 10.5% better than the stratum mean and beats explicit changepoints on average.
 
-Mean held-out standardized MSE:
+However, the changepoint model repeatedly places its main division around the large physical separation between the early Herbal-A block and its later reappearance. This may be block composition rather than a sharp within-block state transition.
 
-- section-mean baseline: **0.990**
-- distance-weighted smooth physical neighbor: **0.926**
-- contiguous 2-regime model: 0.964
-- contiguous 3-regime model: 1.052
-- contiguous 4-regime model: 0.962
-- contiguous 6-regime model: 1.137
-- contiguous 8-regime model: 0.995
+### Main continuous Herbal-A block only
 
-The smooth physical predictor improves mean error by about **6.4%** relative to section means. Simple discrete physical bins do not beat it. However, one central held-out block favors the section baseline, so this is **provisional support for smooth local drift**, not closure of H56-2.
+Restricting to Herbal / Currier A / hand 1 with physical leaf <=56 removes that separated recurrence. Interleaved holdout:
 
-Next inside 56B: explicit changepoint and mixed regime-plus-drift comparisons, then matched-stratum sensitivity before moving to latent dimensionality.
+- global mean: **1.062**
+- smooth: **1.065**
+- changepoint: **1.062**
+- mixed: **1.065**
+
+The selected changepoint count collapses to one regime. Neither smooth drift nor discrete changepoints improve prediction inside this continuous block.
+
+## Phase 56B decision
+
+**H56-2: PARTIALLY SUPPORTED / REFINED.**
+
+There is a real graded physical-locality signal after exact metadata matching. But it is not adequately described as one globally smooth physical trajectory, and simple sharp changepoints are also insufficient.
+
+The current descriptive picture is:
+
+> broad state/block differences or separated recurrences + physical locality, with weaker or non-predictive smooth variation inside at least the main continuous Herbal-A block.
+
+This is precisely why the next step should be multivariate latent-state dimensionality rather than forcing physical order into a one-dimensional drift model.
+
+## Phase 56C frontier — latent dimensionality
+
+Next:
+
+1. PCA / cross-validated low-rank reconstruction as the linear baseline;
+2. held-out prediction versus number of latent dimensions;
+3. nonlinear manifold sensitivity without treating visual separation as evidence;
+4. determine whether a compact common basis exists and which axes track section, physical block, Currier/hand, paragraph/line structure;
+5. use the result to define the structural component to be removed before residual content/cipher tests.
