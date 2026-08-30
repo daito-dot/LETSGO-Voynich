@@ -1,0 +1,100 @@
+{
+  "phase": "61C",
+  "status": "A1 SURVIVES first joint gate",
+  "input": {
+    "bytes": 411671,
+    "git_blob_sha1": "2a4533ab9bdfa85db9bad602d590978953055df1",
+    "paragraphs": 736,
+    "prose_tokens": 32570,
+    "prose_types": 8295
+  },
+  "compatibility_audit": {
+    "reference": {
+      "edit1_type_density": 0.80374,
+      "local_prev10_fraction": 0.09778,
+      "line_position_eta2_mean": 0.03115,
+      "line_position_eta2_max": 0.0881,
+      "entry_pseudo_norm": 1.28505
+    },
+    "observed": {
+      "edit1_type_density": 0.8039783001808318,
+      "local_prev10_fraction": 0.09422781700951796,
+      "line_position_eta2_mean": 0.03453623406174323,
+      "line_position_eta2_max": 0.10624878151735459,
+      "entry_pseudo_norm": 1.2850527346169538
+    },
+    "relative_error": {
+      "edit1_type_density": 0.0002964891393134827,
+      "local_prev10_fraction": 0.036328318577235064,
+      "line_position_eta2_mean": 0.10870735350700568,
+      "line_position_eta2_max": 0.20600206035589777,
+      "entry_pseudo_norm": 2.128023776327836e-06
+    },
+    "gated_metrics": {
+      "edit1_type_density": true,
+      "local_prev10_fraction": true,
+      "line_position_eta2_mean": true,
+      "entry_pseudo_norm": true
+    },
+    "pass": true
+  },
+  "model": "A1: boundary-aware entry mixture + one local-family body activation mechanism",
+  "frozen_plan": "experiments/phase61/PLAN_C.md",
+  "implementation_freeze": "experiments/phase61/IMPLEMENTATION_C.md",
+  "executable": "experiments/phase61/phase61c_joint_model.py",
+  "parameter_grids": {
+    "entry_strength": [0.5, 1.0, 1.5, 2.0],
+    "local_family_p": [0.05, 0.1, 0.2, 0.3]
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "selected": {"entry_strength": 0.5, "local_family_p": 0.2},
+      "train_relative_mse": 0.09681859071614395,
+      "heldout_real": {"entry_projection": 0.996292312845097, "local_prev10_fraction": 0.08799724470466679, "line_position_eta2_mean": 0.05795560072084453, "line_position_eta2_max": 0.1897920451471582, "edit1_type_density": 0.7861247947454844},
+      "heldout_generated": {"entry_projection": 0.8688117133609736, "local_prev10_fraction": 0.05114516962286895, "line_position_eta2_mean": 0.0469081756930765, "line_position_eta2_max": 0.10464251980857715, "edit1_type_density": 0.756235876010706},
+      "heldout_ratio": {"entry_projection": 0.8720449833442165, "local_prev10_fraction": 0.5812133072407044, "line_position_eta2_mean": 0.8093812351116797}
+    },
+    {
+      "fold": 1,
+      "selected": {"entry_strength": 0.5, "local_family_p": 0.2},
+      "train_relative_mse": 0.09685007337225342,
+      "heldout_real": {"entry_projection": 1.4725416483847047, "local_prev10_fraction": 0.09003164556962025, "line_position_eta2_mean": 0.04573103119792477, "line_position_eta2_max": 0.12254100027181167, "edit1_type_density": 0.7884151246983105},
+      "heldout_generated": {"entry_projection": 0.8075084696244703, "local_prev10_fraction": 0.05509493670886075, "line_position_eta2_mean": 0.04209747988031369, "line_position_eta2_max": 0.09892018384261372, "edit1_type_density": 0.7625166790655011},
+      "heldout_ratio": {"entry_projection": 0.54837733826426, "local_prev10_fraction": 0.6119507908611599, "line_position_eta2_mean": 0.9205451698238555}
+    },
+    {
+      "fold": 2,
+      "selected": {"entry_strength": 0.5, "local_family_p": 0.3},
+      "train_relative_mse": 0.04959359153474278,
+      "heldout_real": {"entry_projection": 1.1323585919539951, "local_prev10_fraction": 0.10274454609429978, "line_position_eta2_mean": 0.03287950522062993, "line_position_eta2_max": 0.11403791353249067, "edit1_type_density": 0.7889390519187359},
+      "heldout_generated": {"entry_projection": 1.0389322141784838, "local_prev10_fraction": 0.08191414496833216, "line_position_eta2_mean": 0.05569465018810649, "line_position_eta2_max": 0.157009815165861, "edit1_type_density": 0.7814691708872379},
+      "heldout_ratio": {"entry_projection": 0.9174940001874362, "local_prev10_fraction": 0.7972602739726028, "line_position_eta2_mean": 1.6939017121571958}
+    },
+    {
+      "fold": 3,
+      "selected": {"entry_strength": 0.5, "local_family_p": 0.3},
+      "train_relative_mse": 0.047000001918509234,
+      "heldout_real": {"entry_projection": 0.7906195841800773, "local_prev10_fraction": 0.09658204509998582, "line_position_eta2_mean": 0.025844156503500693, "line_position_eta2_max": 0.057120894014258294, "edit1_type_density": 0.7813935681470138},
+      "heldout_generated": {"entry_projection": 1.1475461184263498, "local_prev10_fraction": 0.09090909090909091, "line_position_eta2_mean": 0.050337842284324766, "line_position_eta2_max": 0.15662908366447623, "edit1_type_density": 0.7857906184700949},
+      "heldout_ratio": {"entry_projection": 1.4514516733308953, "local_prev10_fraction": 0.9412628487518355, "line_position_eta2_mean": 1.9477456065360967}
+    },
+    {
+      "fold": 4,
+      "selected": {"entry_strength": 0.5, "local_family_p": 0.2},
+      "train_relative_mse": 0.08177301602056969,
+      "heldout_real": {"entry_projection": 1.5480966906160991, "local_prev10_fraction": 0.09193574041673294, "line_position_eta2_mean": 0.042389732507797005, "line_position_eta2_max": 0.14695177812518515, "edit1_type_density": 0.7558895207148659},
+      "heldout_generated": {"entry_projection": 0.8705658298712748, "local_prev10_fraction": 0.05738826149196755, "line_position_eta2_mean": 0.03357140641205395, "line_position_eta2_max": 0.10324936422985131, "edit1_type_density": 0.7643358388776091},
+      "heldout_ratio": {"entry_projection": 0.562345902002293, "local_prev10_fraction": 0.6242214532871972, "line_position_eta2_mean": 0.791970234911932}
+    }
+  ],
+  "heldout_real_mean": {"entry_projection": 1.1879817655959948, "local_prev10_fraction": 0.09385824437706111, "line_position_eta2_mean": 0.04096000523013939},
+  "heldout_generated_mean": {"entry_projection": 0.9466728690923105, "local_prev10_fraction": 0.06729032074022406, "line_position_eta2_mean": 0.045721910891575075},
+  "heldout_ratio_of_means": {"entry_projection": 0.7968749155146984, "local_prev10_fraction": 0.7169356425408461, "line_position_eta2_mean": 1.1162574475926033},
+  "heldout_mean_fold_ratio": {"entry_projection": 0.8703427794258202, "local_prev10_fraction": 0.7111817348227, "line_position_eta2_mean": 1.2327087917081518},
+  "broad_regime_gate_0.5_to_2.0": {"entry_projection": true, "local_prev10_fraction": true, "line_position_eta2_mean": true},
+  "decision": "Retain G/A1 as a viable structural family, freeze A1, count its complexity increment, and move to direct N0/B0 comparison. Do not create A2 now.",
+  "complexity_increment_vs_A0": "one local-family mechanism plus one fitted global scalar local_family_p; entry_strength remains an A0 parameter",
+  "edit1_density_caveat": "non-independent because A1 uses the empirical Voynich prose token-type inventory",
+  "reproduction_note": "Full 16-pair training grid is deterministically reproducible from the frozen executable and seeds; compact durable result stores selected models and held-out outcomes."
+}
