@@ -323,15 +323,54 @@ Do not relax the S3 threshold or add A2 machinery to repair `0.468×`. S3 is ret
 
 First reveal: run `33335306504`, artifact `9738893689`, ZIP SHA-256 `058852cfc8bf5d718d200f05758d21452f45715d35a2b682f7422afc6261d8fc`, raw JSON SHA-256 `43b59ad8539db4cf089e6265c38f81ec9afd2f864877b77373a12adbdccdce1b`.
 
-## Current frontier — serious bounded C1 fairness challenge
+## Phase64B — serious bounded C1 / published Naibbe: PARTIAL, NOT A1 RIVAL
 
-Phase64A sharply reduces the value of further post-result G tuning: the core H62 mechanism survives inventory replacement, while the remaining ZL failure is a weak aggregate S3 scalar that should not be repaired after reveal.
+Phase64B gave the C family a materially stronger, independently published challenger rather than continuing to compare A1 only against the deliberately simple C0 transform.
 
-The highest-value unresolved objection is now **family-comparison unfairness**. C0 was deliberately simple. The next frontier is therefore to freeze a materially stronger but bounded **C1 meaningful-text + encoding/shorthand model** with explicit complexity cost and no Voynich-specific boundary tuning.
+Frozen C1-E0 is exact published Naibbe v2 (`greshko/naibbe-cipher@f2675ec5dd275268bc64dd48ea64fc0e0e9827a2`) applied without Voynich-selected parameters to the same equal-weight four-manuscript CREMMA Latin panel used in Phase62.
 
-C1 must be independently motivated, selected only inside training folds, and challenged on the same held-out exposed scorecard plus H62. It must not copy A1's previous-10 mechanism under a cipher label. A C1 pass would reopen the meaningful/cipher mechanism interpretation; a serious C1 failure would strengthen G relative to a fairer competitor, but still would not prove semantic absence.
+Primary published-output ratios to Voynich are:
 
-The independently grounded content bridge remains essential before semantic promotion and is still prerequisite-limited.
+- S1 paragraph-entry projection **-0.09449× — FAIL / opposite sign**;
+- S2 previous-10 near-family excess **-0.01903× — FAIL / approximately zero and opposite sign**;
+- S3 aggregate line-position eta2 **0.62417× — PASS**.
+
+The exposed gate therefore fails decisively on the two features that most distinguish the current Voynich mechanism. S3 survives, but prior N0 work already showed this scalar to be a weak Voynich-specific discriminator.
+
+H62-P1 is more informative and shows a genuine partial C-family gain:
+
+| candidate | mean D_profile | median D_profile | mean |ΔC_short| |
+|---|---:|---:|---:|
+| N0 | 1.52982 | 1.47990 | 0.63750 |
+| C0 | 1.85866 | 1.87201 | 1.30765 |
+| **published Naibbe C1-E0** | **1.23763** | **1.25067** | **0.69290** |
+| **A1-R1** | **0.76660** | **0.80945** | **0.11769** |
+
+Naibbe beats C0 **5/5 folds on both H62 diagnostics** and beats N0 **4/5** on profile distance. However it loses to N0 **0/5** on short-range concentration error and loses to A1-R1 **0/5** on C-short; it beats A1 on D only in fold4. The frozen full H62 viability rule therefore fails and `A1_R1_rival = false`.
+
+The paired raw-token view is also **PARTIAL**. Its H62 geometry improves (`mean D=1.15199`, `mean |ΔC_short|=0.62487`) and meets the H62 baseline-viability subcriterion, but S1/S2 remain near-zero/opposite-sign and it still does not rival A1. Published respacing is therefore not the principal failure.
+
+Five preregistered within-state glyph-mapping permutations show that codebook assignment materially changes H62 but does not solve S1/S2. The published assignment is better than the permutation aggregate on H62 D/C-short but worse on exposed joint relative MSE, so the published glyph assignment receives **no unique specificity credit** under the frozen rule.
+
+A pre-result input-compatibility amendment is retained explicitly: pinned Naibbe `clean_line()` keeps some medieval Unicode alphabetic glyphs that have no codebook cell. Before any successful scientific score was revealed, B3 froze a drop-only projection onto the published 23-letter effective alphabet. No transliteration/expansion was invented. The first successful scientific head is `1e80c41f0e502a7dacb593723dbf9d81f9f84add`; run `33338000172`, job `99328325145`, artifact `9739776686`, ZIP SHA-256 `f8534605b0c6b2396341d47d54b7d4280632ba14eb30ae7f34b8208921dab378`, raw JSON SHA-256 `f88954c2efa2ec69e4bee0cd6fb1c70b49f08b1f44206c7f70bd540ad538d35d`.
+
+Frozen classification:
+
+> **C1-E0 PARTIAL.**
+
+Accepted interpretation:
+
+> **A1-R1 remains the leading tested structural mechanism. A materially stronger independently published meaningful-text cipher improves substantially over simple C0, but exact published no-reuse Naibbe does not reproduce the Voynich paragraph-entry/local-recurrence signature and does not rival A1 on the prospectively sealed H62-P1 geometry.**
+
+This strengthens A1 relative to the tested bounded C1. It does not reject the entire C family, establish semantic absence, identify A1 historically or decipher the manuscript.
+
+## Current frontier — Phase65A independently grounded content-anchor audit
+
+Further result-driven A1 repair is low value, and open-ended cipher search after one serious C1 would create an unconstrained model-selection loop. The next information-gain frontier moves one step up the epistemic ladder: **Mechanism → Content relation**.
+
+Phase65A is not a semantic pattern search. It must first identify whether a defensible localized external anchor exists at label/object/paragraph resolution. Candidate mappings must be fixed from independent catalog/scholarly/visual evidence before any Voynichese feature is inspected for the test. Contested plant-name guesses or text-selected labels are not admissible as primary anchors.
+
+If no candidate satisfies the independence/localization requirements, record M8 as externally blocked rather than manufacturing a semantic test. In that case the fallback frontier is one explicitly historical residual C hypothesis with a distinct preregistered prediction, not a post-hoc Naibbe or A1 rescue.
 
 ## Current interpretation limits
 

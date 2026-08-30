@@ -1,117 +1,72 @@
-# Next research frontier after the meta-analysis
+# Next research frontier — Phase65A independent content-anchor audit
 
-Decision point after Phase55 and `META_ANALYSIS.md`.
+Status: current frontier after Phase64B.
 
-## What should not happen next
+## Why the frontier moves now
 
-Do not immediately resume generator tuning.
+The project has accumulated a sequential mechanism-evidence staircase rather than one target-aware fit:
 
-Do not search for another isolated correlation or visual reading.
+- frozen A1 structural gate;
+- fair N0/C0/A1 held-out tournament;
+- sealed prospective H62-P1 success;
+- held-out-vocabulary restriction;
+- independent GC/IT transcription replication;
+- empirical-inventory autonomy stress;
+- serious independently published Naibbe C1 fairness challenge.
 
-Do not treat Currier, hand, section, folio and paragraph as independent labels without accounting for their observational confounding.
+Phase64B is especially important because it shows both sides of the comparison. Published Naibbe can outperform weak C0 substantially on recurrence-profile geometry, so C mechanisms cannot be dismissed as powerless. Yet it still fails Voynich entry S1, local-prev10 S2 and the sealed short-range concentration geometry and is not an A1 rival.
 
-Do not optimize another model against the already exposed paragraph-reset / line-position targets and then call the fit validation.
+Continuing to add mechanisms to A1 or searching unlimited cipher variants now has poor information value and increasing researcher degrees of freedom.
 
-## Frontier: latent multiscale state map
+## Phase65A question
 
-The next research block should determine the smallest useful state representation of the manuscript itself.
+> Is there a localized external content anchor that can be fixed independently of Voynichese and support a genuinely prospective content-relation test?
 
-Working descriptive hierarchy:
+This is a prerequisite audit before semantic modeling. It is not permission to mine plant names, labels or translations until something looks good.
 
-`section/document role -> physical page/leaf drift -> paragraph dynamics -> line state -> token morphology`
+## Candidate-anchor admissibility
 
-The central question is not yet what historical mechanism produced those states. It is whether these apparent layers are genuinely distinct, how many latent dimensions they require, and which observed labels become redundant once physical and textual context are modeled.
+A primary anchor must satisfy all of the following:
 
-## Phase 56A — structural state matrix
+1. **Independent origin** — the identification/localization comes from catalog, iconographic, manuscript, historical or other external evidence rather than Voynichese string similarity.
+2. **Useful localization** — object, label or paragraph-level localization is available; broad Herbal/Balneological/Zodiac page class alone is insufficient.
+3. **Pre-freezable mapping** — the mapping and confidence rule can be written down before target text features are evaluated.
+4. **Non-circular selection** — candidate objects/items are not chosen because their nearby tokens fit a proposed reading.
+5. **Replicable source identity** — image/catalog/dataset/version identifiers can be pinned.
+6. **Unseen prediction** — at least one held-out item/content relation can be predicted after training or rule construction.
+7. **Strong null** — physical layout, section, Currier/hand and token-family confounds are preserved where relevant.
 
-Construct one audited feature matrix at several observation scales:
+## Candidate classes to audit
 
-- page-side
-- paragraph
-- line
+Audit, without textual scoring, whether any of these can meet the requirements:
 
-Feature families should include morphology, token-family topology, line-position composition, local recurrence/continuity, token length, slot occupancy, and selected previously established structural equivalence features.
+- externally identifiable zodiac/astronomical iconography with localized neighboring labels or paragraphs;
+- catalogued object classes in pharmaceutical/recipe pages where object-text adjacency is unambiguous;
+- repeated diagram elements whose identity/order is fixed by geometry rather than text;
+- independently annotated localized illustration features from scholarly/digital collections;
+- any public object/label alignment dataset with stable item identifiers and provenance.
 
-Every row must retain explicit metadata:
+Plant-species identifications are admissible only if the primary mapping is independently established strongly enough to be frozen without using Voynichese. Contested resemblance-based identifications should normally be sensitivity material, not primary truth labels.
 
-- full page-side id
-- physical leaf id/order
-- recto/verso
-- section
-- Currier
-- hand
-- paragraph id
-- line index / paragraph-relative position
+## Phase65A deliverables
 
-The purpose is to create one canonical analysis substrate and prevent unit-definition drift between phases.
+Before any content score is computed:
 
-## Phase 56B — smooth drift versus changepoints
+1. source audit with exact URLs/commit/version/date or image IDs;
+2. candidate mapping table with item IDs, localization and confidence provenance;
+3. independence audit explaining why the text was not used to choose the mapping;
+4. confound audit for section/page/layout/hand/Currier leakage;
+5. preregistered prediction and null;
+6. hard feasibility verdict: `ANCHOR READY` or `EXTERNALLY BLOCKED`.
 
-Within comparable section/hand/Currier strata, test whether physical-order variation is better described as:
+Only `ANCHOR READY` authorizes Phase65B content-relation science.
 
-- smooth local drift;
-- discrete changepoints;
-- a mixture of stable regimes plus drift.
+## Stop rule
 
-Use both linear/state-space descriptions and nonlinear/change-point methods. Compare predictive performance on held-out neighboring and non-neighboring page-sides.
+If no defensible anchor satisfies the requirements, do not lower the standard and do not call a page-class correlation semantic evidence. Record the blocker explicitly.
 
-## Phase 56C — latent dimensionality
+The fallback is one separately frozen **historically motivated residual C hypothesis** chosen for a prediction that distinguishes it from A1 and published Naibbe. It must not be a post-result locality/reuse patch to Naibbe and must carry an explicit complexity/target-dependence charge.
 
-Estimate how many latent coordinates are needed to reconstruct/predict the structural fingerprint.
+## Claim boundary
 
-Use complementary methods rather than trusting one embedding:
-
-- PCA/factor-style linear compression;
-- nonlinear manifold representation as exploratory sensitivity;
-- cross-validated low-rank prediction;
-- clustering/state models only where supported by stability tests.
-
-The important statistic is held-out predictive adequacy versus dimensionality, not visual attractiveness of an embedding.
-
-## Phase 56D — transfer and residualization
-
-Test whether a latent representation learned in one part of the manuscript predicts structural features in another:
-
-- within section across physical distance;
-- across sections with same Currier/hand where possible;
-- across hand with same section/Currier where possible.
-
-Then residualize known structural variation. Preserve those residuals as the future target for content/cipher tests.
-
-## Falsifiable hypotheses
-
-### H56-1: low-dimensional state hypothesis
-
-A small latent state (roughly a few dimensions rather than dozens of independent factors) predicts a substantial fraction of held-out structural variation.
-
-Falsified if predictive performance continues to improve broadly with many unrelated dimensions and no stable compact representation emerges.
-
-### H56-2: smooth physical drift hypothesis
-
-After controlling broad section/document role, nearby physical leaves/page-sides remain more predictable from one another than distant ones, with a graded distance relationship.
-
-Falsified if the Phase55 distance gradient disappears under audited matched strata or is explained entirely by discrete metadata/changepoints.
-
-### H56-3: shared grammar plus local state
-
-A substantial common structural basis transfers across sections while a smaller number of coordinates account for section/local differences.
-
-Falsified if models require essentially separate high-dimensional grammars for each major section and cross-section transfer collapses.
-
-### H56-4: meaningful residual opportunity
-
-After structural state is modeled, nontrivial stable residual variation remains that can be tested against independent content/illustration/label evidence.
-
-This hypothesis is not supported merely because residual variance exists. Residuals must be stable under transcription/control sensitivity and predict independent evidence.
-
-## Stop condition for this block
-
-Do not return to decipherment/generator selection until there is an audited answer to:
-
-1. what the main structural scales are;
-2. whether physical variation is drift or regimes;
-3. approximate latent dimensionality;
-4. which labels remain independently predictive after conditioning;
-5. what residual target remains after structural prediction.
-
-That residual target becomes the next legitimate search space for semantic or cipher information.
+Even a successful Phase65B content relation would not by itself decipher the manuscript. It would be the first justified promotion from mechanism evidence toward content evidence. Translation/decipherment still requires an executable mapping, substantial unseen prediction and interpretable output.
