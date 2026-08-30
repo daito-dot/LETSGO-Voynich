@@ -2,56 +2,59 @@
 
 Status: development diagnostic. Paragraph boundaries and all relevant targets are exposed.
 
-## Why this phase
+## Audit note added in Phase 55
 
-Phase 53 showed that simple paragraph-local topic/family concentration can increase the paragraph reset, but only by over-producing generic short-range clustering. Phase 54 asks what temporal shape a successful mechanism actually has to reproduce.
+The original Phase53 parser collapsed `f1r` and `f1v` to the common leaf id `f1` via `re.match(r'f\d+', loc)`. Phase54 inherited that parser. The original headline therefore mixed recto/verso page-sides inside a leaf-level sequence.
 
-## Shifted-boundary test
+Phase55 recomputed this test preserving full page-side identifiers (`f1r`, `f1v`, etc.). The qualitative transient survives, but the corrected headline gap is smaller and the effect is not uniform across manuscript sections. The corrected values below supersede the original Phase54 headline for interpretation.
 
-The same adjacent-line edit-distance-1 family continuity statistic was recomputed after shifting every paragraph-start label by -6 through +6 lines within each folio.
+## Corrected shifted-boundary test
 
-Mean within-minus-boundary gap:
+Mean within-minus-boundary gap across 206 eligible page-sides:
 
-- shift -1: -0.0145
-- **true boundary 0: +0.1153**
-- shift +1: +0.0332
-- shift +2: -0.0535
+- shift -1: **-0.0035**
+- **true boundary 0: +0.0899**
+- shift +1: +0.0377
+- shift +2: -0.0505
 
-All other shifts are near zero relative to the true boundary. At the true boundary, 88/99 eligible folios have a positive gap.
+At the true boundary, 161/206 eligible page-sides have a positive gap.
 
-This is much sharper than a generic paragraph-level stationary topic effect.
+The original leaf-collapsed values (`+0.1153`, 88/99 leaves) are retained only as historical audit evidence and should not be used as the current headline.
 
-## Recovery after paragraph start
+## Corrected recovery after paragraph start
 
-Mean adjacent-line near-family continuity by current line's distance from the paragraph start:
+Mean adjacent-line near-family continuity by current line's distance from paragraph start:
 
-- first paragraph line (0): **0.1326**
-- line 1: 0.2172
-- line 2: 0.2876
-- line 3: 0.2885
-- line 4: 0.2919
-- line 5: 0.2822
-- line 6: 0.2660
+- first paragraph line (0): **0.1348**
+- line 1: 0.2184
+- line 2: 0.2818
+- line 3: 0.2905
+- line 4: 0.3012
+- line 5: 0.2845
+- line 6: 0.2670
 
-The discontinuity is therefore concentrated at paragraph entry, followed by rapid recovery over roughly the next two lines.
+The rapid recovery over roughly two lines therefore survives the page-side audit.
+
+## Section dependence discovered in Phase 55
+
+Corrected mean true-boundary gaps:
+
+- Herbal: +0.0859 (128 sides)
+- Biological: +0.1272 (19)
+- Pharmaceutical: +0.1217 (16)
+- starred/text section: +0.1371 (25)
+- text-only miscellaneous: +0.1099 (6)
+- Astronomical: -0.0502 (5; small n)
+- Cosmological: -0.0968 (7; small/heterogeneous n)
+
+Therefore the paragraph-entry effect is strong in major prose-heavy sections but must **not** be described as manuscript-universal.
 
 ## Interpretation
 
-The generator target is now more precise:
+The surviving target is:
 
-> a boundary-triggered transient reconfiguration followed by rapid relaxation into an ordinary within-paragraph regime.
+> in several major prose-heavy Voynich sections, paragraph entry is associated with a boundary-specific reconfiguration followed by rapid recovery toward the ordinary within-paragraph regime.
 
-This is different from assigning each paragraph a stationary restricted vocabulary or topic distribution. Those mechanisms naturally raise within-paragraph local clustering, which Phase 53 showed is too strong relative to Voynich.
+This remains different from a simple stationary paragraph-local topic model. It is compatible with discourse/entry morphology, cipher/key/state initialization, a formal entry-state mechanism, or mixed mechanisms.
 
-The shape is compatible with several mechanism families and does not decide among them:
-
-- discourse/entry morphology at paragraph openings;
-- a cipher/key/state initialization that relaxes or mixes after entry;
-- a formal generator with a paragraph-entry state followed by transition to a shared steady regime;
-- mixed mechanisms.
-
-## Falsifiable next mechanism
-
-A minimal next generator should add **one transient paragraph-entry state** with a predeclared decay schedule, rather than a stationary paragraph-local root pool. It succeeds only if it raises the true-boundary gap while preserving the observed modest generic local excess and the Phase 50 density target.
-
-Because this mechanism is directly motivated by Phase 54, its fit to these dimensions is model development, not validation. New dimensions must be reserved before any later validation claim.
+Because the target was discovered and audited on the same corpus, it is a development target, not prospective validation.
