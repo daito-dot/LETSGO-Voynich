@@ -1,0 +1,11 @@
+{
+  "phase":"52B_manual_source_samples",
+  "status":"exploratory; targets exposed",
+  "tokenization":"Unicode NFC Letter/Mark sequences; punctuation discarded; diplomatic abbreviation glyphs retained",
+  "documents":[
+    {"name":"Phi_10a135_medical","tokens":398,"median_raw_coverage":0.2894736842,"median_local_excess":0.0005476190,"median_token_len":4.0,"alphabet_size":44,"window_raw_coverages":[0.4363636364,0.2894736842,0.25]},
+    {"name":"Mazarine915_scholastic","tokens":454,"median_raw_coverage":0.5894736842,"median_local_excess":0.0124285714,"median_token_len":2.0,"alphabet_size":52,"window_raw_coverages":[0.4946236559,0.6631578947,0.5894736842]},
+    {"name":"Latin6395_literary","tokens":134,"median_raw_coverage":0.1788617886,"median_local_excess":0.0051879699,"median_token_len":5.0,"alphabet_size":35,"window_raw_coverages":[0.1788617886]},
+    {"name":"UBL758_ecclesiastical","tokens":339,"median_raw_coverage":0.2571428571,"median_local_excess":0.0038095238,"median_token_len":5.0,"alphabet_size":41,"window_raw_coverages":[0.3523809524,0.2571428571,0.2543859649]}
+  ]
+}
