@@ -34,17 +34,22 @@ Current pharmaceutical item-specific matching tests have not established a state
 
 A simple finite-state DSL with root families, one-character variants and weak local state could reproduce high near-neighbor density and locality after exploratory tuning. When frozen and tested on unused dimensions it failed badly on paragraph reset and line-position grammar. It is falsified as a sufficient broad mechanism.
 
-Any next formal generator therefore needs, at minimum, explicit line-level positional organization and paragraph-level state/reset. Adding those mechanisms after seeing the failures incurs complexity cost and is not validation.
+## Phase 52 closure: document / genre confounding
 
-## Phase 52: document / genre confounding
+Phase 52 established that medieval manuscript/document choice is a major control variable. A single Dante prose control cannot represent medieval Latin generally, and Voynich itself also varies substantially by section.
 
-Current work tests whether control-document choice, rather than language alone, drives some apparent Voynich anomalies.
+Phase 52B added heavily abbreviated medical, scholastic, literary and ecclesiastical CREMMA excerpts. The scholastic Mazarine 915 sample reached raw edit-1 type-family coverage 0.589 median and 0.663 in one 141-token window, much closer to Voynich than the earlier Latin pilot maximum (~0.457). Therefore raw near-neighbour density is strongly confounded by manuscript abbreviation/tokenization/document practice.
 
-A pilot using medieval Latin manuscripts from a common graphematic-transcription project shows large document-to-document movement in edit-1 density and line-position effects. Therefore a single Dante prose control cannot represent all medieval Latin documents.
+However, holding each window's token lengths fixed and resampling from its empirical character inventory substantially reduced the apparent Latin anomaly. Across the added Latin windows observed-minus-null excess ranged roughly +0.016 to +0.162. In 80 matched Voynich prose windows, the same diagnostic gave median observed coverage 0.756, median null 0.297, and median excess **+0.446** (mean +0.436). The current Latin maximum overlaps only the low extreme of the sampled Voynich excess distribution.
 
-Voynich itself also varies by manuscript section. Preliminary matched-window analysis indicates that section explains a substantial fraction of folio-level variation in near-neighbor density. Voynich should not be treated as one homogeneous document either.
+Therefore:
 
-However, the medieval Latin pilot documents examined so far remain below Voynich section-level near-neighbor density. The hypothesis that the observed Voynich excess is merely an artifact of choosing an unusually low-density Latin document is therefore currently **not supported**, but the control panel is not yet broad enough for closure.
+- **SUPPORTED CONFOUND:** document/scribe/abbreviation/genre choice materially changes the baseline.
+- **NOT SUPPORTED AS SUFFICIENT EXPLANATION:** current document/genre variation does not explain the typical Voynich near-family excess after a simple length+inventory null.
+- genre itself is not isolated from manuscript, script, abbreviation practice, chronology, or transcription convention.
+- the iid character/unit null is diagnostic rather than a final cross-script null.
+
+Genre-matched controls remain a standing requirement, but Phase 52 no longer blocks the next generator experiment.
 
 ## Competing explanation families still open
 
@@ -56,25 +61,20 @@ However, the medieval Latin pilot documents examined so far remain below Voynich
 
 Deceptive-cipher explanations receive no credit merely because semantic tests fail. They must specify bounded nuisance mechanisms and outperform simpler alternatives after complexity charge.
 
-## Immediate frontier
+## Immediate frontier: Phase 53 hierarchical generator
 
-Before increasing the complexity of the hierarchical generator, complete the document/genre confound test:
+Return to the formal-generator branch using nested models:
 
-- expand medieval Latin to multiple manuscripts per relevant genre
-- emphasize medical, recipe/pharmacological, commentary/scholastic, ecclesiastical and other strongly templated documents
-- separate individual-document, genre, chronology/script and language effects where possible
-- control token length and character/alphabet inventory
-- compare document-level distributions rather than one corpus mean
-- test paragraph-boundary geometry where genuine paragraph structure is available
+- M0: frozen Phase50 simple DSL
+- M1: M0 + explicit line-position mechanism
+- M2: M0 + paragraph/item-state reset
+- M3: M0 + both line and paragraph hierarchy
 
-After this, return to a nested generator comparison:
+Conceptual architecture:
 
-- M0: frozen simple DSL
-- M1: + line-position mechanism
-- M2: + paragraph-state/reset mechanism
-- M3: + both hierarchical mechanisms
+`document/global grammar -> paragraph/item state -> line state/position -> token family -> surface token`
 
-Architecture selection targets must not be reused as validation targets. Incremental complexity should be charged using predictive code length / MDL conventions.
+Phase 51/52 dimensions are exposed development/model-selection targets. They must not be presented as independent validation. New mechanisms motivated by those failures pay complexity cost. Compare incremental predictive code length / MDL and multivariate fingerprint adequacy, then reserve new targets/partitions for validation after architecture selection.
 
 ## Methodological rules
 
