@@ -1,0 +1,8 @@
+{
+  "version":"1.1",
+  "reason":"f24 was demoted after its text had been accessed before every source/cost decision was fully frozen; f22 substituted conservatively",
+  "development_training":["f18v","f19r","f23r","f48r","f48v"],
+  "exposed_diagnostic":["f13r","f13v","f14r","f14v","f15r","f15v"],
+  "final_folios":["f16","f11","f22","f58","f35","f53","f46","f54","f38","f81","f75","f106","f104"],
+  "warning":"The final set was locked after generator code/parameters were fixed, but later workspace preview exposed broad ZL3b content including f22. Do not describe v1.1 as pristine blind prospective evidence."
+}
