@@ -16,23 +16,30 @@ jobs:
           python-version: '3.12'
       - name: Install audit dependency
         run: python -m pip install --disable-pip-version-check numpy==2.1.3
-      - name: Run read-only audit
+      - name: Run cross-fit audit
         run: python audits/phase60b_crossfit_audit.py --out phase60b_crossfit_audit_results.json
+      - name: Run eligibility and signed-carrier audit
+        run: python audits/phase60b_eligibility_carrier_audit.py --out phase60b_eligibility_carrier_audit_results.json
       - name: Show compact summary
         run: |
           python - <<'PY'
           import json
           d=json.load(open('phase60b_crossfit_audit_results.json'))
+          print('CROSSFIT AUDIT')
           print('eligible paragraphs:',d['n_eligible_paragraphs'])
           for mode,r in d['results'].items():
-              print('\n',mode)
-              print('accepted',r['accepted_reference']['crossfit_mean'])
-              print('legacy_public',r['legacy_public_reimplementation']['mean_projection'])
-              print('corrected_global',r['corrected_crossfit_global_scaling']['mean_projection'])
-              print('corrected_train_only',r['corrected_crossfit_train_only_scaling']['mean_projection'])
-              print('stable_train_only',r['corrected_crossfit_train_only_scaling']['stable_coordinate_effects'])
+              print(mode,'accepted',r['accepted_reference']['crossfit_mean'],'corrected_train_only',r['corrected_crossfit_train_only_scaling']['mean_projection'])
+          e=json.load(open('phase60b_eligibility_carrier_audit_results.json'))
+          print('\nELIGIBILITY AUDIT')
+          print('closest',e['closest_scenario'])
+          for mode,r in e['corrected_train_only_crossfit'].items():
+              print(mode,'n',r['n'],'mean_projection',r['mean_projection'])
+              print('folds',r['folds'])
+              print('stable_signed_effects',r['stable_signed_effects'])
           PY
       - uses: actions/upload-artifact@v4
         with:
           name: phase60b-crossfit-audit
-          path: phase60b_crossfit_audit_results.json
+          path: |
+            phase60b_crossfit_audit_results.json
+            phase60b_eligibility_carrier_audit_results.json
