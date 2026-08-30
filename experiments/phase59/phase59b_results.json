@@ -1,0 +1,21 @@
+{
+  "phase":"59B",
+  "status":"development / mixed result",
+  "boundary_rule":"Only source-native explicit entry markers were used for the primary item test (pilcrow ¶). No semantic boundary was inferred from Latin wording after seeing Voynich results.",
+  "voynich_reference":{"n":531,"entry_to_line2_norm":1.3292,"signflip_p":0.00033,"note":"Phase59A, 11-dimensional generic structural fingerprint"},
+  "dante_reference":{"n":33,"entry_to_line2_norm":0.4817,"signflip_p":0.8727,"mean_projection_to_voynich_direction":-0.1859,"projection_p":0.7155},
+  "medical_source_marker_sets":{
+    "H318_recipe":{"n":3,"transition_norm":2.802,"norm_p":0.3333,"cosine_to_voynich":0.533,"mean_projection_to_voynich":1.4933,"projection_p":0.2222,"positive_entries":3},
+    "CLM13027_39r_treatment":{"n":3,"transition_norm":1.952,"norm_p":0.7778,"cosine_to_voynich":0.786,"mean_projection_to_voynich":1.5340,"projection_p":0.4444,"positive_entries":2},
+    "CLM13027_41r_41v_medical_discussion":{"n":9,"transition_norm":1.299,"norm_p":0.6530,"cosine_to_voynich":0.506,"mean_projection_to_voynich":0.6571,"projection_p":0.1949,"positive_entries":4},
+    "pooled_medical":{"n":15,"transition_norm":1.084,"norm_p":0.39083,"cosine_to_voynich":0.792,"mean_projection_to_voynich":0.8584,"projection_p":0.0381,"positive_entries":9}
+  },
+  "nonmedical_pilcrow_controls":{
+    "UBL758_ecclesiastical":{"n":5,"transition_norm":2.037,"norm_p":0.5152,"cosine_to_voynich":0.758,"mean_projection_to_voynich":1.544,"projection_p":0.1212,"positive_entries":4},
+    "BIS193_scholastic":{"n":5,"transition_norm":3.826,"norm_p":0.0909,"cosine_to_voynich":0.139,"mean_projection_to_voynich":0.531,"projection_p":0.4242,"positive_entries":2}
+  },
+  "interpretation":"The sharp Voynich paragraph-entry trajectory is not reproduced by Dante continuous prose, but explicit medieval manuscript entry markers can induce multivariate transitions in partially similar directions. Pooled medical entries align strongly with the frozen Voynich direction (cosine ~0.79; directional sign-flip p~0.038), but ecclesiastical prose also aligns (~0.76), while scholastic argumentative entries do not (~0.14). Therefore the effect is not specifically medical and not a manuscript-universal entry grammar. The current best interpretation is a broader medieval item/section-entry phenomenon whose geometry depends on document/register type; Voynich appears to instantiate a particularly consistent and strong version.",
+  "hypothesis_decision":{"H59B_1":"NOT ESTABLISHED — practical medical entry alone is not sufficient/specific","H59B_2":"TOO STRONG / REJECTED AS STATED — Voynich is not simply absent from all medical controls; directional similarity exists","H59B_3":"SUPPORTED — some medieval practical/section-entry genres reproduce part of the trajectory but not uniformly or completely"},
+  "limitations":["Only two medical manuscripts contribute eligible pilcrow items in the present primary sample.","Per-manuscript item counts are small; pooled entry-level p-values do not replace manuscript-level replication.","Latin and Voynich token-unit representations are only generically comparable; k/t-specific dimensions are not semantically homologous across scripts.","Nonmedical controls show that pilcrow/document-entry grammar itself is an important confound."],
+  "next":"Phase59C should separate the generic medieval entry component from the Voynich-specific remainder. Learn an entry-transition basis from Latin source-marker controls without Voynich, subtract/project it from the Voynich trajectory, and test which feature-space components remain unusually strong and section-transferable."
+}
