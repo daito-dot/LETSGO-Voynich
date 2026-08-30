@@ -1,26 +1,63 @@
 # Phase 56 — latent multiscale state map
 
-Phase56 has started. The execution plan was frozen in `PLAN.md` before implementation.
+The execution plan was frozen in `PLAN.md` before implementation.
 
-## 56A current state
+## Phase 56A — canonical substrate: COMPLETE
 
-The first implementation artifact is `phase56_build_state_matrix.py`, a canonical substrate builder that keeps physical leaf and page-side identities separate and emits page-side, paragraph and line scale tables from the local ZL3b/EVA-derived transcription.
+`phase56_build_state_matrix.py` now parses the actual ZL3b page-header metadata and preserves physical leaf and page-side separately.
 
-The builder is deliberately mechanism-neutral. Its purpose is to stop each later experiment from inventing a slightly different unit definition or parser.
+Audited substrate:
 
-### Frozen audit requirements
+- 226 page headers in source
+- 4,087 included P-coded prose lines
+- **206 page-sides**
+- **99 physical leaves**
+- **736 paragraphs**
+- recto 104 / verso 102
 
-Before 56B begins, 56A must verify:
+Section counts among included page-sides:
 
-- page-side counts against the Phase55 audited map (Phase55 had 197 page-sides in its folio-feature map; paragraph analysis had 206 eligible sides because eligibility/subsets differ);
-- section / Currier / hand counts against ZL3b metadata;
-- no recto/verso collapse;
-- physical leaf order retained independently from page-side;
-- paragraph starts and line ordering checked on representative pages;
-- feature calculations spot-checked against earlier phase metrics where definitions match.
+- H 128
+- S 25
+- B 19
+- P 16
+- C 7
+- T 6
+- A 5
 
-The Phase55 summary is the immediate regression reference, not a requirement that every count be numerically identical when inclusion rules differ.
+Currier is absent from the ZL3b source header on 10 included page-sides; this is not a parser failure. `f115r` has hand `$H=@` in the source and is retained literally.
 
-## Next execution inside Phase56
+### Regression audit
 
-Run the canonical builder on the local transcription, audit its rows, correct parser/schema issues if found, then freeze `56A-v1` before any drift or latent-dimensionality modeling.
+The 197 page-sides overlapping the earlier Phase55 folio-feature map were compared on:
+
+- TTR
+- mean/sd token-unit length
+- edit-1 family coverage
+- previous-10 locality
+- line-position MI
+- first/final entropy
+
+Maximum absolute difference was **0.0** on every checked feature. Phase56A-v1 is therefore frozen as the canonical substrate for 56B-D.
+
+### Parser correction during audit
+
+The first GitHub implementation incorrectly looked for `$I/$L/$H` on comment records. Actual ZL3b stores them on page-header records such as `<f1r> <! ...>`. This was caught before any Phase56 model result was accepted and the builder was replaced.
+
+## Phase 56B — drift versus regimes: IN PROGRESS
+
+Initial predictive comparison used 197 sufficiently populated page-sides, an 11-feature standardized structural fingerprint, and five contiguous physical-leaf held-out blocks.
+
+Mean held-out standardized MSE:
+
+- section-mean baseline: **0.990**
+- distance-weighted smooth physical neighbor: **0.926**
+- contiguous 2-regime model: 0.964
+- contiguous 3-regime model: 1.052
+- contiguous 4-regime model: 0.962
+- contiguous 6-regime model: 1.137
+- contiguous 8-regime model: 0.995
+
+The smooth physical predictor improves mean error by about **6.4%** relative to section means. Simple discrete physical bins do not beat it. However, one central held-out block favors the section baseline, so this is **provisional support for smooth local drift**, not closure of H56-2.
+
+Next inside 56B: explicit changepoint and mixed regime-plus-drift comparisons, then matched-stratum sensitivity before moving to latent dimensionality.
