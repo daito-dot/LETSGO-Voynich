@@ -1,0 +1,83 @@
+name: Phase63B0 independent-transcription source audit
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/phase63/PLAN_B.md'
+      - 'experiments/phase63/phase63b0_source_audit.py'
+      - '.github/workflows/phase63b0-source-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LETSGO-Voynich
+        uses: actions/checkout@v4
+
+      - name: Checkout pinned ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Fetch canonical GC2a and IT2a files
+        shell: bash
+        run: |
+          mkdir -p external/transcriptions
+          curl --fail --location --retry 3 --retry-delay 2 \
+            'https://www.voynich.nu/data/GC2a-n.txt' \
+            --output external/transcriptions/GC2a-n.txt
+          curl --fail --location --retry 3 --retry-delay 2 \
+            'https://www.voynich.nu/data/IT2a-n.txt' \
+            --output external/transcriptions/IT2a-n.txt
+          curl --fail --location --silent --show-error --head \
+            'https://www.voynich.nu/data/GC2a-n.txt' > external/transcriptions/GC2a-http-headers.txt || true
+          curl --fail --location --silent --show-error --head \
+            'https://www.voynich.nu/data/IT2a-n.txt' > external/transcriptions/IT2a-http-headers.txt || true
+
+      - name: Verify pinned ZL3b input
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Run source-only audit
+        shell: bash
+        run: |
+          python experiments/phase63/phase63b0_source_audit.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/transcriptions/GC2a-n.txt \
+            external/transcriptions/IT2a-n.txt \
+            > phase63b0_source_manifest.json
+
+      - name: Print compact source manifest
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase63b0_source_manifest.json'))
+          print('PHASE63B0_SOURCE_AUDIT')
+          for name,s in x['sources'].items():
+              print(name, 'sha256=',s['sha256'], 'blob=',s['git_blob_sha1'], 'header=',s['ivttf_header'])
+              print('  pages=',s['P_pages'],'leaves=',s['P_physical_leaves'],'P_loci=',s['P_loci'],'paragraphs=',s['paragraph_starts'],'ends=',s['paragraph_ends'])
+              print('  high_ascii=',s['high_ascii_occurrences'],'uncertain=',s['uncertain_reading_open'],'question=',s['unreadable_question_marks'],'comma_spaces=',s['uncertain_comma_spaces'])
+              print('  native_chars=', ''.join(s['raw_nonreserved_character_inventory_in_P_text']))
+          print('common_leaves=',x['common_P_physical_leaf_count_all_three'])
+          print('restricted_fold_sizes=',x['phase63B_restricted_fold_sizes'])
+          for pair,v in x['pairwise'].items():
+              print(pair, 'P_loci=',v['P_locus_overlap'], 'paragraph_starts=',v['paragraph_start_locus_overlap'])
+          PY
+
+      - name: Upload source manifest and retrieval headers
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase63b0-source-manifest
+          path: |
+            phase63b0_source_manifest.json
+            external/transcriptions/GC2a-http-headers.txt
+            external/transcriptions/IT2a-http-headers.txt
