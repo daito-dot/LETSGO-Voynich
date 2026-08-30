@@ -1,0 +1,86 @@
+name: Phase63B independent-transcription science
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/phase63/PLAN_B.md'
+      - 'experiments/phase63/IMPLEMENTATION_B.md'
+      - 'experiments/phase63/PARSER_AMENDMENT_B1.md'
+      - 'experiments/phase63/phase63b_common.py'
+      - 'experiments/phase63/phase63b_common_b1.py'
+      - 'experiments/phase63/phase63b_science.py'
+      - '.github/workflows/phase63b-science.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replication:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen scientific head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Fetch exact frozen GC2a and IT2a
+        shell: bash
+        run: |
+          mkdir -p external/transcriptions
+          curl --fail --location --retry 3 'https://www.voynich.nu/data/GC2a-n.txt' -o external/transcriptions/GC2a-n.txt
+          curl --fail --location --retry 3 'https://www.voynich.nu/data/IT2a-n.txt' -o external/transcriptions/IT2a-n.txt
+          echo "b09570cb6c993bc2d87134d115e60a978650a8a6495483ddbb1f6005a586096f  external/transcriptions/GC2a-n.txt" | sha256sum -c -
+          echo "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  external/transcriptions/IT2a-n.txt" | sha256sum -c -
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+
+      - name: Install numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Run frozen Phase63B scientific replication
+        shell: bash
+        run: |
+          python experiments/phase63/phase63b_science.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/transcriptions/GC2a-n.txt \
+            external/transcriptions/IT2a-n.txt \
+            external/cremma \
+            > phase63b_science_results.json
+
+      - name: Print frozen verdict summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase63b_science_results.json'))
+          print(json.dumps({
+              'GC': x['observational_frozen_criteria']['GC2a'],
+              'IT': x['observational_frozen_criteria']['IT2a'],
+              'IT_R3_W1': x['IT_full_A1_R1_transfer']['W1']['across_fold']['frozen_IT_R3_criterion_pass'],
+              'IT_R3_W2': x['IT_full_A1_R1_transfer']['W2']['across_fold']['frozen_IT_R3_criterion_pass'],
+              'overall': x['across_phase63B'],
+          }, indent=2))
+          PY
+
+      - name: Upload first-reveal scientific result
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase63b-first-reveal
+          path: phase63b_science_results.json
