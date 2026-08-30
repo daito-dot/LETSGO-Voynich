@@ -73,6 +73,22 @@ Negative results stay in the repository because they constrain the search space.
 
 The current analyses use ZL3b / EVA-derived transcription material. Third-party transcription text is not automatically redistributed here. `data/README.md` documents provenance, expected file identity, and local setup. Contributions of external corpora should include their source and license.
 
+## License and reuse
+
+This repository is public and intentionally reusable, but different material has different licensing status.
+
+- **Software and code** — MIT License. See [`LICENSE-CODE`](LICENSE-CODE).
+- **Original research text, reports, documentation, figures, tables, and project-generated result files** — Creative Commons Attribution 4.0 International (CC BY 4.0). See [`LICENSE-CONTENT`](LICENSE-CONTENT).
+- **Third-party transcriptions, manuscript images, external corpora, quotations, and other third-party material** — not relicensed here; the original rights and terms continue to apply.
+
+The root [`LICENSE`](LICENSE) file defines the repository-wide licensing policy and scope. In particular, hashes, references, derived measurements, or analysis code do not grant redistribution rights to third-party source material.
+
+## Citation
+
+If this repository, its code, or its research results contribute to your work, please cite the repository and identify the relevant release, commit, or phase-specific result where practical. Machine-readable citation metadata is provided in [`CITATION.cff`](CITATION.cff).
+
+For research claims, citing the exact phase result or frozen plan is preferable to citing only the moving `main` branch because later phases may revise earlier interpretations.
+
 ## Language
 
 Issues, discussions, research notes, and pull requests are welcome in English or Japanese.

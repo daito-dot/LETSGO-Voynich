@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use LETSGO-Voynich, its code, or its research results, please cite this repository and the relevant version or commit."
+title: "LETSGO-Voynich"
+authors:
+  - name: "LETSGO-Voynich contributors"
+abstract: "Open, falsifiable and reproducible research on the structure, generation mechanisms, cipher hypotheses and possible decipherment of the Voynich Manuscript."
+repository-code: "https://github.com/daito-dot/LETSGO-Voynich"
+url: "https://github.com/daito-dot/LETSGO-Voynich"
+keywords:
+  - "Voynich Manuscript"
+  - "Voynichese"
+  - "cryptanalysis"
+  - "computational linguistics"
+  - "historical manuscripts"
+  - "falsifiable research"
+  - "generative models"

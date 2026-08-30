@@ -1,0 +1,23 @@
+LETSGO-Voynich licensing
+
+This repository uses separate licenses for software/code and original research content.
+
+1. Software and code
+
+Unless otherwise noted in a file or directory, source code and software in this repository (including analysis scripts and supporting utilities) are licensed under the MIT License. See LICENSE-CODE.
+
+2. Original research content
+
+Unless otherwise noted, original research text, reports, documentation, figures, tables, and project-generated result files in this repository are licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0). See LICENSE-CONTENT.
+
+3. Third-party materials are excluded
+
+Third-party transcriptions, manuscript images, external corpora, and other materials not authored by this project are not relicensed by this repository. Their original licenses, copyright terms, database rights, terms of use, and provenance requirements continue to apply.
+
+In particular, the presence of references, hashes, setup instructions, derived measurements, or code that operates on third-party data does not grant permission to redistribute the underlying third-party material.
+
+4. Contributions
+
+By contributing material to this repository, you agree that your contribution may be distributed under the license applicable to the part of the repository to which you contribute, unless an explicit exception is agreed and documented.
+
+For citation guidance, see CITATION.cff.
