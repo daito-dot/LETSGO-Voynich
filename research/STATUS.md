@@ -13,21 +13,22 @@ A later audit may narrow interpretation without rewriting a frozen historical re
 
 Voynichese has strong internal grammar, positional structure, document-role effects, page-local token-family organization, and a manuscript-wide short-lived paragraph-entry formal role.
 
-The Phase62–64 mechanism program now provides four qualitatively stronger layers beyond exploratory fit:
+The Phase62–65 program now provides four qualitatively stronger mechanism-evidence layers beyond exploratory fit, plus one new externally grounded content-test bridge:
 
 1. **sealed prospective support** for the frozen A1 local-family mechanism on previously unseen recurrence-distance geometry;
 2. **target-dependence robustness** showing that this advantage survives removal of token types unique to held-out physical leaves;
 3. **independent-transcription replication** showing that the key entry/recurrence structure survives an independent v101 transcription and an independent EvaT reading, while frozen ZL-selected A1 parameters transfer to the EvaT reading without retuning;
-4. **inventory-autonomy stress testing** showing that the core H62 recurrence geometry survives a drastic synthetic-vocabulary replacement, while the strict full autonomy gate fails on canonical ZL because aggregate S3 falls below the frozen threshold.
+4. **inventory-autonomy stress testing** showing that the core H62 recurrence geometry survives a drastic synthetic-vocabulary replacement, while the strict full autonomy gate fails on canonical ZL because aggregate S3 falls below the frozen threshold;
+5. **localized content-anchor readiness** from Phase65A: 25 physically localized pharmaceutical plant-fragment ↔ adjacent-label pairs can be fixed without using Voynichese similarity, allowing a separately frozen object-level content-relation test. No content relation has yet been detected.
 
 Current family state:
 
 - **N:** simple source-native structured medieval N0 is disfavored on joint exposed and prospective recurrence geometry; broader meaningful-text families remain open.
-- **C:** simple reversible boundary-blind C0 materially improves N0 on exposed structure but is insufficient on S1/S2 and poor on H62-P1; broader cipher/shorthand families remain open only as separately specified, complexity-charged models.
+- **C:** simple reversible boundary-blind C0 materially improves N0 on exposed structure but is insufficient on S1/S2 and poor on H62-P1; a materially stronger published Naibbe C1 is PARTIAL but not an A1 rival. Broader cipher/shorthand families remain open only as separately specified, complexity-charged models.
 - **G:** A1 remains the **leading tested structural mechanism for the core recurrence signature**, with prospective support, held-out-vocabulary robustness and independent-reading transfer. Phase64A does **not** establish full inventory autonomy: ZL fails the frozen omnibus gate on S3 (`0.468×`). However H62 survives synthetic-vocabulary replacement almost unchanged in both ZL and IT, strongly weakening the claim that its prospective success is merely copied from the empirical token membership/edit graph. A1 remains historically/semantically ungrounded and structurally incomplete.
 - **M:** deferred pending simpler-family failure profiles and stronger fair competitors.
 
-Structural fit is not decipherment.
+Structural fit is not decipherment. Anchor readiness is not content detection.
 
 ## Robust structural state through Phase60
 
@@ -42,7 +43,7 @@ Audit qualifications:
 - Phase60C section-blind entry/body role transfers across H/B/P/S/T.
 - Persistent line0 initialization is not supported by 60D2/60E; clean public 60E replay remains debt.
 
-Current page-level content tests remain negative; independently localized semantic testing remains blocked pending defensible external mapping.
+Prior page-level content tests remain negative. Phase65A now supplies a defensible object-local external mapping, so localized content-relation testing is no longer externally blocked, but the frozen Phase65B test has not yet been run.
 
 ## Phase61 — A1 architecture state
 
@@ -364,13 +365,54 @@ Accepted interpretation:
 
 This strengthens A1 relative to the tested bounded C1. It does not reject the entire C family, establish semantic absence, identify A1 historically or decipher the manuscript.
 
-## Current frontier — Phase65A independently grounded content-anchor audit
+Exact replay on the frozen first-reveal code and pinned environment reproduced the archived JSON byte-for-byte (`f88954c2...`), with zero numeric or nonnumeric differences; see `experiments/phase64/REPLAY_AUDIT_B.md`.
 
-Further result-driven A1 repair is low value, and open-ended cipher search after one serious C1 would create an unconstrained model-selection loop. The next information-gain frontier moves one step up the epistemic ladder: **Mechanism → Content relation**.
+## Phase65A — independently grounded localized content-anchor audit: M8-ANCHOR READY
 
-Phase65A is not a semantic pattern search. It must first identify whether a defensible localized external anchor exists at label/object/paragraph resolution. Candidate mappings must be fixed from independent catalog/scholarly/visual evidence before any Voynichese feature is inspected for the test. Contested plant-name guesses or text-selected labels are not admissible as primary anchors.
+Phase65A froze source-independence, localization, ambiguity, content-specificity, prospective-population and contamination gates **before** auditing candidate anchor families. No new visual↔Voynichese content statistic was computed in the audit.
 
-If no candidate satisfies the independence/localization requirements, record M8 as externally blocked rather than manufacturing a semantic test. In that case the fallback frontier is one explicitly historical residual C hypothesis with a distinct preregistered prediction, not a post-hoc Naibbe or A1 rescue.
+The admitted population is **V1-P25**:
+
+- f100v: 13 physically localized plant-fragment ↔ adjacent-label pairs (`4 + 5 + 4` rows);
+- f102v2: 12 pairs from the lower two rows (`7 + 5`);
+- the complete 7-unit top row of f102v2 is excluded before science because an external layout source explicitly flags its first three label attachments as directionally ambiguous.
+
+V1-P25 passes all frozen A1–A6 gates and clears the prospective `n>=20` requirement. It does not require plant species names or any Voynichese reading: the external target is text-blinded image morphology, and the text unit is attached by physical layout.
+
+Two attractive alternatives remain non-primary rather than being forced into the test:
+
+- zodiac degree/property mapping has ample repeated structure but lacks a uniquely fixed external degree-number alignment under the current evidence, so it fails the exact-mapping gate;
+- named botanical species identifications remain too contested to supply a sufficiently independent primary ground-truth population.
+
+Prior Phase3 and Phase58 visual-content work does not consume V1-P25: Phase3 used different Pharma loci and asked a cross-section label-substring question, while Phase58 was page-level. The overlap/exposure history is nevertheless recorded as contamination disclosure in `experiments/phase65/ANCHOR_AUDIT_A.md`.
+
+Frozen Phase65A classification:
+
+> **`M8-ANCHOR READY` — an independently grounded localized content-relation test is executable.**
+
+This is a feasibility/mapping result only. It does **not** establish that the labels encode morphology, plant identity or any semantic content.
+
+## Current frontier — Phase65B sealed local image↔label content-relation test
+
+Phase65B is frozen in `experiments/phase65/PLAN_B.md` but has not been executed.
+
+Primary question:
+
+> Do physically attached labels on visually more similar plant fragments become more similar under a generic frozen string distance than expected under physically constrained label reassignment?
+
+The design deliberately avoids model fitting and species-name hypotheses:
+
+- f102v2 lower rows are the sealed primary page; f100v is an independent unchanged-code replication page;
+- visual representation is frozen external DINOv2 ViT-S/14 with no fine-tuning;
+- text distance is generic normalized unit-cost Levenshtein on pinned ZL3b, with IT2a as an independent-transcription sensitivity;
+- comparisons are within physical rows only;
+- null = exact within-row label reassignment (`7!×5! = 604,800` for intact f102v2; `4!×5!×4! = 69,120` for intact f100v);
+- a page passes only if weighted within-row distance concordance `T >= 0.20` and exact one-sided `p <= 0.05`;
+- crop/source/model/transcription hashes and a synthetic-only preflight must be frozen before the first f102v2 association reveal.
+
+No P25 image↔label association may be inspected before that preflight and freeze are complete. After the f102v2 reveal, the scientific executable cannot change before the f100v replication.
+
+Even a replicated positive would establish only a localized external image↔label-form relation, not plaintext, plant names, language, cipher key, family-level N/C/G dominance or decipherment.
 
 ## Current interpretation limits
 
@@ -378,11 +420,12 @@ Do **not** infer:
 
 - Voynich is meaningless;
 - semantic information is absent;
+- Phase65A has detected semantic/content information;
 - A1 is the historical production algorithm;
 - all meaningful/cipher models are rejected;
 - the manuscript is deciphered.
 
-Phase63B removes a major representation-dependence objection, but A1 still depends on target-side training morphology and historically selected architecture/parameters, and it retains known fold/profile mismatches.
+Phase63B removes a major representation-dependence objection, but A1 still depends on target-side training morphology and historically selected architecture/parameters, and it retains known fold/profile mismatches. Phase65A only removes an external-mapping blocker for one localized content test.
 
 ## Methodological rules
 
