@@ -1,0 +1,79 @@
+name: Phase64B exact replay audit
+
+on:
+  push:
+    branches: [phase64b-naibbe-science]
+    paths:
+      - '.github/workflows/phase64b-replay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout archived result branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase64b-naibbe-science
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout exact published Naibbe source
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify archived authority and frozen sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum experiments/phase64/phase64b_science_results.json | awk '{print $1}')" = "f88954c2efa2ec69e4bee0cd6fb1c70b49f08b1f44206c7f70bd540ad538d35d"
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+
+      - name: Install frozen runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Replay exact frozen computation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/phase64/phase64b_science.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma \
+            external/naibbe \
+            > /tmp/phase64b_replay.json
+          test "$(sha256sum /tmp/phase64b_replay.json | awk '{print $1}')" = "f88954c2efa2ec69e4bee0cd6fb1c70b49f08b1f44206c7f70bd540ad538d35d"
+          cmp --silent experiments/phase64/phase64b_science_results.json /tmp/phase64b_replay.json
+          echo "PHASE64B EXACT REPLAY PASS"
+          sha256sum /tmp/phase64b_replay.json
+
+      - name: Upload replay audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase64b-exact-replay
+          path: /tmp/phase64b_replay.json

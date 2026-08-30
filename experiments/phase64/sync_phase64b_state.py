@@ -1,0 +1,359 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import re
+
+# STATUS: replace the now-completed C1 frontier with the frozen result and new frontier.
+p = Path('research/STATUS.md')
+s = p.read_text(encoding='utf-8')
+new_status = r'''## Phase64B — serious bounded C1 / published Naibbe: PARTIAL, NOT A1 RIVAL
+
+Phase64B gave the C family a materially stronger, independently published challenger rather than continuing to compare A1 only against the deliberately simple C0 transform.
+
+Frozen C1-E0 is exact published Naibbe v2 (`greshko/naibbe-cipher@f2675ec5dd275268bc64dd48ea64fc0e0e9827a2`) applied without Voynich-selected parameters to the same equal-weight four-manuscript CREMMA Latin panel used in Phase62.
+
+Primary published-output ratios to Voynich are:
+
+- S1 paragraph-entry projection **-0.09449× — FAIL / opposite sign**;
+- S2 previous-10 near-family excess **-0.01903× — FAIL / approximately zero and opposite sign**;
+- S3 aggregate line-position eta2 **0.62417× — PASS**.
+
+The exposed gate therefore fails decisively on the two features that most distinguish the current Voynich mechanism. S3 survives, but prior N0 work already showed this scalar to be a weak Voynich-specific discriminator.
+
+H62-P1 is more informative and shows a genuine partial C-family gain:
+
+| candidate | mean D_profile | median D_profile | mean |ΔC_short| |
+|---|---:|---:|---:|
+| N0 | 1.52982 | 1.47990 | 0.63750 |
+| C0 | 1.85866 | 1.87201 | 1.30765 |
+| **published Naibbe C1-E0** | **1.23763** | **1.25067** | **0.69290** |
+| **A1-R1** | **0.76660** | **0.80945** | **0.11769** |
+
+Naibbe beats C0 **5/5 folds on both H62 diagnostics** and beats N0 **4/5** on profile distance. However it loses to N0 **0/5** on short-range concentration error and loses to A1-R1 **0/5** on C-short; it beats A1 on D only in fold4. The frozen full H62 viability rule therefore fails and `A1_R1_rival = false`.
+
+The paired raw-token view is also **PARTIAL**. Its H62 geometry improves (`mean D=1.15199`, `mean |ΔC_short|=0.62487`) and meets the H62 baseline-viability subcriterion, but S1/S2 remain near-zero/opposite-sign and it still does not rival A1. Published respacing is therefore not the principal failure.
+
+Five preregistered within-state glyph-mapping permutations show that codebook assignment materially changes H62 but does not solve S1/S2. The published assignment is better than the permutation aggregate on H62 D/C-short but worse on exposed joint relative MSE, so the published glyph assignment receives **no unique specificity credit** under the frozen rule.
+
+A pre-result input-compatibility amendment is retained explicitly: pinned Naibbe `clean_line()` keeps some medieval Unicode alphabetic glyphs that have no codebook cell. Before any successful scientific score was revealed, B3 froze a drop-only projection onto the published 23-letter effective alphabet. No transliteration/expansion was invented. The first successful scientific head is `1e80c41f0e502a7dacb593723dbf9d81f9f84add`; run `33338000172`, job `99328325145`, artifact `9739776686`, ZIP SHA-256 `f8534605b0c6b2396341d47d54b7d4280632ba14eb30ae7f34b8208921dab378`, raw JSON SHA-256 `f88954c2efa2ec69e4bee0cd6fb1c70b49f08b1f44206c7f70bd540ad538d35d`.
+
+Frozen classification:
+
+> **C1-E0 PARTIAL.**
+
+Accepted interpretation:
+
+> **A1-R1 remains the leading tested structural mechanism. A materially stronger independently published meaningful-text cipher improves substantially over simple C0, but exact published no-reuse Naibbe does not reproduce the Voynich paragraph-entry/local-recurrence signature and does not rival A1 on the prospectively sealed H62-P1 geometry.**
+
+This strengthens A1 relative to the tested bounded C1. It does not reject the entire C family, establish semantic absence, identify A1 historically or decipher the manuscript.
+
+## Current frontier — Phase65A independently grounded content-anchor audit
+
+Further result-driven A1 repair is low value, and open-ended cipher search after one serious C1 would create an unconstrained model-selection loop. The next information-gain frontier moves one step up the epistemic ladder: **Mechanism → Content relation**.
+
+Phase65A is not a semantic pattern search. It must first identify whether a defensible localized external anchor exists at label/object/paragraph resolution. Candidate mappings must be fixed from independent catalog/scholarly/visual evidence before any Voynichese feature is inspected for the test. Contested plant-name guesses or text-selected labels are not admissible as primary anchors.
+
+If no candidate satisfies the independence/localization requirements, record M8 as externally blocked rather than manufacturing a semantic test. In that case the fallback frontier is one explicitly historical residual C hypothesis with a distinct preregistered prediction, not a post-hoc Naibbe or A1 rescue.
+
+## Current interpretation limits'''
+pattern = r'## Current frontier — serious bounded C1 fairness challenge\n.*?\n## Current interpretation limits'
+s2, n = re.subn(pattern, new_status, s, flags=re.S)
+if n != 1:
+    raise SystemExit(f'STATUS frontier replacement count={n}')
+p.write_text(s2, encoding='utf-8')
+
+# Hypothesis ledger: preserve all prior rows, update only P64-C1 and current conclusion.
+p = Path('research/hypothesis-ledger.md')
+s = p.read_text(encoding='utf-8')
+old = '| P64-C1 | A materially stronger but bounded meaningful-text + encoding model can rival A1 under explicit complexity cost | **NEXT FAIRNESS CHALLENGE — DESIGN REQUIRED** | Phase64A makes further G-side repair lower value: H62 survives inventory removal while only ZL aggregate S3 fails. C0 remains intentionally weak/global/boundary-blind, so the next high-information test is a separately frozen, independently motivated C1. |'
+new = '| P64-C1 | A materially stronger but bounded meaningful-text + encoding model can rival A1 under explicit complexity cost | **PARTIAL SUPPORT FOR C STRUCTURAL POWER / NOT AN A1 RIVAL** | Exact published Naibbe v2 strongly improves over C0 on H62 (5/5 wins on both diagnostics) and improves N0 on D_profile, but primary S1/S2 are opposite-sign/near-zero, C-short is worse than N0, and it fails every frozen A1-rival condition except one fold-level D win. Frozen classification `C1-E0 PARTIAL`. This strengthens A1 relative to this serious C1 while explicitly leaving the broader C family open. |'
+if old not in s:
+    raise SystemExit('P64-C1 old row not found')
+s = s.replace(old, new, 1)
+old_tail = "The next executable challenge is a **serious bounded C1**, not A2/S3 repair. Phase64A retains the strict ZL autonomy failure while showing that the core H62 success is not dependent on explicit empirical token membership; family-comparison unfairness is now the higher-value objection."
+new_tail = "Phase64B has now supplied one serious independently published C1. It demonstrates that a developed meaningful-text cipher can move substantially closer than C0 on H62, but it still does not generate the entry/local-recurrence signature or rival A1. The next high-information challenge is therefore an **independently grounded localized content-anchor audit (Phase65A)** rather than A2/S3 repair or open-ended cipher fishing. If no defensible anchor exists, the content lane remains externally blocked and only a separately motivated residual C hypothesis with a distinct frozen prediction is admissible."
+if old_tail not in s:
+    raise SystemExit('ledger old tail not found')
+s = s.replace(old_tail, new_tail, 1)
+p.write_text(s, encoding='utf-8')
+
+# ROADMAP: close M7 and promote Phase65A.
+p = Path('ROADMAP.md')
+s = p.read_text(encoding='utf-8')
+old_row = '| **Phase 64B / C1** | **🟡 current fairness gate** | freeze a serious bounded meaningful-text + encoding/shorthand competitor before any family-level conclusion |'
+new_row = '| **Phase 64B / C1** | **✅ partial / not A1 rival** | published Naibbe materially beats C0 on H62 but fails S1/S2, short-range concentration vs N0, and all frozen A1-rival criteria |'
+if old_row not in s:
+    raise SystemExit('ROADMAP table row missing')
+s = s.replace(old_row, new_row, 1)
+stair_old = '5. **Phase63B — independent transcription replication:** core entry/recurrence effects survive independent v101/EvaT transcriptions and frozen ZL-selected A1 parameters transfer to IT without retuning.'
+stair_new = stair_old + '\n6. **Phase64A — inventory autonomy stress:** exact empirical training-token membership is not needed for H62, although canonical ZL fails the strict aggregate S3 autonomy gate.\n7. **Phase64B — serious C1 fairness challenge:** published Naibbe improves substantially over C0 on recurrence-profile distance but fails the core entry/local-recurrence gates and does not rival A1.'
+if stair_old not in s:
+    raise SystemExit('ROADMAP staircase anchor missing')
+s = s.replace(stair_old, stair_new, 1)
+phase_block = r'''## Phase64B — serious bounded C1 fairness gate: COMPLETE / PARTIAL
+
+### Frozen challenger
+
+C1-E0 is exact published Naibbe v2 at `greshko/naibbe-cipher@f2675ec5dd275268bc64dd48ea64fc0e0e9827a2`, applied to the exact equal-weight Phase62 CREMMA Latin panel with published defaults, five frozen realizations/manuscript and five frozen within-state mapping permutations. No reuse variant, Voynich-selected parameter, A2 or post-result locality repair is allowed.
+
+### Result
+
+Primary exposed ratios are **S1 -0.0945× / S2 -0.0190× / S3 0.6242×**. S1 and S2 fail decisively; S3 passes.
+
+H62:
+
+| candidate | mean D_profile | mean |ΔC_short| |
+|---|---:|---:|
+| N0 | 1.52982 | 0.63750 |
+| C0 | 1.85866 | 1.30765 |
+| **Naibbe C1-E0** | **1.23763** | **0.69290** |
+| **A1-R1** | **0.76660** | **0.11769** |
+
+Naibbe beats C0 5/5 on both H62 diagnostics and N0 4/5 on D, but loses to N0 0/5 on C-short and does not satisfy the A1-rival rule. Frozen classification: **C1-E0 PARTIAL**.
+
+This closes the immediate fairness objection that A1 had only been compared with a toy cipher transform. It does **not** close the entire C family.
+
+First successful reveal: head `1e80c41f0e502a7dacb593723dbf9d81f9f84add`, run `33338000172`, artifact `9739776686`, raw SHA-256 `f88954c2efa2ec69e4bee0cd6fb1c70b49f08b1f44206c7f70bd540ad538d35d`.
+
+See `experiments/phase64/REPORT_B.md`.
+
+## 🟡 Phase65A — independently grounded localized content-anchor audit
+
+### Question
+
+> Is there an external object/label/paragraph-level mapping that can be fixed independently of Voynichese structure and used for a genuinely prospective content-relation test?
+
+### Why now
+
+The structural mechanism has survived a prospective discriminator, held-out vocabulary restriction, independent transcription and an inventory-autonomy stress; a serious published C1 has also been tested. More generator/cipher tuning now has lower information gain than attempting to cross the **Mechanism → Content relation** boundary.
+
+### Freeze requirements
+
+1. candidate anchors come from independent catalog, iconographic, manuscript or scholarly evidence, not Voynichese similarity;
+2. mapping is localized to label/object/paragraph level, not only broad section/page class;
+3. disputed identifications are scored for independence/confidence before text analysis;
+4. source identities and mapping decisions are frozen before any textual prediction is evaluated;
+5. at least one unseen-item/content prediction and explicit null are preregistered;
+6. if no source passes these requirements, mark the content lane blocked instead of lowering the bar.
+
+### Fallback if externally blocked
+
+Freeze one historically motivated residual C hypothesis that predicts a feature A1 and published Naibbe separate on. It must have an external motivation, explicit complexity charge and a prediction fixed before output; do not add locality/reuse merely because Phase64B showed that Naibbe lacks it.
+
+## Later model-family work'''
+pattern = r'## 🟡 Phase64B — serious bounded C1 fairness gate\n.*?\n## Later model-family work'
+s2, n = re.subn(pattern, phase_block, s, flags=re.S)
+if n != 1:
+    raise SystemExit(f'ROADMAP phase block replacement count={n}')
+s = s2
+s = s.replace('- **M7 fair strong C competitor:** 🟡 Phase64B/C1 current.', '- **M7 fair strong C competitor:** ✅ Phase64B published Naibbe tested; partial, not A1 rival.')
+s = s.replace('- **M8 content relation:** ⛔ not established.', '- **M8 content relation:** 🟡 Phase65A anchor feasibility/audit current; relation itself not established.')
+cont_old = '''1. finish Phase64A replay/result integration if not yet on main;
+2. freeze **Phase64B/C1** source family, operations, complexity ledger and falsification criteria before any C1 output is computed;
+3. do not repair A1-R2 S3 or add A2;
+4. give C1 materially more representational power than C0, but do not smuggle in Voynich-specific boundary/locality rules;
+5. preserve the content bridge as the later semantic gate.'''
+cont_new = '''1. finish Phase64B result/replay integration and exact-head merge if not yet on main;
+2. begin **Phase65A** by auditing independently grounded localized content anchors before any semantic/textual test;
+3. freeze source identity, localization, confidence rules, prediction and null before inspecting target text outcomes;
+4. do not repair A1-R2 S3, add A2, or add post-result locality/reuse to Naibbe;
+5. if no content anchor meets the frozen standard, record the external blocker and pivot only to a separately motivated residual C prediction.'''
+if cont_old not in s:
+    raise SystemExit('ROADMAP continue block missing')
+s = s.replace(cont_old, cont_new, 1)
+p.write_text(s, encoding='utf-8')
+
+# Current Japanese checkpoint: old file predates the Phase60-64 evidence staircase, replace it as a snapshot.
+Path('research/CHECKPOINT_JA.md').write_text(r'''# 研究チェックポイント（日本語）
+
+最終更新: Phase64B first reveal 後
+
+## いま一番強く言えること
+
+Voynicheseには、単なる文字頻度や一般的な「中世文書らしさ」では説明しにくい、**段落入口の形式的な切替と、短距離に集中する近縁語形の再帰**がある。
+
+この二つは現在、同じ機構候補 A1 でかなり一貫して説明できている。
+
+A1は「意味のない文字列を作る装置」と同義ではない。意味のある元情報の上に形式層が載る場合も理論上はあり得る。現時点で支持されているのは、**強い形式生成層が存在する**という構造・機構レベルの主張までである。
+
+## 証拠がどこまで積み上がったか
+
+1. Phase61C: A1が段落入口・局所近縁・行位置の凍結済み集約スコア領域に入った。
+2. Phase62C: 同一スコアカードで、テストした実装の順位は `A1 > C0 > N0`。
+3. Phase62P: それまで見ていなかった距離別近縁再帰 H62-P1 を封印して予測させ、A1がN0/C0に5/5 foldで勝った。
+4. Phase63A: held-out leafにしかない語彙を生成候補から除いてもA1の優位はほぼ維持された。
+5. Phase63B: GC/v101とIT/EvaTという独立転写でも入口・短距離再帰が再現し、ITではZLで固定したA1-R1が無調整で移植成功した。
+6. Phase64A: 実際の学習語彙そのものをsynthetic vocabularyへ置換してもH62はほぼ維持された。ただしZLの集約S3が凍結下限を割り、完全autonomyは未達。
+7. Phase64B: C側に単純C0よりはるかに本格的な公開暗号Naibbeを与えた。C0よりH62は明確に改善したが、段落入口S1とprevious-10 S2はほぼゼロ/逆符号で、短距離集中C_shortもA1には遠く及ばなかった。分類は **PARTIAL**。
+
+## Phase64Bで何が変わったか
+
+Naibbeは「暗号だから全部ダメ」ではなかった。
+
+- H62 `D_profile`: Naibbe **1.238**、N0 **1.530**、C0 **1.859**。
+- `|ΔC_short|`: Naibbe **0.693**、N0 **0.638**、C0 **1.308**。
+- A1-R1: `D_profile` **0.767**、`|ΔC_short|` **0.118**。
+
+つまりNaibbeはC0よりかなり強く、全体的な再帰profileの形はN0より近づく。しかしVoynichで特に強い**短距離への集中**は作れず、S1/S2も再現できない。
+
+したがって現在の適切な表現は、
+
+> **A1は、テスト済みのN0/C0/公開Naibbe C1の中では最も強い構造機構で、prospective・独立転写・target-dependence stressの支持も持つ。**
+
+である。
+
+「GがC全体に勝った」「意味がない」「A1が実際の歴史的生成法だ」ではない。
+
+## まだ分からないこと
+
+- 平文・意味情報が保存されているか。
+- 意図的な暗号化・難読化が形式層の下にあるか。
+- A1が歴史的機構そのものか、観測された制約を近似するモデルにすぎないか。
+- 画像・対象物・段落と文字列を独立に結びつけるcontent relationがあるか。
+- 最終的な読み・翻訳。
+
+## 次の研究: Phase65A
+
+次はモデルをさらにVoynichへ合わせるより、**Mechanism → Content relation**へ一段進める。
+
+ただし、いきなり「この植物名では？」のような読み当てはしない。先に、文字列を見ずに固定できる外部anchorが存在するかを監査する。
+
+Primary anchorに必要な条件:
+
+- 図像・目録・写本研究など外部根拠から決まる;
+- label / object / paragraph程度まで局在する;
+- Voynicheseの似ている語を見て対象を選ばない;
+- 対応関係とconfidenceを先にfreezeできる;
+- 未見対象への予測とnullを置ける。
+
+条件を満たすanchorが無ければ、無理に意味テストを作らず**外部blocker**として記録する。その場合だけ、A1とNaibbeが異なる失敗形状を予測する別の歴史的C仮説へ戻る。
+
+## 解読と呼ぶ基準
+
+最低でも以下が必要:
+
+- 実行可能な固定mapping/generation rule;
+- 十分量の未見データ予測;
+- 解釈可能な固定出力;
+- 強いnull/競合との比較;
+- prospectiveまたはexternal replication;
+- independently grounded content relation;
+- 失敗例・例外・自由度の明示。
+
+現在は **Observation → Structure → Mechanism** までかなり進んだ段階であり、**Content relation → Decipherment** は未到達。
+''', encoding='utf-8')
+
+# Replace the obsolete Phase55 frontier memo with the live Phase65A frontier.
+Path('research/NEXT_RESEARCH_FRONTIER.md').write_text(r'''# Next research frontier — Phase65A independent content-anchor audit
+
+Status: current frontier after Phase64B.
+
+## Why the frontier moves now
+
+The project has accumulated a sequential mechanism-evidence staircase rather than one target-aware fit:
+
+- frozen A1 structural gate;
+- fair N0/C0/A1 held-out tournament;
+- sealed prospective H62-P1 success;
+- held-out-vocabulary restriction;
+- independent GC/IT transcription replication;
+- empirical-inventory autonomy stress;
+- serious independently published Naibbe C1 fairness challenge.
+
+Phase64B is especially important because it shows both sides of the comparison. Published Naibbe can outperform weak C0 substantially on recurrence-profile geometry, so C mechanisms cannot be dismissed as powerless. Yet it still fails Voynich entry S1, local-prev10 S2 and the sealed short-range concentration geometry and is not an A1 rival.
+
+Continuing to add mechanisms to A1 or searching unlimited cipher variants now has poor information value and increasing researcher degrees of freedom.
+
+## Phase65A question
+
+> Is there a localized external content anchor that can be fixed independently of Voynichese and support a genuinely prospective content-relation test?
+
+This is a prerequisite audit before semantic modeling. It is not permission to mine plant names, labels or translations until something looks good.
+
+## Candidate-anchor admissibility
+
+A primary anchor must satisfy all of the following:
+
+1. **Independent origin** — the identification/localization comes from catalog, iconographic, manuscript, historical or other external evidence rather than Voynichese string similarity.
+2. **Useful localization** — object, label or paragraph-level localization is available; broad Herbal/Balneological/Zodiac page class alone is insufficient.
+3. **Pre-freezable mapping** — the mapping and confidence rule can be written down before target text features are evaluated.
+4. **Non-circular selection** — candidate objects/items are not chosen because their nearby tokens fit a proposed reading.
+5. **Replicable source identity** — image/catalog/dataset/version identifiers can be pinned.
+6. **Unseen prediction** — at least one held-out item/content relation can be predicted after training or rule construction.
+7. **Strong null** — physical layout, section, Currier/hand and token-family confounds are preserved where relevant.
+
+## Candidate classes to audit
+
+Audit, without textual scoring, whether any of these can meet the requirements:
+
+- externally identifiable zodiac/astronomical iconography with localized neighboring labels or paragraphs;
+- catalogued object classes in pharmaceutical/recipe pages where object-text adjacency is unambiguous;
+- repeated diagram elements whose identity/order is fixed by geometry rather than text;
+- independently annotated localized illustration features from scholarly/digital collections;
+- any public object/label alignment dataset with stable item identifiers and provenance.
+
+Plant-species identifications are admissible only if the primary mapping is independently established strongly enough to be frozen without using Voynichese. Contested resemblance-based identifications should normally be sensitivity material, not primary truth labels.
+
+## Phase65A deliverables
+
+Before any content score is computed:
+
+1. source audit with exact URLs/commit/version/date or image IDs;
+2. candidate mapping table with item IDs, localization and confidence provenance;
+3. independence audit explaining why the text was not used to choose the mapping;
+4. confound audit for section/page/layout/hand/Currier leakage;
+5. preregistered prediction and null;
+6. hard feasibility verdict: `ANCHOR READY` or `EXTERNALLY BLOCKED`.
+
+Only `ANCHOR READY` authorizes Phase65B content-relation science.
+
+## Stop rule
+
+If no defensible anchor satisfies the requirements, do not lower the standard and do not call a page-class correlation semantic evidence. Record the blocker explicitly.
+
+The fallback is one separately frozen **historically motivated residual C hypothesis** chosen for a prediction that distinguishes it from A1 and published Naibbe. It must not be a post-result locality/reuse patch to Naibbe and must carry an explicit complexity/target-dependence charge.
+
+## Claim boundary
+
+Even a successful Phase65B content relation would not by itself decipher the manuscript. It would be the first justified promotion from mechanism evidence toward content evidence. Translation/decipherment still requires an executable mapping, substantial unseen prediction and interpretable output.
+''', encoding='utf-8')
+
+# Reproducibility audit: mark the modern prospective/replayable track separately from historical debt.
+p = Path('research/REPRODUCIBILITY_AUDIT.md')
+s = p.read_text(encoding='utf-8')
+s = s.replace('Last audited after Phase61C, including an independent post-61C code/provenance review.', 'Last audited through Phase64B, while retaining the independent Phase51–61C historical code/provenance review.')
+anchor = '## Authority rule\n'
+if anchor not in s:
+    raise SystemExit('repro authority anchor missing')
+modern = r'''## Modern frozen/replayable track: Phase62–64
+
+The later mechanism-comparison track was designed with stronger freeze-before-reveal and exact-source controls than several historical phases.
+
+| Phase | Result authority | Replay/audit status |
+|---|---|---|
+| 62C | `phase62c_c0_a1_results.json` | frozen N0/C0/A1 held-out tournament; exact source/CREMMA authorities recorded |
+| 62P / H62-P1 | `phase62p_h62p1_results.json` | preregistered prospective discriminator; raw SHA-256 `0e1b687ab73efbc494834f49398ed474230f47bcde4cf4dbcaa46631efd75264` |
+| 63A | `phase63a_training_vocab_results.json` | clean replay semantically identical to machine precision; canonical 14-decimal semantic SHA `cd53f47729c864badb5e8c747cfd9ad989de9c616ca54dd5bdcb83b075c33c74` |
+| 63B | `phase63b_science_results.json` | first reveal and clean replay raw JSON byte-identical; independent GC/IT source hashes pinned |
+| 64A | frozen Phase64A result/report | first-reveal artifact/hash recorded; synthetic-vocabulary autonomy stress retained as mixed/strict failure |
+| 64B | `phase64b_science_results.json` | first successful reveal head/run/artifact/raw hash recorded; exact replay workflow separately verifies byte identity |
+
+### Phase64B first-reveal chronology
+
+The first authorized execution attempt (`33337753319`) failed before candidate scoring because published Naibbe `clean_line()` retained unsupported medieval Unicode alphabetic characters. No scientific score or classification was emitted.
+
+Before a successful reveal, `PREFLIGHT_AMENDMENT_B3.md` froze a drop-only projection onto Naibbe's already frozen 23-letter effective alphabet; B4 toy preflight `33337950314` then passed without reading ZL3b/CREMMA scientific sources.
+
+First successful reveal:
+
+- scientific head `1e80c41f0e502a7dacb593723dbf9d81f9f84add`;
+- run `33338000172` / job `99328325145`;
+- artifact `9739776686`;
+- ZIP SHA-256 `f8534605b0c6b2396341d47d54b7d4280632ba14eb30ae7f34b8208921dab378`;
+- raw JSON SHA-256 `f88954c2efa2ec69e4bee0cd6fb1c70b49f08b1f44206c7f70bd540ad538d35d`.
+
+The exact artifact bytes were hash-verified before being committed to `experiments/phase64/phase64b_science_results.json`. The B3 retention loss is reported rather than hidden; it is part of the exact adapter provenance and does not authorize later expansion/transliteration as if it were the same model.
+
+'''
+if modern.splitlines()[0] not in s:
+    s = s.replace(anchor, modern + anchor, 1)
+p.write_text(s, encoding='utf-8')

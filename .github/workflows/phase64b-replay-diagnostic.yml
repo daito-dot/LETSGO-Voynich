@@ -1,0 +1,160 @@
+name: Phase64B replay diagnostic
+
+on:
+  push:
+    branches: [phase64b-naibbe-science]
+    paths:
+      - '.github/workflows/phase64b-replay-diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout current archival authority
+        uses: actions/checkout@v4
+        with:
+          ref: phase64b-naibbe-science
+          path: current
+
+      - name: Checkout exact first-reveal scientific head
+        uses: actions/checkout@v4
+        with:
+          ref: 1e80c41f0e502a7dacb593723dbf9d81f9f84add
+          path: first-reveal
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout exact published Naibbe source
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify all authorities before replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C first-reveal rev-parse HEAD)" = "1e80c41f0e502a7dacb593723dbf9d81f9f84add"
+          test "$(sha256sum current/experiments/phase64/phase64b_science_results.json | awk '{print $1}')" = "f88954c2efa2ec69e4bee0cd6fb1c70b49f08b1f44206c7f70bd540ad538d35d"
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+          test "$(git -C external/naibbe hash-object README.md)" = "486782221285186c0f78dd9474b676e067cd4bea"
+
+      - name: Install exact first-reveal Python dependencies
+        run: python -m pip install --disable-pip-version-check 'numpy==2.5.2' 'pandas==3.0.5'
+
+      - name: Replay unchanged first-reveal science
+        shell: bash
+        run: |
+          set -euo pipefail
+          python first-reveal/experiments/phase64/phase64b_science.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma \
+            external/naibbe \
+            > phase64b_replay.json
+          echo "archived_sha256=$(sha256sum current/experiments/phase64/phase64b_science_results.json | awk '{print $1}')"
+          echo "replay_sha256=$(sha256sum phase64b_replay.json | awk '{print $1}')"
+
+      - name: Compute exact structural and numeric differences
+        shell: bash
+        run: |
+          python - <<'PY' | tee phase64b_replay_audit.json
+          import hashlib, json, math
+          from pathlib import Path
+
+          a=json.loads(Path('current/experiments/phase64/phase64b_science_results.json').read_text(encoding='utf-8'))
+          b=json.loads(Path('phase64b_replay.json').read_text(encoding='utf-8'))
+
+          nonnumeric=[]
+          numeric=[]
+          def walk(x,y,path='$'):
+              if isinstance(x,bool) or isinstance(y,bool):
+                  if type(x) is not type(y) or x != y:
+                      nonnumeric.append({'path':path,'archived':x,'replay':y,'kind':'bool_or_type'})
+                  return
+              if isinstance(x,(int,float)) and isinstance(y,(int,float)):
+                  xf=float(x); yf=float(y)
+                  if math.isnan(xf) and math.isnan(yf): return
+                  d=abs(xf-yf)
+                  if d != 0.0:
+                      numeric.append({'path':path,'archived':x,'replay':y,'abs_diff':d})
+                  return
+              if type(x) is not type(y):
+                  nonnumeric.append({'path':path,'archived_type':type(x).__name__,'replay_type':type(y).__name__,'kind':'type'})
+                  return
+              if isinstance(x,dict):
+                  kx=set(x); ky=set(y)
+                  if kx != ky:
+                      nonnumeric.append({'path':path,'missing_in_replay':sorted(kx-ky),'extra_in_replay':sorted(ky-kx),'kind':'keys'})
+                  for k in sorted(kx & ky): walk(x[k],y[k],path+'.'+str(k))
+              elif isinstance(x,list):
+                  if len(x)!=len(y):
+                      nonnumeric.append({'path':path,'archived_len':len(x),'replay_len':len(y),'kind':'length'})
+                  for i,(xx,yy) in enumerate(zip(x,y)): walk(xx,yy,f'{path}[{i}]')
+              elif x != y:
+                  nonnumeric.append({'path':path,'archived':x,'replay':y,'kind':'value'})
+          walk(a,b)
+
+          def canonical(obj, ndigits):
+              if isinstance(obj,bool) or obj is None or isinstance(obj,str): return obj
+              if isinstance(obj,float): return round(obj,ndigits)
+              if isinstance(obj,int): return obj
+              if isinstance(obj,list): return [canonical(v,ndigits) for v in obj]
+              if isinstance(obj,dict): return {k:canonical(v,ndigits) for k,v in obj.items()}
+              return obj
+          def chash(obj, ndigits):
+              blob=json.dumps(canonical(obj,ndigits),ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()
+              return hashlib.sha256(blob).hexdigest()
+
+          numeric.sort(key=lambda r:r['abs_diff'], reverse=True)
+          result={
+              'archived_raw_sha256': hashlib.sha256(Path('current/experiments/phase64/phase64b_science_results.json').read_bytes()).hexdigest(),
+              'replay_raw_sha256': hashlib.sha256(Path('phase64b_replay.json').read_bytes()).hexdigest(),
+              'raw_byte_identical': Path('current/experiments/phase64/phase64b_science_results.json').read_bytes()==Path('phase64b_replay.json').read_bytes(),
+              'nonnumeric_difference_count': len(nonnumeric),
+              'numeric_difference_count': len(numeric),
+              'max_abs_numeric_difference': numeric[0]['abs_diff'] if numeric else 0.0,
+              'top_numeric_differences': numeric[:30],
+              'first_nonnumeric_differences': nonnumeric[:30],
+              'classification_equal': a.get('frozen_primary_classification')==b.get('frozen_primary_classification'),
+              'primary_evaluation_equal_exact_json': a['published_mapping']['primary_evaluation']==b['published_mapping']['primary_evaluation'],
+              'canonical_hashes': {
+                  str(n): {'archived':chash(a,n),'replay':chash(b,n),'equal':chash(a,n)==chash(b,n)}
+                  for n in (15,14,13,12,11,10)
+              },
+          }
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Upload diagnostic regardless of exact-byte result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase64b-replay-diagnostic
+          path: |
+            phase64b_replay.json
+            phase64b_replay_audit.json

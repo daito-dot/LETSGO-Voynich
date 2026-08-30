@@ -1,0 +1,48 @@
+name: Phase64B Naibbe sparse-codebook inspection B2
+
+on:
+  push:
+    branches: [phase64b-naibbe-science]
+    paths:
+      - '.github/workflows/phase64b-naibbe-preflight-b2.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: phase64b-naibbe-science
+      - uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+      - name: Print exact pinned mapping occupancy only
+        shell: bash
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0,'experiments/phase64')
+          import phase64b_naibbe as x
+          m=x.load_naibbe(Path('external/naibbe').resolve())
+          original=dict(m.placeholder_to_glyph)
+          all_codes={f'{state}_{table}_{letter}' for state in m.STATES for table in m.TABLES for letter in m.ALPHABET}
+          effective_codes={f'{state}_{table}_{letter}' for state in m.STATES for table in m.TABLES for letter in x.EFFECTIVE_LETTERS}
+          print('loaded_entries',len(original))
+          print('full_grid_cells',len(all_codes))
+          print('full_grid_missing',sorted(all_codes-set(original)))
+          print('full_grid_extra',sorted(set(original)-all_codes))
+          print('effective_grid_cells',len(effective_codes))
+          print('effective_present',len(effective_codes & set(original)))
+          print('effective_missing',sorted(effective_codes-set(original)))
+          for state in m.STATES:
+              cells=[c for c in effective_codes if c.startswith(state+'_')]
+              print(state,'effective_present',sum(c in original for c in cells),'of',len(cells))
+          print('No ZL3b or CREMMA scientific source was checked out or read.')
+          PY

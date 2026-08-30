@@ -54,7 +54,7 @@ Structural fit is not decipherment.
 | Phase 63A | ✅ target-dependence robustness | training-leaf-only output vocabulary leaves exposed and H62-P1 advantages essentially unchanged |
 | **Phase 63B** | **✅ strong external replication** | entry/recurrence effects survive GC v101 and IT EvaT; frozen A1-R1 transfers to IT without retuning and passes W1/W2 criteria |
 | **Phase 64A** | **✅ mixed / strict autonomy fail** | synthetic-vocabulary A1 preserves core H62 geometry, but canonical ZL fails frozen S3 gate at `0.468×`; IT arm passes |
-| **Phase 64B / C1** | **🟡 current fairness gate** | freeze a serious bounded meaningful-text + encoding/shorthand competitor before any family-level conclusion |
+| **Phase 64B / C1** | **✅ partial / not A1 rival** | published Naibbe materially beats C0 on H62 but fails S1/S2, short-range concentration vs N0, and all frozen A1-rival criteria |
 
 ## Evidence staircase for the current A1 mechanism
 
@@ -65,6 +65,8 @@ The strongest current support is now sequential rather than a single fit result:
 3. **Phase62P — sealed prospective prediction:** A1 predicts previously unseen recurrence-distance geometry and wins both frozen diagnostics in 5/5 folds.
 4. **Phase63A — held-out vocabulary restriction:** the advantage survives removal of token types unique to held-out leaves.
 5. **Phase63B — independent transcription replication:** core entry/recurrence effects survive independent v101/EvaT transcriptions and frozen ZL-selected A1 parameters transfer to IT without retuning.
+6. **Phase64A — inventory autonomy stress:** exact empirical training-token membership is not needed for H62, although canonical ZL fails the strict aggregate S3 autonomy gate.
+7. **Phase64B — serious C1 fairness challenge:** published Naibbe improves substantially over C0 on recurrence-profile distance but fails the core entry/local-recurrence gates and does not rival A1.
 
 This is materially stronger evidence for a real formal generation layer. It still does not identify that layer as nonsemantic or historically identical to A1.
 
@@ -201,28 +203,55 @@ IT ratios: **1.136 / 0.976 / 0.586**, all pass. IT H62 `D=0.832`, `|ΔC_short|=0
 
 Frozen classification: **INCONSISTENT / PRIMARY FAILURE**. Do not repair S3 after reveal. The important retained result is that explicit empirical inventory membership is not required for the core prospective recurrence geometry under tested MG0.
 
-## 🟡 Phase64B — serious bounded C1 fairness gate
+## Phase64B — serious bounded C1 fairness gate: COMPLETE / PARTIAL
+
+### Frozen challenger
+
+C1-E0 is exact published Naibbe v2 at `greshko/naibbe-cipher@f2675ec5dd275268bc64dd48ea64fc0e0e9827a2`, applied to the exact equal-weight Phase62 CREMMA Latin panel with published defaults, five frozen realizations/manuscript and five frozen within-state mapping permutations. No reuse variant, Voynich-selected parameter, A2 or post-result locality repair is allowed.
+
+### Result
+
+Primary exposed ratios are **S1 -0.0945× / S2 -0.0190× / S3 0.6242×**. S1 and S2 fail decisively; S3 passes.
+
+H62:
+
+| candidate | mean D_profile | mean |ΔC_short| |
+|---|---:|---:|
+| N0 | 1.52982 | 0.63750 |
+| C0 | 1.85866 | 1.30765 |
+| **Naibbe C1-E0** | **1.23763** | **0.69290** |
+| **A1-R1** | **0.76660** | **0.11769** |
+
+Naibbe beats C0 5/5 on both H62 diagnostics and N0 4/5 on D, but loses to N0 0/5 on C-short and does not satisfy the A1-rival rule. Frozen classification: **C1-E0 PARTIAL**.
+
+This closes the immediate fairness objection that A1 had only been compared with a toy cipher transform. It does **not** close the entire C family.
+
+First successful reveal: head `1e80c41f0e502a7dacb593723dbf9d81f9f84add`, run `33338000172`, artifact `9739776686`, raw SHA-256 `f88954c2efa2ec69e4bee0cd6fb1c70b49f08b1f44206c7f70bd540ad538d35d`.
+
+See `experiments/phase64/REPORT_B.md`.
+
+## 🟡 Phase65A — independently grounded localized content-anchor audit
 
 ### Question
 
-> Can a materially stronger, independently motivated meaningful-text + cipher/shorthand mechanism rival A1 on held-out entry/locality and H62 recurrence geometry without importing A1's previous-10 process or Voynich-specific boundary tuning?
+> Is there an external object/label/paragraph-level mapping that can be fixed independently of Voynichese structure and used for a genuinely prospective content-relation test?
 
 ### Why now
 
-Phase64A makes A2 repair low-value and family fairness high-value. C0 was intentionally weak. A developed G candidate cannot support `G > C` at family level until C receives a serious, complexity-charged challenge.
+The structural mechanism has survived a prospective discriminator, held-out vocabulary restriction, independent transcription and an inventory-autonomy stress; a serious published C1 has also been tested. More generator/cipher tuning now has lower information gain than attempting to cross the **Mechanism → Content relation** boundary.
 
 ### Freeze requirements
 
-1. plaintext corpus/source rule fixed independently of Voynich outcomes;
-2. historically or mathematically motivated encoding/shorthand operations;
-3. no Voynich-specific paragraph/section rules unless explicitly charged;
-4. nested training-only model selection;
-5. explicit complexity/dependence ledger;
-6. same held-out S1/S2/S3 and H62 scorecard;
-7. at least one prospective discriminator frozen before C1 output is seen;
-8. no copying of A1's explicit previous-10 local-family mechanism under a cipher label.
+1. candidate anchors come from independent catalog, iconographic, manuscript or scholarly evidence, not Voynichese similarity;
+2. mapping is localized to label/object/paragraph level, not only broad section/page class;
+3. disputed identifications are scored for independence/confidence before text analysis;
+4. source identities and mapping decisions are frozen before any textual prediction is evaluated;
+5. at least one unseen-item/content prediction and explicit null are preregistered;
+6. if no source passes these requirements, mark the content lane blocked instead of lowering the bar.
 
-Content relation remains essential but mapping-prerequisite limited.
+### Fallback if externally blocked
+
+Freeze one historically motivated residual C hypothesis that predicts a feature A1 and published Naibbe separate on. It must have an external motivation, explicit complexity charge and a prediction fixed before output; do not add locality/reuse merely because Phase64B showed that Naibbe lacks it.
 
 ## Later model-family work
 
@@ -256,8 +285,8 @@ These debts limit fine historical claims but do not erase the newer prospectivel
 - **M4 target-dependence robustness:** ✅ Phase63A survives training-only vocabulary restriction.
 - **M5 independent transcription robustness:** ✅ Phase63B strong replication.
 - **M6 mechanism autonomy:** ✅ Phase64A mixed — strict full autonomy not supported; core H62 survives inventory removal.
-- **M7 fair strong C competitor:** 🟡 Phase64B/C1 current.
-- **M8 content relation:** ⛔ not established.
+- **M7 fair strong C competitor:** ✅ Phase64B published Naibbe tested; partial, not A1 rival.
+- **M8 content relation:** 🟡 Phase65A anchor feasibility/audit current; relation itself not established.
 - **M9 decipherment threshold:** ⛔ not reached.
 
 ## Stop / pivot rules
@@ -273,8 +302,8 @@ Pause or pivot rather than endlessly repair when:
 
 ## What to do when asked simply to "continue"
 
-1. finish Phase64A replay/result integration if not yet on main;
-2. freeze **Phase64B/C1** source family, operations, complexity ledger and falsification criteria before any C1 output is computed;
-3. do not repair A1-R2 S3 or add A2;
-4. give C1 materially more representational power than C0, but do not smuggle in Voynich-specific boundary/locality rules;
-5. preserve the content bridge as the later semantic gate.
+1. finish Phase64B result/replay integration and exact-head merge if not yet on main;
+2. begin **Phase65A** by auditing independently grounded localized content anchors before any semantic/textual test;
+3. freeze source identity, localization, confidence rules, prediction and null before inspecting target text outcomes;
+4. do not repair A1-R2 S3, add A2, or add post-result locality/reuse to Naibbe;
+5. if no content anchor meets the frozen standard, record the external blocker and pivot only to a separately motivated residual C prediction.

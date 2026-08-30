@@ -1,6 +1,6 @@
 # Reproducibility audit
 
-Last audited after Phase61C, including an independent post-61C code/provenance review.
+Last audited through Phase64B, while retaining the independent Phase51–61C historical code/provenance review.
 
 This file distinguishes **accepted numerical authority** from **fully replayable code**. A result can remain accepted while its historical implementation is marked as reproducibility debt; the debt must not be silently hidden or reconstructed as if exact.
 
@@ -32,6 +32,35 @@ Exact ZL3b/EVA Git blob SHA-1 used by the Phase60/61 audit:
 | 61A | `phase61a_results.json` | historical generator executable not preserved | numerical authority retained; treat as a **narrow architecture/mechanism demonstration**, not prospective validation of preselected strength 1.5 |
 | 61B | `phase61b_results.json` | historical A0 executable not preserved | **reproducibility debt**; accepted joint A0 rejection retained; Phase61C independently reproduces the Voynich-side metric regime |
 | 61C | `phase61c_results.json` + `REPORT_C.md` | `phase61c_joint_model.py` | **replayable frozen implementation**; prospective freeze chronology verified; training-only preprocessing/model selection verified; additional vocabulary and eta2-profile sensitivities audited |
+
+## Modern frozen/replayable track: Phase62–64
+
+The later mechanism-comparison track was designed with stronger freeze-before-reveal and exact-source controls than several historical phases.
+
+| Phase | Result authority | Replay/audit status |
+|---|---|---|
+| 62C | `phase62c_c0_a1_results.json` | frozen N0/C0/A1 held-out tournament; exact source/CREMMA authorities recorded |
+| 62P / H62-P1 | `phase62p_h62p1_results.json` | preregistered prospective discriminator; raw SHA-256 `0e1b687ab73efbc494834f49398ed474230f47bcde4cf4dbcaa46631efd75264` |
+| 63A | `phase63a_training_vocab_results.json` | clean replay semantically identical to machine precision; canonical 14-decimal semantic SHA `cd53f47729c864badb5e8c747cfd9ad989de9c616ca54dd5bdcb83b075c33c74` |
+| 63B | `phase63b_science_results.json` | first reveal and clean replay raw JSON byte-identical; independent GC/IT source hashes pinned |
+| 64A | frozen Phase64A result/report | first-reveal artifact/hash recorded; synthetic-vocabulary autonomy stress retained as mixed/strict failure |
+| 64B | `phase64b_science_results.json` | first successful reveal head/run/artifact/raw hash recorded; exact replay workflow separately verifies byte identity |
+
+### Phase64B first-reveal chronology
+
+The first authorized execution attempt (`33337753319`) failed before candidate scoring because published Naibbe `clean_line()` retained unsupported medieval Unicode alphabetic characters. No scientific score or classification was emitted.
+
+Before a successful reveal, `PREFLIGHT_AMENDMENT_B3.md` froze a drop-only projection onto Naibbe's already frozen 23-letter effective alphabet; B4 toy preflight `33337950314` then passed without reading ZL3b/CREMMA scientific sources.
+
+First successful reveal:
+
+- scientific head `1e80c41f0e502a7dacb593723dbf9d81f9f84add`;
+- run `33338000172` / job `99328325145`;
+- artifact `9739776686`;
+- ZIP SHA-256 `f8534605b0c6b2396341d47d54b7d4280632ba14eb30ae7f34b8208921dab378`;
+- raw JSON SHA-256 `f88954c2efa2ec69e4bee0cd6fb1c70b49f08b1f44206c7f70bd540ad538d35d`.
+
+The exact artifact bytes were hash-verified before being committed to `experiments/phase64/phase64b_science_results.json`. The B3 retention loss is reported rather than hidden; it is part of the exact adapter provenance and does not authorize later expansion/transliteration as if it were the same model.
 
 ## Authority rule
 

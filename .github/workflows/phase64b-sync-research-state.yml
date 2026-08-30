@@ -1,0 +1,46 @@
+name: Phase64B synchronize research state
+
+on:
+  push:
+    branches: [phase64b-naibbe-science]
+    paths:
+      - '.github/workflows/phase64b-sync-research-state.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout result branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase64b-naibbe-science
+          fetch-depth: 0
+
+      - name: Apply audited Phase64B state transitions
+        run: python experiments/phase64/sync_phase64b_state.py
+
+      - name: Validate synchronized markers
+        shell: bash
+        run: |
+          grep -Fq 'C1-E0 PARTIAL' experiments/phase64/REPORT_B.md
+          grep -Fq 'Phase64B — serious bounded C1 / published Naibbe: PARTIAL' research/STATUS.md
+          grep -Fq 'PARTIAL SUPPORT FOR C STRUCTURAL POWER / NOT AN A1 RIVAL' research/hypothesis-ledger.md
+          grep -Fq 'Phase65A — independently grounded localized content-anchor audit' ROADMAP.md
+          grep -Fq 'Phase65A independent content-anchor audit' research/NEXT_RESEARCH_FRONTIER.md
+          grep -Fq 'Phase64B first-reveal chronology' research/REPRODUCIBILITY_AUDIT.md
+          grep -Fq 'Phase64Bで何が変わったか' research/CHECKPOINT_JA.md
+
+      - name: Commit synchronized research state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ROADMAP.md research/STATUS.md research/hypothesis-ledger.md research/CHECKPOINT_JA.md research/NEXT_RESEARCH_FRONTIER.md research/REPRODUCIBILITY_AUDIT.md
+          git diff --cached --check
+          git commit -m 'Synchronize research state after Phase 64B'
+          git push origin HEAD:phase64b-naibbe-science
