@@ -1,0 +1,42 @@
+name: Phase62 control recovery
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/phase62/phase62a_recover_controls.py'
+      - '.github/workflows/phase62-control-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LETSGO-Voynich
+        uses: actions/checkout@v4
+
+      - name: Checkout frozen CREMMA control corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Verify external commit
+        shell: bash
+        run: |
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+
+      - name: Recover Phase59 control candidates
+        run: |
+          python experiments/phase62/phase62a_recover_controls.py external/cremma > phase62a_control_recovery.json
+          cat phase62a_control_recovery.json
+
+      - name: Upload recovery audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase62-control-recovery
+          path: phase62a_control_recovery.json
