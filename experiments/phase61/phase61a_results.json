@@ -1,0 +1,12 @@
+{
+  "phase":"61A",
+  "status":"A0 narrow gate SURVIVES; broader joint fit required",
+  "question":"Can a single boundary-aware entry mixture, learned only on training physical leaves and with no persistent paragraph state, reproduce the held-out Voynich entry-transition direction?",
+  "design":{"outer_cv":"5 folds grouped by physical leaf","generator":"body draws from a fixed manuscript token inventory; paragraph line0 alone is reweighted by a coarse entry/body token-shape score learned on training leaves","entry_shape":"k/t presence x capped token length x first character x last character","persistent_state":false,"strength_grid":[0.0,0.5,1.0,1.5,2.0],"replicates_per_fold_strength":3,"heldout_direction":"Voynich transition direction learned on training leaves only"},
+  "weighted_results":{"heldout_voynich_projection":1.1834,"generated_projection":{"0.0":-0.1220,"0.5":0.1939,"1.0":0.6960,"1.5":1.5529,"2.0":1.6633}},
+  "fold_real_projections":[0.9998,1.4709,1.1263,0.7945,1.5666],
+  "decision":"A boundary-aware nonsemantic generator can reproduce or exceed the scalar held-out entry-direction projection with one explicit short-lived entry-mixture mechanism. Therefore Phase60's entry signature alone does NOT reject hierarchical meaningless generation once paragraph-boundary awareness is granted.",
+  "critical_limitation":"This is intentionally only the narrow preregistered gate. The generator was not yet required to jointly match Voynich near-family density, local-prev10 activation, line-position grammar, section modulation, token-frequency spectrum, or other Phase44-60 constraints. Its body generator in this optimized test is simplified and must not be treated as a successful whole-manuscript model.",
+  "interpretation":"The explanatory cost of R60-A is now explicit: at minimum it needs a paragraph-boundary-conditioned token-form mixture. That mechanism is cheap enough to reproduce the entry direction, so the next discriminator must be joint constraint satisfaction and complexity, not entry existence by itself.",
+  "next":"Phase61B: freeze a multi-target scorecard and test whether A0 can satisfy entry direction + near-family density/locality + line-position grammar simultaneously without adding new mechanisms. If it fails, any repair becomes A1 and pays an explicit complexity increment."
+}
