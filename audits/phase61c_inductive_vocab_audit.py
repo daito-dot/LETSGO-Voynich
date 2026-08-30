@@ -11,8 +11,7 @@ No accepted experiment file is modified.
 from __future__ import annotations
 import importlib.util
 import json
-import math
-import random
+import sys
 import urllib.request
 from pathlib import Path
 
@@ -22,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "experiments/phase61/phase61c_joint_model.py"
 spec = importlib.util.spec_from_file_location("p61c", SRC)
 m = importlib.util.module_from_spec(spec)
+sys.modules["p61c"] = m
 spec.loader.exec_module(m)
 
 TRANSCRIPTION_URL = "https://raw.githubusercontent.com/Aspect-Research/voynich-autoexploration/master/data/transcriptions/eva_zl3b.txt"
@@ -90,7 +90,7 @@ def run(paragraphs):
                 g = avg(reps)
                 candidates.append((rel_mse(g, real_train), strength, local_p, g))
         candidates.sort(key=lambda x:(x[0],x[1],x[2]))
-        score, strength, local_p, train_gen = candidates[0]
+        score, strength, local_p, _train_gen = candidates[0]
 
         reps=[]
         for r in range(m.TEST_REPS):
@@ -136,10 +136,15 @@ def main():
     paragraphs,_=m.parse(str(source))
     out=run(paragraphs)
     out["input_git_blob_sha1"]=m.EXPECTED_GIT_BLOB_SHA1
-    out["frozen_reference"]=json.loads((ROOT/"experiments/phase61/phase61c_results.json").read_text())
+    ref=json.loads((ROOT/"experiments/phase61/phase61c_results.json").read_text())
+    out["frozen_reference_summary"]={
+        "status":ref["status"],
+        "heldout_ratio_of_means":ref["heldout_ratio_of_means"],
+        "selected":[f["selected"] for f in ref["folds"]],
+    }
     p=ROOT/"phase61c_inductive_vocab_audit_results.json"
     p.write_text(json.dumps(out,indent=2,ensure_ascii=False)+"\n")
-    print(json.dumps({k:v for k,v in out.items() if k!="frozen_reference"},indent=2,ensure_ascii=False))
+    print(json.dumps(out,indent=2,ensure_ascii=False))
 
 if __name__=="__main__":
     main()
