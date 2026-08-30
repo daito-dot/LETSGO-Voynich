@@ -23,19 +23,26 @@ This public ledger records hypotheses that have been tested or materially constr
 | H49-F | Conventional programming/formal text alone explains Voynich near-neighbor topology | NOT SUPPORTED | Ordinary programming/formal corpora are much lower after matched comparisons. |
 | H50-D | Simple finite-state family generator can reproduce high density + locality | MECHANISM DEMONSTRATED | Exploratory DSL can match these two dimensions after target-aware tuning. Not historical evidence. |
 | H51-D | Frozen Phase50 simple DSL is sufficient as broad Voynich mechanism | FALSIFIED AS SUFFICIENT MECHANISM | 20 generated corpora all far below Voynich paragraph reset and line-position grammar. |
-| H52-G | High Voynich edit1 density is mainly an artifact of choosing a low-density Latin control document | PRELIMINARY NOT SUPPORTED | Medieval Latin manuscript choice matters strongly, but current pilot maximum remains below Voynich section-level matched-window densities. Broader panel required. |
-| H52-S | Voynich section differences are negligible | NOT SUPPORTED | Section explains a substantial fraction of folio-level variation in the current matched-window analysis. |
+| H52-G | High Voynich edit1 density is mainly an artifact of choosing a low-density Latin control document | PRELIMINARY NOT SUPPORTED | Medieval manuscript choice matters strongly, but simple length/inventory matching leaves a large typical Voynich excess. |
+| H52-S | Voynich section differences are negligible | NOT SUPPORTED | Section explains substantial variation; later crossed analyses show real section signal independent of some hand/Currier combinations. |
+| H53-P | Simple stationary paragraph-local family preference is sufficient | NOT SUPPORTED AS SUFFICIENT | Increasing paragraph family reuse raises reset mainly by overproducing generic local clustering. |
+| H54-U | Paragraph-entry reset is manuscript-universal | WITHDRAWN / NOT SUPPORTED | Correct page-side audit shows positive reset in H/B/P/S/T but small A/C samples are negative. Earlier recto/verso collapse was corrected. |
+| H56-1 | A compact latent state predicts substantial structural variation | QUALIFIED SUPPORT | Matched-token analysis: ~64% variance in 3 PCs, ~79% in 5; leading directions recur across page/paragraph scales. Not a 1–2 axis system. |
+| H56-2 | Physical-order state is one smooth drift | PARTIAL / REFINED | Locality survives exact section+Currier+hand matching, but one smooth trajectory and simple changepoints are inadequate. Broad blocks + local similarity fit better descriptively. |
+| H56-3 | Shared grammar plus local state transfers across sections | SUPPORTED RELATIVE | Cross-scale latent basis recurs; paragraph-entry transition learned from other sections transfers positively to held-out H/B/P/S/T. |
+| H56-4 | Stable residual opportunity remains after known structural prediction | OPEN / CANDIDATE DEFINED | Reliable paragraph-specific residual remains after cross-fitted metadata/page-state prediction; Phase57 narrows it to a robust leading ~2D subspace. |
+| H57-1 | Residual is stable across reasonable token representations | PARTIAL SUPPORT | Leading residual space remains moderately aligned under raw EVA and conservative/Phase56 composite units, but nontrivial rotation remains. |
+| H57-2 | Residual is stable across matched window scale | SUPPORTED FOR TOP-2 / PARTIAL OVERALL | On a fixed eligible paragraph set, top-2 subspace remains close across 15–40 token windows; PC3+ is substantially more scale-sensitive. |
+| H57-3 | Residual is merely omitted local physical/page state | NOT SUPPORTED BY TESTED MODELS | Adding leakage-safe same-page/opposite-side/adjacent-leaf context does not explain away the residual; model sensitivity remains documented. |
+| H57-4 | Leading residual remains broadly label-neutral | SUPPORTED FOR TOP-2 | Explicit cross-fitted metadata removal leaves PC1/PC2 section/Currier/hand eta² around .01–.03; leaf-bootstrap top-2 subspace is stable. |
+| H58-1 | Robust 2D residual carries independent content information | PROSPECTIVE / UNTESTED | Frozen before content inspection in Phase58. Requires independently defined content and matched permutation/null controls. |
+| H58-2 | Robust residual is only unmodeled document structure | PROSPECTIVE / UNTESTED | Phase58A nuisance transfer is the first control. Strong nuisance prediction is a warning, not semantic evidence. |
+| H58-3 | No detectable information exists at the current residual representation | PROSPECTIVE / UNTESTED | Supported only if both nuisance and independently grounded content relations fail under the frozen design. |
 
 ## Important open mechanism alternatives
 
-The broad paragraph reset remains compatible with at least:
-
-- paragraph-conditioned morphology/orthography in meaningful text
-- paragraph-conditioned cipher/key/alphabet state affecting multiple token components
-- structured generation that reinitializes a distributed token-construction state
-
-The current evidence does not distinguish these strongly enough for decipherment.
+Current evidence remains compatible with meaningful text, systematic cipher, bounded adversarial/deceptive cipher, hierarchical formal generation, or mixed mechanisms. The shared paragraph transition and robust residual constrain all of these but do not select one.
 
 ## Rule for adding hypotheses
 
-Every new entry should identify a falsification condition and distinguish structural support from semantic/decipherment support. If a hypothesis survives only after adding free exceptions, those added degrees of freedom must be recorded.
+Every new entry must identify a falsification condition and distinguish structural support from semantic/decipherment support. If a hypothesis survives only after adding free exceptions, those added degrees of freedom must be recorded. Deliberate deception receives no null-result privilege.
