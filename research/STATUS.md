@@ -2,11 +2,11 @@
 
 ## Accepted high-level state
 
-Voynichese has strong internal grammar, positional structure, document-role effects, and local state organization. What is not yet established is whether those regularities preserve semantic information from a natural language or cipher, or can be generated without meaning by a sufficiently constrained formal process.
+Voynichese has strong internal grammar, positional structure, document-role effects, page-local token-family organization, and paragraph/line state dynamics. What is not yet established is whether the remaining variation preserves semantic information from a natural language or cipher, or can be generated without meaning by a sufficiently constrained formal process.
 
 Structural equivalence is not cipher equivalence. A pattern is promoted toward decipherment only when it predicts independently grounded content or transfers under a constrained encoder/mapping.
 
-## Current evidence frontier
+## Current evidence frontier — through Phase 56
 
 ### Token and line structure
 
@@ -16,33 +16,67 @@ Strong token-internal positional constraints and line-position effects are repro
 
 Voynich tokens form unusually dense edit-distance-1 / near-neighbor families. Local activation of related token families occurs at short scales. Literal online copy-and-modify is weakened: edit geometry is largely inventory-driven and there is no clear earlier-source directional asymmetry.
 
-### Internal hierarchy — Phase 55
+### Audited multiscale hierarchy
 
-Generator tuning is paused while the manuscript itself is mapped more carefully.
+Phase56 established a canonical substrate that keeps physical leaf, page-side, paragraph, line and token units distinct. It reproduces the overlapping Phase55 page fingerprints exactly under shared definitions.
 
-At folio/page-side feature scale, section, Currier and hand labels are strongly confounded; Currier × hand normalized mutual information is ~0.655. Global Currier classification therefore cannot be interpreted as an isolated Currier mechanism.
+The earlier simple hierarchy has been refined to:
 
-Nevertheless, strong section/document-role structure survives useful crossed comparisons. Holding hand 1 / Currier A fixed, Herbal vs Pharmaceutical is classified at ~0.87–0.90 balanced accuracy. Holding hand 2 / Currier B fixed, Herbal vs Biological is perfectly separated in the current feature set. Hand classification within Herbal B is much weaker.
+`broad document constraints`
 
-A major new result is strong physical/document locality below broad labels. In standardized fingerprint space, recto/verso of the same physical leaf are substantially closer (mean distance ~5.03) than different leaves with the same section+hand (~6.81), and similarity decays with leaf separation: adjacent leaves ~5.72, gap 2 ~6.12, gap 6–10 ~6.31, gap 11+ ~7.14.
+`+ page-local token-family activation state`
 
-The current working hierarchy is therefore:
+`+ transferable paragraph-entry transition`
 
-`manuscript -> broad section/document role -> locally drifting leaf/page state -> paragraph-entry dynamics -> line-position grammar -> token morphology`
+`+ line-position grammar`
 
-Hand and Currier cut across this hierarchy but are not independently identifiable everywhere because of the manuscript's observational design.
+`+ token morphology / edge entropy / {k,t}-related dimensions`
 
-### Paragraph-boundary audit correction
+Hand and Currier cut across this hierarchy but remain heavily confounded with section in parts of the manuscript.
 
-Phase 53/54 accidentally collapsed recto and verso page-side IDs to common leaf IDs. Phase 55 recomputed the analysis correctly.
+### Physical locality: real but not one smooth drift
 
-The paragraph-entry transient survives but the headline true-boundary gap is revised from ~+0.115 to **+0.0899** across 206 eligible page-sides (161 positive). Continuity still recovers rapidly: ~0.135 at entry, 0.218 after one line, 0.282 after two lines, then ~0.29–0.30.
+After exact matching on section + Currier + hand, structural fingerprint distance increases with physical separation. However, smooth-distance and explicit changepoint models do not yield a single adequate one-dimensional physical trajectory inside the largest continuous Herbal-A block.
 
-Crucially, this is **not manuscript-universal**. Corrected mean gaps are positive in Herbal (+0.086), Biological (+0.127), Pharmaceutical (+0.122), starred/text (+0.137), but negative in the small Astronomical (-0.050) and Cosmological (-0.097) samples. The earlier interpretation of a universal Voynich paragraph reset is withdrawn.
+H56-2 is therefore refined: physical locality is real, but the current description is broad state/block differences plus local similarity rather than one globally smooth drift or a few sharp regimes.
 
-### Linear vs nonlinear structure
+### Latent dimensionality: moderately low-dimensional
 
-At folio-feature scale, nonlinear ExtraTrees does not substantially outperform linear logistic models: section ~0.846 nonlinear vs 0.890 linear; Currier ~0.973 vs 0.974; hand ~0.832 vs 0.819. The important nonlinear/stateful behavior currently appears more as physical-order drift and boundary-triggered transitions than as a hidden globally nonlinear clustering surface.
+A critical Phase56C audit found that unmatched full-page PCA was contaminated by page token count (original PC1 r=-0.886 with n_tokens). The previous interpretation of that PC1 as a dominant section axis is withdrawn.
+
+With matched-token windows, page-side variation is distributed over several structural dimensions:
+
+- first 3 PCs: ~63.7%
+- first 5 PCs: ~78.7%
+- first 7 PCs: ~90.0%
+
+The leading matched axis is primarily near-family activation / local continuity rather than section. Similar leading directions recur at paragraph scale. Linear PCA outperforms RBF kernel PCA in grouped held-out reconstruction; no nonlinear-manifold advantage is established for these matched fingerprints.
+
+### Paragraph entry is a transferable multivariate state transition
+
+The corrected paragraph-entry effect is not only a drop in one continuity statistic.
+
+Using a 5D matched paragraph-trained latent basis and centering line states within page-side, the line0 -> line2 transition learned from other major sections transfers positively to every held-out H/B/P/S/T section. Held-out cosine similarity to the trained direction ranges from ~0.74 to ~0.97; page-bootstrap projection intervals remain above zero in all five sections.
+
+Biological is weaker but still positive.
+
+Thus a shared paragraph-entry/recovery dynamic is supported within the manuscript. This remains internal development evidence, not external replication.
+
+### Structural residual target now exists
+
+Phase56D constructed 635 matched paragraph fingerprints (>=20 body tokens). Independent resampling gives median split-half reliability ~0.964.
+
+In physical-leaf-grouped cross-validation, section + Currier + hand + paragraph ordinal yields standardized MSE ~0.919. Adding leakage-safe page context from other paragraphs on the same page improves this to ~0.885.
+
+Therefore known broad metadata and page-local context explain a real but minority share of stable paragraph variation. Substantial reliable paragraph-specific variation remains.
+
+The leading cross-fitted residual axis has very little remaining association with broad labels (section eta2 ~0.005, Currier ~0.002, hand ~0.002). A modest page-local residual similarity remains, so the residual is not yet nuisance-free.
+
+This residual is a **candidate future information-bearing target**, not evidence for semantics or cipher information.
+
+### Paragraph-boundary audit correction retained
+
+Phase53/54 accidentally collapsed recto and verso page-side IDs to common leaf IDs. Corrected analysis gives true-boundary gap ~+0.0899 across 206 eligible page-sides, with section dependence. The universal-reset interpretation remains withdrawn.
 
 ### Periodicity
 
@@ -52,13 +86,9 @@ Apparent fixed/drifting periodicities can be generated by token and boundary arc
 
 Current pharmaceutical item-specific matching tests have not established a state-invariant mapping from structural token classes to item content. This is a negative result for the tested domain, not proof that the manuscript lacks meaning.
 
-## Phase 52 control result retained
-
-Medieval manuscript/document choice is a major baseline confound. Highly abbreviated scholastic Latin can approach Voynich raw edit-1 density, but after a simple matched length+inventory null the typical Voynich excess remains much larger. Genre/scribe/abbreviation controls remain mandatory but are not currently a sufficient explanation.
-
 ## Formal-generator branch status
 
-The frozen simple DSL is insufficient. Phase 53 showed that line-position grammar is cheap to reproduce, whereas simple paragraph active-pool, surface-state, or preferred-family mechanisms either underproduce the boundary reset or overproduce generic local clustering. Because Phase 55 revealed a richer manuscript hierarchy and corrected the boundary unit, generator development remains paused.
+The frozen simple DSL remains insufficient. Generator development remains paused until the new residual target passes robustness checks.
 
 ## Competing explanation families still open
 
@@ -70,22 +100,24 @@ The frozen simple DSL is insufficient. Phase 53 showed that line-position gramma
 
 Deceptive-cipher explanations receive no credit merely because semantic tests fail. They must specify bounded nuisance mechanisms and outperform simpler alternatives after complexity charge.
 
-## Immediate frontier: Phase 56 internal multiscale dynamics
+## Immediate frontier: Phase 57 residual robustness gate
 
-Continue manuscript-internal mapping below folio scale before returning to generators:
+Before exposing Phase56 residuals to semantic/content/cipher hypotheses, test whether they survive reasonable analysis perturbations:
 
-- paragraph-level state geometry
-- line-level transition/recovery trajectories
-- recurring token-family transformation directions across sections
-- smooth physical-order drift versus discrete changepoints
-- compare recto/verso, adjacent leaves, paragraph boundaries and line transitions as distinct state-transition scales
-- use both linear transition models and nonlinear/state-space/changepoint methods
+- alternative token-unit/collapse definitions
+- matched-window length sensitivity
+- richer but leakage-safe local structural predictors
+- transcription/source sensitivity where feasible
+- stability of residual axes and paragraph relationships across resampling
+
+Only residual structure that survives this gate becomes the legitimate target for renewed content/cipher testing.
 
 ## Methodological rules
 
 - Observation -> Structure -> Mechanism -> Content relation -> Decipherment.
 - Preserve relevant known structure in nulls.
 - Keep exploratory/model-selection/held-out/prospective/external-replication labels distinct.
-- Audit unit definitions (page-side vs physical leaf vs folio) explicitly.
+- Audit unit definitions explicitly.
+- Equalize or explicitly model estimator sample-size effects.
 - Negative results and corrections remain recorded.
 - Decipherment requires an executable mapping/generation rule, substantial unseen prediction, fixed interpretable output, strong competitors/nulls, and documented errors.
