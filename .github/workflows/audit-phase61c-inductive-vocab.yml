@@ -1,0 +1,36 @@
+name: audit-phase61c-inductive-vocab
+
+on:
+  push:
+    branches:
+      - audit/phase61c-inductive-vocab-20260830
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependency
+        run: python -m pip install --disable-pip-version-check numpy==2.1.3
+      - name: Run strict inductive-vocabulary sensitivity
+        run: python audits/phase61c_inductive_vocab_audit.py
+      - name: Summary
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('phase61c_inductive_vocab_audit_results.json'))
+          print('status:',d['status'])
+          print('reference:',d['frozen_reference_summary'])
+          print('ratios:',d['heldout_ratio_of_means'])
+          print('gate:',d['broad_regime_gate_0.5_to_2.0'])
+          for f in d['folds']:
+              print(f['fold'], f['selected'], 'unseen_type_frac',round(f['heldout_unseen_type_fraction'],4),'unseen_token_frac',round(f['heldout_unseen_token_fraction'],4), 'ratios',f['heldout_ratio'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase61c-inductive-vocab-audit
+          path: phase61c_inductive_vocab_audit_results.json
