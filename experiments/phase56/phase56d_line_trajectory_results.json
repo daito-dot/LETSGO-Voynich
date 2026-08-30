@@ -1,0 +1,12 @@
+{
+  "phase":"56D-initial",
+  "status":"development; transition mapping before residualization",
+  "basis":"5D PCA fitted on matched 20-token paragraph windows; line states projected after train-basis standardization; line PC coordinates centered within page-side to remove page-level state",
+  "included_lines":3264,
+  "all_sections_page_centered_profile":{"line0":{"n":662,"PC1":-1.0751,"PC2":0.1771,"PC3":-0.1673,"PC4":-0.0110,"PC5":-0.3001},"line1":{"n":665,"PC1":0.1707,"PC2":-0.1674,"PC3":0.0448,"PC4":0.0722,"PC5":0.1372},"line2":{"n":557,"PC1":0.3291,"PC2":-0.0258,"PC3":0.0567,"PC4":0.0670,"PC5":0.1286},"line3":{"n":404,"PC1":0.5868,"PC2":0.1127,"PC3":0.0411,"PC4":0.0275,"PC5":0.0889}},
+  "interpretation":"Paragraph entry is a multivariate latent-state transient, not merely a change in the original scalar continuity statistic. The largest displacement is on PC1, the matched near-family/local-continuity axis: entry lines are strongly negative relative to their own page state and recover by line1-3. PC3 and PC5 also shift, while PC2/PC4 effects are smaller/nonmonotone.",
+  "entry_to_line2_cross_section_cosine":{"H-B":0.416,"H-P":0.823,"H-S":0.822,"H-T":0.993,"B-P":0.677,"B-S":0.707,"B-T":0.390,"P-S":0.817,"P-T":0.813,"S-T":0.851},
+  "interpretation_cross_section":"The entry-to-interior direction is strongly aligned among H/P/S/T and moderately aligned for Biological. This supports a partially shared paragraph-entry trajectory rather than wholly section-specific reset mechanisms. Biological remains a possible distinct or noisier case.",
+  "caveats":["Line fingerprints are noisier than matched paragraph/page fingerprints because individual lines are short; only lines with >=5 body tokens are included.","The PCA basis was fitted using all eligible paragraph windows, so this is descriptive/development evidence, not prospective validation.","Page-centering removes static page state but does not by itself prove causality of paragraph boundaries."],
+  "next":"Run grouped held-out entry/interior prediction and cross-section transfer using the frozen matched latent basis; then residualize metadata + page-local state + paragraph-relative position."
+}
