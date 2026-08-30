@@ -1,0 +1,11 @@
+{
+  "phase":"59A",
+  "status":"initial meaningful-prose comparator",
+  "target":"multivariate paragraph-entry line0 -> line2 transition using the same 11 generic morphology/family features",
+  "voynich":{"eligible_paragraphs":531,"mean_standardized_delta_norm":1.3292,"signflip_null_mean":0.1905,"signflip_null95":[0.1037,0.3007],"p_upper":0.00033,"mean_standardized_delta":[-0.2417,-0.6204,-0.2966,-0.4957,-0.3688,-0.0771,0.0622,0.4454,0.4521,0.4861,0.4525]},
+  "dante":{"source":"Dante, De vulgari eloquentia, retained Phase46 consecutive excerpt","paragraph_boundaries":"genuine numbered source paragraphs","lineation":"deterministic synthetic wrapping using empirical Voynich body-line length distribution","eligible_paragraphs":33,"mean_standardized_delta_norm":0.4817,"signflip_null_mean":0.7183,"signflip_null95":[0.3566,1.2284],"p_upper":0.8727,"mean_standardized_delta":[-0.1734,0.1333,0.0900,0.2294,0.1427,0.0129,-0.3114,0.0356,0.0401,-0.0553,0.0]},
+  "null":"within each eligible paragraph, independently sign-flip the paired line0-vs-line2 delta; 3000 permutations",
+  "interpretation":"The strong coordinated Voynich paragraph-entry transition is not reproduced by this meaningful Latin prose comparator under manuscript-like synthetic line wrapping. Dante sample size is small (33 eligible paragraphs), so this is a sanity comparator, not a natural-language-family rejection.",
+  "relation_to_phase46":"Consistent with the older Phase46 finding that Dante's near-family paragraph reset was much smaller than Voynich. Phase59A strengthens the comparison from one near-family scalar to a coordinated multivariate transition.",
+  "next":"Run the same multivariate transition test on the frozen bounded cipher transforms and formal-generator comparators; broaden meaningful prose before family-level inference."
+}
