@@ -2,6 +2,8 @@
 
 For progress sequencing and the active decision gate, see `../ROADMAP.md`. Phase-specific plans/results control exact methods and numbers; this file controls current accepted interpretation.
 
+For implementation/replay caveats through Phase61C, also read `REPRODUCIBILITY_AUDIT.md` and `AUDIT_PHASE51_61C_20260830.md` before changing any Phase60/61 numerical interpretation.
+
 ## Accepted high-level state
 
 Voynichese has strong internal grammar, positional structure, document-role effects, page-local token-family organization, and a manuscript-wide paragraph-entry formal role. What is not established is whether these structures encode independently grounded semantic content, arise from cipher/shorthand mechanics, or can be reproduced most efficiently by a hierarchical nonsemantic generator.
@@ -50,15 +52,15 @@ Phase62 later shows that this broad overlap does **not** mean objective source-n
 ## Phase 60 — paragraph entry is real, transferable and short-lived
 
 - **60A:** real paragraph boundaries exceed internal pseudo-boundaries under physical-leaf cross-fitting.
-- **60B:** the transition is carried mainly by {k,t}-family behavior, near-family/edit1 activation, local previous-10 continuity, length/TTR and stable edge behavior.
+- **60B:** the transition is consistently associated with lower TTR/shorter-token structure together with increased edit1/local-near-family and k/t-related structure. An independent audit found the current public reimplementation's final pooled-direction calculation is not a true cross-fit replay; corrected fold-specific training directions leave all five folds positive, but the historical accepted `n=380` eligibility rule is still unrecovered. Therefore exact Phase60B contribution magnitudes and fine carrier ranking are not replay-certified.
 - **60C:** a section-blind structural entry/body role transfers across held-out H/B/P/S/T.
-- **60D/60D2/60E:** persistent line0 initialization is not supported after coupling-free prospective testing.
+- **60D/60D2/60E:** persistent line0 initialization is not supported after coupling-free prospective testing. The current public 60E `.py` file is only a provenance stub; frozen JSON remains numerical authority pending exact clean replay.
 
 Strongest retained statement:
 
 > Voynich paragraph starts instantiate a manuscript-wide, transferable formal entry register. It is partly comparable to medieval structured-document entry grammar and partly Voynich-specific, but its detectable influence is short-lived rather than a persistent paragraph initializer.
 
-The frozen Phase50 stationary/weak-context DSL also fails the entry-specific direction; explicit boundary-conditioned machinery is needed for that generator family.
+The frozen Phase50 stationary/weak-context DSL also fails the entry-specific direction; explicit boundary-conditioned machinery is needed for that generator family. The original full Phase51 historical generator source has now been recovered and archived as provenance, while the public Phase51 entrypoint remains a normalized parameter/provenance stub.
 
 ## Phase 61 — nonsemantic architecture discrimination
 
@@ -66,15 +68,19 @@ The frozen Phase50 stationary/weak-context DSL also fails the entry-specific dir
 
 A boundary-aware short-lived paragraph-line0 mixture can reproduce the scalar held-out entry-direction target without persistent paragraph state.
 
+Interpret this as a **narrow architecture/mechanism demonstration**. The exposed strength grid was evaluated before strength 1.5 was fixed for the first 61B joint diagnostic, so 61A is not prospective validation of a preselected strength-1.5 model.
+
 ### 61B — A0 joint scorecard: FAILS
 
 A0 produces far too little local-prev10 near-family activation while overproducing line-position and entry/pseudo effects. Its high edit1 density is non-independent because the empirical Voynich vocabulary is supplied.
+
+The exact historical A0 executable was not preserved, so `phase61b_results.json` remains accepted numerical authority rather than a fully replay-certified generator run. Phase61C independently reproduces the Voynich-side metric regime closely; this supports metric continuity but does not reconstruct the missing A0 run.
 
 ### 61C — A1 first joint gate: SURVIVES
 
 A1 adds exactly one bounded local-family reuse/one-edit mechanism from line1 onward. No persistent paragraph state, section-specific grammar or extra line-position rule was allowed.
 
-Held-out A1/Voynich ratios on the Phase61 scorecard:
+Held-out A1/Voynich ratios on the **frozen aggregate Phase61 scorecard**:
 
 | target | ratio |
 |---|---:|
@@ -82,13 +88,21 @@ Held-out A1/Voynich ratios on the Phase61 scorecard:
 | local-prev10 | **0.717** |
 | line-position eta2 mean | **1.116** |
 
-All pass the frozen `[0.5,2.0]` broad-regime gate.
+All pass the frozen `[0.5,2.0]` broad-regime gate. Independent review verifies the plan → implementation freeze → executable → held-out result chronology and confirms training-only feature scaling, direction learning and parameter selection.
+
+A stricter sensitivity that removed every held-out-only token type from the generator produced essentially unchanged ratios (`0.795`, `0.718`, `1.098`) and exactly the same selected parameter pairs. Full-manuscript vocabulary sharing is therefore not driving the first-gate survival decision.
+
+However, a post-hoc held-out decomposition shows the aggregate line-position eta2 mean hides substantial coordinate mismatch: near-family eta2 coordinates are overproduced by about 6x while the aggregate excluding those coordinates is about 0.64x Voynich. This diagnostic was not preregistered and does not retroactively fail 61C, but it constrains the claim.
 
 Retain:
 
-> A minimally extended boundary-aware nonsemantic generator remains structurally viable once it pays for one additional local-family mechanism.
+> A minimally extended boundary-aware nonsemantic generator remains structurally viable after paying for one additional local-family mechanism: it reaches the broad held-out regime for the frozen scalar entry projection, global local-prev10 level, and aggregate line-position eta2 mean.
 
-This is not evidence that Voynich is meaningless. A1 uses the empirical Voynich token inventory and remains historically/semantically ungrounded.
+Do **not** strengthen that to:
+
+> A1 reproduces the full Voynich multivariate line-position grammar/profile.
+
+This is not evidence that Voynich is meaningless. A1 remains historically/semantically ungrounded and pays explicit target-derived vocabulary/architecture costs.
 
 ## Phase 62 — first fair N/C/G tournament
 
@@ -101,6 +115,8 @@ Primary common exposed scorecard:
 - **S3** — generic fixed-five-token line-position eta2 mean.
 
 Literal Voynich `{k,t}` dimensions are excluded from this primary cross-language comparison.
+
+The Phase61C eta2 decomposition is a warning against overinterpreting scalar averages. Phase62 family ranking should preserve the frozen scorecard but carry coordinate/profile mismatch forward as a diagnostic and rely on the already-sealed prospective discriminator before claiming a winner.
 
 ### 62A — source/design freeze: COMPLETE
 
@@ -180,9 +196,10 @@ After Phase62C, Phase62D must commit the exposed-score structural ranking or unr
 - Phase3 plant-label semantic result: NOT SUPPORTED after corrected permutation test.
 - Phase53/54 recto/verso collapse corrected in Phase55; universal paragraph-reset claim withdrawn.
 - Phase56 unmatched full-page PC1 was contaminated by token count.
-- Phase60D recovery-vector evidence for persistent initialization was mathematically coupled and superseded by 60D2/60E.
-- Phase61A narrow success did not validate A0; Phase61B rejected A0 jointly.
-- Phase61C survival is structural only and carries major target-vocabulary dependence.
+- Phase60B public reimplementation is not an exact cross-fit replay; corrected training-direction audit preserves the high-level entry effect but exact historical `n=380` effect sizes/carrier rank remain uncertified.
+- Phase60D recovery-vector evidence for persistent initialization was mathematically coupled and superseded by 60D2/60E; the public 60E executable remains a provenance stub pending exact replay.
+- Phase61A narrow success did not validate a preselected A0 strength; Phase61B rejected A0 jointly, while exact historical A0 numerical replay remains provenance debt.
+- Phase61C survival is structural only. It is robust to training-vocabulary-only sensitivity, but its aggregate eta2 pass does not establish a full multivariate line-position profile match.
 - Phase59 small semantic source subsets remain historical development evidence; Phase62 uses an independently reproducible objective source panel.
 
 ## Methodological rules
