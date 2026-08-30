@@ -1,0 +1,146 @@
+name: Phase63A training-only vocabulary robustness
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/phase63/PLAN_A.md'
+      - 'experiments/phase63/phase63a_training_vocab.py'
+      - 'experiments/phase63/DETERMINISM_AUDIT_A.md'
+      - '.github/workflows/phase63a-training-vocab.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  robustness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LETSGO-Voynich head branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+      - name: Verify prior prospective authority exists
+        shell: bash
+        run: |
+          test -f experiments/phase62/phase62p_h62p1_results.json
+          test -f experiments/phase62/REPORT_P.md
+          echo "0e1b687ab73efbc494834f49398ed474230f47bcde4cf4dbcaa46631efd75264  experiments/phase62/phase62p_h62p1_results.json" | sha256sum -c -
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen external inputs
+        shell: bash
+        run: |
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Run unchanged frozen Phase63A scientific executable
+        run: |
+          python experiments/phase63/phase63a_training_vocab.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma \
+            > phase63a_replay.json
+
+      - name: Download exact first-run Phase63A artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          mkdir -p first-result
+          curl --fail --location \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/9733309531/zip" \
+            --output first-result.zip
+          unzip -q first-result.zip -d first-result
+          echo "bcd05d1823e17b034c0abf984a0af9b0cb31b5a37bd9e604c327ab9aff1937a7  first-result/phase63a_training_vocab_results.json" | sha256sum -c -
+
+      - name: Verify semantic replay to machine precision
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, json, math
+          first=json.load(open('first-result/phase63a_training_vocab_results.json'))
+          replay=json.load(open('phase63a_replay.json'))
+          diffs=[]
+          def walk(a,b,path=''):
+              if type(a) is not type(b):
+                  diffs.append((path,a,b)); return
+              if isinstance(a,dict):
+                  if set(a)!=set(b): diffs.append((path+'/<keys>',sorted(a),sorted(b)))
+                  for k in set(a)&set(b): walk(a[k],b[k],path+'/'+str(k))
+              elif isinstance(a,list):
+                  if len(a)!=len(b): diffs.append((path+'/<len>',len(a),len(b)))
+                  for i,(x,y) in enumerate(zip(a,b)): walk(x,y,path+'/'+str(i))
+              elif a != b:
+                  diffs.append((path,a,b))
+          walk(first,replay)
+          non_numeric=[]; max_abs=0.0
+          for path,a,b in diffs:
+              if isinstance(a,(int,float)) and isinstance(b,(int,float)) and not isinstance(a,bool) and not isinstance(b,bool):
+                  max_abs=max(max_abs,abs(float(a)-float(b)))
+              else:
+                  non_numeric.append((path,a,b))
+          print('raw_structural_differences=',len(diffs))
+          print('non_numeric_differences=',len(non_numeric))
+          print('max_absolute_numeric_difference=',max_abs)
+          if non_numeric or max_abs > 1e-14:
+              raise SystemExit('semantic replay exceeds frozen audit tolerance')
+          def canon(x):
+              if isinstance(x,dict): return {k:canon(v) for k,v in sorted(x.items())}
+              if isinstance(x,list): return [canon(v) for v in x]
+              if isinstance(x,float): return round(x,14)
+              return x
+          def digest(x):
+              raw=json.dumps(canon(x),sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+              return hashlib.sha256(raw).hexdigest()
+          d1=digest(first); d2=digest(replay)
+          print('first_semantic_sha256=',d1)
+          print('replay_semantic_sha256=',d2)
+          expected='cd53f47729c864badb5e8c747cfd9ad989de9c616ca54dd5bdcb83b075c33c74'
+          if d1 != expected or d2 != expected:
+              raise SystemExit('canonical semantic digest mismatch')
+          if first['across_fold']['robust_to_heldout_vocabulary_removal'] is not True or replay['across_fold']['robust_to_heldout_vocabulary_removal'] is not True:
+              raise SystemExit('scientific verdict changed')
+          PY
+
+      - name: Archive first-run scientific result in repository
+        shell: bash
+        run: |
+          cp first-result/phase63a_training_vocab_results.json experiments/phase63/phase63a_training_vocab_results.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/phase63/phase63a_training_vocab_results.json
+          if git diff --cached --quiet; then
+            echo "first-run result already archived"
+            exit 0
+          fi
+          git commit -m "Record exact first-run Phase 63A robustness result"
+          git push origin "HEAD:${{ github.head_ref }}"
+
+      - name: Upload audit replay
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase63a-semantic-replay-audit
+          path: phase63a_replay.json

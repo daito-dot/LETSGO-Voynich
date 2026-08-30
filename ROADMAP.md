@@ -22,9 +22,9 @@ Discriminate among competing mechanism families by:
 2. genuinely prospective prediction;
 3. explicit target-dependence / complexity cost;
 4. independent transcription and external controls;
-5. independently grounded content prediction before any semantic promotion.
+5. independently grounded content prediction before semantic promotion.
 
-Families remain:
+Families remain open:
 
 - **N** — meaningful structured natural/technical text;
 - **C** — meaningful text plus cipher/shorthand/obscuration;
@@ -39,7 +39,7 @@ Structural fit is not decipherment.
 |---|---|---|
 | Phases 1–43 | ✅ | direct semantic cribs and weak periodic interpretations repeatedly failed; structural invariants accumulated |
 | Phases 44–52 | ✅ | mechanism tests and document/genre confounding became explicit |
-| Phases 53–57 | ✅ | audits corrected page/leaf/sample-size issues and narrowed a robust residual opportunity |
+| Phases 53–57 | ✅ | audits corrected page/leaf/sample-size issues and narrowed robust residual opportunities |
 | Phase 58 | ✅ negative / ⛔ localized content | page-level visual relations negative; defensible object/paragraph mapping unavailable |
 | Phase 59 | ✅ development | broad entry transition partly overlaps medieval structured-document entry grammar, with Voynich-specific remainder |
 | Phase 60 | ✅ with audit caveats | paragraph entry genuine, transferable and short-lived; exact 60B/60E replay debts remain |
@@ -50,72 +50,26 @@ Structural fit is not decipherment.
 | Phase 62B | ❌ N0 | source-native structured Latin matches generic S3 but fails S1/S2 |
 | Phase 62C | ✅ | C0 materially improves N0 but remains insufficient; frozen A1 leads exposed scalar fit |
 | Phase 62D | ✅ pre-prospective freeze | exposed ranking fixed as `A1 > C0 > N0`; overall family conclusion kept unresolved |
-| **Phase 62P / H62-P1** | **✅ prospective A1 support** | frozen A1 wins both preregistered recurrence-profile diagnostics in **5/5 physical-leaf folds** |
-| **Phase 63A** | **🟡 current** | remove the strongest remaining target convenience: re-test A1 with **training-leaf-only output vocabulary** and no retuning |
-| Phase 63B | ⏭ | independent Voynich transcription-lineage replication of strongest Phase60–62 claims |
-| Phase 64 | ⏭ | only after robustness: decide whether to invest in a more expressive C1, a more autonomous G model, or an independently grounded content lane |
+| Phase 62P / H62-P1 | ✅ prospective A1 support | A1 uniquely wins both preregistered recurrence-profile diagnostics in 5/5 physical-leaf folds |
+| **Phase 63A** | **✅ target-dependence robustness** | training-leaf-only output vocabulary leaves exposed and H62-P1 advantages essentially unchanged |
+| **Phase 63B** | **🟡 current** | freeze and execute an independent Voynich transcription/segmentation-lineage replication |
+| Phase 64 | ⏭ | after independent replication, decide whether next highest-value challenge is autonomous morphology, bounded C1, or externally grounded content |
 
-## Completed Phase62 tournament
+## Strongest current mechanism evidence
 
-### N0 — meaningful structured medieval plaintext
+### Phase62 exposed tournament
 
-Across-fold ratios to held-out Voynich:
+- **N0:** S1 `-0.980×`, S2 `0.133×`, S3 `0.989×` Voynich. Not jointly competitive.
+- **C0:** S1 `-0.932×`, S2 `0.249×`, S3 `0.856×`; digraph coding materially improves N0 but remains insufficient.
+- **A1:** S1 `0.623×`, S2 `1.512×`, S3 `0.587×`; strongest exposed scalar fit, with known fold/profile heterogeneity and higher target dependence.
 
-- S1 entry specialization: **-0.980**
-- S2 near-family locality excess: **0.133**
-- S3 aggregate generic line-position eta2: **0.989**
+Before prospective reveal, Phase62D froze:
 
-N0 is not jointly competitive. Its S3 match shows that generic line-position structure is weak evidence by itself.
+> **Exposed scalar fit: A1 > C0 > N0. Overall N/C/G mechanism-family conclusion unresolved.**
 
-### C0 — bounded reversible boundary-blind recoding
+### Phase62P H62-P1 — sealed prospective test
 
-All five folds selected non-overlapping digraph coding using training targets only.
-
-C0/Voynich:
-
-- S1 **-0.932**
-- S2 **0.249**
-- S3 **0.856**
-
-C0 materially improves N0 under the frozen fold/manuscript-omission rule, but remains insufficient on S1/S2. The broader C family is not falsified; any stronger cipher/shorthand is a separately named and complexity-charged C1.
-
-### A1 — frozen boundary-aware + local-family generator
-
-No Phase62 retuning.
-
-Common-score A1/Voynich ratio-of-means:
-
-- S1 **0.623**
-- S2 **1.512**
-- S3 **0.587**
-
-All pass the frozen exposed common-score gate. The independent Phase61 audit still limits the claim: aggregate S3 hides coordinate-level mismatch, and several individual fold/target ratios lie outside the broad interval.
-
-### Phase62D — ranking frozen before prospective reveal
-
-Before H62-P1 was computed, the repository committed:
-
-> **Exposed scalar structural fit: A1 > C0 > N0.**
-
-and separately:
-
-> **Overall N/C/G mechanism-family conclusion: unresolved pending prospective validation.**
-
-The same decision commit preregistered the directional A1 prediction: because A1 directly selects local-family variants from at most the preceding 10 tokens, near-family excess should be more concentrated in 1–10 than 11–40 tokens. This was explicitly not a prediction of literal zero after token 10.
-
-## Completed H62-P1 — first sealed prospective discriminator
-
-The five-bin statistic was frozen in Phase62A:
-
-- B1 1–2 tokens
-- B2 3–5
-- B3 6–10
-- B4 11–20
-- B5 21–40
-
-Within-item permutation nulls remove recurrence expected from the same item vocabulary/multiset. Two primary diagnostics were frozen: normalized profile L1 distance `D_profile` and absolute short-range concentration difference `|ΔC_short|`.
-
-### Result
+H62-P1 was frozen in Phase62A before tournament outcomes. It measures near-family recurrence excess in distance bins `1–2 / 3–5 / 6–10 / 11–20 / 21–40` and compares normalized profile shape plus short-range concentration.
 
 | candidate | mean D_profile | median D_profile | D wins | mean |ΔC_short| | C wins |
 |---|---:|---:|---:|---:|---:|
@@ -123,102 +77,127 @@ Within-item permutation nulls remove recurrence expected from the same item voca
 | C0 | 1.85866 | 1.87201 | 0/5 | 1.30765 | 0/5 |
 | **A1** | **0.76259** | **0.81061** | **5/5** | **0.11615** | **5/5** |
 
-A1 satisfies every frozen prospective-leader condition and uniquely wins both diagnostics in every held-out physical-leaf fold.
+A1 satisfies every preregistered prospective-leader condition.
 
-This is materially stronger evidence than another exposed-statistic fit because the target, interpretation, executable, aggregation, missing-bin rule and victory rule all existed in Git history before the first result.
+Accepted promotion:
 
-See:
+> **A1 is the leading tested structural mechanism with genuine prospective support relative to N0/C0.**
 
-- `experiments/phase62/DECISION_D.md`
-- `experiments/phase62/IMPLEMENTATION_P.md`
-- `experiments/phase62/phase62p_h62p1.py`
-- `experiments/phase62/phase62p_h62p1_results.json`
-- `experiments/phase62/REPORT_P.md`
+This is not a claim of meaninglessness, historical production identity or decipherment.
 
-### What is promoted
+## Completed Phase63A — training-only vocabulary robustness
 
-Promote A1 from:
+Phase63A removes token types that occur only on each held-out physical-leaf fold. No new mechanism or retuning is allowed.
 
-> provisional leading exposed-score structural candidate
+### How strong was the intervention?
 
-to:
+Across folds:
 
-> **leading tested structural mechanism with genuine prospective support relative to N0/C0.**
+- full manuscript vocabulary: 8,295 types;
+- mean training vocabulary: **7,050.2 types**;
+- mean held-out distinct-type coverage by training vocabulary: **0.5083**;
+- mean held-out token-occurrence coverage: **0.8016**.
 
-### What is not promoted
+Thus roughly **49% of held-out distinct token types** and **20% of held-out token occurrences** correspond to types unavailable to the generator.
 
-Do not infer that:
+All generated tokens are audited to belong to the training vocabulary.
 
-- Voynich is meaningless;
-- A1 is the historical production algorithm;
-- semantics are absent;
-- all meaningful-text/cipher families are rejected;
-- A1 reproduces the full structural profile.
+### Exposed score retention
 
-A1's five-bin profiles remain imperfect (`D_profile` about 0.54–1.01), and its longer-range B4/B5 behavior differs from Voynich in some folds.
+A1-R1 / Voynich ratio-of-means:
 
-## 🟡 Current gate — Phase63A: target-dependence reduction
+- S1 **0.65353**
+- S2 **1.51061**
+- S3 **0.58264**
 
-The strongest remaining methodological objection to A1 is that it is supplied the empirical Voynich token vocabulary. Phase61C already showed that restricting the vocabulary to training leaves barely changes the exposed scalar gate, but **H62-P1 has not yet been challenged under that restriction**.
+All remain in the frozen historical `[0.5,2.0]` gate.
+
+### H62-P1 retention
+
+A1-R1:
+
+- mean `D_profile` **0.76660**
+- median `D_profile` **0.80945**
+- mean `|ΔC_short|` **0.11769**
+
+It beats N0 and C0 in **5/5 folds on both metrics**.
+
+Relative to full-vocabulary A1, degradation is negligible:
+
+- mean `D_profile` `+0.00401`;
+- median `D_profile` `-0.00116`;
+- mean `|ΔC_short|` `+0.00153`.
+
+All frozen Phase63A R1/R2/R3 survival conditions pass.
+
+Accepted interpretation:
+
+> **A1's exposed and prospective structural advantage does not depend on access to token types unique to the held-out physical leaves.**
+
+This reduces one major target-leakage concern but does not make A1 autonomous. It still uses Voynich training-side morphology/vocabulary, Voynich-derived architecture and frozen Voynich-selected parameters.
+
+### Replay audit
+
+First raw scientific result:
+
+- Actions run `33315453851`
+- artifact `9733309531`
+- raw JSON SHA-256 `bcd05d1823e17b034c0abf984a0af9b0cb31b5a37bd9e604c327ab9aff1937a7`
+
+A cross-run raw SHA mismatch was audited before acceptance. First and clean replay parsed JSON differ in only 16 S1 floating-point scalars, maximum absolute difference `2.22e-16`; all S2/S3/H62-P1/discrete fields and verdicts are identical. Canonical 14-decimal semantic SHA is identical:
+
+`cd53f47729c864badb5e8c747cfd9ad989de9c616ca54dd5bdcb83b075c33c74`
+
+See `experiments/phase63/DETERMINISM_AUDIT_A.md` and `REPORT_A.md`.
+
+## 🟡 Current gate — Phase63B independent transcription replication
+
+The next highest-value objection is no longer held-out vocabulary leakage. It is **representation/transcription dependence**.
 
 ### Question
 
-> Does A1's prospective H62-P1 advantage survive when every held-out fold can generate only token types observed on its training leaves?
+> Do the strongest Phase60–63 findings survive an independently maintained Voynich transcription/segmentation lineage rather than ZL3b/EVA?
 
-### Intended frozen test
+### Phase63B source/design freeze requirements
 
-For each existing physical-leaf fold:
+Before calculating replication outcomes:
 
-1. construct A1 vocabulary from training leaves only;
-2. learn shape scores and edit1 neighbor graph from training-side information only;
-3. retain the exact already-frozen A1 entry-strength/local-family-p pair — no retuning;
-4. retain the exact held-out layout and deterministic seeds;
-5. evaluate both:
-   - Phase62 exposed S1/S2/S3;
-   - the now-known H62-P1 five-bin profile;
-6. report held-out token-type/occurrence coverage lost by the training-only vocabulary.
+1. identify at least one genuinely independent transcription lineage with stable provenance/version/hash;
+2. document how its glyph/token/space conventions differ from ZL3b;
+3. define a deterministic paragraph/line/physical-leaf mapping without tuning against ZL3b results;
+4. freeze which metrics are technically comparable under that representation;
+5. freeze any unavoidable cross-transcription normalization before outcomes;
+6. preserve the original ZL3b result as discovery/primary evidence rather than rewriting it.
 
-### Phase63A survival rule to freeze before execution
+### Priority replication targets
 
-A1-R1 should count as robust only if, without parameter repair:
+In order:
 
-- S1/S2/S3 ratio-of-means still satisfy the historical `[0.5,2.0]` common-score gate;
-- its H62-P1 mean profile distance remains lower than both N0 and C0;
-- its mean absolute `C_short` difference remains lower than both N0 and C0;
-- it beats both N0 and C0 in at least 3/5 folds on each H62-P1 metric.
-
-No requirement that it beat the full-vocabulary A1 is imposed; degradation relative to full A1 is reported directly as target-dependence cost.
+1. genuine paragraph-boundary entry specialization versus internal pseudo-boundaries;
+2. local near-family activation / recurrence-distance geometry;
+3. H62-P1 short-vs-long profile shape;
+4. A1-R1 structural advantage if the independent representation supports a defensible generator vocabulary/neighbor definition;
+5. aggregate line-position structure only as a secondary check because Phase62 shows S3 alone is weak discrimination.
 
 ### Stop rule
 
-If training-only vocabulary destroys the prospective advantage, record that before proposing a more autonomous G model. Do not silently restore full-vocabulary information or add an A2 mechanism.
+If a claimed invariant depends strongly on ZL3b segmentation/glyph conventions, record the failure before adapting the metric. Do not tune the independent transcription until it recreates the ZL3b answer.
 
-## ⏭ Phase63B — independent transcription lineage
-
-After Phase63A, replicate the strongest claims under an independently maintained Voynich transcription/segmentation lineage where technically defensible:
-
-1. paragraph-entry boundary effect;
-2. local near-family activation;
-3. H62-P1 recurrence-distance geometry;
-4. the frozen A1 robustness result.
-
-Representation differences must be specified before comparing outcomes. Do not tune one transcription to mimic ZL3b.
-
-## Other tracks
-
-### C family
-
-C0 is informative but weak. Do not build C1 merely because C0 lost. A historically motivated C1 becomes appropriate only after the current robustness challenge, with bounded rules and explicit complexity cost.
+## Later model-family work
 
 ### G family
 
-Do not build A2 to improve the known long-range/profile residual. If Phase63A passes, the next G question is **autonomy**: can the relevant token inventory/morphology itself be learned or generated without supplying the manuscript's empirical output vocabulary?
+Do **not** add A2 merely to repair known B4/B5 or line-profile residuals. If independent replication survives, the next G challenge is autonomy: generate/learn morphology without supplying the empirical Voynich token inventory.
 
-### Content lane
+### C family
 
-Page-level visual tests remain negative. Strong semantic promotion still requires externally grounded object/paragraph mapping and unseen content prediction.
+C0 is useful but insufficient. A stronger C1 is legitimate only as a separately frozen historically/mathematically motivated model with explicit complexity cost after current replication.
 
-### Reproducibility debt
+### N/content lane
+
+Simple N0 is disfavored, not all meaningful-text families. Strong semantic promotion still requires externally grounded object/paragraph mapping and unseen content prediction.
+
+## Reproducibility debt
 
 Retain and eventually close:
 
@@ -226,15 +205,15 @@ Retain and eventually close:
 - clean Phase60E executable replay;
 - exact historical A0 provenance where recoverable.
 
-These debts do not supersede the current prospective result but limit over-precise historical claims.
+These debts limit fine historical claims but do not erase the newer prospectively frozen Phase62/63 results.
 
 ## Decision milestones
 
 - **M1 Phase61 architecture gate:** ✅ A0 fails jointly; A1 survives narrow scalar gate.
-- **M2 first fair exposed N/C/G tournament:** ✅ `A1 > C0 > N0` among tested implementations.
+- **M2 exposed N/C/G tournament:** ✅ `A1 > C0 > N0` among tested implementations.
 - **M3 prospective discriminator:** ✅ A1 wins H62-P1 5/5 on both frozen metrics.
-- **M4 target-dependence robustness:** 🟡 Phase63A current.
-- **M5 independent transcription/external robustness:** ⏭.
+- **M4 target-dependence robustness:** ✅ Phase63A survives training-only vocabulary restriction.
+- **M5 independent transcription robustness:** 🟡 Phase63B current.
 - **M6 content relation:** ⛔ not established.
 - **M7 decipherment threshold:** ⛔ not reached.
 
@@ -250,4 +229,4 @@ Pause or pivot rather than endlessly repair when:
 
 ## What to do when asked simply to "continue"
 
-Execute **Phase63A**. Freeze its exact training-only-vocabulary implementation and survival rule before running it. Do not create A2/C1/M0 first.
+Execute **Phase63B source recovery/design freeze first**. Do not calculate an independent-transcription replication result until source identity, segmentation mapping, comparable metrics and falsification rules are committed.
