@@ -9,13 +9,13 @@ This file is the deterministic entry point for a new researcher or AI/chat sessi
 3. `RESEARCH_PROTOCOL.md`
 4. `research/STATUS.md`
 5. `research/hypothesis-ledger.md`
-6. `research/NARRATIVE_HYPOTHESIS_PHASE60.md`
-7. `research/NARRATIVE_REVISION_PHASE60.md`
-8. `experiments/phase59/` — medieval-entry development comparison
-9. `experiments/phase60/` — especially 60A/60B/60C/60D2/60E
-10. `experiments/phase61/PLAN_C.md`, `IMPLEMENTATION_C.md`, `REPORT_C.md`, `phase61c_results.json`
-11. `experiments/phase62/CONTROL_RECOVERY.md`
-12. `experiments/phase62/PLAN.md`
+6. `experiments/phase59/` — medieval-entry development comparison
+7. `experiments/phase60/` — especially 60A/60B/60C/60D2/60E
+8. `experiments/phase61/PLAN_C.md`, `IMPLEMENTATION_C.md`, `REPORT_C.md`, `phase61c_results.json`
+9. `experiments/phase62/CONTROL_RECOVERY.md`
+10. `experiments/phase62/PLAN.md`
+11. `experiments/phase62/IMPLEMENTATION_B.md`
+12. `experiments/phase62/REPORT_B.md` and `phase62b_n0_results.json`
 13. exact scripts/results before changing numerical interpretation
 
 Do not reconstruct the project from chat history when the repository contains a newer state.
@@ -25,10 +25,9 @@ Do not reconstruct the project from chat history when the repository contains a 
 1. phase-specific frozen plan/result/report controls exact method and numerical result;
 2. `research/STATUS.md` controls current accepted scientific interpretation;
 3. `research/hypothesis-ledger.md` controls hypothesis history/status;
-4. `ROADMAP.md` controls active gate and sequencing, not scientific numbers;
+4. `ROADMAP.md` controls active gate and sequencing;
 5. frozen narrative/design files record pre-test decisions and are not rewritten to hide failures;
-6. checkpoint/handoff files are secondary summaries;
-7. old chat/memory is non-authoritative when repository evidence conflicts.
+6. old chat/memory is non-authoritative when repository evidence conflicts.
 
 ## Current accepted structural state
 
@@ -44,127 +43,122 @@ Voynichese currently requires explanation of at least:
 
 `+ token morphology / edge-pattern / {k,t}-related structure`
 
-Phase59 supports a decomposition of paragraph entry into a substantial generic medieval entry/register component plus a transferable Voynich-specific remainder.
+Phase59 showed that broad medieval entry grammar overlaps part of the Voynich transition while a Voynich-specific remainder survives.
 
-Phase60 established that the entry role is genuine and transferable but does **not** behave like a persistent line0 initializer of later paragraph body state.
+Phase60 established that the entry role is genuine and transferable but short-lived rather than a persistent paragraph initializer.
 
 Current page-level visual/content tests remain negative; strong localized semantic testing is blocked pending defensible external paragraph/object mapping.
 
 ## Phase61 decisions
 
-### 61A — A0 narrow entry gate
+### A0
 
-SUPPORTED NARROWLY. A boundary-aware nonsemantic paragraph-line0 mixture can reproduce the held-out scalar entry direction without persistent paragraph state.
+- 61A: boundary-aware entry mixture survives a narrow scalar entry gate.
+- 61B: A0 fails jointly because locality is far too weak and positional/entry effects are mis-scaled.
 
-### 61B — A0 joint model
+### A1
 
-FALSIFIED AS SUFFICIENT. A0 produces far too little local-prev10 near-family activation and strongly overstates line-position / entry-pseudo effects. High edit1 density is non-independent because the empirical Voynich vocabulary is supplied.
+61C adds exactly one bounded local-family mechanism to A0 and no persistent paragraph state/section grammar/additional line rule.
 
-### 61C — A1 first joint gate
+Held-out A1/Voynich Phase61 ratios:
 
-SUPPORTED AS A STRUCTURAL GENERATOR GATE.
-
-A1 adds exactly one mechanism to A0: bounded local-family reuse / one-edit mutation from line1 onward. No persistent paragraph state, section-specific grammar or extra line-position rule was allowed.
-
-Held-out A1/Voynich ratios across five physical-leaf folds:
-
-- entry projection: **0.797**
+- entry: **0.797**
 - local-prev10: **0.717**
-- line-position eta2 mean: **1.116**
+- line-position eta2: **1.116**
 
-All pass the frozen `[0.5,2.0]` broad-regime gate.
+A1 survives that exposed structural gate but uses the empirical Voynich token inventory and is now frozen.
 
-Interpretation:
-
-> A minimally extended boundary-aware nonsemantic generator remains structurally viable once it pays for one additional local-family mechanism.
-
-This is not evidence that the manuscript is meaningless. A1 uses the empirical Voynich token inventory and is now frozen.
+Do not create A2 before the current tournament and prospective test are resolved.
 
 ## Phase62A — source/design freeze: COMPLETE
 
-Phase62A was deliberately completed **without computing N0/C0 tournament scores**.
-
-### External provenance
-
-Voynich reproducibility mirror:
+Pinned Voynich:
 
 - `matthewdgreen/cipher_benchmark@315f0cad4de3d021bd4185765c037cf2a28d341c`
-- `ZL3b-n.txt` expected Git blob `2a4533ab9bdfa85db9bad602d590978953055df1`
+- ZL3b blob `2a4533ab9bdfa85db9bad602d590978953055df1`
 
-Medieval controls:
+Pinned medieval controls:
 
 - `HTR-United/CREMMA-Medieval-LAT@292525969ad98380b398e6606a9c2a36d51913ae`
 
-### Control-recovery correction
+Historical Phase59 H318/CLM/BIS subsets were not fully recoverable and were not rebuilt by fitting old Voynich results.
 
-The exact old Phase59 H318/CLM/BIS semantic item subsets are not fully reconstructable from the current repository. Do **not** recreate them by choosing entries that match old Voynich results.
+Primary objective N0 panel:
 
-A new corpus-wide rule was fixed before counts were inspected: include manuscripts with >=5 eligible literal-pilcrow entries. Primary N0 panel:
+- BIS193
+- CLM13027
+- Mazarine915
+- UBL758
 
-- BIS193 — 64;
-- CLM13027 — 39;
-- Mazarine915 — 38;
-- UBL758 — 5.
+Equal-weight manuscripts. H318 is sensitivity only.
 
-Manuscript is the equal-weight replication unit.
-
-Predeclared sensitivities:
-
-- H318 — 4 eligible, Phase52-preexisting medical/recipe control;
-- Arras861 — no literal-pilcrow entry, non-entry sensitivity only.
-
-See `experiments/phase62/CONTROL_RECOVERY.md`.
-
-### Frozen common scorecard
-
-Primary:
+Frozen common scorecard:
 
 - **S1** — generic 8D fixed-five-token entry-minus-pseudo projection;
-- **S2** — full-line previous-10 near-family excess over a document-vocabulary/line-layout preserving redistribution null;
+- **S2** — full-line previous-10 near-family excess above a vocabulary/line-layout preserving null;
 - **S3** — generic fixed-five-token line-position eta2 mean.
 
-Voynich-specific literal `{k,t}` dimensions are excluded from the primary cross-language tournament.
+Frozen C0 family:
 
-### Frozen C0 family
-
-Exactly five boundary-blind reversible transforms:
-
-1. identity/monoalphabetic-equivalent;
+1. identity / monoalphabetic-equivalent;
 2. token reversal;
-3. two-class positional allography;
-4. three-class positional allography;
+3. 2-class positional allography;
+4. 3-class positional allography;
 5. non-overlapping digraph coding.
 
-No C0 transform can inspect entry position, line, section or held-out Voynich target.
+Frozen prospective H62-P1 is a five-bin near-family recurrence-distance profile. **Do not compute/reveal Voynich H62-P1 until after Phase62D is committed.**
 
-### Frozen prospective holdout H62-P1
+## Phase62B — N0 baseline: COMPLETE / FAILS JOINT GATE
 
-A five-bin near-family recurrence distance profile is preregistered over distances:
+Source-native meaningful structured medieval text was evaluated before C0/A1 common-score results.
 
-- 1–2;
-- 3–5;
-- 6–10;
-- 11–20;
-- 21–40 tokens.
+Across-fold means:
 
-This is mechanistically relevant because A1 has an explicit maximum local-family memory of 10 tokens.
+| target | Voynich | N0 | ratio |
+|---|---:|---:|---:|
+| S1 | 0.87599 | -0.85872 | -0.980 |
+| S2 | 0.04388 | 0.00585 | 0.133 |
+| S3 | 0.02827 | 0.02797 | 0.989 |
 
-**Do not compute/reveal the Voynich H62-P1 profile until Phase62D's exposed-score structural ranking/unresolved set is committed.**
+Interpretation:
 
-Exact definitions are in `experiments/phase62/PLAN.md`.
+- **S1 fails:** every primary manuscript is negative on the Voynich-training-derived common entry direction; every leave-one-manuscript-out aggregate remains negative.
+- **S2 fails:** ordinary structured Latin reaches only ~13.3% of the Voynich locality excess; LOMO remains ~11.6–16.0%.
+- **S3 passes:** generic line-position grammar is readily reproduced and is weak evidence when cited alone.
 
-## Current frontier — Phase62B N0 baseline
+H318's tiny predeclared sensitivity aligns positively on S1 but fails/overshoots the other dimensions and remains outside the primary result.
 
-When asked to continue, execute **N0 only** under the frozen plan.
+Exact result/report:
 
-1. reproduce the pinned Voynich and CREMMA inputs;
-2. implement the common S1–S3 extractor exactly as frozen;
-3. run the four primary manuscripts with all eligible entries;
-4. equal-weight manuscripts;
-5. report per-manuscript and leave-one-manuscript-out heterogeneity;
-6. record the N0 result durably;
-7. do not change C0, A1, source membership, or H62-P1 after seeing N0;
-8. stop at the Phase62B decision record, then proceed to already-frozen Phase62C.
+- `experiments/phase62/phase62b_n0_results.json`
+- `experiments/phase62/REPORT_B.md`
+
+Do not interpret N0 failure as proof of G/A1. The common-score C0/A1 comparison has not yet been run.
+
+## Current frontier — Phase62C
+
+When asked to continue, execute the already-frozen Phase62C comparison.
+
+### C0
+
+- evaluate only C0-0…C0-4 from `experiments/phase62/PLAN.md`;
+- select transform on Voynich training folds only using frozen S1–S3 error;
+- evaluate selected transform on held-out Voynich folds;
+- no boundary-aware transform, target codebook, continuous tuning or post-result repair;
+- if more expressive ciphering is later justified, name it C1 after Phase62C is frozen.
+
+### Frozen A1
+
+- regenerate/re-score the Phase61C model under the common Phase62 S1–S3 scorecard;
+- use its already selected fold-specific entry strength/local-family p;
+- do not retune A1;
+- retain explicit complexity/target-vocabulary cost.
+
+### Firewall
+
+- do not compute/reveal H62-P1;
+- do not create A2, C1 or M0 inside Phase62C;
+- after Phase62C, Phase62D must commit the exposed-score structural ranking/unresolved set before H62-P1 reveal.
 
 ## Research families
 
@@ -173,22 +167,20 @@ When asked to continue, execute **N0 only** under the frozen plan.
 - **G** — constrained nonsemantic/formal generation;
 - **M** — mixed mechanisms only after simpler families have fixed failure patterns.
 
-The project now compares predictive efficiency and target dependence, not how many observed peculiarities a story can explain after the fact.
-
 ## Important corrections retained
 
 - Phase3 plant-label semantic headline: NOT SUPPORTED.
 - Phase53/54 recto/verso collapse corrected in Phase55.
 - Phase56 unmatched full-page PC1 sample-size contamination withdrawn.
-- Phase60D recovery-vector result mathematically coupled; persistent-initialization claim rejected by 60D2/60E.
-- Phase61A narrow success did not validate A0; Phase61B rejected A0 jointly.
+- Phase60D persistent-initialization evidence was mathematically coupled and rejected by 60D2/60E.
+- Phase61A narrow success did not validate A0; Phase61B rejected it jointly.
 - Phase61C survival is structural only and carries target-vocabulary dependence.
-- Phase59 small semantic control subsets remain historical development evidence, not the prospective Phase62 source panel.
+- Phase59 small semantic subsets remain historical development evidence; Phase62 uses an independently reproducible objective source panel.
 
 ## Frozen methodological constraints
 
 - Observation → Structure → Mechanism → Content relation → Decipherment.
-- Equalize/model sample-size effects.
+- Preserve relevant known structure in nulls.
 - Page-side and physical leaf are distinct units.
 - Search freedom belongs in model-selection/null folds.
 - Local state is a default confound.
@@ -196,7 +188,7 @@ The project now compares predictive efficiency and target dependence, not how ma
 - Deliberate deception is allowed only as a bounded, complexity-charged mechanism.
 - Negative results and audit corrections remain public.
 - Failed hard predictions narrow the narrative; no free repair.
-- Exposed targets may train/diagnose models; preregistered holdouts remain sealed until their reveal gate.
+- Exposed targets may train/diagnose models; sealed prospective targets remain untouched until their preregistered reveal gate.
 
 ## Before declaring decipherment
 
@@ -204,4 +196,4 @@ Require an executable fixed mapping/generation rule, substantial prediction of u
 
 ## Session behavior
 
-When asked simply to "continue", execute the current yellow gate in `ROADMAP.md`. Update durable records at genuine decision points. Do not skip ahead to H62-P1 or create A2/C1 before their frozen gate.
+When asked simply to "continue", execute Phase62C exactly as frozen. Do not skip ahead to H62-P1 or create A2/C1/M0 before Phase62D.
