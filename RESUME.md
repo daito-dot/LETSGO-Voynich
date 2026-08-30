@@ -229,36 +229,41 @@ Do not convert this into a claim of semantic emptiness or historical identity.
 
 The exact artifact was hash-verified by a separate recording workflow before being committed as `experiments/phase63/phase63b_science_results.json`.
 
-## Current frontier — Phase64
+## Phase64A — empirical-inventory autonomy: MIXED / PRIMARY FAIL
 
-Phase63B closes the independent-transcription gate positively.
+A1-R2/MG0 replaces the explicit empirical training-token inventory with order-2 character-Markov synthetic vocabularies. Training-only CV selected order 2 in all 10 folds. Synthetic vocabularies overlap training types only ~20–23% and held-out types ~12–13%; edit1 connectivity is roughly halved.
+
+ZL primary ratios: **S1 0.84668 / S2 0.92025 / S3 0.46772**. S3 alone fails the frozen gate. H62 remains strong (`D=0.76160`, `|ΔC_short|=0.12030`) and beats N0/C0 5/5 on both diagnostics.
+
+IT independent ratios: **1.13567 / 0.97605 / 0.58586**, all pass. H62 `D=0.83163`, `|ΔC_short|=0.07486`; the full source-arm gate passes.
+
+Frozen overall classification:
+
+> **INCONSISTENT / PRIMARY FAILURE — independent IT passes but canonical ZL fails the frozen inventory-autonomy gate.**
+
+Retain both conclusions simultaneously: full inventory autonomy is not established, but the core prospective recurrence geometry is highly robust to removal of explicit empirical vocabulary membership/topology. Do not repair ZL S3 after seeing this result.
+
+First reveal: head `5e9121f7e05d8950f223298a44b816d6ee088e07`, run `33335306504`, artifact `9738893689`, raw JSON SHA-256 `43b59ad8539db4cf089e6265c38f81ec9afd2f864877b77373a12adbdccdce1b`.
+
+## Current frontier — Phase64B/C1
 
 When asked to continue:
 
-1. finish/verify the Phase63B clean replay audit if still running;
-2. merge the Phase63B result/report/status branch into main only after provenance and replay state are recorded;
-3. freeze **Phase64A G-autonomy** before computing a new result;
-4. in Phase64A, remove the empirical training token inventory as the generator's output vocabulary while keeping the structural A1 contract fixed as far as possible;
-5. do **not** add mechanisms to repair known fold2/B4-B5/line-position residuals;
-6. maintain a parallel **C1 design track** so successful G autonomy is not misreported as family-level `G > C/N` proof.
+1. finish/verify Phase64A replay and merge result state to main;
+2. freeze a **serious bounded C1** before computing any C1 output;
+3. C1 must start from meaningful plaintext and independently motivated cipher/shorthand operations, with explicit complexity cost;
+4. use nested training-only selection and the same held-out S1/S2/S3 + H62 scorecard;
+5. freeze an additional prospective discriminator before reveal;
+6. do not copy A1's explicit previous-10 mechanism or add Voynich-specific boundary tuning;
+7. do not repair A1-R2 S3 in parallel.
 
-### Why autonomy is next
-
-The main direct objection left against A1-R1 is no longer held-out leakage or ZL transcription dependence. It is that A1 still receives the training-side empirical token inventory/morphology. Phase64A should test whether a lower-level frozen morphology generator can replace that inventory.
-
-### C1 fairness requirement
-
-C0 is deliberately weak. Before any family-level conclusion, define a historically/mathematically motivated C1 with explicit complexity accounting and no Voynich-specific boundary tuning. A developed G model cannot fairly establish `G > C` against C0 alone.
-
-### Content lane
-
-Independently grounded localized object/paragraph mapping remains essential before semantic promotion. Do not invent labels or tune mapping against text results merely to unblock the ladder.
+The scientific reason for the pivot is that Phase64A leaves only a narrow ZL S3 omnibus failure while the core H62 signature survives a severe inventory/topology intervention. The larger unresolved threat to interpretation is now that C0 was an underpowered competitor.
 
 ## Research families
 
 - **N:** simple N0 disfavored; broader meaningful-text families remain open.
-- **C:** C0 limited/insufficient; serious bounded C1 still owed.
-- **G:** A1/A1-R1 currently leads tested structural mechanisms prospectively, survives held-out-vocabulary restriction and independent-transcription transfer, but remains morphology-dependent and historically/semantically ungrounded.
+- **C:** C0 limited/insufficient; serious bounded C1 is the current fairness frontier.
+- **G:** A1/A1-R1 currently leads the tested core recurrence mechanism prospectively. A1-R2 shows H62 survives drastic inventory replacement, but strict full autonomy fails on canonical ZL S3; G remains historically/semantically ungrounded and structurally incomplete.
 - **M:** deferred.
 
 ## Important retained corrections

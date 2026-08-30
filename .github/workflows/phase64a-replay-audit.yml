@@ -1,0 +1,119 @@
+name: Phase64A replay audit
+
+on:
+  push:
+    branches: [phase64a-record]
+    paths:
+      - '.github/workflows/phase64a-replay-audit.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout frozen recording branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase64a-record
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Fetch exact frozen IT2a
+        shell: bash
+        run: |
+          mkdir -p external/transcriptions
+          curl --fail --location --retry 3 'https://www.voynich.nu/data/IT2a-n.txt' -o external/transcriptions/IT2a-n.txt
+          echo "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  external/transcriptions/IT2a-n.txt" | sha256sum -c -
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Replay unchanged Phase64A science
+        shell: bash
+        run: |
+          python experiments/phase64/phase64a_science.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/transcriptions/IT2a-n.txt \
+            > phase64a_replay.json
+          sha256sum phase64a_replay.json
+
+      - name: Download exact first-reveal authority
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          curl --fail --location \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/9738893689/zip" \
+            --output first-reveal.zip
+          echo "058852cfc8bf5d718d200f05758d21452f45715d35a2b682f7422afc6261d8fc  first-reveal.zip" | sha256sum -c -
+          mkdir first-reveal
+          unzip -q first-reveal.zip -d first-reveal
+          echo "43b59ad8539db4cf089e6265c38f81ec9afd2f864877b77373a12adbdccdce1b  first-reveal/phase64a_inventory_autonomy_results.json" | sha256sum -c -
+
+      - name: Verify semantic replay and frozen verdict
+        shell: bash
+        run: |
+          python - <<'PY' | tee phase64a_replay_audit.txt
+          import hashlib, json
+          first=json.load(open('first-reveal/phase64a_inventory_autonomy_results.json'))
+          replay=json.load(open('phase64a_replay.json'))
+          diffs=[]
+          def walk(a,b,path=''):
+              if type(a) is not type(b):
+                  diffs.append((path,a,b)); return
+              if isinstance(a,dict):
+                  if set(a)!=set(b): diffs.append((path+'/<keys>',sorted(a),sorted(b)))
+                  for k in sorted(set(a)&set(b)): walk(a[k],b[k],path+'/'+str(k))
+              elif isinstance(a,list):
+                  if len(a)!=len(b): diffs.append((path+'/<len>',len(a),len(b)))
+                  for i,(x,y) in enumerate(zip(a,b)): walk(x,y,path+'/'+str(i))
+              elif a != b:
+                  diffs.append((path,a,b))
+          walk(first,replay)
+          non_numeric=[]; max_abs=0.0
+          for path,a,b in diffs:
+              if isinstance(a,(int,float)) and isinstance(b,(int,float)) and not isinstance(a,bool) and not isinstance(b,bool):
+                  max_abs=max(max_abs,abs(float(a)-float(b)))
+              else:
+                  non_numeric.append((path,a,b))
+          def rawsha(path): return hashlib.sha256(open(path,'rb').read()).hexdigest()
+          print('first_raw_sha256=',rawsha('first-reveal/phase64a_inventory_autonomy_results.json'))
+          print('replay_raw_sha256=',rawsha('phase64a_replay.json'))
+          print('raw_structural_differences=',len(diffs))
+          print('non_numeric_differences=',len(non_numeric))
+          print('max_absolute_numeric_difference=',max_abs)
+          if non_numeric or max_abs > 1e-13:
+              raise SystemExit('semantic replay exceeds audit tolerance')
+          if replay['across_phase64A'] != first['across_phase64A']:
+              raise SystemExit('overall Phase64A verdict changed')
+          for arm in ('ZL_primary','IT_independent'):
+              if replay[arm]['across_fold']['pass'] != first[arm]['across_fold']['pass']:
+                  raise SystemExit(f'{arm} pass/fail changed')
+              if replay[arm]['across_fold'].get('A1_R2_scalar_gate_0.5_to_2.0') != first[arm]['across_fold'].get('A1_R2_scalar_gate_0.5_to_2.0'):
+                  raise SystemExit(f'{arm} scalar gate changed')
+          print('verdict_replay_stable=true')
+          PY
+
+      - name: Upload replay audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase64a-replay-audit
+          path: |
+            phase64a_replay.json
+            phase64a_replay_audit.txt

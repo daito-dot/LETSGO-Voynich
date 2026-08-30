@@ -13,17 +13,18 @@ A later audit may narrow interpretation without rewriting a frozen historical re
 
 Voynichese has strong internal grammar, positional structure, document-role effects, page-local token-family organization, and a manuscript-wide short-lived paragraph-entry formal role.
 
-The Phase62/63 mechanism program now provides three qualitatively stronger layers beyond exploratory fit:
+The Phase62–64 mechanism program now provides four qualitatively stronger layers beyond exploratory fit:
 
 1. **sealed prospective support** for the frozen A1 local-family mechanism on previously unseen recurrence-distance geometry;
 2. **target-dependence robustness** showing that this advantage survives removal of token types unique to held-out physical leaves;
-3. **independent-transcription replication** showing that the key entry/recurrence structure survives an independent v101 transcription and an independent EvaT reading, while frozen ZL-selected A1 parameters transfer to the EvaT reading without retuning.
+3. **independent-transcription replication** showing that the key entry/recurrence structure survives an independent v101 transcription and an independent EvaT reading, while frozen ZL-selected A1 parameters transfer to the EvaT reading without retuning;
+4. **inventory-autonomy stress testing** showing that the core H62 recurrence geometry survives a drastic synthetic-vocabulary replacement, while the strict full autonomy gate fails on canonical ZL because aggregate S3 falls below the frozen threshold.
 
 Current family state:
 
 - **N:** simple source-native structured medieval N0 is disfavored on joint exposed and prospective recurrence geometry; broader meaningful-text families remain open.
 - **C:** simple reversible boundary-blind C0 materially improves N0 on exposed structure but is insufficient on S1/S2 and poor on H62-P1; broader cipher/shorthand families remain open only as separately specified, complexity-charged models.
-- **G:** A1/A1-R1 is the **leading tested structural mechanism with prospective support, held-out-vocabulary robustness, and independent-reading transfer**. Phase63B materially reduces the objection that its strongest evidence is a ZL3b/EVA transcription artifact. A1 remains training-manuscript-dependent, historically/semantically ungrounded, non-autonomous in morphology and structurally imperfect.
+- **G:** A1 remains the **leading tested structural mechanism for the core recurrence signature**, with prospective support, held-out-vocabulary robustness and independent-reading transfer. Phase64A does **not** establish full inventory autonomy: ZL fails the frozen omnibus gate on S3 (`0.468×`). However H62 survives synthetic-vocabulary replacement almost unchanged in both ZL and IT, strongly weakening the claim that its prospective success is merely copied from the empirical token membership/edit graph. A1 remains historically/semantically ungrounded and structurally incomplete.
 - **M:** deferred pending simpler-family failure profiles and stronger fair competitors.
 
 Structural fit is not decipherment.
@@ -292,17 +293,45 @@ First reveal:
 
 The artifact was independently hash-verified before the exact result JSON was committed. A clean replay audit is tracked separately; its outcome may narrow byte-level reproducibility but cannot rewrite the first-reveal scientific verdict.
 
-## Current frontier — Phase64 mechanism-family fairness/autonomy gate
+## Phase64A — empirical-inventory autonomy ablation: MIXED / STRICT GATE FAIL
 
-M5 transcription robustness is now passed. The next strategic question is no longer whether the main structure is a ZL/EVA artifact.
+A1-R2/MG0 replaces the empirical outer-training token list with a synthetic vocabulary from a frozen low-order character Markov model. Order `2` was selected by training-only inner CV in all 10 outer folds. Synthetic vocabularies overlap empirical training vocabularies only about **20.2% (ZL)** / **22.7% (IT)** and held-out vocabularies about **11.7% / 13.4%**; edit1 connectivity is approximately halved.
 
-The highest-value remaining mechanism objections are:
+### ZL primary
 
-1. **G autonomy:** A1-R1 still receives an empirical training-side Voynich token inventory/morphology. A stronger G test must generate or learn morphology without supplying that inventory as the candidate vocabulary.
-2. **C family underdevelopment:** C0 was deliberately simple. A historically/mathematically motivated C1 deserves a separately frozen test with explicit complexity cost before interpreting G-family success as family-level dominance.
-3. **content relation:** structural evidence still lacks independently grounded object/paragraph prediction. This remains essential for semantic promotion, but the current localized mapping prerequisite is not yet solved.
+A1-R2 / held-out ZL ratios:
 
-Phase64 must not add A2 merely to fit known residuals. It should freeze an information-gain-oriented next test before revealing a new result.
+- S1 **0.84668× — pass**
+- S2 **0.92025× — pass**
+- S3 **0.46772× — frozen fail**
+
+H62 remains strong: mean `D_profile` **0.76160**, mean `|ΔC_short|` **0.12030**, with **5/5 wins against both N0 and C0 on both diagnostics**. Relative to A1-R1, H62 changes negligibly.
+
+### IT independent arm
+
+Ratios are **1.13567 / 0.97605 / 0.58586**, all passing. H62 mean `D_profile` **0.83163**, mean `|ΔC_short|` **0.07486**; the full frozen IT source-arm criterion passes.
+
+Frozen classification:
+
+> **INCONSISTENT / PRIMARY FAILURE — independent IT passes but canonical ZL fails the frozen inventory-autonomy gate.**
+
+Accepted interpretation:
+
+> **Full A1 inventory autonomy is not established. However, the prospective near-family recurrence geometry is highly robust to removal of the explicit empirical token inventory and exact empirical edit1 topology; the remaining canonical failure is concentrated in aggregate S3.**
+
+Do not relax the S3 threshold or add A2 machinery to repair `0.468×`. S3 is retained as a real frozen failure even though prior phases show it is a weak discriminator and aggregate scalar can hide coordinate mismatch.
+
+First reveal: run `33335306504`, artifact `9738893689`, ZIP SHA-256 `058852cfc8bf5d718d200f05758d21452f45715d35a2b682f7422afc6261d8fc`, raw JSON SHA-256 `43b59ad8539db4cf089e6265c38f81ec9afd2f864877b77373a12adbdccdce1b`.
+
+## Current frontier — serious bounded C1 fairness challenge
+
+Phase64A sharply reduces the value of further post-result G tuning: the core H62 mechanism survives inventory replacement, while the remaining ZL failure is a weak aggregate S3 scalar that should not be repaired after reveal.
+
+The highest-value unresolved objection is now **family-comparison unfairness**. C0 was deliberately simple. The next frontier is therefore to freeze a materially stronger but bounded **C1 meaningful-text + encoding/shorthand model** with explicit complexity cost and no Voynich-specific boundary tuning.
+
+C1 must be independently motivated, selected only inside training folds, and challenged on the same held-out exposed scorecard plus H62. It must not copy A1's previous-10 mechanism under a cipher label. A C1 pass would reopen the meaningful/cipher mechanism interpretation; a serious C1 failure would strengthen G relative to a fairer competitor, but still would not prove semantic absence.
+
+The independently grounded content bridge remains essential before semantic promotion and is still prerequisite-limited.
 
 ## Current interpretation limits
 

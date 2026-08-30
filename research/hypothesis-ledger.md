@@ -61,12 +61,12 @@ This public ledger records hypotheses that have been tested or materially constr
 | H62-P1 | The frozen near-family recurrence-distance profile discriminates among N0/C0/A1 on unseen geometry | **SUPPORTED PROSPECTIVELY FOR A1 + TRANSCRIPTION ROBUST** | Frozen before tournament outcomes. Original A1 mean D 0.763 vs N0 1.530 / C0 1.859 and mean |ΔC_short| 0.116 vs 0.638 / 1.308, with 5/5 wins. Phase63B independently reproduces positive short-range concentration in 5/5 GC and 5/5 IT folds; IT A1-R1 retains mean D 0.830 and mean |ΔC_short| 0.0718. |
 | P63-A1-R1 | A1's exposed and H62-P1 advantages survive when output vocabulary is restricted to token types observed on training leaves only, with no retuning | **SUPPORTED ROBUSTNESS** | Phase63A removes ~49% of held-out distinct types from generation candidates (mean held-out occurrence coverage ~0.802). A1-R1 still has S1/S2/S3 ratios 0.654/1.511/0.583 and H62-P1 mean D 0.767 / mean |ΔC_short| 0.118, beating N0 and C0 5/5 folds on both H62-P1 metrics. All frozen R1/R2/R3 conditions pass; degradation vs full-vocabulary A1 is negligible. |
 | P63-TX | Strongest Phase60–63 entry/locality/A1 results survive independently maintained Voynich transcription/segmentation lineages | **SUPPORTED — STRONG PHASE63B REPLICATION** | GC v101: entry and `C_short` positive in 5/5 W1 folds with W2 sign stability. IT EvaT: same observational effects positive 5/5; frozen ZL-selected A1-R1 transfers without retuning with exposed ratios 0.737/1.586/0.647 and H62 mean D 0.830 / mean |ΔC_short| 0.0718, beating N0 on D 4/5 and C-short 5/5 and C0 5/5 on both. This reduces ZL/EVA representation dependence but does not establish historical identity or semantic emptiness. |
-| P64-G-AUTO | A1's structural advantage survives removal of the empirical training token inventory as the output vocabulary | NEXT FROZEN CHALLENGE — NOT YET TESTED | Phase63A removed held-out-only vocabulary but retained training-side empirical token inventory/morphology. Phase64A must define a lower-level frozen morphology generator without adding residual-repair mechanisms, then test exposed + H62 geometry prospectively. |
-| P64-C1 | A materially stronger but bounded meaningful-text + encoding model can rival A1 under explicit complexity cost | OPEN DESIGN CHALLENGE | C0 was intentionally weak/global/boundary-blind. A family-level G conclusion is premature until a historically/mathematically motivated C1 receives a separately frozen fair test. |
+| P64-A1-R2 | A1's structural advantage survives removal of the empirical training token inventory as the output vocabulary | **MIXED / STRICT AUTONOMY NOT SUPPORTED** | Phase64A: ZL S1/S2 pass (`0.847×/0.920×`) but S3 fails the frozen lower bound at `0.468×`; IT passes all three (`1.136×/0.976×/0.586×`). Despite synthetic vocab train overlap only ~20–23%, held-out overlap ~12–13% and roughly halved edit1 connectivity, H62 remains essentially unchanged: ZL D `0.762`, C-short error `0.120`, 5/5 wins vs N0/C0 on both; IT D `0.832`, C-short `0.0749` and full arm pass. Full autonomy is not established, but empirical inventory membership is strongly weakened as the explanation for the prospective H62 success. |
+| P64-C1 | A materially stronger but bounded meaningful-text + encoding model can rival A1 under explicit complexity cost | **NEXT FAIRNESS CHALLENGE — DESIGN REQUIRED** | Phase64A makes further G-side repair lower value: H62 survives inventory removal while only ZL aggregate S3 fails. C0 remains intentionally weak/global/boundary-blind, so the next high-information test is a separately frozen, independently motivated C1. |
 
 ## Current mechanism alternatives
 
-The tested A1 mechanism now has four increasingly independent evidence layers:
+The tested A1 mechanism now has five increasingly independent evidence layers:
 
 ### Exposed scalar scorecard
 
@@ -87,13 +87,20 @@ The tested A1 mechanism now has four increasingly independent evidence layers:
 - IT A1-R1 / IT exposed ratios are `0.737 / 1.586 / 0.647`.
 - IT H62 mean D is `0.830` versus N0 `1.477` / C0 `1.797`; mean `|ΔC_short|` is `0.0718` versus `0.622 / 1.292`.
 
+### Inventory-autonomy stress test
+
+- A1-R2/MG0 removes the explicit empirical training-token membership list as output vocabulary.
+- ZL strict source-arm gate fails only because S3 is `0.468×`; S1/S2 pass and H62 beats N0/C0 5/5 on both diagnostics.
+- IT passes the entire frozen source-arm gate.
+- H62 is nearly unchanged from A1-R1 despite low synthetic-vocabulary overlap and roughly half the empirical edit1 connectivity.
+
 Current interpretation:
 
 - **N0:** not jointly competitive and not competitive on unseen near-family recurrence geometry; nevertheless shows generic aggregate line-position S3 is ordinary in structured medieval text.
 - **C0:** materially improves N0 on exposed structure, so simple reversible recoding has limited explanatory value, but remains far from Voynich on S1/S2 and performs poorly on H62-P1. The wider C family is not falsified by this bounded C0 test.
 - **A1/A1-R1:** **leading tested structural mechanism with prospective support, training-only-vocabulary robustness and independent-reading transfer**. The evidence is now difficult to dismiss as a ZL3b/EVA-specific artifact. However A1 still uses empirical training-side morphology/vocabulary, Voynich-derived architecture, frozen Voynich-selected parameters, explicit paragraph boundaries/10-token memory and held-out layout. It has known fold/full-profile mismatch and is not a decipherment or historical model.
 
-The next executable challenge is **G autonomy**, not A2 repair. In parallel, C1 must be designed seriously enough that later family-level claims are not based on comparing a developed G model only against deliberately weak C/N baselines.
+The next executable challenge is a **serious bounded C1**, not A2/S3 repair. Phase64A retains the strict ZL autonomy failure while showing that the core H62 success is not dependent on explicit empirical token membership; family-comparison unfairness is now the higher-value objection.
 
 ## Rule for adding hypotheses
 
