@@ -1,0 +1,129 @@
+name: Phase63B replay audit
+
+on:
+  push:
+    branches: [phase63b-record]
+    paths:
+      - '.github/workflows/phase63b-replay-audit.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen recording branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase63b-record
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Fetch exact GC2a and IT2a
+        shell: bash
+        run: |
+          mkdir -p external/transcriptions
+          curl --fail --location --retry 3 'https://www.voynich.nu/data/GC2a-n.txt' -o external/transcriptions/GC2a-n.txt
+          curl --fail --location --retry 3 'https://www.voynich.nu/data/IT2a-n.txt' -o external/transcriptions/IT2a-n.txt
+          echo "b09570cb6c993bc2d87134d115e60a978650a8a6495483ddbb1f6005a586096f  external/transcriptions/GC2a-n.txt" | sha256sum -c -
+          echo "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  external/transcriptions/IT2a-n.txt" | sha256sum -c -
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+
+      - name: Install numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Replay unchanged Phase63B executable
+        shell: bash
+        run: |
+          python experiments/phase63/phase63b_science.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/transcriptions/GC2a-n.txt \
+            external/transcriptions/IT2a-n.txt \
+            external/cremma \
+            > phase63b_replay.json
+          sha256sum phase63b_replay.json
+
+      - name: Download exact first-reveal authority
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          curl --fail --location \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/9738599590/zip" \
+            --output first-reveal.zip
+          echo "4b9448e655d539528357ee4b51de1ebdea70003730c593f49c96bdbb4a6d9324  first-reveal.zip" | sha256sum -c -
+          mkdir first-reveal
+          unzip -q first-reveal.zip -d first-reveal
+          echo "77653133af22cd26141bc695a8ee6243cc3d924ba44a41a685cb148b9167db91  first-reveal/phase63b_science_results.json" | sha256sum -c -
+
+      - name: Verify semantic replay and frozen verdict
+        shell: bash
+        run: |
+          python - <<'PY' | tee phase63b_replay_audit.txt
+          import hashlib, json
+          first=json.load(open('first-reveal/phase63b_science_results.json'))
+          replay=json.load(open('phase63b_replay.json'))
+          diffs=[]
+          def walk(a,b,path=''):
+              if type(a) is not type(b):
+                  diffs.append((path,a,b)); return
+              if isinstance(a,dict):
+                  if set(a)!=set(b): diffs.append((path+'/<keys>',sorted(a),sorted(b)))
+                  for k in sorted(set(a)&set(b)): walk(a[k],b[k],path+'/'+str(k))
+              elif isinstance(a,list):
+                  if len(a)!=len(b): diffs.append((path+'/<len>',len(a),len(b)))
+                  for i,(x,y) in enumerate(zip(a,b)): walk(x,y,path+'/'+str(i))
+              elif a != b:
+                  diffs.append((path,a,b))
+          walk(first,replay)
+          non_numeric=[]; max_abs=0.0
+          for path,a,b in diffs:
+              if isinstance(a,(int,float)) and isinstance(b,(int,float)) and not isinstance(a,bool) and not isinstance(b,bool):
+                  max_abs=max(max_abs,abs(float(a)-float(b)))
+              else:
+                  non_numeric.append((path,a,b))
+          def rawsha(path):
+              return hashlib.sha256(open(path,'rb').read()).hexdigest()
+          print('first_raw_sha256=',rawsha('first-reveal/phase63b_science_results.json'))
+          print('replay_raw_sha256=',rawsha('phase63b_replay.json'))
+          print('raw_structural_differences=',len(diffs))
+          print('non_numeric_differences=',len(non_numeric))
+          print('max_absolute_numeric_difference=',max_abs)
+          if non_numeric or max_abs > 1e-13:
+              raise SystemExit('semantic replay exceeds audit tolerance')
+          if replay['across_phase63B'] != first['across_phase63B']:
+              raise SystemExit('overall scientific verdict changed')
+          if replay['observational_frozen_criteria'] != first['observational_frozen_criteria']:
+              raise SystemExit('observational frozen criteria changed')
+          for view in ('W1','W2'):
+              a=replay['IT_full_A1_R1_transfer'][view]['across_fold']['frozen_IT_R3_criterion_pass']
+              b=first['IT_full_A1_R1_transfer'][view]['across_fold']['frozen_IT_R3_criterion_pass']
+              if a != b: raise SystemExit(f'IT R3 {view} verdict changed')
+          print('verdict_replay_stable=true')
+          PY
+
+      - name: Upload replay audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase63b-replay-audit
+          path: |
+            phase63b_replay.json
+            phase63b_replay_audit.txt

@@ -13,17 +13,18 @@ A later audit may narrow interpretation without rewriting a frozen historical re
 
 Voynichese has strong internal grammar, positional structure, document-role effects, page-local token-family organization, and a manuscript-wide short-lived paragraph-entry formal role.
 
-The Phase62/63 mechanism tournament now provides two stronger layers beyond exploratory fit:
+The Phase62/63 mechanism program now provides three qualitatively stronger layers beyond exploratory fit:
 
 1. **sealed prospective support** for the frozen A1 local-family mechanism on previously unseen recurrence-distance geometry;
-2. **target-dependence robustness** showing that this advantage survives removal of token types unique to held-out physical leaves.
+2. **target-dependence robustness** showing that this advantage survives removal of token types unique to held-out physical leaves;
+3. **independent-transcription replication** showing that the key entry/recurrence structure survives an independent v101 transcription and an independent EvaT reading, while frozen ZL-selected A1 parameters transfer to the EvaT reading without retuning.
 
 Current family state:
 
 - **N:** simple source-native structured medieval N0 is disfavored on joint exposed and prospective recurrence geometry; broader meaningful-text families remain open.
 - **C:** simple reversible boundary-blind C0 materially improves N0 on exposed structure but is insufficient on S1/S2 and poor on H62-P1; broader cipher/shorthand families remain open only as separately specified, complexity-charged models.
-- **G:** A1 is the **leading tested structural mechanism with genuine prospective support**, and Phase63A shows that support is not explained by access to held-out-only token types. A1 remains training-manuscript-dependent, historically/semantically ungrounded and structurally imperfect.
-- **M:** deferred pending simpler-family robustness.
+- **G:** A1/A1-R1 is the **leading tested structural mechanism with prospective support, held-out-vocabulary robustness, and independent-reading transfer**. Phase63B materially reduces the objection that its strongest evidence is a ZL3b/EVA transcription artifact. A1 remains training-manuscript-dependent, historically/semantically ungrounded, non-autonomous in morphology and structurally imperfect.
+- **M:** deferred pending simpler-family failure profiles and stronger fair competitors.
 
 Structural fit is not decipherment.
 
@@ -202,27 +203,106 @@ A raw-byte replay mismatch was investigated before acceptance. First vs clean re
 
 Therefore the scientific verdict is replay-stable to machine precision; raw cross-CPU JSON bytes are not guaranteed identical. See `experiments/phase63/DETERMINISM_AUDIT_A.md`.
 
-## Current frontier — Phase63B independent transcription replication
+## Phase63B — independent transcription replication: STRONG REPLICATION
 
-The highest-value remaining robustness question is now **transcription/segmentation dependence**.
+Phase63B was frozen before scientific reveal and tested two complementary independence challenges:
 
-Before computing any replication result:
+- **GC2a / v101:** independent alphabet/transcription, used only in native units with no v101→EVA mapping;
+- **IT2a / EvaT:** independent reading/transcription, permitting full A1-R1 transfer without inventing a cross-alphabet mapping.
 
-1. identify a genuinely independent Voynich transcription lineage with stable provenance/version/hash;
-2. document glyph/token/space/paragraph conventions relative to ZL3b;
-3. freeze a deterministic page/leaf/line/paragraph mapping without tuning against prior results;
-4. freeze which metrics remain representation-comparable;
-5. freeze any normalization/character treatment before seeing outcomes.
+Primary W1 and predeclared W2 word-space sensitivity were both run.
 
-Priority replication targets:
+### GC independent-alphabet observational replication
 
-1. genuine paragraph-entry specialization versus internal pseudo-boundaries;
-2. local near-family recurrence geometry;
-3. H62-P1 short-vs-long profile shape;
-4. A1-R1 advantage if the independent representation permits a defensible generator/neighbor construction;
-5. aggregate line-position eta2 only as secondary evidence.
+GC-R1 paragraph-entry specialization:
 
-If a result depends materially on ZL3b conventions, record that before adapting the metric.
+- positive folds **5/5**;
+- W1 mean projection **1.00905**;
+- W2 mean projection **1.08374**;
+- no W2 sign reversal.
+
+GC-R2 H62-P1 short-range concentration:
+
+- positive `C_short` folds **5/5**;
+- W1 mean **0.58781**;
+- W2 mean **0.59868**;
+- no W2 sign reversal.
+
+Both frozen GC criteria pass. Because edit1 families were constructed in native v101, this materially weakens the hypothesis that the entry/recurrence findings are artifacts of EVA glyph encoding.
+
+### IT independent-reading observational replication
+
+IT-R1:
+
+- positive entry projection **5/5 folds**;
+- W1 mean **0.77003**.
+
+IT-R2:
+
+- positive `C_short` **5/5 folds**;
+- W1 mean **0.58501**;
+- W2 mean **0.59326**.
+
+Both frozen IT observational criteria pass.
+
+### IT-R3 frozen A1-R1 full transfer
+
+No IT retuning was allowed. A1 uses IT training-leaf vocabulary/morphology and the exact ZL-selected Phase61C parameter pairs/seeds.
+
+W1 A1-R1 / IT ratio-of-means:
+
+- S1 **0.73723×**
+- S2 **1.58617×**
+- S3 **0.64696×**
+
+All pass the frozen aggregate `[0.5,2.0]` gate.
+
+H62-P1 W1:
+
+| candidate | mean D_profile | median D_profile | mean |ΔC_short| |
+|---|---:|---:|---:|
+| N0 | 1.47727 | 1.47518 | 0.62192 |
+| fixed C0-4 | 1.79735 | 1.75476 | 1.29206 |
+| **A1-R1** | **0.83028** | **0.92972** | **0.07184** |
+
+A1-R1 beats N0 on `D_profile` in **4/5** folds and on `|ΔC_short|` in **5/5**; it beats fixed C0 in **5/5 on both**. W2 independently passes the same frozen R3 rule (`mean D=0.85525`, `mean |ΔC_short|=0.08292`).
+
+The sole H62 `D_profile` loss to N0 is fold2 (`A1 1.24428` vs `N0 1.19208`) and is retained as a real failure. Individual exposed ratios are also heterogeneous; the frozen test was ratio-of-means, not an all-fold scalar pass.
+
+Frozen Phase63B classification:
+
+> **STRONG REPLICATION — GC independent-alphabet observational effects and IT independent-reading observational/full A1-R1 transfer pass the frozen W1 criteria without W2 observational sign reversal.**
+
+Accepted promotion:
+
+> **The strongest current paragraph-entry and near-family recurrence signatures are not confined to the ZL3b/EVA representation, and the frozen A1-R1 mechanism transfers to an independently maintained EvaT reading without retuning.**
+
+This is stronger evidence for a genuine formal generation layer, but it is not evidence that the layer is nonsemantic or historically identical to A1.
+
+### Phase63B provenance
+
+First reveal:
+
+- scientific head `31746c4d318929b602b35c288e36e83001200509`
+- Actions run `33334225091`
+- job `99318112772`
+- artifact `9738599590`
+- artifact ZIP SHA-256 `4b9448e655d539528357ee4b51de1ebdea70003730c593f49c96bdbb4a6d9324`
+- raw JSON SHA-256 `77653133af22cd26141bc695a8ee6243cc3d924ba44a41a685cb148b9167db91`
+
+The artifact was independently hash-verified before the exact result JSON was committed. A clean replay audit is tracked separately; its outcome may narrow byte-level reproducibility but cannot rewrite the first-reveal scientific verdict.
+
+## Current frontier — Phase64 mechanism-family fairness/autonomy gate
+
+M5 transcription robustness is now passed. The next strategic question is no longer whether the main structure is a ZL/EVA artifact.
+
+The highest-value remaining mechanism objections are:
+
+1. **G autonomy:** A1-R1 still receives an empirical training-side Voynich token inventory/morphology. A stronger G test must generate or learn morphology without supplying that inventory as the candidate vocabulary.
+2. **C family underdevelopment:** C0 was deliberately simple. A historically/mathematically motivated C1 deserves a separately frozen test with explicit complexity cost before interpreting G-family success as family-level dominance.
+3. **content relation:** structural evidence still lacks independently grounded object/paragraph prediction. This remains essential for semantic promotion, but the current localized mapping prerequisite is not yet solved.
+
+Phase64 must not add A2 merely to fit known residuals. It should freeze an information-gain-oriented next test before revealing a new result.
 
 ## Current interpretation limits
 
@@ -234,7 +314,7 @@ Do **not** infer:
 - all meaningful/cipher models are rejected;
 - the manuscript is deciphered.
 
-The mechanism evidence is now strong enough to demand harder independence tests, not stronger semantic language.
+Phase63B removes a major representation-dependence objection, but A1 still depends on target-side training morphology and historically selected architecture/parameters, and it retains known fold/profile mismatches.
 
 ## Methodological rules
 
@@ -246,4 +326,5 @@ The mechanism evidence is now strong enough to demand harder independence tests,
 - Do not rescue failed architectures silently; name and charge each extension.
 - Reduce target dependence before adding mechanisms when a candidate gains support.
 - Prefer profile-aware checks when scalar averages can hide cancellation.
+- Give materially underdeveloped competing mechanism families a fair, separately frozen challenge before family-level conclusions.
 - Decipherment requires an executable fixed mapping/generation rule, substantial unseen prediction, interpretable output, strong competitors/nulls, prospective/external replication, independently grounded content relation and explicit accounting of failures/exceptions.
