@@ -1,0 +1,12 @@
+{
+  "phase":55,
+  "n_page_sides_folio_map":197,
+  "metadata_confounding_nmi":{"section_currier":0.269435,"section_hand":0.349523,"currier_hand":0.654604},
+  "balanced_accuracy":{"section":{"linear":0.8903,"nonlinear":0.8458},"currier":{"linear":0.9744,"nonlinear":0.9725},"hand":{"linear":0.8195,"nonlinear":0.832}},
+  "conditional":{"hand1_currierA_Herbal_vs_Pharma":{"linear":0.874,"nonlinear":0.895},"hand2_currierB_Herbal_vs_Biological":{"linear":1.0,"nonlinear":1.0},"HerbalB_hand_2_3_5":{"linear":0.625,"nonlinear":0.562}},
+  "physical_distance":{"same_leaf":5.025,"same_section_hand_different_leaf":6.807,"broadly_unrelated":7.439,"same_section_hand_by_leaf_gap":{"0":5.02,"1":5.715,"2":6.121,"3_5":6.168,"6_10":6.313,"11plus":7.143}},
+  "corrected_paragraph_boundary":{"shift_minus1":-0.003525,"true":0.089860,"shift_plus1":0.037651,"shift_plus2":-0.050508,"eligible_page_sides":206,"positive":161,"continuity_by_line_since_entry":{"0":0.134826,"1":0.218386,"2":0.281793,"3":0.290451,"4":0.301199}},
+  "boundary_by_section":{"H":0.085856,"B":0.127203,"P":0.121655,"S":0.137103,"T":0.109890,"A":-0.050246,"C":-0.096792},
+  "audit":"Phase53/54 collapsed recto/verso to leaf IDs; corrected page-side analysis supersedes the old ~0.115 headline gap.",
+  "interpretation":"Strong section structure and strong local physical drift coexist. At folio-feature scale nonlinear classifiers add little over linear ones. Paragraph-entry dynamics survive correction but are section-dependent, not manuscript-universal."
+}
