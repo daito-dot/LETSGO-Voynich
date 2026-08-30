@@ -1,6 +1,6 @@
 # RESUME — how to restart this research
 
-This file is the entry point for a new researcher or AI/chat session continuing the project.
+This file is the deterministic entry point for a new researcher or AI/chat session.
 
 ## Read in this order
 
@@ -9,30 +9,28 @@ This file is the entry point for a new researcher or AI/chat session continuing 
 3. `RESEARCH_PROTOCOL.md`
 4. `research/STATUS.md`
 5. `research/hypothesis-ledger.md`
-6. `research/NARRATIVE_HYPOTHESIS_PHASE60.md` — frozen pre-test narrative; do not treat failed predictions as current truth
-7. `research/NARRATIVE_REVISION_PHASE60.md` — post-60D2 revision
-8. `experiments/phase59/` results for the medieval-entry decomposition
-9. `experiments/phase60/` plans/results, especially 60A, 60B, 60C, 60D2 and 60E
-10. `experiments/phase61/PLAN.md`, `phase61a_results.json`, `phase61b_results.json`, and `PLAN_C.md`
-11. exact phase scripts/results before changing numerical interpretation
+6. `research/NARRATIVE_HYPOTHESIS_PHASE60.md`
+7. `research/NARRATIVE_REVISION_PHASE60.md`
+8. `experiments/phase59/` — medieval-entry decomposition and exact controls
+9. `experiments/phase60/` — especially 60A/60B/60C/60D2/60E
+10. `experiments/phase61/PLAN.md`, `PLAN_C.md`, `IMPLEMENTATION_C.md`, `REPORT_C.md`, and result JSONs
+11. exact scripts/results before changing numerical interpretation
 
-Do not reconstruct the project from chat history if the repository contains a newer state.
+Do not reconstruct the project from chat history when the repository contains a newer state.
 
 ## Authority hierarchy
 
-1. phase-specific result/report controls exact method/sample/statistic/numerical result;
+1. phase-specific frozen plan/result/report controls exact method and numerical result;
 2. `research/STATUS.md` controls current accepted interpretation;
 3. `research/hypothesis-ledger.md` controls hypothesis history/status;
-4. `ROADMAP.md` controls progress visibility, active gate and planned sequencing, but not exact scientific claims;
-5. frozen narrative files record what was predicted before testing and must not be rewritten to hide failures;
+4. `ROADMAP.md` controls active gate and sequencing, not scientific numbers;
+5. frozen narrative files record pre-test predictions and are never rewritten to hide failures;
 6. checkpoint/handoff files are secondary summaries;
 7. old chat/memory is non-authoritative when repository evidence conflicts.
 
-## Current accepted state
+## Current accepted structural state
 
-The project has moved beyond direct pattern hunting into mechanism discrimination.
-
-Accepted structural model:
+Voynichese currently requires explanation of at least:
 
 `broad document constraints`
 
@@ -42,108 +40,104 @@ Accepted structural model:
 
 `+ line-position grammar`
 
-`+ token morphology / edge-pattern / k/t-family structure`
+`+ token morphology / edge-pattern / {k,t}-related structure`
 
-Phase57 promoted only a robust leading ~2D residual. Phase58 found no independently grounded page-level visual relation in the tested Biological and Herbal-A domains, and defensible paragraph-to-object localization remained unavailable.
+Phase59 supports a decomposition of paragraph entry into a substantial generic medieval entry/register component plus a transferable Voynich-specific remainder.
 
-Phase59 compared the paragraph-entry transition with source-native medieval Latin item/section entries. A generic medieval entry/register component explains a substantial part of the transition, while a Voynich-specific remainder survives and transfers across major sections.
+Phase60 established that the entry role is genuine and transferable but does **not** behave like a persistent line0 initializer of later paragraph body state.
 
-## Phase 60 narrative test — current decisions
+Current page-level visual/content tests remain negative; strong localized semantic testing is blocked pending defensible external paragraph/object mapping.
 
-The pre-test narrative is preserved in `research/NARRATIVE_HYPOTHESIS_PHASE60.md`.
+## Phase61 decisions
 
-### P60-1 — genuine boundary specificity
-SUPPORTED by Phase60A. Real paragraph boundaries exceed internal pseudo-boundaries under physical-leaf cross-fitting.
+### 61A — A0 narrow entry gate
 
-### P60-2 — stable structural carriers
-SUPPORTED by Phase60B. k/t-family behavior, near-family/edit1 activation, local continuity, length/TTR and edge statistics carry the transition across reasonable EVA representations.
+SUPPORTED NARROWLY. A boundary-aware nonsemantic paragraph-line0 mixture can reproduce the held-out scalar entry direction without persistent paragraph state.
 
-### P60-3 — transferable entry formal role
-SUPPORTED by Phase60C. Entry/body structure learned outside a section transfers to held-out H/B/P/S/T and adds information beyond simple nuisance baselines.
+### 61B — A0 joint model
 
-### P60-4 — entry persistently initializes later body state
-NOT SUPPORTED after Phase60D2 and Phase60E.
+FALSIFIED AS SUFFICIENT. A0 produces far too little local-prev10 near-family activation and strongly overstates line-position / entry-pseudo effects. High edit1 density is non-independent because the empirical Voynich vocabulary is supplied.
 
-The initial Phase60D recovery-vector result was mathematically coupled because the target contained line0. Coupling-free prospective tests show no reliable useful line0 contribution to later absolute states once metadata/immediate prior state are known.
+### 61C — A1 first joint gate
 
-### P60-5 — stationary/weak-context generator without explicit entry mechanism
-SUPPORTED AS A CONSTRAINT. The frozen Phase50 DSL fails to align with the Voynich entry-specific direction despite producing multivariate fluctuations of comparable raw magnitude. Explicit boundary-conditioned machinery is therefore required for that generator family.
+SUPPORTED AS A STRUCTURAL GENERATOR GATE.
 
-### P60-6 — simple global cipher as discriminator from entry structure alone
-NOT DISCRIMINATIVE. A boundary-blind simple cipher can inherit entry/register structure already present in meaningful structured plaintext. Ciphering becomes explanatory only if it also predicts Voynich-specific morphology/local-family/line-position structure beyond the plaintext.
+A1 was frozen before execution and adds exactly one mechanism to A0: bounded local-family reuse / one-edit mutation from line1 onward. It adds no persistent paragraph state, section-specific grammar or extra line-position rule.
 
-## Current narrative after falsification
+Compatibility with the exposed Phase61B metric regime was checked before fresh evaluation; entry/pseudo norm reproduced 1.285053 versus the recorded 1.28505.
 
-The strongest justified statement is:
+Across five held-out physical-leaf folds, generated/Voynich ratios were:
 
-> Voynich paragraph starts instantiate a manuscript-wide, transferable formal entry register. It is partly comparable to medieval structured-document entry grammar and partly Voynich-specific, but its detectable structural influence is short-lived rather than a persistent paragraph initializer.
+- entry projection: **0.797**
+- local-prev10: **0.717**
+- line-position eta2 mean: **1.116**
 
-This does not distinguish meaningful text, cipher/shorthand, hierarchical meaningless formal generation, or mixed mechanisms.
+All satisfy the frozen `[0.5, 2.0]` broad-regime gate.
 
-## Phase 61 — architecture discrimination
+Interpretation:
 
-Phase61 compares mechanism families on joint constraints rather than one exposed statistic.
+> A minimally extended boundary-aware nonsemantic generator remains structurally viable once it pays for one additional local-family mechanism.
 
-### Phase61A
+Do **not** interpret this as evidence that the manuscript is meaningless. A1 uses the empirical Voynich token inventory and is not yet a historical or semantic model.
 
-A0 — a boundary-aware nonsemantic generator with a single short-lived entry mixture — **survived the narrow entry-direction gate**. This shows that the entry signature alone does not reject hierarchical meaningless generation once paragraph-boundary awareness is granted.
+A1 is now frozen. Do not create A2 before fair comparison with meaningful structured-text competitors.
 
-### Phase61B
+## Current frontier — Phase62A
 
-The same frozen A0 **failed the joint scorecard**. It inherited global edit1 density from the empirical Voynich vocabulary but produced far too little local-prev10 near-family activation and overstated line-position and entry/pseudo effects. A0 is rejected as a sufficient joint model.
+The next task is the **first fair model-family tournament freeze**.
 
-### Current frontier — Phase61C
+Immediate action when asked to continue:
 
-`experiments/phase61/PLAN_C.md` is frozen before execution.
+1. recover exact Phase59 medieval structured-document control sources and provenance;
+2. define **N0** = source-native structured medieval plaintext on the common scorecard;
+3. define **B0/C0** = bounded global boundary-blind transforms of the same source family;
+4. compare against frozen **G/A1**;
+5. define complexity cost before evaluation;
+6. commit the tournament plan before seeing numerical outcomes.
 
-A1 adds exactly one repair to A0:
+Do not run approximate substitutes for missing Phase59 controls if exact inputs/provenance are recoverable.
 
-- local-family body activation: after line0, generation may reuse/mutate a recent token by one edit with a bounded probability.
-
-No persistent paragraph latent state, section-specific grammar, or additional line-position rule is allowed.
-
-**Immediate action when asked to continue:** execute Phase61C exactly as frozen.
-
-If A1 fails, do not immediately invent A2. Freeze the failure and move first to fair comparison with N0/B0 meaningful structured-text competitors, as defined in `ROADMAP.md`.
-
-## Research strategy after Phase61C
-
-The main objective is a model-family tournament rather than endless local feature repair:
+## Research families
 
 - **N** — meaningful structured natural/technical text;
-- **C** — meaningful structured text plus bounded global cipher/shorthand/obscuration;
+- **C** — meaningful structured text + bounded cipher/shorthand/obscuration;
 - **G** — constrained nonsemantic/formal generation;
-- **M** — mixed mechanisms, introduced only after simpler families have fixed failure patterns.
+- **M** — mixed mechanisms only after simpler families have fixed failure patterns.
 
-Models should be compared on shared joint targets, explicit complexity cost, and prospectively frozen holdout dimensions not used to design the architecture.
+The project now seeks differences in **predictive efficiency and complexity**, not the number of individual Voynich peculiarities each story can explain post hoc.
 
-Independent content tests remain a separate sparse track and require externally fixed content/localization rather than post-hoc word guessing.
+## Prospective validation rule
+
+Many current scorecard dimensions are exposed and may be used for model selection/diagnosis. They are not final validation.
+
+Before claiming a family winner, freeze at least one genuinely new holdout dimension not used to construct the candidates. Record failed holdouts rather than replacing them silently.
 
 ## Important corrections retained
 
-- Phase3 plant-label headline corrected: NOT SUPPORTED.
+- Phase3 plant-label semantic headline: NOT SUPPORTED.
 - Phase53/54 recto/verso collapse corrected in Phase55.
 - Phase56 unmatched full-page PC1 sample-size contamination withdrawn.
-- Phase60D recovery-vector prediction is mathematically coupled and superseded for initialization claims by Phase60D2/60E.
-- Passing one exposed structural statistic is not model-family validation; Phase61A -> 61B is the current explicit example.
+- Phase60D recovery-vector result is mathematically coupled and superseded for initialization claims by 60D2/60E.
+- Phase61A narrow success did not validate A0; Phase61B rejected it jointly.
+- Phase61C survival is structural only; edit1 density is non-independent because empirical Voynich vocabulary is provided.
 
 ## Frozen methodological constraints
 
-- Observation -> Structure -> Mechanism -> Content relation -> Decipherment.
-- Equalize or explicitly model sample-size effects.
+- Observation → Structure → Mechanism → Content relation → Decipherment.
+- Equalize/model sample-size effects.
 - Page-side and physical leaf are distinct units.
-- Search freedom belongs in null/model-selection folds.
+- Search freedom belongs in model-selection/null folds.
 - Local state is a default confound.
 - Structural equivalence is not semantic/cipher equivalence.
 - Deliberate deception is allowed only as a bounded, complexity-charged mechanism.
 - Negative results and audit corrections remain public.
 - Failed hard predictions narrow the narrative; they are not repaired with free exceptions.
-- Exposed targets may train or diagnose models; genuinely new holdouts should be frozen before evaluation.
+- Exposed targets may train/diagnose models; new holdouts are frozen before evaluation.
 
 ## Before declaring decipherment
 
-Require an executable mapping/generation rule, substantial prediction of unseen material, fixed interpretable output, strong structure-preserving nulls/competitors, prospective or external replication, and explicit accounting of failures/exceptions.
+Require an executable fixed mapping/generation rule, substantial prediction of unseen material, fixed interpretable output, strong structure-preserving nulls/competitors, prospective or external replication, and explicit accounting of failures/exceptions.
 
 ## Session behavior
 
-When asked simply to "continue", execute the current yellow gate in `ROADMAP.md` rather than only describing the next step or inventing a new local analysis. Update durable repository records when accepted interpretation or the active milestone changes. Stop only at a genuine decision point, external blocker, or result requiring materially different research branches.
+When asked simply to "continue", execute the current yellow gate in `ROADMAP.md`. Update durable repository records when accepted interpretation or the active milestone changes. Stop only at a genuine decision point, external blocker, or result requiring a materially different research branch.
