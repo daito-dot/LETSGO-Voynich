@@ -1,0 +1,85 @@
+name: Phase64A inventory-autonomy science
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/phase64/DECISION_64.md'
+      - 'experiments/phase64/PLAN_A.md'
+      - 'experiments/phase64/IMPLEMENTATION_A.md'
+      - 'experiments/phase64/phase64a_mg0.py'
+      - 'experiments/phase64/phase64a_inventory_autonomy.py'
+      - 'experiments/phase64/phase64a_science.py'
+      - '.github/workflows/phase64a-science.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  autonomy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout frozen Phase64A head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Fetch exact frozen IT2a
+        shell: bash
+        run: |
+          mkdir -p external/transcriptions
+          curl --fail --location --retry 3 'https://www.voynich.nu/data/IT2a-n.txt' -o external/transcriptions/IT2a-n.txt
+          echo "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  external/transcriptions/IT2a-n.txt" | sha256sum -c -
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Run frozen Phase64A first reveal
+        shell: bash
+        run: |
+          python experiments/phase64/phase64a_science.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/transcriptions/IT2a-n.txt \
+            > phase64a_inventory_autonomy_results.json
+
+      - name: Print frozen verdict summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase64a_inventory_autonomy_results.json'))
+          def compact(arm):
+              a=arm['across_fold']
+              return {
+                  'pass':a['pass'],
+                  'ratios':a.get('A1_R2_ratio_of_means_to_target'),
+                  'H62':a.get('A1_R2_H62P1_summary'),
+                  'wins':a.get('fold_wins_vs_baselines'),
+                  'failure_class':a.get('failure_class'),
+              }
+          print(json.dumps({
+              'ZL':compact(x['ZL_primary']),
+              'IT':compact(x['IT_independent']),
+              'overall':x['across_phase64A'],
+          }, indent=2))
+          PY
+
+      - name: Upload first-reveal result
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase64a-first-reveal
+          path: phase64a_inventory_autonomy_results.json
