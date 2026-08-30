@@ -2,6 +2,7 @@ name: Phase64B Naibbe C1 first reveal
 
 on:
   pull_request:
+    types: [opened, reopened]
     branches: [main]
     paths:
       - 'experiments/phase64/PLAN_B.md'
@@ -9,6 +10,7 @@ on:
       - 'experiments/phase64/IMPLEMENTATION_B.md'
       - 'experiments/phase64/PREFLIGHT_AMENDMENT_B1.md'
       - 'experiments/phase64/PREFLIGHT_AMENDMENT_B2.md'
+      - 'experiments/phase64/PREFLIGHT_AMENDMENT_B3.md'
       - 'experiments/phase64/phase64b_naibbe.py'
       - 'experiments/phase64/phase64b_science.py'
       - '.github/workflows/phase64b-naibbe-science.yml'
