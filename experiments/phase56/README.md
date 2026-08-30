@@ -19,63 +19,111 @@ The 197 page-sides overlapping the earlier Phase55 folio-feature map were regres
 
 ## Phase 56B — drift versus regimes: COMPLETE AS DEVELOPMENT DIAGNOSTIC
 
-The initial global contiguous-block test suggested a smooth-neighbor advantage, but stronger follow-up tests changed the interpretation.
+After exact matching on section + Currier + hand, physical locality remains real: same-leaf / adjacent-leaf fingerprints are closer than distant leaves. However, neither one globally smooth trajectory nor a small set of sharp changepoints adequately describes the full pattern. The best current description is broad state/block differences plus local physical similarity.
 
-### Exact metadata-matched physical-distance gradient
+See `phase56b_results.json` for the full model comparison.
 
-Conditioning on identical **section + Currier + hand**, mean standardized fingerprint distance is:
+## Phase 56C — latent dimensionality and cross-scale state: COMPLETE AS DEVELOPMENT DIAGNOSTIC
 
-- same physical leaf: **3.231** (106 pairs)
-- leaf gap 1: **3.295** (233)
-- gap 2: **3.534** (203)
-- gap 3–5: **3.620** (530)
-- gap 6–10: **3.637** (740)
-- gap 11+: **4.340** (3219)
+### Critical sample-size correction
 
-Therefore physical locality is not just a section/Currier/hand artifact.
+The first page-side PCA used page fingerprints computed from each page's full available text. Its PC1 correlated **r=-0.886 with page token count**. The apparent dominant `section` axis was therefore substantially contaminated by sample-size-sensitive features such as TTR and inventory size.
 
-### Largest exact stratum: Herbal / Currier A / hand 1
+That interpretation is withdrawn.
 
-93 page-sides / 47 physical leaves. Interleaved leaf holdout:
+Phase56C rebuilt page fingerprints from **30 random contiguous 40-token windows per page-side**, averaged within page-side. Paragraph fingerprints were independently built from **20 random contiguous 20-token windows per paragraph**.
 
-- stratum mean MSE: **1.058**
-- smooth distance predictor: **0.947**
-- optimized dynamic-programming changepoint: **0.985**
-- changepoint + smooth residual: **0.977**
+### Matched page-side latent structure
 
-Smooth interpolation is about 10.5% better than the stratum mean and beats explicit changepoints on average.
+197 page-sides, 11 matched features.
 
-However, the changepoint model repeatedly places its main division around the large physical separation between the early Herbal-A block and its later reappearance. This may be block composition rather than a sharp within-block state transition.
+PCA variance:
 
-### Main continuous Herbal-A block only
+- PC1 31.9%
+- PC2 21.4%
+- PC3 10.4%
+- first 3 cumulative **63.7%**
+- first 5 cumulative **78.7%**
+- first 7 cumulative **90.0%**
 
-Restricting to Herbal / Currier A / hand 1 with physical leaf <=56 removes that separated recurrence. Interleaved holdout:
+The dominant matched PC1 is no longer a section axis. Its largest loadings are:
 
-- global mean: **1.062**
-- smooth: **1.065**
-- changepoint: **1.062**
-- mixed: **1.065**
+- local previous-10 near-family continuity +0.450
+- edit-1 family coverage +0.434
+- TTR -0.371
+- unit inventory -0.342
+- token-length dispersion -0.333
 
-The selected changepoint count collapses to one regime. Neither smooth drift nor discrete changepoints improve prediction inside this continuous block.
+This is best described provisionally as a **near-family activation / local-continuity axis**.
 
-## Phase 56B decision
+PC2 emphasizes mean token length, first/final entropy, and `k/t` mass. PC3 emphasizes `k/t` mass and the balance within `{k,t}`.
 
-**H56-2: PARTIALLY SUPPORTED / REFINED.**
+Metadata effects are distributed across several dimensions rather than dominated by one axis.
 
-There is a real graded physical-locality signal after exact metadata matching. But it is not adequately described as one globally smooth physical trajectory, and simple sharp changepoints are also insufficient.
+### Cross-scale replication at paragraph level
 
-The current descriptive picture is:
+635 paragraphs with >=20 body tokens were analyzed using matched 20-token windows.
 
-> broad state/block differences or separated recurrences + physical locality, with weaker or non-predictive smooth variation inside at least the main continuous Herbal-A block.
+The first paragraph PC is again dominated by local near-family continuity and edit-1 family coverage; the second is again dominated by mean length, final/initial entropy and `k/t` mass.
 
-This is precisely why the next step should be multivariate latent-state dimensionality rather than forcing physical order into a one-dimensional drift model.
+The top two page-side and paragraph subspaces have principal angles about **5.8° and 22.2°**, indicating substantial recurrence of the same low-order structural directions across scales.
 
-## Phase 56C frontier — latent dimensionality
+In the paragraph 5D latent space:
 
-Next:
+- same page-side mean distance: **3.244**
+- same section+hand but different page: **3.567**
+- broadly unrelated: **3.910**
 
-1. PCA / cross-validated low-rank reconstruction as the linear baseline;
-2. held-out prediction versus number of latent dimensions;
-3. nonlinear manifold sensitivity without treating visual separation as evidence;
-4. determine whether a compact common basis exists and which axes track section, physical block, Currier/hand, paragraph/line structure;
-5. use the result to define the structural component to be removed before residual content/cipher tests.
+Thus a page-local state exists below broad section/hand labels.
+
+### Physical locality decomposed by latent axis
+
+After exact section+Currier+hand matching, mean absolute difference on matched PC1 rises from about **1.54** for same/adjacent leaves to **2.46** at leaf gap >=11. The corresponding increase is smaller on PCs 2-5.
+
+Therefore much of the physical-locality effect is concentrated in the near-family/local-continuity dimension: nearby physical units tend to activate more similar token-family topology.
+
+### Linear versus nonlinear compression
+
+Five-fold grouped held-out reconstruction by physical leaf:
+
+| dimensions | PCA MSE | RBF kernel-PCA MSE |
+|---:|---:|---:|
+| 2 | 0.492 | 0.592 |
+| 3 | 0.390 | 0.533 |
+| 4 | 0.325 | 0.441 |
+| 5 | 0.250 | 0.373 |
+| 6 | 0.163 | 0.321 |
+
+Kernel-gamma sensitivity can approach the linear result but does not beat it. There is currently **no evidence that nonlinear manifold compression improves on the linear latent basis** for these audited matched page features.
+
+## Phase 56C decision
+
+**H56-1: QUALIFIED SUPPORT / REFINED.**
+
+The manuscript's matched structural variation is moderately low-dimensional, but not a one- or two-axis system. Roughly 3 dimensions capture ~64% and 5 capture ~79% of page-side variance, with similar leading directions recurring at paragraph scale.
+
+The important correction is that raw page-level sample size can manufacture a seemingly dominant section axis. Future latent/residual analyses must use matched token counts or explicitly model estimator/sample-size effects.
+
+Current structural picture:
+
+`broad document/section constraints`
+
+`+ page-local token-family activation state`
+
+`+ morphology / edge-entropy / {k,t} dimensions`
+
+`+ paragraph and line-position dynamics`
+
+rather than one global section axis or one smooth physical drift.
+
+## Phase 56D frontier — transitions and residualization
+
+Before semantic/cipher testing:
+
+1. project paragraph/line transitions into the matched latent basis;
+2. test whether paragraph entry follows a reproducible multivariate trajectory rather than only the original near-family metric;
+3. test transfer of that trajectory across positive-reset sections;
+4. predict structural state from broad metadata + local page state + paragraph-relative line position;
+5. retain grouped held-out residuals as the candidate future information-bearing target.
+
+Detailed numeric results are in `phase56c_results.json`.
