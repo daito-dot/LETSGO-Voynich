@@ -53,7 +53,8 @@ Structural fit is not decipherment.
 | Phase 62P / H62-P1 | ✅ prospective A1 support | A1 uniquely wins both preregistered recurrence-profile diagnostics in 5/5 physical-leaf folds |
 | Phase 63A | ✅ target-dependence robustness | training-leaf-only output vocabulary leaves exposed and H62-P1 advantages essentially unchanged |
 | **Phase 63B** | **✅ strong external replication** | entry/recurrence effects survive GC v101 and IT EvaT; frozen A1-R1 transfers to IT without retuning and passes W1/W2 criteria |
-| **Phase 64** | **🟡 current strategic gate** | freeze the next highest-information challenge: G autonomy vs serious bounded C1, while content remains prerequisite-limited |
+| **Phase 64A** | **✅ mixed / strict autonomy fail** | synthetic-vocabulary A1 preserves core H62 geometry, but canonical ZL fails frozen S3 gate at `0.468×`; IT arm passes |
+| **Phase 64B / C1** | **🟡 current fairness gate** | freeze a serious bounded meaningful-text + encoding/shorthand competitor before any family-level conclusion |
 
 ## Evidence staircase for the current A1 mechanism
 
@@ -190,43 +191,38 @@ First reveal provenance:
 
 See `experiments/phase63/REPORT_B.md` and `phase63b_science_results.json`.
 
-## 🟡 Phase64 — next strategic gate
+## Phase64A — empirical-inventory autonomy: COMPLETE / MIXED
 
-Phase63B removes representation/transcription dependence as the highest-priority objection in the tested form. The remaining high-information challenges are now:
+MG0 order 2 was selected by training-only CV in all ZL/IT folds. Synthetic vocabularies retained only ~20–23% training membership and ~12–13% held-out membership, with edit1 connectivity roughly halved.
 
-### Candidate 64A — G autonomy
+ZL ratios: **0.847 / 0.920 / 0.468**. S3 alone fails the frozen `[0.5,2]` gate. ZL H62 remains `D=0.762`, `|ΔC_short|=0.120` and wins 5/5 against N0/C0 on both diagnostics.
 
-Question:
+IT ratios: **1.136 / 0.976 / 0.586**, all pass. IT H62 `D=0.832`, `|ΔC_short|=0.0749`; full arm passes.
 
-> Does the A1 structural advantage survive when the generator is no longer handed an empirical training-side token inventory as its output vocabulary?
+Frozen classification: **INCONSISTENT / PRIMARY FAILURE**. Do not repair S3 after reveal. The important retained result is that explicit empirical inventory membership is not required for the core prospective recurrence geometry under tested MG0.
 
-A valid autonomy test may learn lower-level morphology from training data, but generated token types must come from a frozen generative rule rather than selection from the observed token list. No A2 residual-repair mechanism may be added.
+## 🟡 Phase64B — serious bounded C1 fairness gate
 
-Why it matters: this attacks the largest remaining direct target-dependence cost of the leading model.
+### Question
 
-### Candidate 64B — serious bounded C1 challenge
+> Can a materially stronger, independently motivated meaningful-text + cipher/shorthand mechanism rival A1 on held-out entry/locality and H62 recurrence geometry without importing A1's previous-10 process or Voynich-specific boundary tuning?
 
-Question:
+### Why now
 
-> Can a historically/mathematically motivated meaningful-text + encoding mechanism, given materially more representational power than C0 but with explicit complexity cost and no Voynich-specific boundary tuning, rival A1 prospectively?
+Phase64A makes A2 repair low-value and family fairness high-value. C0 was intentionally weak. A developed G candidate cannot support `G > C` at family level until C receives a serious, complexity-charged challenge.
 
-Why it matters: current `A1 > C0 > N0` compares a developed G candidate against deliberately simple N/C baselines. A family-level interpretation requires a fairer C challenge.
+### Freeze requirements
 
-### Content bridge
+1. plaintext corpus/source rule fixed independently of Voynich outcomes;
+2. historically or mathematically motivated encoding/shorthand operations;
+3. no Voynich-specific paragraph/section rules unless explicitly charged;
+4. nested training-only model selection;
+5. explicit complexity/dependence ledger;
+6. same held-out S1/S2/S3 and H62 scorecard;
+7. at least one prospective discriminator frozen before C1 output is seen;
+8. no copying of A1's explicit previous-10 local-family mechanism under a cipher label.
 
-Independently grounded object/paragraph mapping and unseen content prediction remain essential before semantic promotion. Current localized mapping is still externally blocked/underdefined, so do not fabricate a content test merely to advance the sequence.
-
-### Phase64 selection rule
-
-Prefer the next test that maximizes:
-
-1. ability to falsify the current leading explanation;
-2. reduction in target-dependence or family-comparison unfairness;
-3. prospective/held-out executability;
-4. low freedom to repair after observing outcomes;
-5. current feasibility without inventing an external content mapping.
-
-Under those criteria, **G autonomy is the default next executable challenge**, with a serious C1 design track to be frozen before any family-level conclusion. Phase64 should record this decision before computing an autonomy result.
+Content relation remains essential but mapping-prerequisite limited.
 
 ## Later model-family work
 
@@ -259,9 +255,10 @@ These debts limit fine historical claims but do not erase the newer prospectivel
 - **M3 prospective discriminator:** ✅ A1 wins H62-P1 5/5 on both frozen metrics.
 - **M4 target-dependence robustness:** ✅ Phase63A survives training-only vocabulary restriction.
 - **M5 independent transcription robustness:** ✅ Phase63B strong replication.
-- **M6 mechanism autonomy / fair strong competitor:** 🟡 Phase64 current.
-- **M7 content relation:** ⛔ not established.
-- **M8 decipherment threshold:** ⛔ not reached.
+- **M6 mechanism autonomy:** ✅ Phase64A mixed — strict full autonomy not supported; core H62 survives inventory removal.
+- **M7 fair strong C competitor:** 🟡 Phase64B/C1 current.
+- **M8 content relation:** ⛔ not established.
+- **M9 decipherment threshold:** ⛔ not reached.
 
 ## Stop / pivot rules
 
@@ -276,7 +273,8 @@ Pause or pivot rather than endlessly repair when:
 
 ## What to do when asked simply to "continue"
 
-1. finish Phase63B result/replay documentation if not yet merged;
-2. freeze **Phase64A G-autonomy design and falsification criteria before running it**;
-3. do not use Phase64A to repair known A1 residuals;
-4. maintain a separate C1 design track so a successful autonomy result is not misreported as `G > C/N` family proof.
+1. finish Phase64A replay/result integration if not yet on main;
+2. freeze **Phase64B/C1** source family, operations, complexity ledger and falsification criteria before any C1 output is computed;
+3. do not repair A1-R2 S3 or add A2;
+4. give C1 materially more representational power than C0, but do not smuggle in Voynich-specific boundary/locality rules;
+5. preserve the content bridge as the later semantic gate.
