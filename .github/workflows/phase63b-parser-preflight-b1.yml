@@ -1,0 +1,73 @@
+name: Phase63B parser preflight B1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/phase63/PARSER_AMENDMENT_B1.md'
+      - 'experiments/phase63/phase63b_common_b1.py'
+      - 'experiments/phase63/phase63b_parser_preflight_b1.py'
+      - '.github/workflows/phase63b-parser-preflight-b1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Fetch exact frozen GC2a and IT2a
+        shell: bash
+        run: |
+          mkdir -p external/transcriptions
+          curl --fail --location --retry 3 'https://www.voynich.nu/data/GC2a-n.txt' -o external/transcriptions/GC2a-n.txt
+          curl --fail --location --retry 3 'https://www.voynich.nu/data/IT2a-n.txt' -o external/transcriptions/IT2a-n.txt
+          echo "b09570cb6c993bc2d87134d115e60a978650a8a6495483ddbb1f6005a586096f  external/transcriptions/GC2a-n.txt" | sha256sum -c -
+          echo "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  external/transcriptions/IT2a-n.txt" | sha256sum -c -
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Run B1 parser-only preflight
+        run: |
+          python experiments/phase63/phase63b_parser_preflight_b1.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/transcriptions/GC2a-n.txt \
+            external/transcriptions/IT2a-n.txt \
+            > phase63b_parser_preflight_b1.json
+
+      - name: Print population-only summary
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase63b_parser_preflight_b1.json'))
+          if x['scientific_metrics_computed'] is not False:
+              raise SystemExit('preflight firewall violated')
+          for src,views in x['sources'].items():
+              for view,v in views.items():
+                  print(src,view,
+                        'paragraphs=',v['parsed_paragraphs'],
+                        'starts=',v['paragraph_starts_consumed'],
+                        'lines=',v['nonempty_physical_lines'],
+                        'tokens=',v['usable_token_occurrences'],
+                        'types=',v['usable_token_types'],
+                        'base=',v['base_eligible_paragraphs'],
+                        's1pop=',v['S1_eligible_paragraphs'],
+                        'leaves=',v['physical_leaves'],
+                        'excluded=',v['excluded_uncertain_or_unreadable_tokens'],
+                        'ignoredP=',v['ignored_nonempty_P_lines_outside_paragraph'])
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase63b-parser-preflight-b1
+          path: phase63b_parser_preflight_b1.json
