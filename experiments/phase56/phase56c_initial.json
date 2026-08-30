@@ -1,0 +1,12 @@
+{
+  "phase":"56C-initial",
+  "status":"development; linear baseline before nonlinear sensitivity",
+  "n_page_sides":197,
+  "n_features":11,
+  "pca_explained_variance_ratio":[0.278682,0.233385,0.165660,0.084079,0.070333,0.058128,0.032391,0.027862],
+  "pca_cumulative":[0.278682,0.512067,0.677727,0.761806,0.832138,0.890266,0.922657,0.950519],
+  "dimensions":{"50pct":2,"70pct":4,"80pct":5,"90pct":7},
+  "grouped_leaf_cv_reconstruction_mse":{"baseline_zero":1.027705,"dim1":0.768306,"dim2":0.515073,"dim3":0.342881,"dim4":0.264138,"dim5":0.195428,"dim6":0.124027,"dim7":0.089568,"dim8":0.058728,"dim9":0.029786,"dim10":0.016890},
+  "axis_metadata":{"PC1":{"physical_leaf_r":-0.635,"section_eta2":0.775,"currier_eta2":0.542,"hand_eta2":0.600,"largest_loadings":{"linepos_mi":0.500,"ttr":0.451,"edit1_fraction":-0.374,"unit_inventory":-0.374,"mean_len":-0.331}},"PC2":{"physical_leaf_r":-0.364,"section_eta2":0.130,"currier_eta2":0.010,"hand_eta2":0.075,"largest_loadings":{"local_prev10":0.492,"sd_len":-0.421,"unit_entropy":-0.338,"edit1_fraction":0.314}},"PC3":{"physical_leaf_r":-0.153,"section_eta2":0.024,"currier_eta2":0.043,"hand_eta2":0.114,"largest_loadings":{"unit_entropy":0.423,"mean_len":-0.407,"last_entropy":0.395,"kt_mass":-0.360,"local_prev10":0.340}}},
+  "initial_interpretation":"The structural fingerprint is moderately low-dimensional but not one- or two-dimensional. PC1 is heavily aligned with section/Currier/hand and physical order, while PC2-PC3 contain substantial variation weakly associated with those labels. Three dimensions explain about 68% and five about 83% of variance. H56-1 is provisionally compatible with a compact multi-axis state, but nonlinear sensitivity and transfer tests remain required."
+}
