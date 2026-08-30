@@ -7,6 +7,8 @@ Open research repository for testing hypotheses about the Voynich Manuscript.
 This repository is not built around a claim that the manuscript has already been deciphered. The goal is to make proposed explanations testable, comparable, falsifiable, and reproducible.
 
 > **Continuing the existing research? Start with [`RESUME.md`](RESUME.md).** It defines the reading order, source-of-truth hierarchy, current frontier, and rules that prevent exposed targets from being accidentally reused as prospective validation.
+>
+> **Want the current progress map? See [`ROADMAP.md`](ROADMAP.md).** It shows completed stages, the active decision gate, parallel research tracks, dependencies, and milestone completion criteria.
 
 ## What we are looking for
 
@@ -51,6 +53,7 @@ Readable output alone is not enough. If a proposed decipherment uses unconstrain
 ## Research records
 
 - `RESUME.md` — deterministic restart/handoff entry point
+- `ROADMAP.md` — progress map, active gate, parallel tracks and completion criteria
 - `RESEARCH_PROTOCOL.md` — methodological and evidence contract
 - `research/STATUS.md` — current accepted state and research frontier
 - `research/hypothesis-ledger.md` — hypotheses including negative results
@@ -95,4 +98,4 @@ Issues, discussions, research notes, and pull requests are welcome in English or
 
 ## Status
 
-Active research. The benchmark suite and historical experiment archive are currently being consolidated into this repository.
+Active research. The current executable frontier is Phase 61C; see `ROADMAP.md` for progress and decision gates.
