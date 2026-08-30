@@ -1,6 +1,6 @@
 # RESUME — how to restart this research
 
-This file is the entry point for a new researcher or a new AI/chat session continuing the project.
+This file is the entry point for a new researcher or AI/chat session continuing the project.
 
 ## Read in this order
 
@@ -8,90 +8,81 @@ This file is the entry point for a new researcher or a new AI/chat session conti
 2. `RESEARCH_PROTOCOL.md`
 3. `research/STATUS.md`
 4. `research/hypothesis-ledger.md`
-5. `research/CHECKPOINT_JA.md` if Japanese context is useful
-6. the report/README for the current active phase under `experiments/`
-7. the scripts and result files for that phase before modifying the interpretation
+5. `experiments/phase56/README.md`
+6. `experiments/phase57/PLAN.md` and Phase57 result JSON files
+7. `experiments/phase58/PLAN.md`
+8. phase scripts/results before changing interpretation
 
 Do not reconstruct the project from chat history if the repository contains a newer state.
 
 ## Authority hierarchy
 
-When sources disagree:
+1. phase-specific report/result controls exact method/sample/statistic/numerical result;
+2. `research/STATUS.md` controls current accepted interpretation;
+3. `research/hypothesis-ledger.md` controls hypothesis history/status;
+4. human-readable checkpoint files are handoffs, not numerical authority;
+5. old chat/memory is non-authoritative when repository evidence conflicts.
 
-1. **phase-specific report/result file** controls the exact method, sample, statistic, and numerical result for that experiment;
-2. **`research/STATUS.md`** controls the current accepted interpretation after later evidence;
-3. **`research/hypothesis-ledger.md`** controls hypothesis status/history and must preserve negative results;
-4. **`research/CHECKPOINT_JA.md`** is a human-readable handoff, not numerical authority;
-5. old chat summaries, comments, filenames, and memory are non-authoritative if contradicted by repository evidence.
+## Current accepted state
 
-Never silently replace an exact phase result with a later approximate summary.
+The project has moved beyond direct pattern hunting into an audited multiscale structural model.
 
-## Current frontier
+Phase56 established:
 
-At the time this file was created, the active frontier is **Phase 52: document / genre confounding**.
+`broad document constraints + page-local token-family activation + transferable paragraph-entry dynamics + line-position grammar + token morphology`
 
-Reason: medieval Latin controls show substantial document-to-document variation, and Voynich itself has substantial section variation. Before adding more mechanisms to a hierarchical formal generator, determine how much of the fingerprint can arise from practical/technical manuscript genre, document identity, scribal/transcription conventions, and section structure.
+Physical locality is real after exact metadata matching, but it is not adequately described as one smooth drift. Matched-token structural variation is moderately low-dimensional. A sample-size-contaminated PCA interpretation was explicitly withdrawn.
 
-The next planned generator work becomes the following phase only after the genre/document confound is sufficiently characterized.
+Phase57 stress-tested the paragraph residual. Only the **leading approximately two-dimensional consensus residual** passed the gate strongly enough to be promoted. Higher axes are representation/window-sensitive and are not eligible for semantic rescue.
 
-## Immediate Phase 52 work
+The promoted residual is:
 
-Expand the medieval Latin panel, preferably within a common transcription framework, with multiple documents per relevant genre. Prioritize:
+- cross-fitted against broad metadata;
+- stable under physical-leaf bootstrap;
+- top-2 stable across 15–40 token windows on a fixed paragraph set;
+- moderately stable across reasonable EVA unit definitions;
+- not explained away by the tested leakage-safe local physical/page-context predictors.
 
-- medical
-- recipe / pharmacological
-- herbal if machine-readable material is available
-- scholastic / commentary
-- ecclesiastical
-- literary/continuous prose baseline
-- other strongly templated/list-like practical texts
+This is a candidate information-bearing target, not evidence of meaning.
 
-Record source-native structural boundary type explicitly: prose paragraph, recipe/item, herb entry, chapter/section, list item, etc. Do not call all of them paragraphs.
+## Current frontier — Phase 58
 
-Use matched token counts and, when controls lack manuscript lineation comparable to Voynich, deterministic/sensitivity line wrapping based on the empirical Voynich line-length distribution. Bootstrap at document/folio level rather than treating tokens as independent observations.
+The frozen question is now:
 
-Primary comparison targets include:
+**Does the robust 2D paragraph residual predict independently grounded manuscript content better than matched structural controls?**
 
-- edit-distance-1 type-family density
-- local previous-10 near-family excess under structure-aware nulls
-- paragraph/item-boundary reset
-- Phase47 operation decomposition: substitution/insertion/deletion
-- Phase47 zone decomposition: initial/medial/final
-- line-position mutual information
-- relevant token-internal positional statistics where representation is comparable
+Execution order is fixed:
 
-Separate language, genre, individual-document, chronology/script, and transcription/abbreviation effects as far as the corpus allows.
+1. **58A nuisance transfer control** — test residual prediction of document/physical labels not explicitly removed, such as quire, recto/verso and physical-order bins. Success here is a warning.
+2. **58B independently grounded visual/content relation** — content labels must be defined without reading Voynichese and frozen before comparison.
+3. **58C label/text-role relation** where illustration/item geometry provides an independently defined relation.
+4. **58D bounded cipher-information test** only after content tests; mapping family must be specified before evaluation and complexity-charged.
+
+No free post-hoc semantic relabeling of the two residual axes is allowed.
+
+## Important corrections retained
+
+- Phase3 plant-label headline is corrected: 2 total 4-gram hits; exact permutation p=.725; binary pair-hit p=.667. NOT SUPPORTED.
+- Phase53/54 parser collapsed recto/verso to physical leaf. Phase55 corrected it. Do not reuse the old universal paragraph-reset headline.
+- Correct paragraph-entry effect is section-dependent at the scalar level, although Phase56 later shows a transferable multivariate entry→recovery direction across H/B/P/S/T.
+- Phase56 unmatched full-page PC1 was contaminated by token count (r≈-.886). Only matched-token latent results are authoritative.
 
 ## Frozen methodological constraints
 
-- Phase52 targets already inspected are **exposed**. They may guide model development but cannot later be relabeled prospective validation.
-- A new generator feature motivated by a known failure pays complexity cost.
-- Search/tuning freedom belongs inside model selection or the null; it cannot be hidden in the final score.
-- Local/folio/register state is a default confound.
-- Semantic tests should compare correct vs wrong content within the same relevant state where possible.
-- Structural equivalence is not semantic or cipher equivalence.
-- Deliberate deception is allowed as a hypothesis only as a bounded mechanism; failed semantic tests are not positive evidence for deception.
-- Numerical/symbolic interpretation comes late, after robust structural/content linkage.
-
-## After Phase 52
-
-Compare nested formal generators rather than jumping directly to a complex model:
-
-- M0 — frozen Phase50 finite-state DSL
-- M1 — M0 + explicit line-position process
-- M2 — M0 + paragraph/item latent-state reset
-- M3 — M0 + both mechanisms in a hierarchy
-
-Conceptual architecture:
-
-`document/global grammar -> paragraph/item state -> line state/position -> token family -> surface token`
-
-Charge incremental description/model cost and compare held-out predictive code length / MDL plus multivariate fingerprint adequacy. The dimensions used to choose M1/M2/M3 are development targets, not independent validation.
+- Observation -> Structure -> Mechanism -> Content relation -> Decipherment.
+- Equalize or explicitly model sample-size effects.
+- Page-side and physical leaf are distinct units.
+- Search freedom belongs in null/model-selection folds.
+- Local state is a default confound.
+- Semantic tests require same-state matching where possible.
+- Structural equivalence is not semantic/cipher equivalence.
+- Deliberate deception is allowed only as a bounded, complexity-charged mechanism.
+- Negative results and audit corrections remain public.
 
 ## Before declaring decipherment
 
-Require an executable mapping/generation rule, substantial prediction of unseen material, fixed interpretable output, strong structure-preserving nulls and competitors, prospective or external replication, and explicit accounting of failures/exceptions.
+Require an executable mapping/generation rule, substantial prediction of unseen material, fixed interpretable output, strong structure-preserving nulls/competitors, prospective or external replication, and explicit accounting of failures/exceptions.
 
 ## Session behavior
 
-When asked simply to “continue”, execute the current frontier rather than only describing the next step. Update durable repository records when the accepted interpretation changes. Stop only at a genuine decision point, external blocker, or result that requires choosing between materially different research branches.
+When asked simply to “continue”, execute the current frontier rather than only describing the next step. Update durable repository records when accepted interpretation changes. Stop only at a genuine decision point, external blocker, or result requiring materially different research branches.
