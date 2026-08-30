@@ -1,12 +1,10 @@
 {
-  "phase":"56B-initial",
-  "status":"development; audited 56A-v1 substrate",
-  "n_page_sides":197,
-  "inclusion":"page-sides with >=40 body tokens and finite 11-feature fingerprint",
-  "features":["ttr","mean_len","sd_len","edit1_fraction","local_prev10","linepos_mi","first_entropy","last_entropy","unit_entropy","kt_mass","k_share_within_kt"],
-  "cv":"5 contiguous held-out physical-leaf blocks; features standardized on each training fold",
-  "mean_standardized_mse":{"section_mean_baseline":0.9895711875,"smooth_physical_neighbor":0.9263223992,"contiguous_regime_k2":0.9641762982,"contiguous_regime_k3":1.0524940298,"contiguous_regime_k4":0.9617433583,"contiguous_regime_k6":1.1373630322,"contiguous_regime_k8":0.9948946484},
-  "smooth_fold_mse":[0.8226548223,0.9191022691,0.8885546564,1.2525451537,0.7487550944],
-  "section_baseline_fold_mse":[0.9468384526,1.0391669250,0.8435892577,1.3321547463,0.7861065559],
-  "interpretation":"Distance-weighted physical neighbors improve mean held-out error by about 6.4% relative to section means. Simple globally binned discrete physical regimes do not improve on the smooth predictor and are generally close to or worse than the section baseline. One middle held-out block favors the section baseline, so smooth drift is supported only provisionally; explicit changepoint and mixed regime+drift models remain required before H56-2 is closed."
+  "phase":"56B",
+  "status":"development / model-selection diagnostic",
+  "features":["ttr","mean_len","sd_len","unit_inventory","unit_entropy","first_entropy","last_entropy","edit1_fraction","local_prev10","kt_mass","linepos_mi"],
+  "all_page_side_block_cv":{"n_page_sides":197,"five_contiguous_leaf_blocks":true,"mean_standardized_mse":{"section_baseline":0.964826,"smooth_distance":0.971214,"changepoint_tree":1.092182,"mixed_tree_plus_smooth":1.067231},"interpretation":"Contiguous-block extrapolation does not support a universal smooth-drift predictor; changepoint trees are worse. End blocks are one-sided extrapolation and therefore not a clean interpolation test."},
+  "exact_stratum_pairwise_distance":{"conditioning":"same section + same Currier + same hand","mean_standardized_fingerprint_distance":{"same_leaf":3.230951,"gap1":3.295126,"gap2":3.533585,"gap3_5":3.620391,"gap6_10":3.636855,"gap11plus":4.339695},"pair_counts":{"same_leaf":106,"gap1":233,"gap2":203,"gap3_5":530,"gap6_10":740,"gap11plus":3219},"interpretation":"A graded physical-distance relationship survives exact metadata matching."},
+  "largest_exact_stratum":{"definition":"Herbal / Currier A / hand 1","n_page_sides":93,"n_physical_leaves":47,"interleaved_leaf_holdout_mean_mse":{"global_stratum_mean":1.058017,"smooth_distance":0.946714,"dynamic_programming_changepoint":0.985245,"changepoint_plus_smooth_residual":0.977352},"selected_dp_segments":"BIC usually chooses 2 segments, with the split tracking the physically separated reappearance of the same stratum around the leaf-56 / leaf-87 gap.","interpretation":"Across the full exact stratum, smooth interpolation improves about 10.5% over the stratum mean and beats explicit changepoints on average."},
+  "largest_contiguous_subblock":{"definition":"Herbal / Currier A / hand 1, physical leaves <=56","interleaved_leaf_holdout_mean_mse":{"global_mean":1.062118,"smooth_distance":1.064672,"changepoint":1.062118,"mixed":1.064672},"selected_changepoints":1,"interpretation":"Inside the main continuous block, neither smooth drift nor changepoints improve predictive error. The strong full-stratum distance gradient is therefore not well described as a single smooth trajectory throughout the contiguous block."},
+  "decision":"H56-2 is only partially supported. Physical locality is real after exact metadata matching, but the data favor a mixed description: broad state blocks / separated recurrences plus local similarity, rather than one globally smooth physical drift or a small set of sharp changepoints. Proceed to latent-dimensionality/state representation rather than forcing a univariate physical-order model."
 }
