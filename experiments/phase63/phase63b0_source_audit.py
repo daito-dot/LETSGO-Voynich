@@ -44,6 +44,7 @@ def load_phase62_module():
     if spec is None or spec.loader is None:
         raise RuntimeError("cannot import Phase62 fold authority")
     mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
     spec.loader.exec_module(mod)
     return mod
 
@@ -62,11 +63,13 @@ def locus_generic(code: str) -> Optional[str]:
 def strip_high_ascii(body: str) -> Tuple[str, int, Set[str]]:
     codes: Set[str] = set()
     count = 0
+
     def repl(m: re.Match[str]) -> str:
         nonlocal count
         count += 1
         codes.add(m.group(0))
         return ""
+
     return HIGH_RE.sub(repl, body), count, codes
 
 
