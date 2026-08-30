@@ -2,7 +2,7 @@ name: Phase64B Naibbe C1 first reveal
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened]
     branches: [main]
     paths:
       - 'experiments/phase64/PLAN_B.md'
