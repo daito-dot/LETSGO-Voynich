@@ -1,0 +1,12 @@
+{
+  "phase":"52B_length_character_null",
+  "null":"within each window token lengths fixed; token units/characters sampled iid from the empirical window inventory",
+  "latin_excess_ranges":{
+    "Phi_10a135_medical":[0.0215490127,0.0705113899],
+    "Mazarine915_scholastic":[0.0188618728,0.1620619252],
+    "Latin6395_literary":[0.0538877954,0.0538877954],
+    "UBL758_ecclesiastical":[0.0158198511,0.1489265576]
+  },
+  "voynich":{"n_windows":80,"median_observed":0.7556511057,"median_null":0.2970749335,"median_excess":0.4464534971,"mean_excess":0.4356611850,"approx_excess_2_5":0.1533789649,"approx_excess_97_5":0.6737833980},
+  "interpretation":"Short-token and inventory effects explain a substantial part of high raw density in heavily abbreviated Latin. The current Voynich excess remains much larger in typical matched windows. This iid-unit null is a robustness diagnostic, not the final cross-script null."
+}
