@@ -1,0 +1,11 @@
+{
+  "phase":"60A",
+  "hypothesis":"P60-1 entry-state restriction is local and directional",
+  "test":"Compare real paragraph line0->line2 transitions with all eligible internal pseudo-start i->i+2 transitions (i>=1). Paragraphs are paired where at least one pseudo-transition exists. Generic 11-feature EVA line fingerprint; no semantic labels used.",
+  "primary_development_result":{"real_n":594,"real_mean_projection":1.299,"pseudo_n":1493,"pseudo_mean_projection":0.134,"paired_paragraphs":431,"paired_mean_real_minus_pseudo":0.918,"paired_positive_fraction":0.673,"page_cluster_bootstrap95":[0.711,1.126]},
+  "anti_circular_leaf_holdout":{"method":"5 folds by physical leaf; learn real-entry direction on training leaves only, compare real vs internal pseudo boundaries on held-out leaves","folds":[{"fold":0,"n":73,"mean_real_minus_pseudo":0.672,"positive_fraction":0.630},{"fold":1,"n":91,"mean_real_minus_pseudo":1.491,"positive_fraction":0.758},{"fold":2,"n":95,"mean_real_minus_pseudo":0.467,"positive_fraction":0.579},{"fold":3,"n":93,"mean_real_minus_pseudo":0.485,"positive_fraction":0.591},{"fold":4,"n":79,"mean_real_minus_pseudo":1.458,"positive_fraction":0.759}],"weighted_mean_real_minus_pseudo":0.904},
+  "decision":"P60-1 SURVIVES. Matched internal pseudo-boundaries do not reproduce the real paragraph-entry transition. The effect remains positive in every physical-leaf held-out fold, so it is not merely circular estimation of the transition direction.",
+  "interpretation":"The item-initialization narrative passes its first direct falsification attempt: the transition is specifically concentrated at true paragraph starts rather than being a generic two-line fluctuation anywhere inside paragraphs.",
+  "cautions":["This 60A implementation uses a rebuilt generic EVA 11-feature line fingerprint and therefore is a direct entry-specificity test, not yet the exact Phase59C Latin-orthogonal projection replication.","Paragraph length constrains which internal pseudo-starts exist; later tests should position-match and length-match pseudo-boundaries.","Survival of P60-1 is structural evidence only."],
+  "next":"60B feature attribution and representation robustness, followed by stricter position/length-matched pseudo-boundary controls."
+}
