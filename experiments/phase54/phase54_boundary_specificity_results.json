@@ -1,0 +1,8 @@
+{
+  "phase":54,
+  "status":"development diagnostic; true paragraph boundaries exposed",
+  "shifted_boundary_mean_gap":{"-6":0.01868,"-5":0.01154,"-4":0.00303,"-3":-0.00364,"-2":-0.01913,"-1":-0.01448,"0":0.11528,"1":0.03315,"2":-0.05353,"3":-0.01929,"4":-0.00995,"5":-0.00783,"6":0.00989},
+  "true_boundary":{"mean_gap":0.1152761789,"median_gap":0.1212632275,"folios_positive":88,"n_folios":99},
+  "continuity_by_lines_since_paragraph_start":{"0":0.13264,"1":0.21717,"2":0.28757,"3":0.28855,"4":0.29185,"5":0.28218,"6":0.26605},
+  "interpretation":"The edit1-family discontinuity is sharply aligned to the actual paragraph boundary. Continuity is lowest on the first paragraph line, partially recovers on the second, and reaches the within-paragraph plateau by roughly lines 2-4. Simple stationary paragraph-topic concentration is therefore the wrong shape."
+}
