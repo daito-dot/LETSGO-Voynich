@@ -20,41 +20,48 @@ The audited hierarchy is currently:
 
 `+ token morphology / edge entropy / {k,t}-related dimensions`
 
-Physical locality remains after exact section+Currier+hand matching, but is not one simple smooth drift. Matched-token structural variation is moderately low-dimensional: ~64% in 3 PCs and ~79% in 5. Similar leading directions recur across page and paragraph scales. Linear PCA currently beats nonlinear kernel compression.
-
-The paragraph-entry/recovery transition is multivariate and transfers positively to held-out H/B/P/S/T sections when learned from the others. This is internal manuscript evidence, not external replication.
+Physical locality remains after exact section+Currier+hand matching, but is not one simple smooth drift. Matched-token structural variation is moderately low-dimensional. The paragraph-entry/recovery transition is multivariate and transfers positively across held-out major sections.
 
 ## Phase 57 residual robustness gate — PASS WITH NARROW TARGET
 
-Phase56D's paragraph residual was stress-tested before semantic use.
+Only the leading approximately two-dimensional consensus residual is promoted. It is reasonably stable across token representation, stable in its top-2 subspace across 15–40 token windows on fixed eligibility, not explained away by tested leakage-safe local context, weakly associated with broad labels after cross-fitting, and stable under physical-leaf bootstrap. PC3+ is not eligible for semantic rescue.
 
-The result is deliberately narrow: **only the leading approximately two-dimensional consensus residual is promoted**.
+## Phase 58A nuisance transfer — NEGATIVE
 
-- reasonable EVA unit-definition changes rotate the residual somewhat, but retain a moderately aligned leading space;
-- on a fixed eligible paragraph set, the top-2 residual subspace is stable across 15–40 token windows, while PC3+ is more scale-sensitive;
-- richer leakage-safe same-page/opposite-side/adjacent-leaf context does not explain the residual away in the tested models;
-- explicit cross-fitted section/Currier/hand removal leaves only small broad-label association in residual PC1/PC2 (eta² roughly .01–.03);
-- physical-leaf bootstrap gives stable top-2 subspace orientation.
+The promoted 2D residual does not predict recto/verso or coarse physical-position bins above matched nulls. Quire is also uninformative descriptively but is a weak high-cardinality test. Thus the residual is not obviously a leftover simple manuscript-location code.
 
-Higher residual axes are **not eligible** for post-hoc semantic rescue.
+## Phase 58B independently grounded visual tests — CURRENTLY NEGATIVE
 
-## Phase 58A nuisance transfer control — COMPLETE
+Two visual annotation pilots were performed using external illustration descriptions only; proposed Voynichese meanings from those external projects were not used.
 
-Before content testing, the promoted 2D residual was tested against document/physical labels not explicitly removed.
+### Biological/balneological within-domain pilot
 
-Using physical-leaf-grouped CV and matched permutations within section|Currier|hand:
+20 page-sides, page-aggregated frozen residual, exact label-count permutations:
 
-- recto/verso balanced accuracy **.445**, matched-null mean ~.498, upper-tail p=.978;
-- coarse physical leaf bin balanced accuracy **.180**, matched-null mean ~.186, upper-tail p=.597;
-- quire prediction is near nominal inverse-class-count performance but is high-cardinality and poorly supported across grouped folds, so it is descriptive only.
+- explicit blue pool/water: p=.921
+- explicit green pool/water: p=.155
+- animal/special animal figure: p=.649, low positive count
 
-Thus there is no evidence that the promoted 2D residual is mainly a recto/verso or coarse physical-order nuisance code. This clears the tested nuisance gate but is **not positive semantic evidence**.
+No tested relation is supported. The green-water contrast is not significant and must not be rescued post hoc.
 
-## Current semantic/content evidence
+### Early Herbal-A visual morphology pilot
 
-Earlier pharmaceutical item-specific/state-invariant mapping tests were negative. They predate the new robust residual and cannot be reinterpreted as tests of it.
+24 eligible page-sides in a narrow Herbal-A / Currier-A / hand-1 domain, using externally annotated plant morphology:
 
-The next content test must use labels defined independently of Voynichese and frozen before comparison. Same-state/matched permutation controls remain mandatory.
+- veined leaves: p=.327
+- multiple flowers: p=.982
+- flat-topped root: p=.311
+- broad reproductive structure (berries/pods/fruits/seeds): p=.220
+
+None is supported.
+
+### Current interpretation
+
+The robust 2D residual has now passed simple nuisance tests but **failed to predict independently defined page-level visual properties in two narrow matched domains**.
+
+This is a meaningful negative result for H58-1 at page aggregation. It does not prove absence of semantics. A specific remaining possibility is that paragraph-level information is tied to particular illustrated subobjects or local text regions and is washed out when all paragraph residuals on a page are averaged.
+
+That localized hypothesis requires paragraph-to-object spatial linkage defined independently of Voynichese before testing. Without such linkage, searching for the best paragraph/object pairing would be semantic fishing.
 
 ## Competing explanation families still open
 
@@ -64,22 +71,17 @@ The next content test must use labels defined independently of Voynichese and fr
 4. hierarchical formal generator with physical, paragraph and line state
 5. mixed mechanisms
 
-Deceptive-cipher explanations receive no credit from failed semantic tests alone. A deception mechanism must be bounded and complexity-charged.
+The current page-level visual nulls increase pressure on simple 'text directly describes the visible page feature' accounts at the promoted residual representation. They do not positively support formal generation or deliberate deception.
 
-## Immediate frontier: Phase 58B independently grounded content relation
+## Immediate frontier: Phase 58C localized content linkage
 
-The eligible predictor is fixed: the Phase57-promoted leading ~2D paragraph residual.
+Do not proceed to a flexible cipher search yet.
 
-Before comparing it with content:
+The next legitimate content test must obtain or create an independent mapping between illustrated subobjects/local regions and nearby prose paragraphs. The mapping rule must be frozen without reference to residual coordinates or proposed decipherments.
 
-- define visual/content labels without reading Voynichese;
-- document the annotation/data-selection rule;
-- freeze labels before residual comparison;
-- prefer within-page or same section+hand+Currier matching;
-- compare against structure-only baselines and matched label permutations;
-- do not reinterpret residual axis orientation after seeing labels.
+Candidate evidence sources include manuscript image geometry, externally annotated object bounding boxes, and independently located text regions. Text-derived lexicon matches are not acceptable ground truth for this gate.
 
-A positive Phase58B result would establish an information-bearing relation only. It would not identify plaintext or constitute decipherment.
+If a defensible spatial mapping cannot be constructed, Phase58C should be recorded as blocked/unidentifiable and the research should return to mechanism discrimination rather than inventing semantic pairings.
 
 ## Important corrections retained
 
