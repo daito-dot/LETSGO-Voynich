@@ -1,0 +1,75 @@
+name: Phase62B N0 baseline
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/phase62/IMPLEMENTATION_B.md'
+      - 'experiments/phase62/phase62b_n0.py'
+      - '.github/workflows/phase62b-n0.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  n0:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LETSGO-Voynich
+        uses: actions/checkout@v4
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen inputs
+        shell: bash
+        run: |
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Run frozen N0 baseline only
+        run: |
+          python experiments/phase62/phase62b_n0.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma \
+            > phase62b_n0_results.json
+
+      - name: Print compact result
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase62b_n0_results.json'))
+          print('PHASE62B_N0')
+          print('source_counts=', json.dumps(x['source_counts'], ensure_ascii=False))
+          a=x['across_fold']
+          print('voynich_mean=', a['voynich_mean'])
+          print('N0_mean=', a['N0_equal_manuscript_mean'])
+          print('ratios=', a['N0_ratio_of_means_to_voynich'])
+          print('gate=', a['broad_regime_gate_0.5_to_2.0'])
+          print('competitive=', a['materially_competitive_under_frozen_rule'])
+          for name,v in x['per_manuscript'].items():
+              print('MANUSCRIPT', name, 'S1=', v['S1_mean_across_voynich_folds'], 'S2=', v['S2'], 'S3=', v['S3'], 'counts=', v['counts'])
+          print('decision=', x['decision'])
+          PY
+
+      - name: Upload N0 result
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase62b-n0-results
+          path: phase62b_n0_results.json
