@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit/recover the external Phase59 medieval-entry control source set.
+"""Audit/recover the external Phase59 controls and enumerate Phase62 candidates.
 
 This script is deliberately descriptive. It does NOT score N0/B0 against
 Voynich and therefore cannot expose the Phase62 tournament outcome.
@@ -18,26 +18,27 @@ import json
 import sys
 import unicodedata
 from pathlib import Path
-from typing import Iterable
 
 EXTERNAL_REPO = "HTR-United/CREMMA-Medieval-LAT"
 EXTERNAL_COMMIT = "292525969ad98380b398e6606a9c2a36d51913ae"
 
+# Historical Phase59 development groups. These counts are exposed and are used
+# only to audit recoverability, never to choose a new subset by Voynich fit.
 HISTORICAL_GROUPS = {
     "H318_recipe": {
         "expected_n": 3,
         "files": ["data/H318/10r.txt"],
-        "selection_status": "file identified from the Phase59 recipe context; eligibility to be audited",
+        "selection_status": "file identified from the Phase59 recipe context; exact historical item subset was not stored",
     },
     "CLM13027_39r_treatment": {
         "expected_n": 3,
         "files": ["data/CLM13027/39r.txt"],
-        "selection_status": "exact page named in Phase59 result key",
+        "selection_status": "exact page named in Phase59 result key; exact historical item subset was not stored",
     },
     "CLM13027_41r_41v_medical_discussion": {
         "expected_n": 9,
         "files": ["data/CLM13027/41r.txt", "data/CLM13027/41v.txt"],
-        "selection_status": "exact pages named in Phase59 result key",
+        "selection_status": "exact pages named in Phase59 result key; exact historical item subset was not stored",
     },
     "UBL758_ecclesiastical": {
         "expected_n": 5,
@@ -47,8 +48,20 @@ HISTORICAL_GROUPS = {
     "BIS193_scholastic": {
         "expected_n": 5,
         "glob": "data/BIS-193/*.txt",
-        "selection_status": "historical page subset was not recorded; enumerate without choosing by Voynich fit",
+        "selection_status": "historical five-entry subset was not recorded; enumerate without choosing by Voynich fit",
     },
+}
+
+# The five manuscripts were already fixed as the Phase52 document/genre pilot,
+# before the Phase62 tournament was conceived. Phase62 can therefore use an
+# objective all-eligible rule over these manuscript directories without
+# selecting manuscripts/items by current Voynich fit.
+PHASE52_PANEL = {
+    "Arras861_literary": "data/Arras-861/*.txt",
+    "CLM13027_medical": "data/CLM13027/*.txt",
+    "H318_medical_recipes": "data/H318/*.txt",
+    "UBL758_ecclesiastical": "data/UBL758/*.txt",
+    "BIS193_scholastic": "data/BIS-193/*.txt",
 }
 
 
@@ -57,7 +70,7 @@ def git_blob_sha1(data: bytes) -> str:
 
 
 def unicode_lm_tokens(text: str) -> list[str]:
-    """Phase52-style graphematic tokenization: NFC Letter/Mark sequences.
+    """Graphematic tokenization: NFC maximal Letter/Mark sequences.
 
     Punctuation/separators are discarded; combining marks remain attached to
     neighboring letters where present. This is not abbreviation expansion.
@@ -85,14 +98,10 @@ def marker_entries(path: Path, root: Path) -> list[dict]:
         if "¶" not in line:
             continue
         parts = line.split("¶")
-        # Each part after a pilcrow is an explicit source marker. If several
-        # markers share one physical line, each is recorded separately.
+        # Each segment after a pilcrow is an explicit source marker. If several
+        # markers share a physical line, split() already isolates each segment.
         for j, after in enumerate(parts[1:], start=1):
             line0 = after
-            # Do not allow text after a later same-line pilcrow to leak into
-            # this entry's line0.
-            if j < len(parts) - 1:
-                line0 = after
             line1 = lines[i + 1] if i + 1 < len(lines) else ""
             line2 = lines[i + 2] if i + 2 < len(lines) else ""
             t0 = unicode_lm_tokens(line0)
@@ -103,8 +112,9 @@ def marker_entries(path: Path, root: Path) -> list[dict]:
                     "path": str(path.relative_to(root)),
                     "source_line_1based": i + 1,
                     "marker_index_on_line": j,
+                    "entry_id": f"{path.relative_to(root)}:{i+1}:pilcrow{j}",
                     "token_counts_line0_line1_line2": [len(t0), len(t1), len(t2)],
-                    "eligible_phase59_primary": bool(len(t0) >= 5 and len(t2) >= 5),
+                    "eligible_phase62": bool(len(t0) >= 5 and len(t2) >= 5),
                     "line0_preview": " ".join(t0[:12]),
                     "line1_preview": " ".join(t1[:8]),
                     "line2_preview": " ".join(t2[:8]),
@@ -121,17 +131,13 @@ def audit_file(path: Path, root: Path) -> dict:
         "bytes": len(data),
         "git_blob_sha1": git_blob_sha1(data),
         "pilcrow_markers": len(entries),
-        "eligible_entries": sum(e["eligible_phase59_primary"] for e in entries),
+        "eligible_entries": sum(e["eligible_phase62"] for e in entries),
         "entries": entries,
     }
 
 
 def contiguous_windows(files: list[dict], expected: int, limit: int = 50) -> list[dict]:
-    """Diagnostic only: filename-ordered contiguous windows summing to expected.
-
-    This does not select a historical subset. It only shows whether the missing
-    historical UBL/BIS page subset can be reconstructed uniquely from counts.
-    """
+    """Diagnostic only: filename-ordered contiguous windows summing to expected."""
     arr = sorted(files, key=lambda x: x["path"])
     out = []
     for i in range(len(arr)):
@@ -147,7 +153,7 @@ def contiguous_windows(files: list[dict], expected: int, limit: int = 50) -> lis
     return out
 
 
-def resolve_group(root: Path, spec: dict) -> dict:
+def resolve_historical_group(root: Path, spec: dict) -> dict:
     if "files" in spec:
         paths = [root / x for x in spec["files"]]
     else:
@@ -168,6 +174,35 @@ def resolve_group(root: Path, spec: dict) -> dict:
     }
 
 
+def resolve_phase52_panel_manuscript(root: Path, pattern: str) -> dict:
+    paths = sorted(root.glob(pattern))
+    audits = [audit_file(p, root) for p in paths]
+    eligible = [
+        e
+        for a in audits
+        for e in a["entries"]
+        if e["eligible_phase62"]
+    ]
+    return {
+        "glob": pattern,
+        "scanned_file_count": len(audits),
+        "files_with_pilcrows": sum(bool(a["pilcrow_markers"]) for a in audits),
+        "pilcrow_markers": sum(a["pilcrow_markers"] for a in audits),
+        "eligible_entries": len(eligible),
+        "eligible_entry_ids": [e["entry_id"] for e in eligible],
+        "eligible_by_file": {
+            a["path"]: a["eligible_entries"]
+            for a in audits
+            if a["eligible_entries"]
+        },
+        "source_blobs_with_eligible_entries": {
+            a["path"]: a["git_blob_sha1"]
+            for a in audits
+            if a["eligible_entries"]
+        },
+    }
+
+
 def main() -> int:
     if len(sys.argv) != 2:
         print(f"usage: {sys.argv[0]} /path/to/CREMMA-Medieval-LAT", file=sys.stderr)
@@ -175,15 +210,30 @@ def main() -> int:
     root = Path(sys.argv[1]).resolve()
     if not root.exists():
         raise SystemExit(f"external checkout not found: {root}")
+
+    historical = {
+        k: resolve_historical_group(root, v)
+        for k, v in HISTORICAL_GROUPS.items()
+    }
+    panel = {
+        k: resolve_phase52_panel_manuscript(root, pattern)
+        for k, pattern in PHASE52_PANEL.items()
+    }
+
     out = {
-        "purpose": "Phase62A source recovery only; no Voynich tournament scoring",
+        "purpose": "Phase62A source recovery and candidate-manifest enumeration only; no Voynich tournament scoring",
         "external_repository": EXTERNAL_REPO,
         "external_commit": EXTERNAL_COMMIT,
         "tokenization": "Unicode NFC maximal Letter/Mark sequences; punctuation discarded; abbreviation graphemes retained",
-        "boundary_rule": "literal source-native pilcrow U+00B6; line0 is post-marker remainder of source line; line1/line2 are the next two physical transcription lines; primary eligibility requires >=5 tokens in line0 and line2",
-        "historical_phase59_expected_counts": {k: v["expected_n"] for k, v in HISTORICAL_GROUPS.items()},
-        "groups": {k: resolve_group(root, v) for k, v in HISTORICAL_GROUPS.items()},
-        "interpretation_rule": "Counts may identify historical subsets only when the recorded page names or source evidence make the reconstruction unique. Missing UBL/BIS historical subset metadata must not be recovered by choosing the subset that best matches Voynich statistics.",
+        "boundary_rule": "literal source-native pilcrow U+00B6; line0 is post-marker remainder of source line; line1/line2 are the next two physical transcription lines; eligibility requires >=5 tokens in line0 and line2",
+        "historical_phase59_recovery": historical,
+        "phase62_candidate_panel_basis": "all eligible pilcrow entries in the five manuscripts fixed earlier by Phase52: Arras861, CLM13027, H318, UBL758, BIS193",
+        "phase62_candidate_panel": panel,
+        "phase62_candidate_panel_totals": {
+            "manuscripts": len(panel),
+            "eligible_entries": sum(v["eligible_entries"] for v in panel.values()),
+        },
+        "interpretation_rule": "Historical Phase59 subsets are recoverable only when recorded source/page evidence makes the reconstruction unique. Missing historical item metadata must never be reconstructed by choosing items that best match Voynich. Phase62 instead uses the independently pre-existing Phase52 manuscript panel and an all-eligible entry rule, subject to a separately frozen tournament plan.",
     }
     print(json.dumps(out, ensure_ascii=False, indent=2))
     return 0
