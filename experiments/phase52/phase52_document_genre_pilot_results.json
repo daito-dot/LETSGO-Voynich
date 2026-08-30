@@ -1,0 +1,13 @@
+{
+  "phase": "52_document_genre_pilot",
+  "status": "exploratory pilot",
+  "matched_tokens": 141,
+  "documents": [
+    {"id":"H318","genre":"medical","edit1_type_fraction":0.293,"local_prev10_excess":-0.002,"line_position_mi_excess":0.064},
+    {"id":"CLM13027","genre":"medical","edit1_type_fraction":0.214,"local_prev10_excess":-0.003,"line_position_mi_excess":0.087},
+    {"id":"Arras861","genre":"literary","edit1_type_fraction":0.150,"local_prev10_excess":0.004,"line_position_mi_excess":0.050},
+    {"id":"BIS193","genre":"scholastic","edit1_type_fraction":0.457,"local_prev10_excess":0.010,"line_position_mi_excess":0.046},
+    {"id":"UBL758","genre":"ecclesiastical","edit1_type_fraction":0.371,"local_prev10_excess":-0.011,"line_position_mi_excess":0.154}
+  ],
+  "interpretation": "Document choice is a real confound within medieval Latin; current pilot maximum remains below Voynich matched section medians. Genre, manuscript, scribe/script, abbreviation, chronology and layout are not yet separated."
+}
