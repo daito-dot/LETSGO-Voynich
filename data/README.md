@@ -13,6 +13,12 @@ The transcription itself is third-party source material and is not automatically
 
 When reproducing historical scripts, place the transcription locally and adjust the input path if necessary. New scripts should accept an explicit input path rather than depend on a private filename.
 
+## Licensing boundary
+
+The repository licenses in `LICENSE`, `LICENSE-CODE`, and `LICENSE-CONTENT` apply only to material for which this project has the right to grant those licenses. They do **not** relicense third-party transcriptions, manuscript images, external corpora, quoted material, or other third-party source content.
+
+A checksum, filename, citation, derived statistic, preprocessing recipe, or script that operates on third-party material does not grant permission to redistribute that source material. Always follow the original provider's license, copyright terms, database rights, and terms of use.
+
 ## Why provenance matters
 
 A transcription is an analytical representation of the manuscript, not ground truth. Results can depend on glyph segmentation, EVA conventions, uncertain readings, spaces, line boundaries, and editorial normalization. Claims that survive an independent transcription are therefore stronger than claims demonstrated on one transcription lineage only.
