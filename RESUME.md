@@ -21,7 +21,9 @@ This file is the deterministic entry point for a new researcher or AI/chat sessi
 15. `experiments/phase63/PLAN_A.md`
 16. `experiments/phase63/DETERMINISM_AUDIT_A.md`
 17. `experiments/phase63/REPORT_A.md`, `phase63a_training_vocab_results.json`
-18. exact executable/source files before changing numerical interpretation
+18. `experiments/phase63/PLAN_B.md`, `IMPLEMENTATION_B.md`, `PARSER_AMENDMENT_B1.md`
+19. `experiments/phase63/REPORT_B.md`, `phase63b_science_results.json`
+20. exact executable/source files before changing numerical interpretation
 
 Do not reconstruct the project from old chat when the repository contains a newer state.
 
@@ -41,21 +43,31 @@ Retain:
 
 > Voynich paragraph starts instantiate a manuscript-wide, transferable formal entry register. It is partly comparable to medieval structured-document entry grammar and partly Voynich-specific, but its detectable influence is short-lived rather than a persistent paragraph initializer.
 
-A1 is the current leading tested structural mechanism. It is a boundary-aware generator with one bounded local-family body process, no persistent paragraph latent state, no section-specific grammar and no separate line-position rule.
+A1/A1-R1 is the current leading tested structural mechanism. It is a boundary-aware generator with one bounded local-family body process, no persistent paragraph latent state, no section-specific grammar and no separate line-position rule.
 
-Phase61C narrow scalar gate:
+The strongest evidence is now a staircase:
+
+1. held-out exposed A1 regime;
+2. fair Phase62 N0/C0/A1 tournament;
+3. sealed H62-P1 prospective prediction;
+4. training-only vocabulary robustness;
+5. independent-transcription replication and IT full transfer.
+
+This supports a genuine formal generation layer more strongly than before. It does **not** identify that layer as meaningless, semantic-free, cipher-free or historically identical to A1.
+
+## Phase61 narrow architecture state
+
+Phase61C held-out ratios:
 
 - entry projection **0.797×**
 - local-prev10 **0.717×**
 - aggregate line-position eta2 **1.116×**
 
-The Phase61 audit remains binding: A1 does not reproduce the full line-position coordinate profile.
+The Phase61 audit remains binding: A1 does not reproduce the full line-position coordinate profile. Near-family eta2 coordinates are badly overproduced even though the aggregate scalar passes.
 
 ## Phase62 exposed tournament
 
 ### N0
-
-Source-native structured medieval text:
 
 - S1 **-0.980×** Voynich
 - S2 **0.133×**
@@ -65,7 +77,7 @@ Fails joint gate; S3 match shows generic line-position structure alone is weak d
 
 ### C0
 
-Best frozen reversible boundary-blind transform = non-overlapping digraph coding, selected independently in all five folds.
+Best frozen reversible boundary-blind transform = non-overlapping digraph coding.
 
 - S1 **-0.932×**
 - S2 **0.249×**
@@ -73,7 +85,7 @@ Best frozen reversible boundary-blind transform = non-overlapping digraph coding
 
 Materially improves N0 but remains insufficient on S1/S2.
 
-### frozen A1
+### Frozen A1
 
 No Phase62 retuning:
 
@@ -83,21 +95,7 @@ No Phase62 retuning:
 
 Passes exposed ratio-of-means gate, with fold/profile caveats retained.
 
-## Phase62D pre-prospective freeze
-
-Before H62-P1 was computed, the repository committed:
-
-> exposed scalar structural ranking: **A1 > C0 > N0**
-
-while keeping:
-
-> overall N/C/G family conclusion: **unresolved pending prospective validation**.
-
-It also committed A1's H62-P1 directional prediction: explicit maximum 10-token local-family memory should yield stronger near-family recurrence concentration in 1–10 relative to 11–40 tokens; not a literal zero-after-10 claim.
-
 ## Phase62P H62-P1 — genuine prospective A1 support
-
-H62-P1 was frozen in Phase62A before tournament outcomes and implemented only after Phase62D.
 
 | candidate | mean D | median D | D wins | mean |ΔC_short| | C wins |
 |---|---:|---:|---:|---:|---:|
@@ -109,32 +107,24 @@ Accepted wording:
 
 > **Frozen A1 predicts the previously sealed distance-dependent near-family recurrence geometry substantially better than tested N0/C0. A1 is the leading tested structural mechanism with genuine prospective support.**
 
-This is not evidence that Voynich is meaningless or that A1 is historical truth.
-
 First-reveal raw JSON SHA-256:
 
 `0e1b687ab73efbc494834f49398ed474230f47bcde4cf4dbcaa46631efd75264`
 
 ## Phase63A — training-only vocabulary robustness: PASS
 
-Phase63A removes every token type not observed on a fold's training physical leaves, without parameter repair.
-
-Intervention size:
+Intervention:
 
 - full vocabulary: 8,295 types;
 - mean training vocabulary: **7,050.2**;
 - mean held-out distinct-type coverage: **0.5083**;
 - mean held-out occurrence coverage: **0.8016**.
 
-Thus roughly half of held-out distinct token types are unavailable to generation.
-
 A1-R1 / Voynich exposed ratio-of-means:
 
 - S1 **0.65353**
 - S2 **1.51061**
 - S3 **0.58264**
-
-All pass historical `[0.5,2.0]` gate.
 
 H62-P1:
 
@@ -144,52 +134,131 @@ H62-P1:
 - versus N0: 5/5 fold wins on both metrics
 - versus C0: 5/5 fold wins on both metrics
 
-All frozen R1/R2/R3 conditions pass. Degradation versus full-vocabulary A1 is negligible.
-
-Accepted wording:
+Accepted:
 
 > **A1's exposed and prospective structural advantage does not depend on access to token types unique to the held-out physical leaves.**
 
-This reduces one target-leakage concern. A1 still uses training-side Voynich morphology/vocabulary, Voynich-derived architecture, frozen Voynich-selected parameters, explicit paragraph boundaries/10-token memory and the true held-out layout/token counts.
+The remaining dependence is important: A1 still receives training-side empirical Voynich morphology/vocabulary.
 
-### Phase63A replay note
-
-First raw result SHA-256:
+First raw Phase63A result SHA-256:
 
 `bcd05d1823e17b034c0abf984a0af9b0cb31b5a37bd9e604c327ab9aff1937a7`
 
-A clean replay differed bytewise only in 16 S1 floating-point fields, maximum absolute `2.22e-16`. S2/S3/H62-P1/discrete fields and verdicts were exactly identical. Canonical 14-decimal semantic SHA:
+## Phase63B — independent-transcription replication: STRONG REPLICATION
 
-`cd53f47729c864badb5e8c747cfd9ad989de9c616ca54dd5bdcb83b075c33c74`
+### Frozen source roles
 
-Read `experiments/phase63/DETERMINISM_AUDIT_A.md` before asserting raw-byte determinism.
+- **GC2a / v101:** independent transcription/alphabet. Analyze native v101 only; never convert to EVA.
+- **IT2a / EvaT:** independent reading/transcription. Use for observational replication and full frozen A1-R1 transfer.
+- W1 primary, W2 predeclared sensitivity.
 
-## Current frontier — Phase63B independent transcription replication
+The parser/source/metric/seed/falsification definitions were frozen before the first scientific reveal. An initial ZL parser incompatibility involving `'` and `0` was corrected in `PARSER_AMENDMENT_B1.md` before any scientific metric was implemented or computed.
+
+### GC observational replication
+
+GC-R1 entry specialization:
+
+- W1 positive **5/5**, mean **1.00905**;
+- W2 mean **1.08374**, no sign reversal.
+
+GC-R2 recurrence geometry:
+
+- W1 positive `C_short` **5/5**, mean **0.58781**;
+- W2 mean **0.59868**, no sign reversal.
+
+**GC-R1/R2 PASS.**
+
+### IT observational replication
+
+IT-R1:
+
+- positive **5/5**, W1 mean **0.77003**.
+
+IT-R2:
+
+- positive `C_short` **5/5**;
+- W1 mean **0.58501**;
+- W2 mean **0.59326**.
+
+**IT-R1/R2 PASS.**
+
+### IT-R3 full frozen A1-R1 transfer
+
+Exact historical parameter pairs and seeds are reused; no IT retuning.
+
+W1 A1-R1 / IT exposed ratio-of-means:
+
+- S1 **0.73723×**
+- S2 **1.58617×**
+- S3 **0.64696×**
+
+H62-P1 W1:
+
+| candidate | mean D | mean |ΔC_short| |
+|---|---:|---:|
+| N0 | 1.47727 | 0.62192 |
+| fixed C0-4 | 1.79735 | 1.29206 |
+| **A1-R1** | **0.83028** | **0.07184** |
+
+A1-R1:
+
+- versus N0: D **4/5**, C-short **5/5** wins;
+- versus C0: **5/5 both**;
+- W2 frozen R3 criterion also passes.
+
+Retain the failure: fold2 H62 `D_profile` is slightly worse for A1 than N0 (`1.24428` vs `1.19208`). Retain fold-wise scalar heterogeneity; the frozen scalar gate was aggregate ratio-of-means.
+
+Frozen classification:
+
+> **STRONG REPLICATION — GC independent-alphabet observational effects and IT independent-reading observational/full A1-R1 transfer pass the frozen W1 criteria without W2 observational sign reversal.**
+
+Accepted wording:
+
+> **The strongest current paragraph-entry and near-family recurrence signatures are not confined to the ZL3b/EVA representation, and the frozen A1-R1 mechanism transfers to an independently maintained EvaT reading without retuning.**
+
+Do not convert this into a claim of semantic emptiness or historical identity.
+
+### Phase63B first-reveal provenance
+
+- scientific head: `31746c4d318929b602b35c288e36e83001200509`
+- Actions run: `33334225091`
+- job: `99318112772`
+- artifact: `9738599590`
+- artifact ZIP SHA-256: `4b9448e655d539528357ee4b51de1ebdea70003730c593f49c96bdbb4a6d9324`
+- raw JSON SHA-256: `77653133af22cd26141bc695a8ee6243cc3d924ba44a41a685cb148b9167db91`
+
+The exact artifact was hash-verified by a separate recording workflow before being committed as `experiments/phase63/phase63b_science_results.json`.
+
+## Current frontier — Phase64
+
+Phase63B closes the independent-transcription gate positively.
 
 When asked to continue:
 
-1. find a genuinely independent Voynich transcription lineage with stable public provenance/version/hash;
-2. document how glyph encoding, uncertain characters, spaces, lines and paragraph starts differ from ZL3b;
-3. freeze a deterministic page/physical-leaf/line/paragraph mapping before computing results;
-4. decide which Phase60–63 metrics are representation-comparable without adapting them to recreate the ZL3b outcome;
-5. commit the source/design freeze;
-6. only then run replication.
+1. finish/verify the Phase63B clean replay audit if still running;
+2. merge the Phase63B result/report/status branch into main only after provenance and replay state are recorded;
+3. freeze **Phase64A G-autonomy** before computing a new result;
+4. in Phase64A, remove the empirical training token inventory as the generator's output vocabulary while keeping the structural A1 contract fixed as far as possible;
+5. do **not** add mechanisms to repair known fold2/B4-B5/line-position residuals;
+6. maintain a parallel **C1 design track** so successful G autonomy is not misreported as family-level `G > C/N` proof.
 
-Priority targets:
+### Why autonomy is next
 
-1. paragraph-entry specialization vs internal pseudo-boundaries;
-2. local edit1/near-family recurrence geometry;
-3. H62-P1 five-bin profile;
-4. A1-R1 advantage if a defensible independent-transcription generator can be defined;
-5. aggregate S3 only as secondary because Phase62 shows it is weak alone.
+The main direct objection left against A1-R1 is no longer held-out leakage or ZL transcription dependence. It is that A1 still receives the training-side empirical token inventory/morphology. Phase64A should test whether a lower-level frozen morphology generator can replace that inventory.
 
-If a result fails under the independent transcription, record the failure before changing token/glyph treatment.
+### C1 fairness requirement
+
+C0 is deliberately weak. Before any family-level conclusion, define a historically/mathematically motivated C1 with explicit complexity accounting and no Voynich-specific boundary tuning. A developed G model cannot fairly establish `G > C` against C0 alone.
+
+### Content lane
+
+Independently grounded localized object/paragraph mapping remains essential before semantic promotion. Do not invent labels or tune mapping against text results merely to unblock the ladder.
 
 ## Research families
 
 - **N:** simple N0 disfavored; broader meaningful-text families remain open.
-- **C:** C0 limited/insufficient; stronger C1 only later as separately frozen model.
-- **G:** A1 currently leads tested structural mechanisms prospectively and survives held-out-vocabulary restriction, but remains non-autonomous and historically/semantically ungrounded.
+- **C:** C0 limited/insufficient; serious bounded C1 still owed.
+- **G:** A1/A1-R1 currently leads tested structural mechanisms prospectively, survives held-out-vocabulary restriction and independent-transcription transfer, but remains morphology-dependent and historically/semantically ungrounded.
 - **M:** deferred.
 
 ## Important retained corrections
@@ -202,6 +271,7 @@ If a result fails under the independent transcription, record the failure before
 - Phase61A is not prospective validation of preselected A0 strength.
 - Phase61C aggregate eta2 does not establish full profile reproduction.
 - Phase59 small semantic subsets are development evidence; Phase62 objective panel supersedes them for fair comparison.
+- Phase63B strong replication is aggregate/frozen-rule support, not universal fold-wise matching.
 
 ## Before declaring decipherment
 
