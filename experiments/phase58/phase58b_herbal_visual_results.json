@@ -1,0 +1,13 @@
+{
+  "phase":"58B",
+  "status":"complete for second predeclared within-stratum visual test",
+  "external_annotation_source":{"repository":"geoffitect/voynich","path":"data/analysis/plant_analysis.json","provenance":"plant_features table; visual feature annotations only. Text enrichment results from that repository were not used."},
+  "scope":"24 early Herbal page-sides visible in the externally sourced feature table and eligible for the frozen W20 residual; effectively a narrow Herbal-A / Currier-A / hand-1 domain",
+  "visual_labels_frozen_before_residual_comparison":{"veined_leaves":6,"multiple_flowers":5,"flat_topped_root":4,"reproductive_structure":6},
+  "reproductive_structure_definition":"berries, pods/fruits, or seeds explicitly present in the external visual feature list; combined before residual comparison as a broad reproductive-structure label",
+  "statistic":"Euclidean distance between positive/negative page centroids in standardized frozen 2D residual; page residual is mean of eligible paragraph residual coordinates",
+  "null":"exact permutation of page labels preserving positive count",
+  "results":{"veined_leaves":{"observed":0.7256,"null_mean":0.6066,"p_upper":0.3269,"decision":"NOT SUPPORTED"},"multiple_flowers":{"observed":0.0958,"null_mean":0.6448,"p_upper":0.9823,"decision":"NOT SUPPORTED"},"flat_topped_root":{"observed":0.8512,"null_mean":0.6997,"p_upper":0.3108,"decision":"NOT SUPPORTED"},"reproductive_structure":{"observed":0.8425,"null_mean":0.6066,"p_upper":0.2203,"decision":"NOT SUPPORTED"}},
+  "interpretation":"None of four independently defined visual plant-morphology labels is associated with the robust 2D residual under the frozen exact test. Together with the Biological visual pilot, current page-aggregated residual evidence does not support H58-1.",
+  "qualification":"The test is page-level. Paragraph-specific semantics tied to particular illustrated subobjects could be averaged away. A spatial paragraph-to-object annotation is required to test that stronger/localized possibility without post-hoc matching."
+}
