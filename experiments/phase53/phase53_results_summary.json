@@ -1,0 +1,11 @@
+{
+  "phase":53,
+  "status":"development/model selection; all Phase51/52 dimensions exposed",
+  "reference":{"paragraph_boundary_reset":0.1333132345,"line_position_mi":0.1435077526,"matched_density_approx":0.77,"local_prev10_excess_approx":0.033},
+  "M1_representative":{"mechanism":"line-position-conditioned prefix/suffix probabilities","line_strength":0.4,"density141":0.7029,"local_excess":0.03357,"boundary_gap":0.0480,"line_mi":0.14764},
+  "active_root_pool_M3":{"density141":0.78775,"local_excess":0.13819,"boundary_gap":0.17286,"line_mi":0.22115,"interpretation":"reset can be generated but generic local clustering is severely over-produced"},
+  "surface_state_M3S":{"K":2,"forced_change":true,"density141":0.60401,"local_excess":0.06872,"boundary_gap":0.07525,"line_mi":0.22659,"interpretation":"damages near-family density and remains weak on reset"},
+  "preferred_family_M3P":{"n_preferred":4,"paragraph_bias":0.30,"line_strength":0.40,"density141":0.73305,"local_excess":0.06029,"boundary_gap":0.09031,"line_mi":0.14535},
+  "preferred_family_weaker_tradeoff":{"n_preferred":4,"paragraph_bias":0.20,"density141":0.76623,"local_excess":0.03992,"boundary_gap":0.06576,"line_mi":0.14733},
+  "conclusion":"Line-position grammar is cheap to reproduce. Three simple paragraph mechanisms fail the joint constraint: strong boundary-specific family discontinuity with only modest generic short-range clustering."
+}
