@@ -1,0 +1,17 @@
+{
+  "phase":"47",
+  "voynich_total_gap":0.1442805889157468,
+  "by_operation":{
+    "substitution":{"gap":0.0994329169,"share":0.689,"paired_ci":[0.0823817,0.1122476]},
+    "insertion":{"gap":0.0202939041,"share":0.141,"paired_ci":[0.0119748,0.0294199]},
+    "deletion":{"gap":0.0245537680,"share":0.170,"paired_ci":[0.0158980,0.0317892]}
+  },
+  "by_zone":{
+    "initial":{"gap":0.0617940536,"share":0.428,"paired_ci":[0.0504054,0.0716081]},
+    "medial":{"gap":0.0425246568,"share":0.295,"paired_ci":[0.0308428,0.0518408]},
+    "final":{"gap":0.0399618786,"share":0.277,"paired_ci":[0.0300790,0.0490993]}
+  },
+  "control_total_gap":{"raw_F1":0.0215907740,"F2_max":0.04072,"F3_median":0.03711,"F3_max":0.10767},
+  "strongest_F3":{"id":"F3_h2_d4_n0.2_a1","total":0.10767,"substitution":0.09662,"insertion":0.01005,"deletion":0.00100,"initial":0.07921,"medial":0.00323,"final":0.02523},
+  "interpretation":"Voynich reset is broad across operation and token zone. The strongest nuisance-cipher scalar match does not reproduce the broad medial/deletion geometry. Full historical result JSON is large (~0.9 MB) and is reproducible from the phase script/source archive."
+}
