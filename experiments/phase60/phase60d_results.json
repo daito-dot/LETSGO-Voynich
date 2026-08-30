@@ -1,0 +1,13 @@
+{
+  "phase":"60D",
+  "status":"P60-4 supported for recovery-vector prediction; absolute-body prediction null",
+  "design":"577 eligible paragraphs, 5-fold physical-leaf CV. Predict line2 structural fingerprint and, separately, recovery delta=(line2-entry line0). Metadata baseline uses section+Currier+hand. Entry model adds only the paragraph's own line0 structural fingerprint. Ridge regularization fixed at alpha=10 for this development test.",
+  "absolute_line2_prediction":{"global_mse":1.01245,"metadata_mse":0.96612,"metadata_plus_entry_mse":0.96923,"relative_change_vs_metadata":-0.00322,"decision":"NO IMPROVEMENT"},
+  "recovery_vector_prediction":{"global_mean_delta_mse":1.64898,"metadata_delta_mse":1.62095,"metadata_plus_own_entry_delta_mse":0.97016,"mse_reduction_vs_metadata":0.40148,"decision":"STRONG IMPROVEMENT"},
+  "anti_tautology_controls":{"wrong_same_page_entry_mse":1.65034,"section_shuffled_entry_mse":1.65484,"own_entry_reduction_vs_wrong_same_page":0.41214,"own_entry_reduction_vs_section_shuffled":0.41374},
+  "section_delta_mse_reduction":{"H":0.414,"B":0.391,"P":0.328,"S":0.411,"T":0.349},
+  "coordinate_delta_error_reduction":{"mean_len":0.496,"sd_len":0.481,"k_share":0.446,"kt_mass":0.437,"last_entropy":0.428,"inventory":0.413,"entropy":0.372,"first_entropy":0.360,"edit1":0.352,"local_prev10":0.338,"ttr":0.325},
+  "decision":"P60-4 survives in its mechanistically relevant form. Entry state does not materially improve prediction of the absolute line2 state beyond metadata, but it strongly predicts how that paragraph will move from entry to body: held-out recovery-vector MSE falls by ~40%. The gain appears in all five major sections and disappears when the paragraph's own entry is replaced by another same-page entry or a section-shuffled entry.",
+  "interpretation":"The first line is not simply a generic decorative/header-like form shared by all paragraphs on a page. Its specific structural composition is coupled to the subsequent within-paragraph transformation. This is consistent with an initialization/state-carrying role. However, because delta contains -line0 algebraically, recovery prediction can partly exploit regression-to-the-mean or mathematical coupling; the wrong-entry controls rule out generic page/section information but do not fully eliminate this coupling. A stronger Phase60D2 test should predict line3/line4 absolute residual state after conditioning on line1 or matched entry magnitude, or predict independent body features not algebraically containing line0.",
+  "next":"Phase60D2 anti-coupling test before promoting the initialization narrative: predict later absolute body residuals / independent coordinates from entry under held-out leaves, conditioning on metadata and early-body state."
+}
