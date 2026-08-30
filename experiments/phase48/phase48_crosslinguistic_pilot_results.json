@@ -1,0 +1,7 @@
+{
+  "phase":"48",
+  "matched_tokens":141,
+  "edit1_type_family_coverage":{"Voynich":{"median":0.7573,"approx_95":[0.6296,0.8750]},"Classical_Arabic":{"median":0.3734},"Middle_English":{"median":0.3684},"Ottoman_Turkish":{"median":0.1795}},
+  "local_prev10_excess":{"Voynich":{"median":0.0313},"Middle_English":{"median":0.0404},"Classical_Arabic":{"median":0.0028},"Ottoman_Turkish":{"median":-0.0186}},
+  "interpretation":"Natural languages can produce substantial one-edit families; near-form clouds alone do not imply artificiality. Voynich is much more saturated in the matched pilot."
+}
