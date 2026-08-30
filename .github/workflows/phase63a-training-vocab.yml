@@ -10,14 +10,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   robustness:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout LETSGO-Voynich
+      - name: Checkout LETSGO-Voynich head branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
 
       - name: Verify prior prospective authority exists
         shell: bash
@@ -57,6 +59,11 @@ jobs:
             external/cremma \
             > phase63a_training_vocab_results.json
 
+      - name: Verify exact first-run result digest
+        shell: bash
+        run: |
+          echo "bcd05d1823e17b034c0abf984a0af9b0cb31b5a37bd9e604c327ab9aff1937a7  phase63a_training_vocab_results.json" | sha256sum -c -
+
       - name: Print compact robustness result
         run: |
           python - <<'PY'
@@ -83,3 +90,18 @@ jobs:
         with:
           name: phase63a-training-vocab-results
           path: phase63a_training_vocab_results.json
+
+      - name: Persist exact Phase63A result on PR branch
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          cp phase63a_training_vocab_results.json experiments/phase63/phase63a_training_vocab_results.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/phase63/phase63a_training_vocab_results.json
+          if git diff --cached --quiet; then
+            echo "exact result already recorded"
+            exit 0
+          fi
+          git commit -m "Record exact Phase 63A robustness result"
+          git push origin "HEAD:${{ github.head_ref }}"
