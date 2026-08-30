@@ -1,0 +1,117 @@
+{
+  "phase": "62B",
+  "family": "N0 source-native structured medieval plaintext",
+  "scope_firewall": "N0 only; C0/A1/H62-P1 not evaluated",
+  "raw_artifact": {
+    "workflow_run_id": 33312611679,
+    "artifact_id": 9732449121,
+    "artifact_name": "phase62b-n0-results",
+    "artifact_zip_sha256": "da12b0171f7f6f5a0762ad17fee5f13d55df199e5f65b0cf935ceb0e04ba8f9d"
+  },
+  "inputs": {
+    "voynich_git_blob_sha1": "2a4533ab9bdfa85db9bad602d590978953055df1",
+    "cremma_commit": "292525969ad98380b398e6606a9c2a36d51913ae",
+    "primary_manuscripts": ["BIS193", "CLM13027", "Mazarine915", "UBL758"],
+    "sensitivity_manuscript": "H318"
+  },
+  "source_counts": {
+    "voynich": {"items_total": 736, "base_eligible": 594, "s1_eligible": 431},
+    "BIS193": {"items_total": 98, "base_eligible": 51, "s1_eligible": 40},
+    "CLM13027": {"items_total": 53, "base_eligible": 29, "s1_eligible": 20},
+    "Mazarine915": {"items_total": 80, "base_eligible": 32, "s1_eligible": 29},
+    "UBL758": {"items_total": 10, "base_eligible": 5, "s1_eligible": 5},
+    "H318_sensitivity": {"items_total": 5, "base_eligible": 3, "s1_eligible": 2}
+  },
+  "across_fold": {
+    "voynich_mean": {
+      "S1": 0.8759941302988878,
+      "S2": 0.04388230466228378,
+      "S3": 0.02827359917233384
+    },
+    "N0_equal_manuscript_mean": {
+      "S1": -0.8587158153275315,
+      "S2": 0.005850659241758974,
+      "S3": 0.027968097960774575
+    },
+    "N0_ratio_of_means_to_voynich": {
+      "S1": -0.9802757639877553,
+      "S2": 0.13332616157663965,
+      "S3": 0.9891948241291401
+    },
+    "N0_mean_fold_ratio": {
+      "S1": -1.5515052844607833,
+      "S2": 0.13379495932329774,
+      "S3": 1.0671528348612265
+    },
+    "N0_mean_fold_relative_error": {
+      "S1": 2.5515052844607835,
+      "S2": 0.8662050406767022,
+      "S3": 0.2511247775893366
+    },
+    "broad_regime_gate_0.5_to_2.0": {"S1": false, "S2": false, "S3": true},
+    "materially_competitive_under_frozen_rule": false
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "voynich": {"S1": 0.8061532394902311, "S2": 0.0421875, "S3": 0.028558534351059265},
+      "N0": {"S1": -0.8567736937064611, "S2": 0.005850659241758974, "S3": 0.027968097960774575},
+      "ratio": {"S1": -1.062792595422974, "S2": 0.1386822931379905, "S3": 0.9793253959385073}
+    },
+    {
+      "fold": 1,
+      "voynich": {"S1": 1.4591847522080983, "S2": 0.04481744246409413, "S3": 0.03301394333015316},
+      "N0": {"S1": -0.9099877882311997, "S2": 0.005850659241758974, "S3": 0.027968097960774575},
+      "ratio": {"S1": -0.6236275336993269, "S2": 0.13054424617036725, "S3": 0.8471601735388581}
+    },
+    {
+      "fold": 2,
+      "voynich": {"S1": 0.20470443416832568, "S2": 0.04864080635308491, "S3": 0.01786250306766611},
+      "N0": {"S1": -0.8530755908996506, "S2": 0.005850659241758974, "S3": 0.027968097960774575},
+      "ratio": {"S1": -4.167352770669238, "S2": 0.12028294102052674, "S3": 1.5657434937772607}
+    },
+    {
+      "fold": 3,
+      "voynich": {"S1": 0.6808459396801555, "S2": 0.042606707317073174, "S3": 0.02273920544890599},
+      "N0": {"S1": -0.8272533583096549, "S2": 0.005850659241758974, "S3": 0.027968097960774575},
+      "ratio": {"S1": -1.2150375145047907, "S2": 0.13731779830389576, "S3": 1.229950537349147}
+    },
+    {
+      "fold": 4,
+      "voynich": {"S1": 1.2290822859476285, "S2": 0.04115906717716672, "S3": 0.039193809663884686},
+      "N0": {"S1": -0.8464886454906908, "S2": 0.005850659241758974, "S3": 0.027968097960774575},
+      "ratio": {"S1": -0.6887160080075875, "S2": 0.14214751798370853, "S3": 0.7135845737023596}
+    }
+  ],
+  "per_manuscript": {
+    "BIS193": {"S1_mean": -1.3887981627112498, "S2": 0.005201177625122677, "S3": 0.02737346899147005},
+    "CLM13027": {"S1_mean": -1.4196891706511923, "S2": 0.00813916374082349, "S3": 0.009023869513387947},
+    "Mazarine915": {"S1_mean": -0.3621328249202938, "S2": 0.007698229407236301, "S3": 0.024867624888474535},
+    "UBL758": {"S1_mean": -0.26424310302738985, "S2": 0.002364066193853428, "S3": 0.05060742844976577}
+  },
+  "leave_one_manuscript_out": {
+    "omit_BIS193": {
+      "aggregate": {"S1": -0.6820216995329587, "S2": 0.0060671531139710735, "S3": 0.028166307617209414},
+      "ratio_to_voynich": {"S1": -0.778568800798076, "S2": 0.13825967347575766, "S3": 0.9962052388707054}
+    },
+    "omit_CLM13027": {
+      "aggregate": {"S1": -0.6717246968863112, "S2": 0.005087824408737469, "S3": 0.034282840776570116},
+      "ratio_to_voynich": {"S1": -0.7668141528038775, "S2": 0.11594250684628198, "S3": 1.2125389685129444}
+    },
+    "omit_Mazarine915": {
+      "aggregate": {"S1": -1.0242434787966106, "S2": 0.005234802519933198, "S3": 0.029001588984874586},
+      "ratio_to_voynich": {"S1": -1.1692355500682867, "S2": 0.11929187767643473, "S3": 1.0257480417722373}
+    },
+    "omit_UBL758": {
+      "aggregate": {"S1": -1.0568733860942454, "S2": 0.007012856924394156, "S3": 0.02042165446444418},
+      "ratio_to_voynich": {"S1": -1.2064845522807806, "S2": 0.15981058830808417, "S3": 0.722287047360673}
+    }
+  },
+  "H318_sensitivity": {
+    "S1_mean": 2.04563104773868,
+    "S2": -0.017964071856287428,
+    "S3": 0.1823586708339533,
+    "interpretation": "small predeclared sensitivity only; excluded from primary N0 by the frozen >=5 source-panel rule"
+  },
+  "decision": "N0 does not satisfy the frozen broad-regime gate: S1 is opposite in sign across all four primary manuscripts and all folds; S2 locality excess is about 13.3% of Voynich; S3 line-position eta2 is approximately matched. Proceed to frozen Phase62C without altering C0, A1, source membership, or H62-P1."
+}
