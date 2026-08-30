@@ -1,0 +1,104 @@
+name: Phase64B Naibbe C1 first reveal
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/phase64/PLAN_B.md'
+      - 'experiments/phase64/C1_SOURCE_AUDIT_B.md'
+      - 'experiments/phase64/IMPLEMENTATION_B.md'
+      - 'experiments/phase64/PREFLIGHT_AMENDMENT_B1.md'
+      - 'experiments/phase64/PREFLIGHT_AMENDMENT_B2.md'
+      - 'experiments/phase64/phase64b_naibbe.py'
+      - 'experiments/phase64/phase64b_science.py'
+      - '.github/workflows/phase64b-naibbe-science.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen scientific head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout exact published Naibbe source
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify exact frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+          test "$(git -C external/naibbe hash-object README.md)" = "486782221285186c0f78dd9474b676e067cd4bea"
+
+      - name: Install frozen runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Run frozen Phase64B first reveal
+        shell: bash
+        run: |
+          python experiments/phase64/phase64b_science.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma \
+            external/naibbe \
+            > phase64b_science_results.json
+          python -m json.tool phase64b_science_results.json > /dev/null
+          sha256sum phase64b_science_results.json
+
+      - name: Print frozen verdict summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase64b_science_results.json'))
+          p=x['published_mapping']['primary_evaluation']
+          r=x['published_mapping']['raw_token_sensitivity_evaluation']
+          q=x['mapping_permutation_control']['aggregate_evaluation']
+          print(json.dumps({
+              'classification': x['frozen_primary_classification'],
+              'published_exposed_ratios': p['candidate_ratio_of_means_to_voynich'],
+              'published_exposed_gate_pass': p['exposed_gate_pass'],
+              'published_H62': p['H62P1_summary'],
+              'published_H62_viable_vs_N0_C0': p['H62_viable_vs_N0_C0'],
+              'published_A1_R1_rival': p['A1_R1_rival'],
+              'raw_sensitivity_classification': r['classification'],
+              'permutation_control_classification': q['classification'],
+              'codebook_specificity': x['codebook_specificity'],
+          }, indent=2))
+          PY
+
+      - name: Upload first-reveal scientific result
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase64b-first-reveal
+          path: phase64b_science_results.json
