@@ -146,6 +146,19 @@ def glyph_line(tokens: Sequence[str]) -> b.Line:
     return [tuple(x) for x in tokens if x]
 
 
+def project_effective_plaintext(published_cleaned: str) -> Tuple[str, List[str]]:
+    """Project published clean_line output onto Naibbe's reachable alphabet.
+
+    The pinned external clean_line uses Unicode isalpha(), so source-native
+    medieval alphabetic glyphs can survive even though the published codebook
+    has no cell for them. B3 freezes a generic drop-only interface projection:
+    no transliteration or expansion is invented here.
+    """
+    allowed = set(EFFECTIVE_LETTERS)
+    dropped = [ch for ch in published_cleaned if ch not in allowed]
+    return "".join(ch for ch in published_cleaned if ch in allowed), dropped
+
+
 def encrypt_manuscript(
     module,
     source_items: Sequence[b.Item],
@@ -160,7 +173,10 @@ def encrypt_manuscript(
     primary: List[b.Item] = []
     raw: List[b.Item] = []
     source_units = 0
+    published_clean_chars = 0
     cleaned_chars = 0
+    dropped_unsupported_chars = 0
+    dropped_unsupported_types = set()
     nonempty_source_lines = 0
     nonempty_cleaned_lines = 0
     primary_tokens = 0
@@ -174,13 +190,14 @@ def encrypt_manuscript(
             source_units += sum(len(tok) for tok in line)
             if source:
                 nonempty_source_lines += 1
-            cleaned = module.clean_line(source)
+            published_cleaned = module.clean_line(source)
+            published_clean_chars += len(published_cleaned)
+            cleaned, dropped = project_effective_plaintext(published_cleaned)
+            dropped_unsupported_chars += len(dropped)
+            dropped_unsupported_types.update(dropped)
             cleaned_chars += len(cleaned)
             if cleaned:
                 nonempty_cleaned_lines += 1
-                if any(ch not in EFFECTIVE_LETTERS for ch in cleaned):
-                    bad = sorted(set(cleaned) - set(EFFECTIVE_LETTERS))
-                    raise RuntimeError(f"Naibbe clean_line emitted unsupported normalized letters: {bad}")
                 encrypted = module.encrypt_naibbe(
                     cleaned,
                     module.naibbe_tables,
@@ -208,6 +225,9 @@ def encrypt_manuscript(
         "seed": seed,
         "source_items": len(source_items),
         "source_graphematic_units": source_units,
+        "published_clean_line_characters": published_clean_chars,
+        "dropped_unsupported_after_clean_line": dropped_unsupported_chars,
+        "dropped_unsupported_character_types": sorted(dropped_unsupported_types),
         "cleaned_plaintext_characters": cleaned_chars,
         "cleaned_to_source_unit_ratio": float(cleaned_chars / source_units) if source_units else None,
         "nonempty_source_lines": nonempty_source_lines,
