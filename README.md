@@ -6,6 +6,8 @@ Open research repository for testing hypotheses about the Voynich Manuscript.
 
 This repository is not built around a claim that the manuscript has already been deciphered. The goal is to make proposed explanations testable, comparable, falsifiable, and reproducible.
 
+> **Continuing the existing research? Start with [`RESUME.md`](RESUME.md).** It defines the reading order, source-of-truth hierarchy, current frontier, and rules that prevent exposed targets from being accidentally reused as prospective validation.
+
 ## What we are looking for
 
 Contributions are welcome for:
@@ -48,12 +50,12 @@ Readable output alone is not enough. If a proposed decipherment uses unconstrain
 
 ## Research records
 
-The repository is being populated with the existing research program:
-
+- `RESUME.md` — deterministic restart/handoff entry point
+- `RESEARCH_PROTOCOL.md` — methodological and evidence contract
 - `research/STATUS.md` — current accepted state and research frontier
 - `research/hypothesis-ledger.md` — hypotheses including negative results
 - `research/CHECKPOINT_JA.md` — Japanese handoff/checkpoint
-- `experiments/` — analysis code and result files
+- `experiments/` — analysis archive and result files
 - `data/README.md` — transcription provenance and setup
 
 ## Evidence labels
