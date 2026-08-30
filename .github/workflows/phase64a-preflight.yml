@@ -1,0 +1,74 @@
+name: Phase64A implementation preflight
+
+on:
+  push:
+    branches: [phase64a-autonomy-science]
+    paths:
+      - 'experiments/phase64/phase64a_mg0.py'
+      - 'experiments/phase64/phase64a_inventory_autonomy.py'
+      - 'experiments/phase64/phase64a_science.py'
+      - '.github/workflows/phase64a-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout implementation head
+        uses: actions/checkout@v4
+        with:
+          ref: phase64a-autonomy-science
+
+      - name: Install numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Compile frozen implementation
+        run: |
+          python -m py_compile \
+            experiments/phase64/phase64a_mg0.py \
+            experiments/phase64/phase64a_inventory_autonomy.py \
+            experiments/phase64/phase64a_science.py
+
+      - name: Verify committed prior-result authority only
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          expected={
+            'experiments/phase62/phase62p_h62p1_results.json':'0e1b687ab73efbc494834f49398ed474230f47bcde4cf4dbcaa46631efd75264',
+            'experiments/phase63/phase63a_training_vocab_results.json':'bcd05d1823e17b034c0abf984a0af9b0cb31b5a37bd9e604c327ab9aff1937a7',
+            'experiments/phase63/phase63b_science_results.json':'77653133af22cd26141bc695a8ee6243cc3d924ba44a41a685cb148b9167db91',
+          }
+          for path,want in expected.items():
+              got=hashlib.sha256(open(path,'rb').read()).hexdigest()
+              assert got==want,(path,got,want)
+          a=json.load(open('experiments/phase63/phase63a_training_vocab_results.json'))
+          b=json.load(open('experiments/phase63/phase63b_science_results.json'))
+          assert a['across_fold']['robust_to_heldout_vocabulary_removal'] is True
+          assert b['across_phase63B']['strong_replication'] is True
+          print('prior authority OK; no Phase64 scientific source read')
+          PY
+
+      - name: Test MG0 determinism on synthetic toy types
+        shell: bash
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,'experiments/phase64')
+          import phase64a_mg0 as mg
+          chars='abcde'
+          types=[a+b+c for a in chars for b in chars for c in chars]
+          m1,cv1=mg.select_order(types)
+          m2,cv2=mg.select_order(types)
+          assert cv1==cv2
+          v1,d1=mg.generate_synthetic_vocab(m1,len(types),123456)
+          v2,d2=mg.generate_synthetic_vocab(m2,len(types),123456)
+          assert v1==v2 and d1==d2
+          assert len(v1)==len(types)==len(set(v1))
+          assert d1['membership_queries_against_empirical_vocab']==0
+          assert not (set(''.join(v1))-set(chars))
+          print({'selected_order':m1.order,'types':len(v1),'attempts':d1['attempts']})
+          PY
