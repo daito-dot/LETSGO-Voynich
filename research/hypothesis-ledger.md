@@ -53,15 +53,19 @@ This public ledger records hypotheses that have been tested or materially constr
 | P60-7 | Independently localized content relation eventually emerges after structural modeling | OPEN | Current page-level visual tests are negative; localized mapping remains unavailable. |
 | P61-A0-entry | One low-complexity boundary-aware entry mixture can reproduce the held-out Voynich entry-direction target without persistent paragraph state | SUPPORTED NARROW GATE | Phase61A: A0 reproduces/exceeds the scalar held-out entry-direction projection under physical-leaf cross-fitting. This is a mechanism demonstration, not a whole-manuscript fit. |
 | P61-A0-joint | A0 is sufficient to jointly reproduce the surviving Voynich structural fingerprint | FALSIFIED AS SUFFICIENT MODEL | Phase61B: local-prev10 near-family activation is far too low while line-position and entry/pseudo effects are too large; global edit1 density is non-independent because empirical Voynich vocabulary is sampled. |
-| P61-A1 | A0 plus exactly one bounded local-family body mechanism is sufficient to bring entry, locality and line-position targets into the same held-out regime | PROSPECTIVE — PHASE61C | Frozen in `experiments/phase61/PLAN_C.md`; no persistent paragraph state, section-specific grammar, or additional line-position rule is permitted. |
+| P61-A1 | A0 plus exactly one bounded local-family body mechanism is sufficient to bring entry, locality and line-position targets into the same held-out regime | SUPPORTED STRUCTURAL GATE | Phase61C frozen physical-leaf CV: held-out A1/Voynich ratios of means are entry 0.797, local-prev10 0.717, line-position eta2 mean 1.116; all pass the preregistered [0.5,2.0] broad-regime gate. Does not establish meaninglessness; empirical Voynich vocabulary makes edit1 density non-independent. |
+| P62-N0 | Source-native structured medieval plaintext can reproduce a substantial share of the same joint scorecard before encoding | PROSPECTIVE — PHASE62A | Exact Phase59 controls/provenance must be recovered and frozen before numerical tournament evaluation. |
+| P62-B0 | A bounded global boundary-blind encoder applied to structured medieval plaintext can improve the joint Voynich fit without target-aware paragraph/section rules | PROSPECTIVE — PHASE62A | Must use the same scorecard as N0 and frozen A1, with explicit transform/codebook complexity cost. |
 
 ## Current mechanism alternatives
 
 Current evidence remains compatible with meaningful text, systematic cipher/shorthand, bounded adversarial/deceptive cipher, hierarchical formal generation, or mixed mechanisms.
 
-The strongest established paragraph result is a **manuscript-wide, transferable, short-lived paragraph-entry formal register**. Phase61A shows that explicit boundary-aware nonsemantic machinery can reproduce the narrow entry direction, while Phase61B shows that this mechanism alone is not a sufficient joint generator.
+The strongest established paragraph result remains a **manuscript-wide, transferable, short-lived paragraph-entry formal register**. Phase61 now adds a stronger mechanism result: once explicit paragraph entry and one local-family process are supplied, a nonsemantic A1 can place entry, locality and line-position structure in the same broad held-out regime.
 
-The current research frontier is therefore model-family discrimination under joint constraints and explicit complexity cost, not further promotion of the paragraph-entry statistic by itself.
+That keeps G structurally viable but does not privilege it. A1 is frozen and must now compete against N0 and B0/C0 meaningful structured-text families under the same scorecard and explicit complexity accounting.
+
+The current research frontier is therefore the first fair **N/C/G model-family tournament**, followed by a genuinely prospective discriminator rather than further post-hoc generator repair.
 
 ## Rule for adding hypotheses
 
