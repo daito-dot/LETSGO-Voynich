@@ -1,0 +1,8 @@
+{
+  "phase":"49",
+  "matched_tokens":141,
+  "raw_edit1_fraction":{"Voynich":0.7573,"Lojban":0.6038,"Toki_Pona":0.4271,"C":0.1898,"Python":0.1524,"JavaScript":0.1034},
+  "local_prev10_excess":{"Voynich":0.0313,"Lojban":-0.0189,"Toki_Pona":-0.0089,"C":0.0039,"Python":0.0127,"JavaScript":0.0245},
+  "character_length_null_excess":{"Voynich":0.5572,"C":0.1568,"JavaScript":0.0114,"Lojban":0.0013,"Python":-0.0360,"Toki_Pona":-0.1320},
+  "interpretation":"Conventional constructed/programming language does not explain Voynich near-neighbor topology; Voynich remains unusually organized beyond length/alphabet effects in this pilot."
+}
