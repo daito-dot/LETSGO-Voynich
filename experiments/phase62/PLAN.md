@@ -6,25 +6,23 @@ Phase61C kept G/A1 structurally viable after exactly one local-family repair. Ph
 
 ## Scientific question
 
-Among the currently viable families,
+Compare:
 
 - **N0** — source-native meaningful structured medieval text;
 - **C0/B0** — the same text after a bounded, reversible, global, boundary-blind recoding;
-- **G/A1** — the frozen Phase61C nonsemantic generator;
+- **G/A1** — the frozen Phase61C nonsemantic generator.
 
-which family places the same cross-representation structural targets in the Voynich regime most efficiently, and what extra machinery is required?
+Which family places the same cross-representation structural targets in the Voynich regime most efficiently, and what extra machinery is required?
 
-This phase is a **mechanism-family comparison**, not a semantic identification or decipherment test.
+This is a mechanism-family comparison, not a language identification or decipherment test.
 
 ## Frozen inputs
 
 ### Voynich
 
-Primary transcription:
-
-- ZL3b/EVA v3b, 2025-05-13
+- transcription: ZL3b/EVA v3b, 2025-05-13
 - expected Git blob SHA-1: `2a4533ab9bdfa85db9bad602d590978953055df1`
-- reproducible public mirror: `matthewdgreen/cipher_benchmark`
+- public reproducibility mirror: `matthewdgreen/cipher_benchmark`
 - frozen mirror commit: `315f0cad4de3d021bd4185765c037cf2a28d341c`
 - path: `benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt`
 
@@ -32,65 +30,61 @@ The external transcription is not redistributed by this repository.
 
 ### Medieval structured-text controls
 
-External corpus:
-
-- `HTR-United/CREMMA-Medieval-LAT`
+- corpus: `HTR-United/CREMMA-Medieval-LAT`
 - frozen commit: `292525969ad98380b398e6606a9c2a36d51913ae`
-- graphematic medieval Latin manuscript transcriptions
+- representation: graphematic medieval Latin manuscript transcription
 
-The source-recovery audit and rationale are frozen in `CONTROL_RECOVERY.md`.
+Source recovery and provenance are frozen in `CONTROL_RECOVERY.md`.
 
 ### Primary N0 panel
 
-The primary panel was selected by an objective corpus-wide rule committed before its counts were inspected:
+Before corpus-wide counts were inspected, the source audit committed the rule:
 
-> all immediate CREMMA manuscript directories with at least 5 eligible literal-pilcrow entries under the frozen Phase62 enumeration rule.
+> include every immediate CREMMA manuscript directory with at least 5 eligible literal-pilcrow entries.
 
-Resulting manuscripts:
+It yields:
 
 1. BIS 193 — scholastic — 64 eligible entries;
 2. CLM 13027 — medical — 39;
 3. Mazarine 915 — scholastic — 38;
 4. UBL 758 — ecclesiastical — 5.
 
-All eligible entries are used. There is no manual semantic sub-selection inside these manuscripts.
+All eligible entries are used. There is no manual semantic item selection.
 
-**Replication/aggregation unit is manuscript, not entry.** Manuscripts receive equal primary weight so BIS193 cannot dominate by entry count.
+**Replication/aggregation unit = manuscript, not entry.** The four manuscripts receive equal primary weight.
 
 ### Predeclared sensitivities
 
-- H318 — medical/recipes — 4 eligible literal-pilcrow entries; excluded from the primary >=5 rule but retained as a Phase52-preexisting sensitivity.
-- Arras 861 — literary — no literal-pilcrow eligible entries; retained for non-entry line-position/document sensitivity only.
+- H318 — medical/recipes — 4 eligible literal-pilcrow entries; excluded by the frozen >=5 primary rule but retained because it was already a Phase52 control.
+- Arras 861 — literary — no literal-pilcrow eligible entries; retained for non-entry document/line-position sensitivity only.
 
-Neither sensitivity can be promoted into or removed from the primary panel after tournament results are seen.
+Neither may enter/leave the primary estimate after results are seen.
 
-## Entry segmentation
+## Source-native entry segmentation
 
-For structured medieval controls, a source-native item begins at a literal `¶` marker and extends until the next literal pilcrow in the same file or file end.
+A medieval item begins at a literal `¶` and extends until the next literal pilcrow in the same file or file end.
 
-- line0 = post-pilcrow text on the marker's physical transcription line;
-- later lines = following physical transcription lines until the next marker/file end;
-- primary entry eligibility = at least 3 item lines and at least 5 usable tokens on line0 and line2;
-- internal pseudo-boundaries are `j -> j+2`, `j>=1`, within the same item and with >=5 tokens on both compared lines.
+- line0 = post-pilcrow text on the marker's physical source line;
+- later lines = following physical source lines until next marker/file end;
+- primary eligibility = at least 3 item lines and >=5 usable tokens on line0 and line2;
+- internal pseudo-boundaries = `j -> j+2`, `j>=1`, within the same item, both compared lines >=5 tokens.
 
-No Latin wording or semantic interpretation is used to create boundaries.
+No Latin wording/translation is used to create boundaries.
 
-Voynich paragraphs continue to use the explicit ZL3b `<%>` paragraph markers and the audited physical-leaf grouping.
+Voynich uses explicit ZL3b `<%>` paragraph markers and the audited physical-leaf grouping.
 
-## Cross-representation token units
+## Graphematic units
 
-Primary comparison is graphematic and representation-neutral:
+- Voynich: raw EVA characters;
+- Latin: NFC grapheme units, attaching combining marks to the preceding base unit where applicable;
+- punctuation/separators are not units;
+- medieval abbreviation graphemes are retained, never expanded for the primary analysis.
 
-- Voynich raw EVA token characters are units;
-- medieval Latin tokens are NFC grapheme units, with combining marks attached to the preceding base unit where applicable;
-- punctuation/separators are not token units;
-- medieval abbreviation graphemes are retained, not expanded.
+## Sample-size-neutral core feature vector — 8D
 
-## Primary common feature vector — 9D
+Literal Voynich-specific `{k,t}` dimensions have no invariant cross-language analogue and are excluded. Local previous-10 continuity is also kept outside this vector because its intended window must not be truncated by the fixed-token sample-size control.
 
-Literal Voynich-specific `{k,t}` dimensions are excluded from the primary N/C/G tournament because they have no invariant cross-language analogue.
-
-For each line, use:
+For **S1 and S3**, every eligible line is represented using exactly its **first five usable tokens**, with:
 
 1. type-token ratio;
 2. mean token length in graphematic units;
@@ -99,290 +93,301 @@ For each line, use:
 5. unit entropy;
 6. first-unit entropy;
 7. last-unit entropy;
-8. within-line edit-distance-1 token-family fraction;
-9. local previous-10 edit-distance-1 fraction.
+8. within-line edit-distance-1 token-family fraction.
 
-### Sample-size-neutral primary representation
-
-To prevent line-token-count artifacts from becoming model-family evidence, the **primary 9D score uses exactly the first five usable tokens of every eligible line**.
-
-Source-native full-line values are retained only as a sensitivity / continuity analysis.
-
-This fixed-five rule is frozen before N0/C0 scores are inspected.
+The fixed-five representation prevents line token count from becoming a hidden discriminator. Source-native full-line versions are secondary sensitivities only.
 
 ## Primary structural scorecard
 
-All families are evaluated on the same three dimensions.
+All families are judged on the same three dimensions.
 
 ### S1 — entry-specific generic projection
 
 Within each outer Voynich physical-leaf fold:
 
-1. learn feature SDs and the 9D real-entry-minus-internal-pseudo direction using **Voynich training leaves only**;
-2. score held-out Voynich entries on that direction;
-3. score every external manuscript/model output on the same frozen direction and scaling;
-4. aggregate external entries within manuscript first, then aggregate manuscripts equally.
+1. learn 8D feature SDs and the mean real-entry-minus-internal-pseudo direction from **Voynich training leaves only**;
+2. normalize that direction to unit norm;
+3. score held-out Voynich entry deltas on it;
+4. score external N0/C0 manuscript entry deltas on the same frozen Voynich scaling/direction;
+5. average entries within each manuscript first, then average the four manuscripts equally.
 
-Primary quantity: model / held-out-Voynich entry projection ratio.
+Primary S1 quantity: external/model projection divided by the held-out Voynich projection.
 
-Also report the full 9D vector, cosine to the Voynich direction, and source-standardized transition norm. These are secondary diagnostics and cannot replace S1 after results are seen.
+Also report the full 8D mean delta, cosine to the Voynich direction, and source-standardized transition norm as diagnostics. They cannot replace S1 post hoc.
 
 ### S2 — local near-family activation beyond document inventory
 
-Report the raw within-line previous-10 near-family fraction and a locality excess relative to a deterministic permutation null that:
+S2 uses **full eligible physical lines**, not the five-token S1/S3 representation.
 
-- pools tokens within each manuscript/document realization;
-- preserves the number of tokens in every physical line;
-- randomly redistributes the document's existing tokens across line/token slots;
-- therefore preserves the document vocabulary and line-length layout while destroying local lexical-family activation.
+Observed statistic: fraction of token occurrences having at least one non-identical edit-distance-1 token among the preceding up-to-10 tokens on the same physical line.
 
-Use 100 deterministic null replicates per manuscript/model realization.
+Permutation null, separately within each manuscript/model realization:
 
-Primary S2 quantity: observed minus null-median local-prev10 fraction, compared with the equivalently computed held-out Voynich value.
+- pool all tokens from the included physical lines;
+- preserve the number of token slots in every line;
+- randomly redistribute the existing document tokens across those slots;
+- thereby preserve document vocabulary and exact line-token counts while destroying line-local family activation.
+
+Use 100 deterministic null replicates.
+
+Primary S2 quantity:
+
+`locality_excess = observed_local_prev10 - median(null_local_prev10)`.
+
+Compare model locality excess with the equivalently computed held-out Voynich value. Report raw observed and null distribution too.
 
 ### S3 — generic line-position grammar
 
-Compute eta-squared for each of the nine common features across item/paragraph line-position groups:
+Using the same fixed-five 8D features as S1, compute eta-squared for item/paragraph line-position groups:
 
 - line0;
 - line1;
 - line2;
 - line3+.
 
-Primary quantity: mean eta2 over the nine dimensions. Report max and per-dimension eta2 as diagnostics.
+Primary S3 quantity: mean eta2 across 8 dimensions. Report max and per-dimension values as diagnostics.
 
 ## Secondary scorecard
 
-These are reported but cannot override the frozen S1–S3 decision:
+Report but do not use to override S1–S3:
 
-- source-native full-line S1–S3;
-- entry transition norm;
-- entry-direction cosine;
+- full-line S1/S3 sensitivity;
+- entry transition norm and direction cosine;
+- raw local-prev10;
 - edit1 token-type density;
-- number of token types / graphematic units;
-- manuscript-to-manuscript heterogeneity;
-- predeclared H318 and Arras sensitivities.
+- token/unit inventory sizes;
+- manuscript heterogeneity and leave-one-manuscript-out sensitivity;
+- H318 and Arras predeclared sensitivities.
 
-Edit1 type density is especially important as a **target-dependence diagnostic**: it is independent for raw N0/C0 source vocabularies but is not an independent A1 prediction because A1 is supplied the empirical Voynich token vocabulary.
+Edit1 type density is a target-dependence diagnostic: it is independent for N0/C0 source vocabularies but **not** an independent A1 prediction because A1 is supplied the empirical Voynich token vocabulary.
 
 ## N0
 
-N0 is the unencoded source-native structured manuscript text under the fixed extraction/feature rules above.
+N0 is unencoded source-native structured manuscript text under the frozen rules above.
 
-No parameter is tuned to Voynich.
+- Voynich-tuned parameters: none;
+- primary result: equal-manuscript aggregate across BIS193, CLM13027, Mazarine915, UBL758;
+- all four individual manuscript results are reported;
+- best-manuscript matching is not a primary result.
 
-Primary family aggregation:
+## C0/B0 — bounded boundary-blind reversible recodings
 
-- calculate each metric per manuscript;
-- give BIS193, CLM13027, Mazarine915 and UBL758 equal weight;
-- report all manuscript values individually;
-- do not select the best matching manuscript as the primary N0 result.
+C0 begins from the exact N0 items. Every transform is global and token-internal. No transform may inspect manuscript identity, entry/paragraph position, line number, Voynich section, or Voynich boundary labels.
 
-## C0/B0 — bounded boundary-blind recoding family
-
-C0 starts from the exact N0 items and may use only the following **predeclared reversible transforms**. All operate independently inside each token and cannot inspect document, entry, paragraph, line number, Voynich section, or Voynich boundary labels.
+All encoded units are abstract symbols/tuples; arbitrary one-to-one renaming of those symbols is irrelevant to the generic structural scorecard.
 
 ### C0-0 — identity / monoalphabetic-equivalent
 
-No structural recoding. Any one-to-one grapheme renaming is structurally equivalent on the generic scorecard and is represented by identity.
+No structural change. Any one-to-one grapheme substitution is equivalent here.
 
 ### C0-1 — token reversal
 
-Reverse graphematic unit order within every token. This is a fixed reversible transposition and tests whether edge orientation rather than document grammar explains mismatch.
+Reverse graphematic unit order in every token. Fixed and reversible.
 
 ### C0-2 — positional allography, 2 classes
 
-Replace each graphematic unit `g` by an abstract reversible pair `(g, class)`, where class is:
+For token units `g_i`, encode each as `(g_i, class)` where:
 
-- initial;
-- non-initial.
+- `I` if `i=0`;
+- `N` otherwise.
 
-The mapping is global and token-position-conditioned only.
+Token boundaries are preserved. Decoding drops the class tag.
 
 ### C0-3 — positional allography, 3 classes
 
-Replace each unit by `(g, class)` with classes:
+Encode each unit as `(g_i, class)` where:
 
-- initial;
-- medial;
-- final/singleton (singleton is deterministically distinguishable within the encoded unit definition if needed for reversibility).
+- `I` if `i=0` (including singleton tokens);
+- `F` if `i=len(token)-1` and `len(token)>1`;
+- `M` otherwise.
 
-No line/entry state is available.
+Decoding drops the class tag. The rule is fixed, reversible and boundary-blind.
 
 ### C0-4 — non-overlapping digraph coding
 
-Encode token units left-to-right into reversible non-overlapping pairs, with a final singleton unit when token length is odd. Each encoded unit contains its exact source unit(s), so decoding is unique.
+From token start, encode exact unit pairs `(g_0,g_1)`, `(g_2,g_3)`, ... as single abstract units; an odd final source unit becomes a tagged singleton. Because each encoded unit contains its exact source unit(s), decoding is unique.
 
 ### C0 model selection
 
-The family contains exactly five alternatives C0-0…C0-4.
+There are exactly five alternatives C0-0…C0-4.
 
-Within each outer Voynich physical-leaf fold, select one transform using Voynich **training** targets only, minimizing equal-weight mean squared relative error over S1, S2 and S3 after manuscript-level equal weighting.
+For each outer Voynich physical-leaf fold:
 
-Evaluate the selected transform against held-out Voynich targets. The held-out fold cannot choose the transform.
+- compute training-fold Voynich S1–S3 targets;
+- calculate equal-manuscript C0 candidate aggregates;
+- choose the single transform minimizing mean squared relative error over S1, S2 and S3 on training targets;
+- evaluate that selected transform against held-out Voynich targets.
 
-No transform parameters beyond the five-class choice are fitted to Voynich.
+No continuous transform parameter and no Voynich-derived symbol/codeword table is fitted.
 
-A later, more expressive cipher is **C1**, not a repair inside C0, and may be proposed only after C0 is frozen and interpreted.
+Any more expressive cipher becomes **C1** after C0 is frozen; it is not a repair inside Phase62C.
 
 ## Frozen G/A1 competitor
 
-A1 is the exact Phase61C architecture and selected per-fold parameters already frozen in:
+A1 remains exactly the Phase61C architecture. Its mechanism and selected fold parameters are frozen in:
 
 - `../phase61/PLAN_C.md`
 - `../phase61/IMPLEMENTATION_C.md`
 - `../phase61/phase61c_results.json`
 
-No A1 parameter or mechanism may be retuned for Phase62.
+No A1 parameter is retuned.
 
-For the fair tournament, regenerate/re-score frozen A1 outputs on the new common 9D fixed-five scorecard using its frozen selected parameter pair and deterministic seeds. This is **evaluation under a new common representation, not model repair**.
+Phase62 regenerates/rescores A1 using its already selected per-fold parameter pair and deterministic generator seeds, but evaluates the output on the new common 8D/S2 scorecard. This is evaluation under a common representation, not model repair.
 
-## Outer split and target isolation
+## Outer isolation
 
-Voynich outer folds remain physical-leaf folds; recto/verso stay together.
+Voynich outer split remains five physical-leaf folds; recto/verso stay together.
 
-Within each fold:
+Per fold:
 
-- the 9D direction/scaling is learned on training leaves only;
-- C0 transform choice uses training targets only;
-- held-out leaves provide the Voynich target values used for final fold evaluation;
-- N0 has no Voynich-tuned parameters;
-- A1 remains frozen from Phase61C.
+- S1 scaling/direction is learned from Voynich training leaves only;
+- C0 transform choice sees training targets only;
+- held-out leaves define final target values;
+- N0 has no Voynich-tuned parameter;
+- A1 is not retuned.
 
-External manuscripts are independent source documents, not token-level folds. Their uncertainty is represented by manuscript-level values and leave-one-manuscript-out sensitivity rather than pretending 146 entries are independent documents.
+External manuscripts are replication units. Uncertainty is shown with manuscript-level results and leave-one-manuscript-out sensitivity rather than treating 146 entries as 146 independent documents.
 
-## Complexity accounting — frozen before outcome
+## Complexity/dependence accounting — frozen before outcome
 
-Do **not** reduce scientific interpretation to one arbitrary scalar penalty. Report a complexity/dependence vector and use Pareto comparisons.
+Do not collapse complexity to one arbitrary scalar penalty. Report a vector and use Pareto comparisons.
 
-For every family record:
+For each family record:
 
-1. number of explicit Voynich boundary-aware mechanisms;
-2. number of local/context state mechanisms and maximum memory;
-3. number of Voynich-selected discrete/continuous parameters;
-4. number of transform/model alternatives searched;
-5. whether an empirical Voynich token vocabulary/codebook is supplied;
-6. size of any target-derived codebook in types and total graphematic units;
-7. whether section/hand/page metadata are used at generation time;
-8. whether the output process is reversible to a meaningful plaintext candidate.
+1. explicit Voynich boundary-aware mechanisms;
+2. local/context state mechanisms and maximum memory;
+3. Voynich-selected parameters/model choices;
+4. number of transform alternatives searched;
+5. whether empirical Voynich vocabulary/codebook is supplied;
+6. target-derived codebook size in types and total graphematic units;
+7. generation-time use of section/hand/page metadata;
+8. reversibility to a candidate meaningful plaintext.
 
-### Pre-result complexity ledger
+### Pre-result ledger
 
 **N0**
 - Voynich boundary mechanisms: 0
 - Voynich-selected parameters: 0
 - target vocabulary: no
-- reversible plaintext: already plaintext
+- output already meaningful source plaintext
 
 **C0**
 - Voynich boundary mechanisms: 0
-- global boundary-blind transform only
-- searched alternatives: 5 (model-choice cost at least `log2(5)` bits conceptually)
-- no Voynich-derived symbol/codeword table
-- reversible to N0 plaintext by construction
+- one global boundary-blind transform choice
+- alternatives searched: 5; model-choice cost conceptually at least `log2(5)` bits
+- Voynich-derived mapping/codebook: none
+- reversible to N0 source plaintext
 
 **G/A1**
 - explicit Voynich paragraph-entry mechanism: 1
-- local-family mechanism with memory 10: 1
-- selected entry-strength and local-family parameters from Phase61C
-- empirical Voynich prose vocabulary supplied: yes, 8,295 observed token types in the Phase61C input
-- no meaningful plaintext output supplied
+- local-family mechanism: 1, maximum generator memory 10 tokens
+- entry-strength and local-family parameter choices already selected in Phase61C
+- supplied empirical Voynich prose vocabulary: yes, 8,295 observed token types in the Phase61C input
+- candidate meaningful plaintext: none supplied
 
-A1's supplied target vocabulary must remain visible in interpretation even if its structural score is strong.
+A1's target-vocabulary dependence remains explicit even if structural fit is strong.
 
-## Primary comparison / falsification rules
+## Frozen primary decision rules
 
-This tournament does **not** require one family to be declared a winner.
+The tournament may remain unresolved; no forced winner is required.
 
 ### N0 materially competitive
 
-N0 is materially competitive if its equal-manuscript aggregate lies in the broad Voynich regime `[0.5, 2.0]` on all three positive primary target ratios where a ratio is defined, without selecting a favorable manuscript post hoc.
+N0 is materially competitive if the equal-manuscript primary aggregate lies in `[0.5, 2.0]` of held-out Voynich for S1, S2 and S3 wherever the held-out denominator is positive and stable. If S2 Voynich excess is too close to zero for a stable ratio, use the predeclared relative-error score and report the sign rather than manufacturing a ratio.
 
-### C0 materially improves N0
+### C0 explanatory value
 
-C0 is retained as an explanatory cipher/recoding family only if held-out transform selection improves joint S1–S3 fit over N0 without adding boundary awareness and the gain is stable across most Voynich folds / manuscript leave-one-out sensitivities.
+C0 gains explanatory credit only if held-out transform selection materially improves joint S1–S3 error over N0 without boundary awareness, and the improvement is stable across a majority of Voynich folds and manuscript leave-one-out sensitivities.
 
-If C0 does not improve N0, simple boundary-blind reversible recoding receives no explanatory credit merely for obscuring symbols.
+Merely changing symbols is not evidence for ciphering.
 
-### A1 remains materially competitive
+### A1 materially competitive
 
-Frozen A1 remains competitive if its common 9D fixed-five held-out score stays in the broad regime on S1–S3. Failure here is recorded; A1 is not repaired inside Phase62.
+Frozen A1 remains competitive only if its common-scorecard held-out results remain in the same broad regime on S1–S3. Failure is recorded without A1 repair inside Phase62.
 
-### No winner by exposed score alone
+### Exposed scores cannot finish the tournament
 
-Even if one family dominates S1–S3, it becomes only the **leading structural family**. A final mechanism-family promotion requires the prospective holdout below.
+A family may become the leading **structural** family on S1–S3, but final promotion requires the frozen prospective discriminator below.
 
-## Frozen prospective holdout — H62-P1
+## Frozen prospective holdout H62-P1 — near-family recurrence distance profile
 
-This statistic is **not used for N0/C0 selection or A1 construction**.
+Repository search before freezing found no prior phase implementing this exact distance-profile test. The aggregate previous-10 statistic is exposed; the five-bin profile is not used to construct A1 or select C0.
 
-### Near-family recurrence distance profile
+### Exact computation
 
-For each token occurrence in continuous prose/item order, determine whether an edit-distance-1 related token occurs at preceding distance bins:
+Within each Voynich paragraph or medieval source-native item separately, flatten physical lines to token order. Do not cross paragraph/item boundaries.
 
-- 1–2 tokens;
-- 3–5;
-- 6–10;
-- 11–20;
-- 21–40.
+For each token occurrence, for each preceding-distance bin:
 
-Report the excess over a document/paragraph-layout-preserving token permutation null in each bin and the normalized five-bin profile.
+- B1: 1–2;
+- B2: 3–5;
+- B3: 6–10;
+- B4: 11–20;
+- B5: 21–40;
 
-Primary discriminator:
+record whether at least one non-identical edit-distance-1 token occurs in that bin. The observed bin statistic is the mean indicator over token occurrences for which the full bin is available within the same paragraph/item.
 
-> the ratio of short-range excess `(1–10)` to longer-range excess `(11–40)`, together with a preregistered profile distance to Voynich.
+Null:
 
-Why this is discriminative:
+- permute token order **within each paragraph/item**;
+- preserve each paragraph/item token multiset and length;
+- 100 deterministic replicates;
+- `E_b = observed_b - median(null_b)` for each bin.
 
-- A1 contains an explicit maximum local-family memory of 10 tokens and therefore makes a mechanistic prediction about where excess should decay;
-- N0/C0 can show lexical/morphological recurrence but do not contain a hard 10-token generator window;
-- the aggregate previous-10 statistic was exposed, but this five-bin distance profile was not used to construct A1 or select C0.
+Signed normalized profile:
+
+`P_b = E_b / sum_j(abs(E_j))`, when the denominator is nonzero.
+
+Short-range concentration:
+
+`C_short = (E_B1 + E_B2 + E_B3) / sum_j(abs(E_j))`.
+
+Profile distance between a candidate and held-out Voynich:
+
+`D_profile = sum_b abs(P_b(candidate) - P_b(Voynich))`.
+
+Primary prospective comparison reports both `C_short` difference and `D_profile`; lower profile distance is better. Do not combine them into a new post-hoc weighted scalar.
+
+### Mechanistic relevance
+
+A1 explicitly reuses/mutates from a maximum recent window of 10 tokens, so it predicts that induced near-family excess should be disproportionately concentrated in B1–B3. N0/C0 may show lexical/morphological recurrence but have no hard 10-token generator window.
 
 ### Holdout isolation
 
-Do **not** inspect the Voynich H62-P1 profile until:
+Do **not** compute/reveal the Voynich H62-P1 profile until:
 
 1. N0/C0/A1 S1–S3 results are complete;
-2. the structural family ranking is written and committed;
-3. the exact H62-P1 computation and distance metric are executable and committed.
+2. the Phase62D structural ranking/unresolved set is written and committed;
+3. an executable implementing exactly the H62-P1 definition above is committed without having evaluated Voynich H62-P1.
 
-If the H62-P1 profile contradicts the leading family, record the contradiction before any architecture extension.
+A contradictory H62-P1 result must be recorded before any architecture extension.
 
 ## Phase sequence
 
 ### Phase62A — source/design freeze
 
-Complete when:
-
-- external provenance recovered;
-- primary panel fixed;
-- common scorecard fixed;
-- C0 transform family fixed;
-- complexity ledger fixed;
-- prospective H62-P1 frozen.
-
-No tournament score belongs in Phase62A.
+Complete when external provenance, source panel, common scorecard, C0 family, complexity ledger and H62-P1 are committed. **No N0/C0 tournament score belongs in 62A.**
 
 ### Phase62B — N0 baseline
 
-Run N0 only. Record manuscript heterogeneity and common-scorecard results. Do not alter C0/A1 based on N0 output.
+Run N0 only. Record manuscript heterogeneity. Do not change C0/A1 based on N0 results.
 
-### Phase62C — C0 and frozen-A1 evaluation
+### Phase62C — C0 and frozen-A1 common evaluation
 
-Run fixed C0 transform selection and re-score frozen A1 under the common scorecard.
+Run the fixed C0 selection and re-score frozen A1.
 
-### Phase62D — exposed-score tournament decision
+### Phase62D — exposed-score structural decision
 
-Compare N0/C0/A1 S1–S3 plus complexity/dependence vector. Freeze a structural ranking or unresolved set.
+Compare N0/C0/A1 S1–S3 plus complexity/dependence. Commit a structural ranking or unresolved set.
 
-### Phase62P / Phase63 — prospective discriminator
+### Phase62P / Phase63 — prospective reveal
 
-Only after Phase62D is frozen, reveal/evaluate H62-P1 on Voynich and competitors.
+Only after Phase62D is frozen, evaluate H62-P1 on held-out Voynich and competitors.
 
 ## Interpretation limits
 
-- A good N0 score does not prove Latin or any specific language.
-- A good C0 score does not identify a historical cipher.
-- A good A1 score does not prove meaningless generation.
-- Structural equivalence is not semantic equivalence.
-- Meaning/content promotion still requires independently grounded content prediction.
+- good N0 fit does not prove Latin or any specific language;
+- good C0 fit does not identify a historical cipher;
+- good A1 fit does not prove meaningless generation;
+- structural equivalence is not semantic equivalence;
+- content/decipherment promotion still requires independent content prediction.
