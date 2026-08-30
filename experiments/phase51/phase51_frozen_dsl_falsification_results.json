@@ -1,0 +1,9 @@
+{
+  "phase": "51",
+  "model": {"nroots":64,"block":4,"state_use":0.30,"prefix_p":0.22,"suffix_p":0.32,"variants_per_root":2,"alphabet":"abcdefghiklmnoprstuy"},
+  "replicates":20,
+  "paragraph_boundary_reset": {"voynich":0.1333132345,"dsl_median":0.0285473746,"dsl_min":0.0215099795,"dsl_max":0.0333334647,"n_dsl_ge_voynich":0},
+  "line_position_mi": {"voynich":0.1435077526,"dsl_median":0.0241711464,"dsl_min":0.0217489885,"dsl_max":0.0261229049,"n_dsl_ge_voynich":0},
+  "period4_residual": {"voynich":0.002771,"dsl_median":-0.000256,"dsl_min":-0.000948,"dsl_max":0.000804,"n_dsl_ge_voynich":0,"status":"diagnostic only; completed run used one token-shuffle null per replicate"},
+  "conclusion":"Frozen Phase50 DSL falsified as a sufficient broad mechanism."
+}
