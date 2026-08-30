@@ -47,6 +47,9 @@ jobs:
           test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
           test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
 
+      - name: Install source-audit dependency
+        run: python -m pip install --disable-pip-version-check numpy
+
       - name: Run source-only audit
         shell: bash
         run: |
