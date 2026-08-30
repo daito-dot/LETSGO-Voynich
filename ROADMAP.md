@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-30
 
-This file tracks progress and decision points. Exact numerical authority remains with phase-specific plans/results; `research/STATUS.md` controls accepted interpretation; `research/hypothesis-ledger.md` controls hypothesis history.
+This file tracks progress and decision points. Exact numerical authority remains with phase-specific plans/results; `research/STATUS.md` controls accepted interpretation; `research/hypothesis-ledger.md` controls hypothesis history. Reproducibility caveats in `research/REPRODUCIBILITY_AUDIT.md` and `research/AUDIT_PHASE51_61C_20260830.md` remain binding.
 
 ## Progress legend
 
@@ -34,191 +34,154 @@ Structural fit alone is not decipherment.
 | Phases 1–43 | ✅ | direct semantic cribs and weak periodic interpretations repeatedly failed; structural invariants accumulated |
 | Phases 44–52 | ✅ | mechanism tests and document/genre confounding became explicit |
 | Phases 53–57 | ✅ | structural audit corrected page/leaf/sample-size issues and narrowed a robust residual opportunity |
-| Phase 58 | ✅ negative / ⛔ localized content | tested page-level visual relations negative; defensible paragraph/object mapping unavailable |
+| Phase 58 | ✅ negative / ⛔ localized content | page-level visual relations negative; defensible paragraph/object mapping unavailable |
 | Phase 59 | ✅ | broad entry transition partly overlaps medieval structured-document entry grammar, with Voynich-specific remainder |
-| Phase 60 | ✅ | paragraph entry genuine, manuscript-wide and short-lived; persistent line0 initialization rejected |
-| Phase 61A | ✅ narrow | boundary-aware A0 reproduces scalar entry direction |
-| Phase 61B | ❌ A0 | A0 fails joint locality / line-position / entry scorecard |
-| Phase 61C | ✅ A1 survives | one bounded local-family mechanism brings exposed Phase61 targets into broad held-out regime |
+| Phase 60 | ✅ with audit caveats | paragraph entry genuine, manuscript-wide and short-lived; exact 60B carrier magnitudes and 60E replay retain provenance debt |
+| Phase 61A | ✅ narrow | boundary-aware A0 family can reproduce scalar entry direction; not prospective validation of preselected strength |
+| Phase 61B | ❌ A0 | A0 fails joint locality / line-position / entry scorecard; exact historical A0 replay remains provenance debt |
+| Phase 61C | ✅ A1 survives narrow aggregate gate | one local-family mechanism brings frozen scalar targets into broad held-out regime; full line-position profile is **not** reproduced |
 | Phase 62A | ✅ design/source freeze | objective N0 panel, common scorecard, C0 family, complexity ledger and H62-P1 frozen before scoring |
 | Phase 62B | ❌ N0 joint gate | source-native structured Latin matches S3 but is opposite on S1 and reaches only ~13% of Voynich S2 locality excess |
-| Phase 62C | 🟡 current | evaluate the five frozen C0 transforms and re-score frozen A1 on the same Phase62 S1–S3 scorecard |
-| Phase 62D | ⏭ | freeze exposed-score N/C/G structural ranking or unresolved set |
-| Phase 62P/63 | 🔒 prospective | reveal H62-P1 only after Phase62D is committed |
+| Phase 62C | ✅ | C0 digraph coding materially improves N0 but still fails S1/S2; frozen A1 passes all three exposed ratio-of-means gates |
+| **Phase 62D** | **🟡 current** | freeze the exposed-score structural ranking / unresolved-set interpretation **before** H62-P1 reveal |
+| Phase 62P/63 | 🔒 prospective | reveal the preregistered near-family recurrence-distance profile only after Phase62D is committed |
 
-## Completed Phase61 gate
+## Completed Phase62B — N0
 
-Frozen A1 held-out generated/Voynich ratios on the Phase61 scorecard:
+Across-fold result:
 
-- entry projection: **0.797**
-- local-prev10: **0.717**
-- line-position eta2 mean: **1.116**
+| target | Voynich | N0 | N0/Voynich |
+|---|---:|---:|---:|
+| S1 entry projection | 0.87599 | -0.85872 | **-0.980** |
+| S2 locality excess | 0.04388 | 0.00585 | **0.133** |
+| S3 line-position eta2 mean | 0.02827 | 0.02797 | **0.989** |
 
-A1 is frozen. No A2 before the fair N/C/G comparison is completed.
+Consequences:
 
-## Completed Phase62A source/design freeze
+- generic line-position S3 is weak discrimination by itself;
+- objective source-native medieval text does not reproduce the stricter Voynich S1 specialization;
+- Voynich near-family locality remains much stronger.
 
-Pinned sources:
+See `experiments/phase62/REPORT_B.md`.
 
-- CREMMA: `HTR-United/CREMMA-Medieval-LAT@292525969ad98380b398e6606a9c2a36d51913ae`
-- ZL3b mirror: `matthewdgreen/cipher_benchmark@315f0cad4de3d021bd4185765c037cf2a28d341c`
-- ZL3b Git blob: `2a4533ab9bdfa85db9bad602d590978953055df1`
-
-Historical Phase59 item membership was not fully recoverable for H318/CLM/BIS and was not reconstructed by fitting old Voynich results.
-
-Voynich-blind corpus-wide primary N0 panel:
-
-- BIS193
-- CLM13027
-- Mazarine915
-- UBL758
-
-Manuscripts receive equal primary weight. H318 is a predeclared small sensitivity; Arras861 has no eligible literal-pilcrow entries.
-
-Frozen common scorecard:
-
-- **S1** — fixed-five-token generic 8D entry-minus-pseudo projection;
-- **S2** — full-line previous-10 near-family excess above document-vocabulary/line-layout preserving null;
-- **S3** — fixed-five-token generic 8D line-position eta2 mean.
-
-Frozen C0 transforms:
-
-1. identity / monoalphabetic-equivalent;
-2. token reversal;
-3. 2-class positional allography;
-4. 3-class positional allography;
-5. non-overlapping digraph coding.
-
-Frozen prospective holdout:
-
-**H62-P1** near-family recurrence-distance profile over 1–2, 3–5, 6–10, 11–20, 21–40 token bins. Do not compute/reveal the Voynich profile before Phase62D is committed.
-
-## Completed Phase62B — N0 baseline
-
-Primary result:
-
-| target | Voynich | N0 | N0/Voynich | result |
-|---|---:|---:|---:|---|
-| S1 entry projection | 0.87599 | -0.85872 | -0.980 | ❌ |
-| S2 locality excess | 0.04388 | 0.00585 | 0.133 | ❌ |
-| S3 line-position eta2 | 0.02827 | 0.02797 | 0.989 | ✅ |
-
-Key consequences:
-
-1. **Generic line-position grammar is not very discriminative by itself.** N0 essentially reproduces S3.
-2. **The objective source-native medieval panel does not reproduce the common Voynich entry specialization.** S1 is negative in all four manuscripts and every outer fold.
-3. **Voynich local near-family activation remains much stronger.** N0 reaches only ~13.3% of the S2 excess; leave-one-manuscript-out ratios remain ~0.116–0.160.
-4. H318's tiny predeclared sensitivity can align strongly on S1 while failing S2 and grossly overshooting S3, demonstrating why favorable small semantic subsets are not promoted post hoc.
-
-See `experiments/phase62/REPORT_B.md` and `phase62b_n0_results.json`.
-
-## 🟡 Current gate — Phase62C C0 + frozen A1
-
-Question:
-
-> Can a low-complexity, reversible, boundary-blind recoding of meaningful structured text repair N0's S1/S2 failures, and how does that compare with frozen A1 when all are evaluated on the same Phase62 scorecard?
-
-Execution rules already frozen in `experiments/phase62/PLAN.md`:
+## Completed Phase62C — C0 + frozen A1
 
 ### C0
 
-- evaluate only C0-0…C0-4;
-- transform selection uses Voynich **training folds only**;
-- no transform sees entry/paragraph position, line number, section or held-out target;
-- no continuous transform parameter or Voynich-derived symbol/codebook;
-- any more expressive transform becomes C1 later, never a hidden Phase62C repair.
+All five outer folds selected **C0-4 non-overlapping digraph coding** using training targets only.
 
-### A1
+| target | C0/Voynich |
+|---|---:|
+| S1 | **-0.932** |
+| S2 | **0.249** |
+| S3 | **0.856** |
 
-- regenerate/re-score the exact frozen Phase61C architecture;
-- use its already selected per-fold entry strength/local-family p;
-- no retuning under the new common scorecard;
-- retain explicit target-dependence cost from the supplied 8,295-type Voynich vocabulary.
+C0 reduces mean joint relative MSE from N0 `3.0388` to `2.8884`, improves held-out fit in 5/5 folds, and satisfies the frozen manuscript-omission stability rule. Therefore simple reversible boundary-blind recoding has **material but limited** explanatory value.
 
-### Firewall
+It does not solve the main residual problem: S1 remains opposite in sign and S2 remains only about one quarter of Voynich.
 
-- do not compute/reveal H62-P1;
-- do not build A2, C1 or M0;
-- after C0/A1 results, proceed to Phase62D and commit the exposed-score structural ranking/unresolved set first.
+### Frozen A1
 
-## Main track A — model-family tournament
+No retuning was performed. Across-fold ratio-of-means:
 
-### N0
+| target | A1/Voynich |
+|---|---:|
+| S1 | **0.623** |
+| S2 | **1.512** |
+| S3 | **0.587** |
 
-Status: ❌ not jointly competitive on exposed S1–S3.
+All pass the frozen `[0.5,2.0]` common-score gate.
 
-Important surviving contribution: natural structured documents explain much of generic line-position S3, so S3 alone is downgraded as evidence.
+Interpretation constraint from the independent Phase61C audit remains binding: the S3 scalar average hides coordinate-level mismatch. A1 is therefore the strongest **exposed scalar structural fit**, not a demonstrated reproduction of the full multivariate line-position grammar.
 
-### C0
+A1 also pays materially higher target-dependence/complexity costs: explicit boundary mechanism, explicit local-family process with memory 10, Voynich-selected parameters, and supplied 8,295-type empirical Voynich vocabulary. It has no meaningful plaintext candidate.
 
-Status: 🟡 execute now.
+See `experiments/phase62/REPORT_C.md` and `phase62c_c0_a1_results.json`.
 
-Five fixed reversible boundary-blind transforms only.
+## 🟡 Current gate — Phase62D ranking freeze
 
-### G/A1
+Phase62D computes no new Voynich statistic. Its purpose is to lock interpretation before the prospective reveal.
 
-Status: 🟡 common-score evaluation now; architecture itself remains ✅ frozen.
+The decision must distinguish two questions:
 
-Complexity/dependence already paid:
+1. **Exposed scalar structural fit:** which tested candidate is currently closest on frozen S1–S3?
+2. **Overall mechanism-family support:** does exposed fit plus complexity/provenance justify a winner before prospective validation?
 
-- explicit paragraph-entry mechanism;
-- local-family mechanism with memory 10;
-- selected Phase61C parameters;
-- empirical Voynich token vocabulary supplied.
+Expected admissible wording based on already-frozen results:
 
-### M0
+- N0 is not jointly competitive;
+- C0 is better than N0 but insufficient on S1/S2;
+- A1 is the **provisional leading exposed-score structural candidate** among N0/C0/A1;
+- the overall N/C/G mechanism question remains unresolved because A1 has higher target dependence, profile mismatch, fold heterogeneity and no semantic/historical grounding, while C0 is only a bounded first cipher baseline rather than the whole C family.
 
-Status: ⏭ deferred until N0/C0/A1 have fixed common-score profiles.
+Phase62D must freeze that ranking/unresolved set in the repository before any H62-P1 value is computed or revealed.
 
-## Main track B — prospective holdout
+### Phase62D stop condition
 
-H62-P1 is frozen and sealed. It directly tests the **shape** of near-family recurrence versus token distance, including the 10-token cutoff implied by A1.
+Complete only when:
 
-Status: 🔒 reveal only after Phase62D.
+- the exposed-score ranking is explicit;
+- complexity/target dependence is explicitly carried forward;
+- Phase61C profile mismatch and Phase62C fold heterogeneity are recorded;
+- no A2/C1/M0 repair is introduced;
+- H62-P1 remains sealed in the Phase62D commit.
 
-A failed H62-P1 cannot be silently replaced with another favorable holdout.
+## 🔒 Next gate — H62-P1 prospective discriminator
+
+Frozen in Phase62A before the tournament outcome:
+
+near-family recurrence-distance bins:
+
+- 1–2 tokens;
+- 3–5;
+- 6–10;
+- 11–20;
+- 21–40.
+
+The metric compares observed recurrence to a layout-preserving permutation null and evaluates the normalized five-bin excess profile. It is especially discriminative for A1 because A1 contains an explicit maximum local-family memory of 10 tokens.
+
+Rules:
+
+1. do not compute/reveal the Voynich H62-P1 profile before Phase62D merge;
+2. implement the exact frozen statistic and distance metric before seeing its result;
+3. evaluate Voynich, N0, selected C0 and frozen A1 without retuning;
+4. a failed H62-P1 cannot be swapped for a more favorable holdout;
+5. no A2/C1/M0 repair until the prospective result is recorded.
 
 ## Main track C — external controls
 
-Phase62A moved from small partly unrecoverable Phase59 semantic subsets to an objective corpus-wide source rule. Broader independent corpora remain desirable after the frozen tournament; they must not be used to change the Phase62 panel after seeing results.
+After the frozen tournament/prospective gate:
+
+- expand beyond CREMMA to independent medieval corpora;
+- increase manuscripts within medical, recipe/pharmacological, herbal, astronomical/astrological, liturgical, scholastic and strongly itemized genres;
+- preserve manuscript/genre holdout rather than pooling entries as independent documents.
 
 ## Main track D — content anchors
 
-Page-level visual tests remain negative. Strong localized semantic testing remains ⛔ until an external mapping can be fixed without target-string inspection.
+Page-level visual tests remain negative. Strong localized semantic testing remains ⛔ until an external paragraph/object mapping can be fixed without target-string inspection.
 
-## Main track E — transcription robustness
+## Main track E — transcription / replay robustness
 
-Current primary transcription remains ZL3b/EVA. Independent transcription-lineage replication remains required for mature claims after the mechanism tournament.
+Priority debts after the prospective tournament gate:
+
+- independent Voynich transcription-lineage replication;
+- recover exact historical Phase60B eligibility if possible;
+- exact clean Phase60E replay;
+- historical A0 source provenance if recoverable;
+- profile-aware replication of A1 rather than aggregate eta2 only.
 
 ## Main track F — complexity accounting
 
-Use the frozen dependence vector / Pareto interpretation. Do not retroactively ignore A1's target-vocabulary dependence if its common-score fit is strong.
+Use the frozen dependence vector / Pareto interpretation. Later MDL or held-out log-loss may sharpen comparison, but cannot retroactively erase target dependence.
 
 ## Decision milestones
 
-### M1 — Phase61 architecture gate
-
-✅ A0 failed; A1 survived and is frozen.
-
-### M2 — first fair N/C/G tournament
-
-🟡 N0 complete; C0 and frozen-A1 common-score evaluation is current.
-
-### M3 — prospective discriminator
-
-🔒 H62-P1 already frozen; reveal only after Phase62D.
-
-### M4 — external robustness
-
-⏭ broader corpora + independent Voynich transcription lineage.
-
-### M5 — content relation
-
-⛔ not established.
-
-### M6 — decipherment threshold
-
-⛔ not reached.
+- **M1 Phase61 architecture gate:** ✅ A0 fails jointly; A1 survives the frozen aggregate first gate.
+- **M2 first fair N/C/G exposed tournament:** 🟡 results obtained; Phase62D interpretation freeze is current.
+- **M3 prospective discriminator:** 🔒 H62-P1 already frozen; reveal next only after M2 interpretation freeze.
+- **M4 external robustness:** ⏭ broader corpora + independent transcription.
+- **M5 content relation:** ⛔ not established.
+- **M6 decipherment threshold:** ⛔ not reached.
 
 ## Stop / pivot rules
 
@@ -229,8 +192,8 @@ Pause or pivot rather than endlessly repair when:
 3. results collapse under stronger document/genre controls;
 4. a claim depends on one transcription convention;
 5. semantic interpretation requires post-hoc relabeling/free exceptions;
-6. a simpler competing architecture obtains comparable fit with materially lower target dependence/complexity.
+6. a simpler competing architecture obtains comparable prospective fit with materially lower target dependence/complexity.
 
 ## What to do when asked simply to "continue"
 
-Execute Phase62C exactly as frozen. Do not reveal H62-P1 or introduce A2/C1/M0 before Phase62D.
+Execute **Phase62D** first. Commit the exposed-score ranking/unresolved-set interpretation while H62-P1 is still sealed. Only then implement and reveal H62-P1.
