@@ -1,0 +1,9 @@
+{
+  "phase":"58A",
+  "status":"complete nuisance-transfer control",
+  "input":"Phase57-promoted leading 2D cross-fitted W20 paragraph residual; broad section/Currier/hand removed out-of-fold; 635 eligible paragraphs",
+  "evaluation":"5-fold grouped by physical leaf; logistic prediction from residual 2D only; balanced accuracy; matched label permutations within section|Currier|hand strata",
+  "results":{"recto_verso":{"observed_balanced_accuracy":0.4452,"chance":0.5,"matched_permutation_mean":0.4979,"matched_permutation_95pct":[0.4458,0.5468],"upper_tail_p":0.9780},"coarse_physical_leaf_bin":{"bins":"1-25,26-50,51-75,76-100,101+","observed_balanced_accuracy":0.1796,"chance":0.2,"matched_permutation_mean":0.1862,"matched_permutation_95pct":[0.1387,0.2325],"upper_tail_p":0.5968},"quire":{"observed_balanced_accuracy":0.0698,"nominal_inverse_class_count":0.0633,"qualification":"High-cardinality quire labels are poorly supported across grouped folds and strongly tied to physical blocks; retained as descriptive only, not a clean inferential test."}},
+  "decision":"No evidence that the promoted 2D residual is primarily a recto/verso or coarse physical-order nuisance representation. H58-2 is not supported by these nuisance controls. Proceed to independently grounded content annotation/test; this is not positive semantic evidence.",
+  "warning":"Residual construction and Phase57 robustness remain internal to the same transcription/manuscript. Phase58A only clears the tested nuisance labels."
+}
