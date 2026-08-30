@@ -1,0 +1,12 @@
+{
+  "phase":"56B-initial",
+  "status":"development; audited 56A-v1 substrate",
+  "n_page_sides":197,
+  "inclusion":"page-sides with >=40 body tokens and finite 11-feature fingerprint",
+  "features":["ttr","mean_len","sd_len","edit1_fraction","local_prev10","linepos_mi","first_entropy","last_entropy","unit_entropy","kt_mass","k_share_within_kt"],
+  "cv":"5 contiguous held-out physical-leaf blocks; features standardized on each training fold",
+  "mean_standardized_mse":{"section_mean_baseline":0.9895711875,"smooth_physical_neighbor":0.9263223992,"contiguous_regime_k2":0.9641762982,"contiguous_regime_k3":1.0524940298,"contiguous_regime_k4":0.9617433583,"contiguous_regime_k6":1.1373630322,"contiguous_regime_k8":0.9948946484},
+  "smooth_fold_mse":[0.8226548223,0.9191022691,0.8885546564,1.2525451537,0.7487550944],
+  "section_baseline_fold_mse":[0.9468384526,1.0391669250,0.8435892577,1.3321547463,0.7861065559],
+  "interpretation":"Distance-weighted physical neighbors improve mean held-out error by about 6.4% relative to section means. Simple globally binned discrete physical regimes do not improve on the smooth predictor and are generally close to or worse than the section baseline. One middle held-out block favors the section baseline, so smooth drift is supported only provisionally; explicit changepoint and mixed regime+drift models remain required before H56-2 is closed."
+}
