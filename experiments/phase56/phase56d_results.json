@@ -1,0 +1,26 @@
+{
+  "phase":"56D",
+  "status":"development / transition transfer and residualization",
+  "entry_to_line2_transfer":{
+    "method":"5D matched paragraph-trained PCA basis; lines with >=5 body tokens; PCs centered within page-side; each paragraph contributes paired line0->line2 delta; leave one section out; train direction from all other H/B/P/S/T sections; uncertainty bootstrapped by page-side",
+    "heldout":{
+      "H":{"n_paragraphs":176,"n_pages":115,"cosine_to_other_sections":0.8622,"mean_projection":1.5689,"page_bootstrap95":[1.1060,2.0219]},
+      "B":{"n_paragraphs":74,"n_pages":19,"cosine_to_other_sections":0.7375,"mean_projection":0.6348,"page_bootstrap95":[0.1188,1.0852]},
+      "P":{"n_paragraphs":41,"n_pages":16,"cosine_to_other_sections":0.8756,"mean_projection":2.0726,"page_bootstrap95":[1.3050,2.7399]},
+      "S":{"n_paragraphs":199,"n_pages":25,"cosine_to_other_sections":0.8986,"mean_projection":1.3911,"page_bootstrap95":[1.0724,1.7162]},
+      "T":{"n_paragraphs":27,"n_pages":6,"cosine_to_other_sections":0.9659,"mean_projection":2.1018,"page_bootstrap95":[1.3306,2.8448]}
+    },
+    "interpretation":"The entry-to-line2 transition transfers to every held-out major prose/text section. Biological is weaker but still positive. This is stronger evidence for a shared paragraph-entry dynamic than the earlier within-section cosine comparison, though it remains development evidence on the same manuscript."
+  },
+  "paragraph_residualization":{
+    "substrate":"635 paragraphs with >=20 body tokens; each fingerprint is the mean of 10 random contiguous 20-token windows",
+    "split_half_reliability":{"median":0.964,"range":[0.944,0.983],"interpretation":"Matched paragraph fingerprints are highly repeatable; residual variance cannot be dismissed mainly as 20-token sampling noise."},
+    "cv":"5-fold GroupKFold by physical leaf",
+    "model_metadata_only":{"predictors":"section + Currier + hand + normalized paragraph ordinal","mean_standardized_mse":0.9186},
+    "model_metadata_plus_page_context":{"predictors":"metadata + leave-one-paragraph-out mean fingerprint of other paragraphs on the same page-side","mean_standardized_mse":0.8854},
+    "cross_fitted_r2_with_page_context":{"ttr":0.0794,"mean_len":0.3689,"sd_len":0.0584,"unit_inventory":-0.0105,"unit_entropy":0.0962,"first_entropy":0.0448,"last_entropy":0.2196,"edit1_fraction":0.0636,"local_prev10":0.0648,"kt_mass":0.1874,"k_share_within_kt":0.1403},
+    "residual_structure":{"pca_variance_first5":[0.2786,0.1875,0.1007,0.0924,0.0884],"cumulative_first5":0.7477,"PC1_section_eta2":0.0052,"PC1_currier_eta2":0.0016,"PC1_hand_eta2":0.0020,"same_page_residual_5d_distance":3.658,"same_section_hand_different_page":3.834,"broadly_unrelated":3.811},
+    "interpretation":"Known broad metadata and leave-one-paragraph-out page context explain only a minority of stable paragraph-level structural variance. The largest residual axis is almost independent of section/Currier/hand, although a modest same-page residual similarity remains. These cross-fitted residuals are a candidate future target, not yet evidence of semantics or cipher information."
+  },
+  "decision":"H56-4 remains OPEN but now has a concrete candidate residual. The shared paragraph-entry trajectory is transferable across major sections; after removing broad metadata and page-local context, substantial reliable paragraph-specific variation remains. Before semantic/cipher tests, residual robustness must be checked against feature definition/transcription sensitivity and against richer but leakage-safe structural predictors."
+}
