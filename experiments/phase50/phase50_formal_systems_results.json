@@ -1,0 +1,15 @@
+{
+  "phase":"50",
+  "voynich_reference":{"edit1_type_fraction":0.7573,"local_prev10_excess":0.0313},
+  "controls":[
+    {"system":"Lisp-like","edit1_type_fraction":0.1935,"local_prev10_excess":-0.0014},
+    {"system":"Prolog-like","edit1_type_fraction":0.1200,"local_prev10_excess":0.0225},
+    {"system":"regex-like","edit1_type_fraction":0.0930,"local_prev10_excess":0.0268},
+    {"system":"SQL","edit1_type_fraction":0.1961,"local_prev10_excess":0.0029},
+    {"system":"XML","edit1_type_fraction":0.1369,"local_prev10_excess":0.0150},
+    {"system":"TeX","edit1_type_fraction":0.3039,"local_prev10_excess":0.0182},
+    {"system":"initial finite-state DSL","edit1_type_fraction":0.9747,"local_prev10_excess":0.1189}
+  ],
+  "post_target_exploratory":{"nroots":64,"block":4,"state_use":0.30,"edit1_type_fraction":0.7315,"local_prev10_excess":0.0381},
+  "interpretation":"Ordinary formal/programming systems do not reproduce the Voynich topology. A meaning-light finite-state morphology plus weak local state can reproduce density/locality after target-aware tuning; mechanism demonstration only."
+}
