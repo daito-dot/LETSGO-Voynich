@@ -1,0 +1,72 @@
+name: Phase64B Naibbe implementation preflight
+
+on:
+  push:
+    branches: [phase64b-naibbe-science]
+    paths:
+      - 'experiments/phase64/phase64b_naibbe.py'
+      - 'experiments/phase64/IMPLEMENTATION_B.md'
+      - '.github/workflows/phase64b-naibbe-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout implementation head
+        uses: actions/checkout@v4
+        with:
+          ref: phase64b-naibbe-science
+
+      - name: Checkout exact published Naibbe source
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Compile adapter
+        run: python -m py_compile experiments/phase64/phase64b_naibbe.py
+
+      - name: Verify external source and toy encryption only
+        shell: bash
+        run: |
+          python - <<'PY'
+          import copy, importlib.util, os, random, sys
+          from pathlib import Path
+          sys.path.insert(0,'experiments/phase64')
+          import phase64b_naibbe as x
+
+          root=Path('external/naibbe').resolve()
+          m=x.load_naibbe(root)
+          assert len(m.placeholder_to_glyph)==468
+          assert len(x.EFFECTIVE_LETTERS)==23
+          original=dict(m.placeholder_to_glyph)
+          p1=x.permuted_mapping(m,original,6490000)
+          p2=x.permuted_mapping(m,original,6490000)
+          assert p1==p2 and p1!=original
+          for state in m.STATES:
+              codes=[f'{state}_{t}_{L}' for t in m.TABLES for L in x.EFFECTIVE_LETTERS]
+              assert sorted(original[c] for c in codes)==sorted(p1[c] for c in codes)
+
+          x.set_glyph_map(m,original)
+          random.seed(6480000)
+          cleaned=m.clean_line('Arma virumque cano')
+          enc1=m.encrypt_naibbe(cleaned,m.naibbe_tables,original,use_78=m.USE_78_CARD_DECK)
+          out1=m.respace_line(' '.join(enc1),m.SPACE_REMOVAL_RATE)
+          random.seed(6480000)
+          enc2=m.encrypt_naibbe(cleaned,m.naibbe_tables,original,use_78=m.USE_78_CARD_DECK)
+          out2=m.respace_line(' '.join(enc2),m.SPACE_REMOVAL_RATE)
+          assert enc1==enc2 and out1==out2 and enc1
+          print({'cleaned':cleaned,'raw_tokens':len(enc1),'published_tokens':len(out1.split())})
+          print('No ZL3b or CREMMA scientific source was checked out or read in this preflight.')
+          PY
