@@ -1,0 +1,39 @@
+{
+  "phase": "60A",
+  "test": "pseudo-boundary falsification of the narrative item-initialization hypothesis",
+  "status": "prediction P60-1 survives this test",
+  "narrative_reference": "research/NARRATIVE_HYPOTHESIS_PHASE60.md",
+  "question": "Is the apparent paragraph-entry transition merely an ordinary two-line fluctuation that also occurs at arbitrary positions inside paragraphs?",
+  "primary_design": {
+    "real_transition": "paragraph line0 -> line2",
+    "pseudo_transition": "all eligible internal line i -> line i+2 with i >= 1, within the same paragraph",
+    "eligibility": ">=5 usable tokens at both endpoints",
+    "comparison": "for paragraphs with internal pseudo-starts, compare real entry projection with the mean internal pseudo-entry projection",
+    "uncertainty": "cluster bootstrap by page-side"
+  },
+  "primary_results": {
+    "real_n": 594,
+    "real_mean_projection": 1.299,
+    "pseudo_n": 1493,
+    "pseudo_mean_projection": 0.134,
+    "paired_paragraphs": 431,
+    "paired_mean_real_minus_pseudo": 0.918,
+    "paired_positive_fraction": 0.673,
+    "page_cluster_bootstrap95": [0.711, 1.126]
+  },
+  "anti_circular_leaf_holdout": {
+    "design": "5-way physical-leaf split. Learn the entry-transition direction only from training leaves, then compare real vs internal pseudo transitions on held-out leaves.",
+    "folds": [
+      {"fold": 0, "n": 73, "mean_real_minus_pseudo": 0.6718, "positive_fraction": 0.6301},
+      {"fold": 1, "n": 91, "mean_real_minus_pseudo": 1.4915, "positive_fraction": 0.7582},
+      {"fold": 2, "n": 95, "mean_real_minus_pseudo": 0.4672, "positive_fraction": 0.5789},
+      {"fold": 3, "n": 93, "mean_real_minus_pseudo": 0.4847, "positive_fraction": 0.5914},
+      {"fold": 4, "n": 79, "mean_real_minus_pseudo": 1.4584, "positive_fraction": 0.7595}
+    ],
+    "weighted_mean_real_minus_pseudo": 0.9036,
+    "all_folds_direction": "real > pseudo"
+  },
+  "decision": "The simple pseudo-boundary explanation is rejected in this development test. The two-line transition is strongly concentrated at genuine paragraph entry rather than being an ordinary within-paragraph fluctuation.",
+  "interpretation": "This supports the local/directional part of P60-1: paragraph starts behave as a special state boundary. It does not establish semantics, content, plaintext, or cipher. The next falsification should ask what audited structural features carry the effect and whether it survives alternative token/unit representations.",
+  "next": "Phase60B feature attribution and representation robustness for the entry-specific component."
+}
