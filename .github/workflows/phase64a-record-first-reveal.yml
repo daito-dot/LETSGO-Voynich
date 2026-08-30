@@ -1,0 +1,65 @@
+name: Phase64A record exact first reveal
+
+on:
+  push:
+    branches: [phase64a-record]
+    paths:
+      - '.github/workflows/phase64a-record-first-reveal.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout recording branch
+        uses: actions/checkout@v4
+        with:
+          ref: phase64a-record
+
+      - name: Download exact first-reveal artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          curl --fail --location \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/9738893689/zip" \
+            --output first-reveal.zip
+          echo "058852cfc8bf5d718d200f05758d21452f45715d35a2b682f7422afc6261d8fc  first-reveal.zip" | sha256sum -c -
+          rm -rf first-reveal
+          mkdir first-reveal
+          unzip -q first-reveal.zip -d first-reveal
+          echo "43b59ad8539db4cf089e6265c38f81ec9afd2f864877b77373a12adbdccdce1b  first-reveal/phase64a_inventory_autonomy_results.json" | sha256sum -c -
+
+      - name: Verify frozen scientific verdict exactly
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('first-reveal/phase64a_inventory_autonomy_results.json'))
+          assert x['phase']=='64A'
+          assert x['across_phase64A']['ZL_primary_pass'] is False
+          assert x['across_phase64A']['IT_independent_pass'] is True
+          assert x['across_phase64A']['classification']=='INCONSISTENT / PRIMARY FAILURE'
+          z=x['ZL_primary']['across_fold']
+          i=x['IT_independent']['across_fold']
+          assert z['A1_R2_scalar_gate_0.5_to_2.0']=={'S1':True,'S2':True,'S3':False}
+          assert z['H62_mean_superiority_pass'] is True
+          assert z['H62_fold_majority_pass'] is True
+          assert i['pass'] is True
+          PY
+
+      - name: Record exact first-reveal JSON
+        shell: bash
+        run: |
+          cp first-reveal/phase64a_inventory_autonomy_results.json experiments/phase64/phase64a_inventory_autonomy_results.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experiments/phase64/phase64a_inventory_autonomy_results.json
+          git commit -m "Record exact first-reveal Phase 64A autonomy result"
+          git push origin HEAD:phase64a-record
