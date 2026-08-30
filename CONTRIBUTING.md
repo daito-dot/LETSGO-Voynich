@@ -54,4 +54,14 @@ Deliberate deception is a legitimate hypothesis, but null results do not count a
 - compact result files rather than generated caches
 - source/license information for any new corpus
 
+## Contribution licensing
+
+This repository separates code licensing from research-content licensing. See the root `LICENSE` file for scope.
+
+- Contributions to software/code are accepted under the MIT License (`LICENSE-CODE`) unless explicitly documented otherwise.
+- Contributions to original research text, reports, documentation, figures, tables, and project-generated result files are accepted under CC BY 4.0 (`LICENSE-CONTENT`) unless explicitly documented otherwise.
+- Do not contribute third-party transcriptions, manuscript images, corpora, figures, or other material unless redistribution is permitted. Record source and license information for any third-party material that is legitimately included.
+
+By submitting a contribution, you represent that you have the right to submit it under the applicable repository license or that any different licensing terms are clearly identified in the contribution.
+
 English and Japanese are both welcome.
