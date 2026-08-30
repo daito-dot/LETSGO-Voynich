@@ -1,0 +1,10 @@
+{
+  "phase":"44",
+  "evaluation_note":"v1.1 final folio set after f24 contamination correction: f16,f11,f22,f58,f35,f53,f46,f54,f38,f81,f75,f106,f104. Because full ZL3b was later exposed in the workspace, treat this as locked-after-model-freeze rather than pristine blind prospective evidence.",
+  "tokens":4974,
+  "collapsed_units":20264,
+  "fixed_parameters":{"F4_template_reuse":0.45,"F5_line_position_weight":0.75,"F5_mutation":0.10,"F6_reuse":0.45,"F6_shrink":20},
+  "bits_per_unit":{"F5_copy_modify":2.87468,"F4_markov_template_reuse":2.90928,"F6_online_hierarchical_local_state":3.00874},
+  "folio_bootstrap":{"F5_minus_F4":{"mean":-0.0590,"ci95":[-0.0833,-0.0355],"folios_won_by_F5":12,"n_folios":13},"F5_minus_F6":{"mean":-0.1125,"ci95":[-0.1459,-0.0756],"folios_won_by_F5":12,"n_folios":13},"F4_minus_F6":{"mean":-0.05345,"ci95":[-0.09976,-0.00588]}},
+  "interpretation":"F5 is the predictive code-length winner among these tested structural families, but later locality analysis weakens literal online copy-and-modify. Predictive win alone is not a semantic/cipher verdict."
+}
