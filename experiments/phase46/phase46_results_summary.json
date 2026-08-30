@@ -1,0 +1,10 @@
+{
+  "phase":"46",
+  "source":"Dante, De vulgari eloquentia, Liber I I.1 through VIII.7; 48 source paragraphs; 2405 words; synthetic line wrapping drawn from empirical Voynich P-coded prose line lengths",
+  "voynich":{"reset_gap":0.1442805889,"early_prev1":0.1044273434,"late_prev1":0.2045128029,"very_late_prev1":0.2236125581,"early_own_vs_previous_paragraph":0.1247872442,"late_own_vs_previous_paragraph":0.0714995797},
+  "dante_raw_F1":{"reset_gap":0.0215907740,"early_prev1":0.2808407402,"late_prev1":0.3443710428,"very_late_prev1":0.4189052469,"early_own_vs_previous_paragraph":0.2591390863,"late_own_vs_previous_paragraph":0.1525885753},
+  "F2_ranges":{"reset_gap":[0.01619,0.02367,0.04072],"early_prev1":[0.27344,0.33323,0.47182],"late_prev1":[0.34437,0.40753,0.51149],"very_late_prev1":[0.41891,0.50029,0.65748]},
+  "F3_ranges":{"reset_gap":[0.00802,0.03711,0.10767],"early_prev1":[0.30177,0.41671,0.56195],"late_prev1":[0.37675,0.49439,0.63764],"very_late_prev1":[0.45266,0.59978,0.74880]},
+  "raw_latin_wrap_sensitivity":{"n":200,"reset_gap_median":0.01866,"reset_gap_2_5":0.00240,"reset_gap_97_5":0.03078},
+  "interpretation":"Short-range continuation is generic and often stronger in medieval Latin; the large paragraph-boundary edit1-family break is the more discriminating current target. F3 used a broader frozen specification family here and must not be mislabeled as the final admissible Phase44B score."
+}
