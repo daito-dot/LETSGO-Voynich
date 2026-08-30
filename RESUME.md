@@ -5,14 +5,16 @@ This file is the entry point for a new researcher or AI/chat session continuing 
 ## Read in this order
 
 1. `README.md`
-2. `RESEARCH_PROTOCOL.md`
-3. `research/STATUS.md`
-4. `research/hypothesis-ledger.md`
-5. `research/NARRATIVE_HYPOTHESIS_PHASE60.md` — frozen pre-test narrative; do not treat failed predictions as current truth
-6. `research/NARRATIVE_REVISION_PHASE60.md` — post-60D2 revision
-7. `experiments/phase59/` results for the medieval-entry decomposition
-8. `experiments/phase60/` plans/results, especially 60A, 60B, 60C, 60D and 60D2
-9. exact phase scripts/results before changing numerical interpretation
+2. `ROADMAP.md`
+3. `RESEARCH_PROTOCOL.md`
+4. `research/STATUS.md`
+5. `research/hypothesis-ledger.md`
+6. `research/NARRATIVE_HYPOTHESIS_PHASE60.md` — frozen pre-test narrative; do not treat failed predictions as current truth
+7. `research/NARRATIVE_REVISION_PHASE60.md` — post-60D2 revision
+8. `experiments/phase59/` results for the medieval-entry decomposition
+9. `experiments/phase60/` plans/results, especially 60A, 60B, 60C, 60D2 and 60E
+10. `experiments/phase61/PLAN.md`, `phase61a_results.json`, `phase61b_results.json`, and `PLAN_C.md`
+11. exact phase scripts/results before changing numerical interpretation
 
 Do not reconstruct the project from chat history if the repository contains a newer state.
 
@@ -21,9 +23,10 @@ Do not reconstruct the project from chat history if the repository contains a ne
 1. phase-specific result/report controls exact method/sample/statistic/numerical result;
 2. `research/STATUS.md` controls current accepted interpretation;
 3. `research/hypothesis-ledger.md` controls hypothesis history/status;
-4. frozen narrative files record what was predicted before testing and must not be rewritten to hide failures;
-5. checkpoint/handoff files are secondary summaries;
-6. old chat/memory is non-authoritative when repository evidence conflicts.
+4. `ROADMAP.md` controls progress visibility, active gate and planned sequencing, but not exact scientific claims;
+5. frozen narrative files record what was predicted before testing and must not be rewritten to hide failures;
+6. checkpoint/handoff files are secondary summaries;
+7. old chat/memory is non-authoritative when repository evidence conflicts.
 
 ## Current accepted state
 
@@ -41,9 +44,9 @@ Accepted structural model:
 
 `+ token morphology / edge-pattern / k/t-family structure`
 
-Phase57 promoted only a robust leading ~2D paragraph residual. Phase58 found no independently grounded page-level visual relation in the tested Biological and Herbal-A domains, and defensible paragraph-to-object localization remained unavailable.
+Phase57 promoted only a robust leading ~2D residual. Phase58 found no independently grounded page-level visual relation in the tested Biological and Herbal-A domains, and defensible paragraph-to-object localization remained unavailable.
 
-Phase59 then compared the paragraph-entry transition with source-native medieval Latin item/section entries. A generic medieval entry/register component explains a substantial part of the transition, but a Voynich-specific remainder survives and transfers across major sections.
+Phase59 compared the paragraph-entry transition with source-native medieval Latin item/section entries. A generic medieval entry/register component explains a substantial part of the transition, while a Voynich-specific remainder survives and transfers across major sections.
 
 ## Phase 60 narrative test — current decisions
 
@@ -59,42 +62,70 @@ SUPPORTED by Phase60B. k/t-family behavior, near-family/edit1 activation, local 
 SUPPORTED by Phase60C. Entry/body structure learned outside a section transfers to held-out H/B/P/S/T and adds information beyond simple nuisance baselines.
 
 ### P60-4 — entry persistently initializes later body state
-NOT SUPPORTED after Phase60D2.
+NOT SUPPORTED after Phase60D2 and Phase60E.
 
-The initial Phase60D recovery-vector result was mathematically coupled because the target contained line0. D2 predicts absolute line3 after line1 and metadata are known. Adding line0 worsens held-out prediction in every major section. Therefore do not cite Phase60D as evidence of persistent initialization.
+The initial Phase60D recovery-vector result was mathematically coupled because the target contained line0. Coupling-free prospective tests show no reliable useful line0 contribution to later absolute states once metadata/immediate prior state are known.
+
+### P60-5 — stationary/weak-context generator without explicit entry mechanism
+SUPPORTED AS A CONSTRAINT. The frozen Phase50 DSL fails to align with the Voynich entry-specific direction despite producing multivariate fluctuations of comparable raw magnitude. Explicit boundary-conditioned machinery is therefore required for that generator family.
+
+### P60-6 — simple global cipher as discriminator from entry structure alone
+NOT DISCRIMINATIVE. A boundary-blind simple cipher can inherit entry/register structure already present in meaningful structured plaintext. Ciphering becomes explanatory only if it also predicts Voynich-specific morphology/local-family/line-position structure beyond the plaintext.
 
 ## Current narrative after falsification
 
 The strongest justified statement is:
 
-> Voynich paragraph starts instantiate a manuscript-wide, transferable formal entry register. It is partly comparable to medieval structured-document entry grammar and partly Voynich-specific, but its detectable structural influence is short-lived and does not prospectively improve later line3 prediction once line1 is known.
+> Voynich paragraph starts instantiate a manuscript-wide, transferable formal entry register. It is partly comparable to medieval structured-document entry grammar and partly Voynich-specific, but its detectable structural influence is short-lived rather than a persistent paragraph initializer.
 
 This does not distinguish meaningful text, cipher/shorthand, hierarchical meaningless formal generation, or mixed mechanisms.
 
-## Current frontier — Phase 60E
+## Phase 61 — architecture discrimination
 
-Do not return to unconstrained decipherment yet.
+Phase61 compares mechanism families on joint constraints rather than one exposed statistic.
 
-The immediate mechanism problem is:
+### Phase61A
 
-**What is the minimum mechanism required to reproduce the surviving short-lived entry-register signature jointly with previously established Voynich structure?**
+A0 — a boundary-aware nonsemantic generator with a single short-lived entry mixture — **survived the narrow entry-direction gate**. This shows that the entry signature alone does not reject hierarchical meaningless generation once paragraph-boundary awareness is granted.
 
-Execution priorities:
+### Phase61B
 
-1. measure the coupling-free memory horizon of entry information;
-2. test stationary and weak-context formal generators against the transferable entry/body signature;
-3. add explicit entry state only if simpler generators fail, and charge that added complexity;
-4. test bounded cipher transforms of structured medieval controls under the same fixed metrics;
-5. compare joint fit, not one cherry-picked statistic.
+The same frozen A0 **failed the joint scorecard**. It inherited global edit1 density from the empirical Voynich vocabulary but produced far too little local-prev10 near-family activation and overstated line-position and entry/pseudo effects. A0 is rejected as a sufficient joint model.
 
-If a simple nonsemantic generator reproduces the full surviving fingerprint cheaply, N60's meaning-bearing preference weakens. If explicit structured entry machinery is required but both formal and bounded cipher competitors remain viable, mechanism remains unresolved. Semantic promotion still requires independent content prediction.
+### Current frontier — Phase61C
+
+`experiments/phase61/PLAN_C.md` is frozen before execution.
+
+A1 adds exactly one repair to A0:
+
+- local-family body activation: after line0, generation may reuse/mutate a recent token by one edit with a bounded probability.
+
+No persistent paragraph latent state, section-specific grammar, or additional line-position rule is allowed.
+
+**Immediate action when asked to continue:** execute Phase61C exactly as frozen.
+
+If A1 fails, do not immediately invent A2. Freeze the failure and move first to fair comparison with N0/B0 meaningful structured-text competitors, as defined in `ROADMAP.md`.
+
+## Research strategy after Phase61C
+
+The main objective is a model-family tournament rather than endless local feature repair:
+
+- **N** — meaningful structured natural/technical text;
+- **C** — meaningful structured text plus bounded global cipher/shorthand/obscuration;
+- **G** — constrained nonsemantic/formal generation;
+- **M** — mixed mechanisms, introduced only after simpler families have fixed failure patterns.
+
+Models should be compared on shared joint targets, explicit complexity cost, and prospectively frozen holdout dimensions not used to design the architecture.
+
+Independent content tests remain a separate sparse track and require externally fixed content/localization rather than post-hoc word guessing.
 
 ## Important corrections retained
 
 - Phase3 plant-label headline corrected: NOT SUPPORTED.
 - Phase53/54 recto/verso collapse corrected in Phase55.
 - Phase56 unmatched full-page PC1 sample-size contamination withdrawn.
-- Phase60D recovery-vector prediction is mathematically coupled and superseded for initialization claims by Phase60D2.
+- Phase60D recovery-vector prediction is mathematically coupled and superseded for initialization claims by Phase60D2/60E.
+- Passing one exposed structural statistic is not model-family validation; Phase61A -> 61B is the current explicit example.
 
 ## Frozen methodological constraints
 
@@ -107,6 +138,7 @@ If a simple nonsemantic generator reproduces the full surviving fingerprint chea
 - Deliberate deception is allowed only as a bounded, complexity-charged mechanism.
 - Negative results and audit corrections remain public.
 - Failed hard predictions narrow the narrative; they are not repaired with free exceptions.
+- Exposed targets may train or diagnose models; genuinely new holdouts should be frozen before evaluation.
 
 ## Before declaring decipherment
 
@@ -114,4 +146,4 @@ Require an executable mapping/generation rule, substantial prediction of unseen 
 
 ## Session behavior
 
-When asked simply to "continue", execute the current frontier rather than only describing the next step. Update durable repository records when accepted interpretation changes. Stop only at a genuine decision point, external blocker, or result requiring materially different research branches.
+When asked simply to "continue", execute the current yellow gate in `ROADMAP.md` rather than only describing the next step or inventing a new local analysis. Update durable repository records when accepted interpretation or the active milestone changes. Stop only at a genuine decision point, external blocker, or result requiring materially different research branches.

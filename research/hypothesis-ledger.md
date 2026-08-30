@@ -47,16 +47,21 @@ This public ledger records hypotheses that have been tested or materially constr
 | P60-1 | Real paragraph entry is a special local/directional state rather than an arbitrary internal fluctuation | SUPPORTED | Phase60A real boundaries exceed internal pseudo-boundaries; all five physical-leaf cross-fit folds positive. |
 | P60-2 | Entry specialization is carried by a stable interpretable structural subset | SUPPORTED | Phase60B localizes signal mainly to k/t-family, near-family/local-continuity, length/TTR and edge behavior across three unit representations. |
 | P60-3 | A paragraph-entry formal role transfers across manuscript sections | SUPPORTED | Phase60C held-out-section prediction transfers across H/B/P/S/T and broader structure adds paired discrimination beyond nuisance baselines. |
-| P60-4 | Entry state prospectively initializes/predicts later paragraph body beyond early body state | NOT SUPPORTED | Phase60D2: after line1+metadata, adding actual line0 worsens absolute line3 prediction in every major section; bootstrap incremental effect below zero. Phase60D recovery-vector result is mathematically coupled and not initialization evidence. |
-| P60-5 | Stationary/weak-context formal generation needs explicit entry machinery to reproduce surviving signature | PROSPECTIVE — PHASE60E | Must jointly match transferable entry/body structure and prior constraints. |
-| P60-6 | Low-complexity bounded cipher transforms do not automatically create Voynich specialization | PROSPECTIVE — PHASE60E | Test against structured medieval controls with frozen metrics and complexity accounting. |
+| P60-4 | Entry state prospectively initializes/predicts later paragraph body beyond early body state | NOT SUPPORTED | Phase60D2/60E coupling-free tests do not show useful prospective line0 information once metadata/immediate previous state are known; later horizons become negative. Phase60D recovery-vector result is mathematically coupled and not initialization evidence. |
+| P60-5 | Stationary/weak-context formal generation needs explicit entry machinery to reproduce surviving signature | SUPPORTED AS MECHANISM CONSTRAINT | Phase60E: frozen Phase50 DSL produces fluctuations of comparable raw norm but not the Voynich entry-specific direction; explicit boundary-conditioned machinery is required for this generator family. |
+| P60-6 | Low-complexity bounded cipher transforms do not automatically create Voynich specialization | REVISED / ENTRY STRUCTURE NOT DISCRIMINATIVE | A global boundary-blind cipher can inherit source-native entry grammar already present in meaningful structured plaintext. Ciphering becomes explanatory only if it predicts additional Voynich-specific morphology/local-family/line-position structure beyond plaintext. |
 | P60-7 | Independently localized content relation eventually emerges after structural modeling | OPEN | Current page-level visual tests are negative; localized mapping remains unavailable. |
+| P61-A0-entry | One low-complexity boundary-aware entry mixture can reproduce the held-out Voynich entry-direction target without persistent paragraph state | SUPPORTED NARROW GATE | Phase61A: A0 reproduces/exceeds the scalar held-out entry-direction projection under physical-leaf cross-fitting. This is a mechanism demonstration, not a whole-manuscript fit. |
+| P61-A0-joint | A0 is sufficient to jointly reproduce the surviving Voynich structural fingerprint | FALSIFIED AS SUFFICIENT MODEL | Phase61B: local-prev10 near-family activation is far too low while line-position and entry/pseudo effects are too large; global edit1 density is non-independent because empirical Voynich vocabulary is sampled. |
+| P61-A1 | A0 plus exactly one bounded local-family body mechanism is sufficient to bring entry, locality and line-position targets into the same held-out regime | PROSPECTIVE — PHASE61C | Frozen in `experiments/phase61/PLAN_C.md`; no persistent paragraph state, section-specific grammar, or additional line-position rule is permitted. |
 
 ## Current mechanism alternatives
 
 Current evidence remains compatible with meaningful text, systematic cipher/shorthand, bounded adversarial/deceptive cipher, hierarchical formal generation, or mixed mechanisms.
 
-The strongest currently established Phase60 fact is a **transferable, short-lived paragraph-entry formal register**, not persistent paragraph initialization and not semantic content.
+The strongest established paragraph result is a **manuscript-wide, transferable, short-lived paragraph-entry formal register**. Phase61A shows that explicit boundary-aware nonsemantic machinery can reproduce the narrow entry direction, while Phase61B shows that this mechanism alone is not a sufficient joint generator.
+
+The current research frontier is therefore model-family discrimination under joint constraints and explicit complexity cost, not further promotion of the paragraph-entry statistic by itself.
 
 ## Rule for adding hypotheses
 

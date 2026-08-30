@@ -6,6 +6,8 @@ Voynichese has strong internal grammar, positional structure, document-role effe
 
 Structural equivalence is not cipher equivalence. A pattern is promoted toward decipherment only when it predicts independently grounded content or transfers under a constrained encoder/mapping.
 
+For progress sequencing and the active decision gate, see `../ROADMAP.md`.
+
 ## Structural state through Phase 57
 
 The audited hierarchy remains:
@@ -53,6 +55,8 @@ The accepted interpretation is therefore:
 
 rather than either "Voynich-unique state machine" or "ordinary Latin paragraphing explains everything".
 
+The external control panel remains small and heterogeneous, so the magnitude and dimensionality of this decomposition require broader manuscript/genre replication.
+
 ## Phase 60 — falsification of a narrative model
 
 A frozen narrative proposed that Voynich is a structured practical/technical manuscript with a specialized paragraph-entry register. The stronger version also proposed that entry state initializes later paragraph body state.
@@ -87,7 +91,7 @@ A strong prediction of line2-line0 recovery from line0 was observed, but the tar
 
 The coupling-free test asks whether line0 improves prediction of absolute line3 after line1 and metadata are known. It does not.
 
-Current repository result:
+Repository result:
 
 - line1-only MSE: 0.3721
 - line0+line1 MSE: 0.3857
@@ -99,6 +103,14 @@ The actual entry is only slightly better than a wrong entry when both are added,
 
 Therefore the strong "entry initializes and controls later paragraph state" interpretation is withdrawn.
 
+### 60E — memory horizon and mechanism challenge: COMPLETE
+
+Coupling-free prospective tests across horizons line1-line4 show no reliable useful structural memory carried by line0 beyond metadata / immediately preceding state. The entry phenomenon is therefore better described as a short-lived position/register specialization than a persistent initializer.
+
+The frozen Phase50 stationary/weak-context DSL also fails the entry-specific direction: its generated transitions can have comparable raw multivariate magnitude, but they are not concentrated at real paragraph entry and align poorly with the Voynich direction. This establishes a mechanism constraint: that generator family needs explicit boundary-conditioned machinery to reproduce the surviving entry signature.
+
+Simple global boundary-blind ciphers are not rejected by paragraph-entry structure alone. Structured medieval plaintext can already contain entry/register differences that a position-independent cipher would inherit. Ciphering becomes explanatory only if it also accounts for Voynich-specific morphology, near-family/local continuity, line-position structure, or other independent constraints beyond what the plaintext already provides.
+
 ## Current accepted Phase 60 narrative
 
 Retain:
@@ -109,27 +121,61 @@ Do not currently claim:
 
 > the first line carries persistent information that initializes the later paragraph body.
 
-The special entry state appears to be largely absorbed by the next line at the level of the tested structural fingerprints.
-
 This remains compatible with meaningful practical text, cipher/shorthand, hierarchical formal generation, and mixed mechanisms.
 
-## Immediate frontier — Phase 60E / memory-horizon mechanism challenge
+## Phase 61 — joint architecture discrimination
 
-The next mechanism comparison must target the narrower surviving phenomenon, not the falsified persistent-initialization story.
+Phase61 moves from testing one entry statistic to comparing architectures against a joint target vector including entry specificity/direction, near-family density/local activation, line-position grammar, section modulation and short entry memory.
 
-Priority tests:
+### 61A — A0 narrow entry gate: SURVIVES
 
-1. estimate the true short memory horizon using coupling-free prospective tests (line0 contribution to line1, line2, line3... absolute states while conditioning appropriately);
-2. challenge stationary/simple formal generators: can they reproduce the transferable entry-vs-body signature without an explicit entry mechanism while retaining prior matched constraints?;
-3. challenge bounded cipher transforms of structured medieval prose against the same entry signature;
-4. only if a structural/cipher mechanism fails and independent localized content evidence becomes available, return to semantic promotion.
+A0 adds one explicit mechanism to a simple nonsemantic generator: paragraph line0 uses a separate entry-biased mixture, with no persistent paragraph state.
+
+Under physical-leaf cross-fitting, this low-complexity boundary-aware mechanism can reproduce or exceed the scalar held-out Voynich entry-direction projection. Therefore the paragraph-entry signature by itself does not reject hierarchical meaningless generation once boundary awareness is granted.
+
+### 61B — A0 joint scorecard: FAILS
+
+The frozen A0 does not jointly reproduce the broader fingerprint.
+
+Key diagnostic outcomes:
+
+- global edit1 type density is close to Voynich only because the generator samples from an empirical Voynich vocabulary, so this is not an independent success;
+- local-prev10 near-family activation is only about 6.7% of the Voynich level;
+- mean line-position eta2 is about 3.3x the Voynich proxy;
+- the multivariate entry-vs-pseudo norm is about 2.8x the Voynich value at the fixed diagnostic strength.
+
+A0 is rejected as a sufficient joint model. A more complex nonsemantic model remains viable only if the added mechanism is frozen and charged explicitly.
+
+### Current frontier — Phase 61C
+
+`experiments/phase61/PLAN_C.md` is frozen before execution.
+
+A1 adds exactly one new mechanism to A0: bounded local-family reuse / one-edit mutation in the body. It does not add persistent paragraph state, section-specific grammar, or a separate line-position mechanism.
+
+The test asks whether entry projection, local near-family activation and line-position structure can be brought into the same broad held-out regime without another repair.
+
+If A1 fails, the next action is not automatic A2 repair. The failure should be frozen and compared against N0/B0 meaningful structured-text competitors on a common scorecard before further generator elaboration.
+
+## Strategic research direction
+
+The next stage should discriminate model families rather than accumulate local anomalies:
+
+- **N** — meaningful structured natural/technical text;
+- **C** — meaningful structured text plus bounded cipher/shorthand/obscuration;
+- **G** — constrained nonsemantic/formal generation;
+- **M** — mixed mechanisms only after simpler families have fixed failure patterns.
+
+Exposed Voynich features can be used for training/diagnosis, but model-family promotion should depend on jointly fitting them at explicit complexity cost and then predicting at least one prospectively frozen dimension not used to construct the model.
+
+A separate sparse content track remains open, but semantic promotion requires independently grounded localization/content labels rather than post-hoc matching.
 
 ## Important corrections retained
 
 - Phase3 plant-label result: 2 total 4-gram hits; exact permutation p=.725; binary pair-hit p=.667. NOT SUPPORTED.
 - Phase53/54 recto/verso collapse corrected in Phase55; universal paragraph-reset claim withdrawn.
 - Phase56 unmatched full-page PC1 was contaminated by token count (r≈-.886); matched-token results supersede it.
-- Phase60D recovery-vector prediction is not evidence for initialization after Phase60D2 removed mathematical coupling.
+- Phase60D recovery-vector prediction is not evidence for initialization after Phase60D2/60E removed mathematical coupling and tested future absolute state.
+- Phase61A narrow success does not imply a successful whole-manuscript generator; Phase61B explicitly rejects A0 as a joint model.
 
 ## Methodological rules
 
@@ -141,4 +187,5 @@ Priority tests:
 - Search freedom belongs inside null/model-selection folds.
 - Negative results and corrections remain recorded.
 - Do not preserve a narrative after its hard prediction fails; narrow it explicitly.
+- Do not rescue a failed architecture by silently adding mechanisms; name and charge each extension.
 - Decipherment requires executable mapping, substantial unseen prediction, fixed interpretable output, strong competitors/nulls, and prospective/external replication.
