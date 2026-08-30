@@ -30,16 +30,22 @@ jobs:
         run: |
           test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
 
-      - name: Recover Phase59 and Phase52 control candidates
+      - name: Recover historical and objective control candidates
         run: |
           python experiments/phase62/phase62a_recover_controls.py external/cremma > phase62a_control_recovery.json
           python - <<'PY'
           import json
           x=json.load(open('phase62a_control_recovery.json'))
-          print('PHASE62_PANEL_SUMMARY')
-          for k,v in x['phase62_candidate_panel'].items():
+          print('PHASE52_PANEL_SUMMARY')
+          for k,v in x['phase52_panel'].items():
               print(f"{k}\tfiles={v['scanned_file_count']}\tpilcrows={v['pilcrow_markers']}\teligible={v['eligible_entries']}")
-          print(f"TOTAL\tmanuscripts={x['phase62_candidate_panel_totals']['manuscripts']}\teligible={x['phase62_candidate_panel_totals']['eligible_entries']}")
+          print(f"TOTAL\tmanuscripts={x['phase52_panel_totals']['manuscripts']}\teligible={x['phase52_panel_totals']['eligible_entries']}")
+          print('CORPUS_WIDE_STRUCTURED_CANDIDATES')
+          cw=x['corpus_wide_structured_candidates']
+          for k in cw['selected_names']:
+              v=cw['selected_manuscripts'][k]
+              print(f"{k}\tfiles={v['scanned_file_count']}\tpilcrows={v['pilcrow_markers']}\teligible={v['eligible_entries']}")
+          print(f"CORPUS_TOTAL\tselected_manuscripts={cw['n_selected']}\teligible={cw['selected_total_eligible_entries']}")
           print('HISTORICAL_RECOVERY_SUMMARY')
           for k,v in x['historical_phase59_recovery'].items():
               print(f"{k}\texpected={v['expected_phase59_n']}\teligible_scanned={v['eligible_total_across_scanned_files']}")
