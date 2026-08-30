@@ -1,0 +1,15 @@
+{
+  "phase":"56A",
+  "schema_version":"56A-v1",
+  "status":"AUDITED_CANONICAL_SUBSTRATE",
+  "source":"ZL3b/EVA-derived local working transcription; see data/README.md",
+  "counts":{"headers":226,"prose_lines":4087,"page_sides":206,"physical_leaves":99,"paragraphs":736,"recto":104,"verso":102},
+  "page_sections":{"T":6,"H":128,"S":25,"A":5,"C":7,"B":19,"P":16},
+  "page_currier":{"A":114,"B":82,"?":10},
+  "page_hands":{"1":112,"2":46,"5":7,"3":31,"4":9,"@":1},
+  "metadata_audit":{"missing_currier_page_sides":10,"missing_values_are_present_in_source_headers_as_absent_fields":true,"hand_at_page":"f115r","hand_at_is_source_value":true},
+  "regression_against_phase55":{"overlapping_page_sides":197,"features_checked":["ttr","mean_len","sd_len","edit1_fraction","local_prev10","linepos_mi","first_entropy","last_entropy"],"maximum_absolute_difference":0.0},
+  "parser_correction":"Initial GitHub 56A builder incorrectly expected $I/$L/$H on comment lines. Actual ZL3b stores these fields on page header records such as <f1r> <! ...>. Builder corrected before Phase56 modeling.",
+  "unit_rule":"physical leaf and page-side are distinct; page-side identifiers including numbered sub-sides such as f67r1/f67r2 are preserved",
+  "decision":"56A-v1 is frozen as the canonical substrate for Phase56B-D."
+}
