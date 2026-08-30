@@ -59,11 +59,12 @@ This public ledger records hypotheses that have been tested or materially constr
 | P62-C0 | A bounded global boundary-blind reversible recoding can materially improve N0 joint fit without target-aware paragraph/section rules | SUPPORTED AS LIMITED IMPROVEMENT / INSUFFICIENT MODEL | Phase62C selects non-overlapping digraph coding in 5/5 training folds; joint MSE improves in 5/5 held-out folds and passes 3/4 manuscript-omission stability criterion. But S1 remains -0.932× and S2 only 0.249×. On sealed H62-P1, C0 loses both diagnostics to A1 in all 5 folds. |
 | P62-A1-common | Frozen Phase61C A1 remains materially competitive when re-scored on the cross-representation Phase62 common scorecard without retuning | SUPPORTED ON EXPOSED SCALAR SCORECARD | Phase62C ratios of means: S1 0.623, S2 1.512, S3 0.587; all within the frozen broad interval. This is not a universal fold-wise pass and does not erase the Phase61C coordinate-profile mismatch or A1 target-dependence costs. |
 | H62-P1 | The frozen near-family recurrence-distance profile discriminates among N0/C0/A1 on unseen geometry | **SUPPORTED PROSPECTIVELY FOR A1** | Frozen before tournament outcomes and revealed only after Phase62D ranking/prediction commit. A1 has mean D_profile 0.763 vs N0 1.530 / C0 1.859 and mean |ΔC_short| 0.116 vs 0.638 / 1.308; A1 uniquely wins both metrics in 5/5 held-out physical-leaf folds. This supports the frozen A1 mechanism relative to tested baselines, not meaninglessness or historical identity. |
-| P63-A1-R1 | A1's exposed and H62-P1 advantages survive when output vocabulary is restricted to token types observed on training leaves only, with no retuning | PROSPECTIVE ROBUSTNESS — PHASE63A | Must freeze implementation before execution. Survival requires historical S1/S2/S3 gate plus lower H62-P1 mean D and mean |ΔC_short| than N0/C0 and ≥3/5 fold wins against both baselines on both H62-P1 metrics. |
+| P63-A1-R1 | A1's exposed and H62-P1 advantages survive when output vocabulary is restricted to token types observed on training leaves only, with no retuning | **SUPPORTED ROBUSTNESS** | Phase63A removes ~49% of held-out distinct types from generation candidates (mean held-out occurrence coverage ~0.802). A1-R1 still has S1/S2/S3 ratios 0.654/1.511/0.583 and H62-P1 mean D 0.767 / mean |ΔC_short| 0.118, beating N0 and C0 5/5 folds on both H62-P1 metrics. All frozen R1/R2/R3 conditions pass; degradation vs full-vocabulary A1 is negligible. |
+| P63-TX | Strongest Phase60–63 entry/locality/A1 results survive an independently maintained Voynich transcription/segmentation lineage | PROSPECTIVE REPLICATION — PHASE63B | Source lineage, version/hash, page/paragraph mapping, comparable metrics and normalization must be frozen before replication outcomes are computed. Failure cannot be repaired by tuning the independent transcription toward ZL3b. |
 
 ## Current mechanism alternatives
 
-The tested implementations now have two layers of evidence:
+The tested implementations now have three increasingly independent layers of evidence:
 
 ### Exposed scalar scorecard
 
@@ -73,13 +74,17 @@ The tested implementations now have two layers of evidence:
 
 `A1` is the unique leader under every frozen criterion, with 5/5 wins on both primary diagnostics.
 
+### Held-out-vocabulary restriction
+
+`A1-R1` retains essentially the same exposed and H62-P1 performance even though nearly half of held-out distinct token types are unavailable to generation.
+
 Current interpretation:
 
-- **N0:** not jointly competitive and not competitive on unseen near-family recurrence geometry; nevertheless shows that generic aggregate line-position S3 is ordinary in structured medieval text.
-- **C0:** materially improves N0 on exposed structure, so simple reversible recoding has limited explanatory value, but it remains far from Voynich on S1/S2 and performs worse than N0 on H62-P1. The wider C family is not falsified by this bounded C0 test.
-- **A1:** **leading tested structural mechanism with genuine prospective support**. Its direct 10-token local-family mechanism predicted the previously sealed short-range recurrence concentration much better than N0/C0 in every fold. However, it still pays explicit Voynich boundary/local mechanisms, Voynich-selected parameters and empirical target vocabulary, lacks a meaningful plaintext/historical model, has known full-profile mismatch, and is not a decipherment.
+- **N0:** not jointly competitive and not competitive on unseen near-family recurrence geometry; nevertheless shows generic aggregate line-position S3 is ordinary in structured medieval text.
+- **C0:** materially improves N0 on exposed structure, so simple reversible recoding has limited explanatory value, but remains far from Voynich on S1/S2 and performs poorly on H62-P1. The wider C family is not falsified by this bounded C0 test.
+- **A1/A1-R1:** **leading tested structural mechanism with genuine prospective support and one important target-dependence robustness success**. Its direct 10-token local-family mechanism predicted the sealed recurrence geometry much better than N0/C0, and this advantage does not require held-out-only vocabulary types. However it still uses Voynich training-side morphology/vocabulary, Voynich-derived architecture, frozen Voynich-selected parameters, explicit paragraph boundaries/10-token memory and held-out layout. It has known full-profile mismatch and is not a decipherment or historical model.
 
-The next task is therefore not A2 repair. Phase63A removes the strongest remaining target convenience by restricting each held-out generator to training-leaf-only token vocabulary. Only after that robustness result should the project move to independent transcription replication or consider separately frozen C1 / more autonomous G models.
+The next task is **independent transcription replication**, not A2 repair. Phase63B must freeze a genuinely independent transcription lineage and representation mapping before calculating whether the strongest effects survive.
 
 ## Rule for adding hypotheses
 
