@@ -1,0 +1,84 @@
+name: Phase62P H62-P1 prospective reveal
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/phase62/IMPLEMENTATION_P.md'
+      - 'experiments/phase62/IMPLEMENTATION_P_EDGE_CASES.md'
+      - 'experiments/phase62/phase62p_h62p1.py'
+      - '.github/workflows/phase62p-h62p1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prospective:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LETSGO-Voynich
+        uses: actions/checkout@v4
+
+      - name: Verify Phase62D decision is in ancestry
+        shell: bash
+        run: |
+          test -f experiments/phase62/DECISION_D.md
+          git log --oneline -- experiments/phase62/DECISION_D.md
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen inputs
+        shell: bash
+        run: |
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Run frozen H62-P1 prospective test
+        run: |
+          python experiments/phase62/phase62p_h62p1.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma \
+            > phase62p_h62p1_results.json
+
+      - name: Print compact prospective result
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase62p_h62p1_results.json'))
+          print('PHASE62P_H62P1')
+          print('status=', x.get('scientific_status'))
+          if 'across_fold' in x:
+              a=x['across_fold']
+              print('leader=', a['prospective_profile_leader'])
+              print('A1_interpretation=', a['A1_prospective_interpretation'])
+              for k,v in a['candidate_summaries'].items():
+                  print(k, 'mean_D=', v['mean_D_profile'], 'median_D=', v['median_D_profile'], 'D_wins=', v['unique_D_profile_fold_wins'], 'mean_Cdiff=', v['mean_abs_C_short_diff'], 'C_wins=', v['unique_abs_C_short_diff_fold_wins'])
+              for f in x['folds']:
+                  print('FOLD', f['fold'], 'Voynich_Cshort=', f['voynich']['C_short'], 'winnerD=', f['unique_D_profile_winner'], 'winnerC=', f['unique_abs_C_short_diff_winner'])
+                  print('comparisons=', f['comparisons'])
+          else:
+              print('error=', x.get('error'))
+          PY
+
+      - name: Upload prospective result
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase62p-h62p1-results
+          path: phase62p_h62p1_results.json
