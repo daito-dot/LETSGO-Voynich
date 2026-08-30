@@ -2,92 +2,134 @@
 
 ## Accepted high-level state
 
-Voynichese has strong internal grammar, positional structure, document-role effects, page-local token-family organization, and paragraph/line state dynamics. What is not yet established is whether the remaining robust variation preserves independently grounded content information.
+Voynichese has strong internal grammar, positional structure, document-role effects, page-local token-family organization, and a manuscript-wide paragraph-entry formal role. What is not established is whether these structures encode independently grounded semantic content, arise from cipher/shorthand mechanics, or can be reproduced by a hierarchical nonsemantic generator.
 
 Structural equivalence is not cipher equivalence. A pattern is promoted toward decipherment only when it predicts independently grounded content or transfers under a constrained encoder/mapping.
 
-## Structural state established through Phase 56
+## Structural state through Phase 57
 
-The audited hierarchy is currently:
+The audited hierarchy remains:
 
 `broad document constraints`
 
-`+ page-local token-family activation state`
+`+ page-local token-family activation`
 
-`+ transferable paragraph-entry transition`
+`+ paragraph-entry / body-state transition`
 
 `+ line-position grammar`
 
-`+ token morphology / edge entropy / {k,t}-related dimensions`
+`+ token morphology / edge-pattern / {k,t}-related dimensions`
 
-Physical locality remains after exact section+Currier+hand matching, but is not one simple smooth drift. Matched-token structural variation is moderately low-dimensional. The paragraph-entry/recovery transition is multivariate and transfers positively across held-out major sections.
+Physical locality survives exact section+Currier+hand matching but is not one simple smooth drift. Matched-token structural variation is moderately low-dimensional. Phase57 promoted only the leading approximately two-dimensional residual subspace; higher residual axes remain too representation/scale-sensitive for semantic rescue.
 
-## Phase 57 residual robustness gate — PASS WITH NARROW TARGET
+## Phase 58 — content tests
 
-Only the leading approximately two-dimensional consensus residual is promoted. It is reasonably stable across token representation, stable in its top-2 subspace across 15–40 token windows on fixed eligibility, not explained away by tested leakage-safe local context, weakly associated with broad labels after cross-fitting, and stable under physical-leaf bootstrap. PC3+ is not eligible for semantic rescue.
+### 58A nuisance transfer
 
-## Phase 58A nuisance transfer — NEGATIVE
+The promoted 2D residual does not predict recto/verso or coarse physical-position bins above matched nulls. It is not obviously a leftover simple manuscript-location code.
 
-The promoted 2D residual does not predict recto/verso or coarse physical-position bins above matched nulls. Quire is also uninformative descriptively but is a weak high-cardinality test. Thus the residual is not obviously a leftover simple manuscript-location code.
+### 58B visual/content pilots
 
-## Phase 58B independently grounded visual tests — CURRENTLY NEGATIVE
+Independently defined page-level visual properties failed in two narrow matched domains:
 
-Two visual annotation pilots were performed using external illustration descriptions only; proposed Voynichese meanings from those external projects were not used.
+- Biological/balneological: blue pool/water p=.921; green pool/water p=.155; animal/special animal p=.649.
+- early Herbal-A: veined leaves p=.327; multiple flowers p=.982; flat-topped root p=.311; broad reproductive structure p=.220.
 
-### Biological/balneological within-domain pilot
+No relation is supported. Page-level visual semantics therefore remain negative at the promoted residual representation.
 
-20 page-sides, page-aggregated frozen residual, exact label-count permutations:
+### 58C localization
 
-- explicit blue pool/water: p=.921
-- explicit green pool/water: p=.155
-- animal/special animal figure: p=.649, low positive count
+A defensible paragraph-to-illustrated-subobject mapping was not available from the current external annotations without post-hoc pairing. Localized semantic testing remains blocked rather than guessed.
 
-No tested relation is supported. The green-water contrast is not significant and must not be rescued post hoc.
+## Phase 59 — medieval entry grammar comparison
 
-### Early Herbal-A visual morphology pilot
+Dante continuous prose does not reproduce the Voynich multivariate paragraph-entry trajectory. However, source-native medieval Latin item/section markers in medical and other structured manuscripts do produce partially similar entry transitions.
 
-24 eligible page-sides in a narrow Herbal-A / Currier-A / hand-1 domain, using externally annotated plant morphology:
+In the current development comparison, an external rank-2 medieval-entry basis learned without Voynich explains about 65% of Voynich transition energy. A substantial Latin-orthogonal Voynich component remains and transfers positively across H/B/P/S/T.
 
-- veined leaves: p=.327
-- multiple flowers: p=.982
-- flat-topped root: p=.311
-- broad reproductive structure (berries/pods/fruits/seeds): p=.220
+The accepted interpretation is therefore:
 
-None is supported.
+`generic medieval entry/register grammar + Voynich-specific specialization`
 
-### Current interpretation
+rather than either "Voynich-unique state machine" or "ordinary Latin paragraphing explains everything".
 
-The robust 2D residual has now passed simple nuisance tests but **failed to predict independently defined page-level visual properties in two narrow matched domains**.
+## Phase 60 — falsification of a narrative model
 
-This is a meaningful negative result for H58-1 at page aggregation. It does not prove absence of semantics. A specific remaining possibility is that paragraph-level information is tied to particular illustrated subobjects or local text regions and is washed out when all paragraph residuals on a page are averaged.
+A frozen narrative proposed that Voynich is a structured practical/technical manuscript with a specialized paragraph-entry register. The stronger version also proposed that entry state initializes later paragraph body state.
 
-That localized hypothesis requires paragraph-to-object spatial linkage defined independently of Voynichese before testing. Without such linkage, searching for the best paragraph/object pairing would be semantic fishing.
+### 60A — pseudo-boundary falsification: PASS
 
-## Competing explanation families still open
+Real paragraph line0->line2 transitions strongly exceed internal pseudo-boundaries within the same paragraphs. In physical-leaf cross-fitting, real > pseudo in all five folds. The paragraph boundary is therefore a genuine special structural position rather than an arbitrary two-line fluctuation.
 
-1. meaningful natural-language text with unusual manuscript/genre structure
-2. systematic information-preserving cipher
-3. bounded deliberately deceptive/adversarial cipher
-4. hierarchical formal generator with physical, paragraph and line state
-5. mixed mechanisms
+### 60B — feature attribution: PASS WITH SPECIFIC CARRIERS
 
-The current page-level visual nulls increase pressure on simple 'text directly describes the visible page feature' accounts at the promoted residual representation. They do not positively support formal generation or deliberate deception.
+Across raw EVA, conservative composites and Phase56 composites, the entry/body transition is carried mainly by:
 
-## Immediate frontier: Phase 58C localized content linkage
+- k/t-family usage and balance;
+- edit1 / near-family activation;
+- local previous-10 near-family continuity;
+- token/unit length and TTR;
+- stable first/last-edge changes.
 
-Do not proceed to a flexible cipher search yet.
+The effect is not mainly total entropy or inventory-size noise.
 
-The next legitimate content test must obtain or create an independent mapping between illustrated subobjects/local regions and nearby prose paragraphs. The mapping rule must be frozen without reference to residual coordinates or proposed decipherments.
+### 60C — held-out-section transfer: PASS
 
-Candidate evidence sources include manuscript image geometry, externally annotated object bounding boxes, and independently located text regions. Text-derived lexicon matches are not acceptable ground truth for this gate.
+A section-blind structural entry/body role transfers to every held-out H/B/P/S/T section. Broader structural models add paired entry-vs-body discrimination beyond length/frequency nuisance baselines in every section, with page-bootstrap intervals above zero.
 
-If a defensible spatial mapping cannot be constructed, Phase58C should be recorded as blocked/unidentifiable and the research should return to mechanism discrimination rather than inventing semantic pairings.
+Several EVA edge-pattern coefficient directions remain invariant across all five outer held-out-section fits. This establishes a manuscript-wide formal paragraph-entry role, not its semantic meaning.
+
+### 60D — recovery-vector prediction: NOT ACCEPTED AS INITIALIZATION EVIDENCE
+
+A strong prediction of line2-line0 recovery from line0 was observed, but the target algebraically contains line0. This creates mathematical coupling/regression-to-the-mean risk.
+
+### 60D2 — prospective absolute future-state test: FAILS P60-4
+
+The coupling-free test asks whether line0 improves prediction of absolute line3 after line1 and metadata are known. It does not.
+
+Current repository result:
+
+- line1-only MSE: 0.3721
+- line0+line1 MSE: 0.3857
+- relative change from adding line0: -3.64%
+- page-cluster 95% interval for error reduction: [-0.0257, -0.0043]
+- all H/B/P/S/T section-specific gains are negative.
+
+The actual entry is only slightly better than a wrong entry when both are added, and both are worse than omitting line0 entirely.
+
+Therefore the strong "entry initializes and controls later paragraph state" interpretation is withdrawn.
+
+## Current accepted Phase 60 narrative
+
+Retain:
+
+> Voynich has a manuscript-wide, transferable, short-lived paragraph-entry register/formal role, partly homologous to medieval structured-document entry grammar and partly specialized in Voynichese.
+
+Do not currently claim:
+
+> the first line carries persistent information that initializes the later paragraph body.
+
+The special entry state appears to be largely absorbed by the next line at the level of the tested structural fingerprints.
+
+This remains compatible with meaningful practical text, cipher/shorthand, hierarchical formal generation, and mixed mechanisms.
+
+## Immediate frontier — Phase 60E / memory-horizon mechanism challenge
+
+The next mechanism comparison must target the narrower surviving phenomenon, not the falsified persistent-initialization story.
+
+Priority tests:
+
+1. estimate the true short memory horizon using coupling-free prospective tests (line0 contribution to line1, line2, line3... absolute states while conditioning appropriately);
+2. challenge stationary/simple formal generators: can they reproduce the transferable entry-vs-body signature without an explicit entry mechanism while retaining prior matched constraints?;
+3. challenge bounded cipher transforms of structured medieval prose against the same entry signature;
+4. only if a structural/cipher mechanism fails and independent localized content evidence becomes available, return to semantic promotion.
 
 ## Important corrections retained
 
 - Phase3 plant-label result: 2 total 4-gram hits; exact permutation p=.725; binary pair-hit p=.667. NOT SUPPORTED.
 - Phase53/54 recto/verso collapse corrected in Phase55; universal paragraph-reset claim withdrawn.
 - Phase56 unmatched full-page PC1 was contaminated by token count (r≈-.886); matched-token results supersede it.
+- Phase60D recovery-vector prediction is not evidence for initialization after Phase60D2 removed mathematical coupling.
 
 ## Methodological rules
 
@@ -98,4 +140,5 @@ If a defensible spatial mapping cannot be constructed, Phase58C should be record
 - Equalize or model estimator sample-size effects.
 - Search freedom belongs inside null/model-selection folds.
 - Negative results and corrections remain recorded.
+- Do not preserve a narrative after its hard prediction fails; narrow it explicitly.
 - Decipherment requires executable mapping, substantial unseen prediction, fixed interpretable output, strong competitors/nulls, and prospective/external replication.
