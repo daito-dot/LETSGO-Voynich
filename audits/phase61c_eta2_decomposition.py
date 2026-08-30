@@ -8,6 +8,7 @@ No accepted result is modified.
 from __future__ import annotations
 import importlib.util
 import json
+import sys
 import urllib.request
 from pathlib import Path
 
@@ -33,6 +34,7 @@ GROUPS = {
 
 spec = importlib.util.spec_from_file_location("p61c", SRC)
 m = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = m
 spec.loader.exec_module(m)
 
 
