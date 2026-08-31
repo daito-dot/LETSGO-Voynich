@@ -1,4 +1,4 @@
-# Hypothesis ledger addendum — Phase66 through Phase70
+# Hypothesis ledger addendum — Phase66 through Phase71
 
 Date: 2026-08-31
 
@@ -193,3 +193,42 @@ Not established:
 - decipherment.
 
 Blinded Route P applies. No Phase70 parameter tuning or `SC2` rescue is allowed. The next hypothesis must be orthogonal and externally/source grounded, with multiplicity and search freedom frozen before outcome inspection.
+
+## P71-AB1 — Alberti message-initial boundary signal/reset generates Voynich paragraph-entry state
+
+Prediction:
+
+- take Alberti's independently attested first disk method, with a capital alignment signal and alphabet change after four plaintext words;
+- compare a continuous-message control with the same meaningful Latin ciphertext reset at every source paragraph;
+- if message-initial alignment/reset is a sufficient historical mechanism class for the missing entry state, the paragraph-reset arm should move toward the frozen Voynich S1 direction and enter the preregistered positive regime.
+
+Preflight:
+
+- exact source/ring authorities and one-to-one mappings passed;
+- paired plaintext and ciphertext-token counts were identical;
+- the signal was conservatively prefixed to the following encrypted word rather than inserted as an extra token;
+- no Phase71 scientific metric was computed before freeze.
+
+Primary 4-word result:
+
+- CONT S1 ratio = **`-0.871334×`**;
+- PARA S1 ratio = **`-0.952149×`**;
+- PARA positive S1 folds = **0/5**;
+- PARA is not closer to the Voynich target than CONT and is not higher than CONT;
+- S2 ratios = `0.276845×` / `0.291049×`;
+- S3 ratios = `0.910545×` / `0.877604×`;
+- PARA H62 mean D = `1.010144`, mean C-short error = `0.181443`.
+
+The frozen 3-word sensitivity moves PARA slightly toward the target relative to CONT (`-1.143991×` vs `-1.199351×`) but remains negative in **5/5** folds and is explicitly non-rescuing.
+
+Status: **P71-AB1 BOUNDARY-SIGNAL NOT SUPPORTED**.
+
+Key implication:
+
+> The exact source-grounded Alberti initial-signal/reset mechanism does not explain the Voynich paragraph-entry direction; in the primary test it makes S1 modestly more negative. This strengthens S1 as a discriminating mechanism constraint because S3 is already close to Voynich and some H62 summaries are only moderately mismatched while the signed entry effect is reversed.
+
+Bounded claim:
+
+> This rejects one explicit near-period historical mechanism control. It does not reject all meaningful-text ciphers, all boundary mechanisms, or Alberti as a historical subject generally.
+
+Blinded Route N applies. No nearby interval, signal placement, projection, alphabet, null/numeral option, or paragraph/message remapping may be searched as a Phase71 rescue.
