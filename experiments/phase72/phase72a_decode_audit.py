@@ -5,6 +5,11 @@ This program never imports the Voynich scoring modules and contains no S1/S2/S3/
 implementation. It audits an independently maintained DECODE metadata snapshot and,
 optionally, the public DECODE REST record-detail endpoint.
 
+The pinned Decode2LOD RDF snapshot stores controlled vocabulary values as numeric IDs.
+A pre-science compatibility amendment anchors record type 2 = Cipher and 1 = Key using
+independently displayed DECODE web records. No Voynich score was computed before this
+interface correction.
+
 Usage:
   python experiments/phase72/phase72a_decode_audit.py \
       /path/to/Decode2LOD/populated_decryptontology.ttl \
@@ -18,7 +23,7 @@ import hashlib
 import json
 import re
 import time
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Tuple
 
@@ -29,8 +34,15 @@ DECRYPT = Namespace("https://de-crypt.org/r/")
 API_BASE = "https://de-crypt.org/decrypt-web/api"
 START_YEAR_MIN = 1400
 START_YEAR_MAX = 1600
-MAX_DETAIL_RECORDS = 500
-REQUEST_DELAY_SECONDS = 0.05
+MAX_DETAIL_RECORDS = 1000
+REQUEST_DELAY_SECONDS = 0.03
+
+# Pinned Decode2LOD controlled-value compatibility. Independent DECODE web pages:
+# record 4417 / 4959 / 4435 display Record Type = Cipher; record 205 / 1439 = Key.
+RECORD_TYPE_LABELS = {"1": "Key", "2": "Cipher"}
+CIPHER_RECORD_TYPE_IDS = {"2"}
+KEY_RECORD_TYPE_IDS = {"1"}
+SCHEMA_ANCHOR_IDS = ("4417", "205", "1439", "4959", "4435")
 
 
 def sha256_file(path: Path) -> str:
@@ -58,19 +70,30 @@ def int_or_none(value: str | None) -> int | None:
         return int(m.group(1)) if m else None
 
 
+def decode_record_type(value: str | None) -> str | None:
+    if value is None:
+        return None
+    raw = value.strip()
+    if raw in RECORD_TYPE_LABELS:
+        return RECORD_TYPE_LABELS[raw]
+    return raw
+
+
 def extract_metadata(ttl_path: Path) -> Tuple[List[dict], dict]:
     g = Graph()
     g.parse(ttl_path, format="turtle")
     subjects = sorted(set(g.subjects(RDF.type, DECRYPT.Record)), key=str)
     rows: List[dict] = []
     for s in subjects:
+        rt_raw = one(g, s, DECRYPT.hasRecordType)
         row = {
             "uri": str(s),
             "id": one(g, s, DECRYPT.hasID),
             "name": one(g, s, DECRYPT.hasName),
             "start_year": int_or_none(one(g, s, DECRYPT.hasStartYear)),
             "creation_date": one(g, s, DECRYPT.hasCreationDate),
-            "record_type": one(g, s, DECRYPT.hasRecordType),
+            "record_type_raw": rt_raw,
+            "record_type": decode_record_type(rt_raw),
             "cipher_types": one(g, s, DECRYPT.hasCipherTypes),
             "symbol_sets": one(g, s, DECRYPT.hasSymbolSets),
             "status": one(g, s, DECRYPT.hasStatus),
@@ -86,8 +109,10 @@ def extract_metadata(ttl_path: Path) -> Tuple[List[dict], dict]:
         rows.append(row)
 
     distributions = {
-        "record_type": Counter((r["record_type"] or "<NULL>") for r in rows),
+        "record_type_raw": Counter((r["record_type_raw"] or "<NULL>") for r in rows),
+        "record_type_decoded": Counter((r["record_type"] or "<NULL>") for r in rows),
         "status": Counter((r["status"] or "<NULL>") for r in rows),
+        "private_ciphertext": Counter((r["private_ciphertext"] or "<NULL>") for r in rows),
         "cipher_types": Counter((r["cipher_types"] or "<NULL>") for r in rows),
         "symbol_sets": Counter((r["symbol_sets"] or "<NULL>") for r in rows),
         "country": Counter((r["current_country"] or "<NULL>") for r in rows),
@@ -95,19 +120,30 @@ def extract_metadata(ttl_path: Path) -> Tuple[List[dict], dict]:
     return rows, {k: dict(v.most_common()) for k, v in distributions.items()}
 
 
-def is_public_ciphertext(row: dict) -> bool:
+def in_date_window(row: dict) -> bool:
     year = row.get("start_year")
-    if year is None or not (START_YEAR_MIN <= year <= START_YEAR_MAX):
+    return year is not None and START_YEAR_MIN <= year <= START_YEAR_MAX
+
+
+def is_cipher_record(row: dict) -> bool:
+    raw = (row.get("record_type_raw") or "").strip()
+    decoded = (row.get("record_type") or "").strip().lower()
+    if raw in CIPHER_RECORD_TYPE_IDS:
+        return True
+    if raw in KEY_RECORD_TYPE_IDS:
         return False
-    rt = (row.get("record_type") or "").lower()
-    if not ("cipher" in rt or "crypt" in rt):
-        return False
-    if "key" in rt and "ciphertext" not in rt:
-        return False
+    return "cipher" in decoded or "crypt" in decoded
+
+
+def is_nonprivate(row: dict) -> bool:
+    # Preserve the originally frozen exclusion: only explicit True is excluded.
+    # Unknown/null is reported separately so PLAN_B can require stricter public access.
     priv = (row.get("private_ciphertext") or "").strip().lower()
-    if priv in {"true", "1", "yes"}:
-        return False
-    return bool(row.get("id"))
+    return priv not in {"true", "1", "yes"}
+
+
+def is_public_ciphertext(row: dict) -> bool:
+    return in_date_window(row) and is_cipher_record(row) and is_nonprivate(row) and bool(row.get("id"))
 
 
 def walk(value: Any, path: str = "") -> Iterable[Tuple[str, Any]]:
@@ -129,9 +165,10 @@ def detail_signature(detail: Any) -> dict:
     boundary_candidates = []
     for path, value in walk(detail):
         leaf = path.lower()
-        if any(x in leaf for x in ("transcript", "ciphertext", "cleartext", "plaintext", "decrypt")):
+        is_text_field = any(x in leaf for x in ("transcript", "ciphertext", "cleartext", "plaintext", "decrypt"))
+        if is_text_field:
             field_paths.append(path)
-            if isinstance(value, str):
+            if isinstance(value, str) and len(value) >= 20:
                 text_candidates.append({
                     "path": path,
                     "chars": len(value),
@@ -148,8 +185,8 @@ def detail_signature(detail: Any) -> dict:
         "relevant_field_paths": sorted(set(field_paths)),
         "text_candidates": text_candidates,
         "boundary_candidate_paths": boundary_candidates[:200],
-        "has_machine_readable_text_candidate": any(x["chars"] >= 20 for x in text_candidates),
-        "has_multiline_text_candidate": any(x["lines"] >= 2 and x["chars"] >= 20 for x in text_candidates),
+        "has_machine_readable_text_candidate": bool(text_candidates),
+        "has_multiline_text_candidate": any(x["lines"] >= 2 for x in text_candidates),
         "detail_sha256": hashlib.sha256(
             json.dumps(detail, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
         ).hexdigest(),
@@ -164,7 +201,7 @@ def fetch_detail(session: requests.Session, record_id: str) -> Tuple[Any | None,
             r = session.get(url, timeout=30)
             r.raise_for_status()
             return r.json(), None
-        except Exception as exc:  # source audit: preserve error and retry boundedly
+        except Exception as exc:
             last_error = f"{type(exc).__name__}: {exc}"
             time.sleep(0.5 * (attempt + 1))
     return None, last_error
@@ -180,6 +217,14 @@ def main() -> int:
 
     ttl_path = Path(args.ttl).resolve()
     rows, distributions = extract_metadata(ttl_path)
+    by_id = {str(r["id"]): r for r in rows if r.get("id") is not None}
+
+    date_window = [r for r in rows if in_date_window(r)]
+    cipher_window = [r for r in date_window if is_cipher_record(r)]
+    explicit_private_cipher_window = [
+        r for r in cipher_window
+        if (r.get("private_ciphertext") or "").strip().lower() in {"true", "1", "yes"}
+    ]
     candidates = sorted(
         [r for r in rows if is_public_ciphertext(r)],
         key=lambda r: (r["start_year"], str(r["id"])),
@@ -197,7 +242,7 @@ def main() -> int:
     errors = []
     if not args.skip_live_details:
         session = requests.Session()
-        session.headers.update({"User-Agent": "LETSGO-Voynich-Phase72-source-audit/1.0"})
+        session.headers.update({"User-Agent": "LETSGO-Voynich-Phase72-source-audit/1.1"})
         for i, row in enumerate(live_candidates):
             rid = str(row["id"])
             detail, error = fetch_detail(session, rid)
@@ -210,7 +255,9 @@ def main() -> int:
                     "id": rid,
                     "start_year": row["start_year"],
                     "name": row["name"],
+                    "record_type_raw": row["record_type_raw"],
                     "record_type": row["record_type"],
+                    "private_ciphertext": row["private_ciphertext"],
                     "cipher_types": row["cipher_types"],
                     "symbol_sets": row["symbol_sets"],
                     "country": row["current_country"],
@@ -222,22 +269,19 @@ def main() -> int:
 
     transcribed = [x for x in detail_summaries if x["has_machine_readable_text_candidate"]]
     multiline = [x for x in detail_summaries if x["has_multiline_text_candidate"]]
-    family_groups = sorted(set(
-        (x.get("cipher_types") or "<NULL>")
-        for x in transcribed
-    ))
-    holders = sorted(set(
-        (x.get("holder") or x.get("country") or "<NULL>")
-        for x in transcribed
-    ))
+    family_groups = sorted(set((x.get("cipher_types") or "<NULL>") for x in transcribed))
+    holders = sorted(set((x.get("holder") or x.get("country") or "<NULL>") for x in transcribed))
 
-    if len(transcribed) >= 10 and len(family_groups) >= 2 and len(multiline) >= 5:
+    if detail_truncated and len(transcribed) < 10:
+        feasibility = "P72-EXT INCOMPLETE DETAIL AUDIT"
+    elif len(transcribed) >= 10 and len(family_groups) >= 2 and len(multiline) >= 5:
         feasibility = "P72-EXT READY"
     elif len(transcribed) >= 10:
         feasibility = "P72-EXT TRANSCRIPTION READY / BOUNDARY BLOCKED"
     else:
         feasibility = "P72-EXT UNDERPOWERED"
 
+    schema_anchors = {rid: by_id.get(rid) for rid in SCHEMA_ANCHOR_IDS}
     audit = {
         "phase": "72A",
         "status": "SOURCE_FEASIBILITY_ONLY_NO_VOYNICH_SCORE",
@@ -246,15 +290,26 @@ def main() -> int:
             "ttl_sha256": sha256_file(ttl_path),
             "api_base": API_BASE,
         },
+        "source_schema_compatibility": {
+            "record_type_labels": RECORD_TYPE_LABELS,
+            "known_external_web_anchor_ids": list(SCHEMA_ANCHOR_IDS),
+            "anchor_rows_in_pinned_snapshot": schema_anchors,
+            "run1_zero_candidate_result_disposition": "SOURCE_SCHEMA_MISMATCH_NOT_UNDERPOWERED",
+        },
         "filters": {
             "start_year_min": START_YEAR_MIN,
             "start_year_max": START_YEAR_MAX,
-            "record_type_contains_cipher_or_crypt": True,
-            "exclude_key_only_when_identifiable": True,
+            "record_type_cipher_raw_ids": sorted(CIPHER_RECORD_TYPE_IDS),
+            "literal_cipher_or_crypt_fallback": True,
+            "exclude_key_raw_ids": sorted(KEY_RECORD_TYPE_IDS),
             "exclude_private_true": True,
+            "null_privacy_flag_retained_for_feasibility_but_reported": True,
         },
         "metadata": {
             "all_records": len(rows),
+            "records_in_date_window": len(date_window),
+            "cipher_records_in_date_window_before_privacy": len(cipher_window),
+            "explicit_private_cipher_records_in_date_window": len(explicit_private_cipher_window),
             "distributions": distributions,
             "candidate_records": len(candidates),
             "candidates": candidates,
@@ -280,7 +335,11 @@ def main() -> int:
     Path(args.details_out).write_text(json.dumps(external_details, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({
         "all_records": len(rows),
+        "records_in_date_window": len(date_window),
+        "cipher_records_in_date_window_before_privacy": len(cipher_window),
+        "explicit_private_cipher_records_in_date_window": len(explicit_private_cipher_window),
         "candidate_records": len(candidates),
+        "detail_attempted": len(live_candidates) if not args.skip_live_details else 0,
         "detail_successes": len(detail_summaries),
         "detail_errors": len(errors),
         "records_with_text_candidate": len(transcribed),
