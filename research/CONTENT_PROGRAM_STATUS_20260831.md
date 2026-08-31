@@ -207,14 +207,47 @@ Accepted interpretation:
 
 This is an existence/compatibility result, not a claim that Voynich plaintext is Latin, that Naibbe is historical, or that A1 is the historical production algorithm.
 
-## Current frontier — orthogonal source-grounded discriminator
+## Phase71A — source-grounded Alberti boundary mechanism
 
-Phase70's blinded post-result Route P is controlling. No `SC2` repair or tuning of local probability, history length, edit relation, entry strength, codebook, plaintext panel, or respacing is allowed.
+Phase71 changed mechanism family rather than repairing Phase70. It tested Alberti's historically attested first disk method as a near-period control: a capital alignment signal plus cipher-disk reset was applied prospectively at each source paragraph and compared with the same meaningful Latin ciphertext treated as one continuous message.
 
-The next test must change the scientific question rather than optimize Phase70. Priority order:
+The primary used Alberti's 4-word alphabet-change interval. Signals were conservatively prefixed to the following encrypted word, so paired arms kept identical plaintext, layout and token counts.
 
-1. an independently grounded external/content discriminator;
-2. a historically/source-grounded mechanism family with family-level multiplicity controlled in advance;
-3. if formal structure is used, treat the still-missing paragraph-entry S1 component as the highest-information unresolved axis rather than re-testing locality.
+Primary result:
 
-The direct-music branch in Issue #26 is relevant only insofar as it supplies externally grounded historical models. Its accumulated results already reject ordinary finite-state music likeness, the tested Ptolemaic/zodiac relation, the public f67r2/f113r musical package, literal Guidonian sequence dynamics, and the Nicholas-Philip duration grouping after adversarial controls. Static six-state/Guidonian fits were real but were progressively localized to generic slot/pair geometry under stronger controls. Therefore no melody/pitch decoding is promoted from that branch without a genuinely new independent observable.
+- CONT S1 ratio **`-0.87133×`**;
+- PARA S1 ratio **`-0.95215×`**;
+- PARA positive S1 folds **0/5**;
+- paragraph reset was neither closer to the Voynich target nor higher than the continuous control;
+- S2 ratios `0.27685×` / `0.29105×`;
+- S3 ratios **`0.91055×` / `0.87760×`**;
+- H62 mean D `1.00564` / `1.01014`;
+- H62 C-short error `0.12273` / `0.18144`.
+
+Frozen classification:
+
+> **P71-AB1 BOUNDARY-SIGNAL NOT SUPPORTED**
+
+The non-rescuing 3-word sensitivity moved PARA slightly toward CONT on the scalar comparison but remained negative in **5/5** S1 folds (`R_PARA=-1.14399×`).
+
+Accepted interpretation:
+
+> The exact Alberti-style message-initial signal/reset mechanism does not explain the Voynich paragraph-entry direction; under the primary construction it makes S1 modestly more negative. This strengthens paragraph-entry S1 as a discriminator because aggregate line-position S3 is already close to the Voynich scalar and some H62 summaries are not extreme, yet the signed entry effect is reversed.
+
+This does not reject all historical ciphers or meaningful plaintext. It closes only this frozen mechanism control. Blinded Route N prohibits nearby interval/signal/projection/Alberti-variant rescue searches.
+
+## Current frontier — real historical ciphertext / independent external evidence
+
+After Phase69–71 the formal picture is now separated more sharply:
+
+- short-range near-family recurrence can coexist with exactly recoverable meaningful plaintext;
+- aggregate line-position structure is relatively easy for heterogeneous structured systems to approach;
+- the Voynich paragraph-entry transition remains unusually hard to reproduce and is opposite-signed in the tested Alberti control.
+
+The next experiment must therefore remain orthogonal. Highest-priority candidates are:
+
+1. **real historical ciphertext corpora** with independently established cipher families/message boundaries, to test whether S1-like entry behavior occurs in actual historical practice rather than another synthetic cipher;
+2. a genuinely new independently grounded content relation, not another representation search over the exhausted Quire-19 morphology pairs;
+3. only after external evidence, a separately frozen historical mechanism family. No Phase70/71 repair is allowed.
+
+The direct-music branch in Issue #26 remains a negative/control-rich side lane: no melody/pitch/duration decoding is promoted without a genuinely new independent observable.
