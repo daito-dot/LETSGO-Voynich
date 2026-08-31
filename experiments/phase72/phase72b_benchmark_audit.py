@@ -11,7 +11,7 @@ import json
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 MAX_YEAR = 1900
 
@@ -45,13 +45,23 @@ def page_key(value: Any, fallback: str) -> Tuple[int, int, str]:
     return (int(m.group(1)), side, s)
 
 
-def declared_transcription(record: dict, root: Path) -> Tuple[str | None, Path | None]:
+def declared_transcription(record: dict, root: Path) -> Tuple[str | None, Path | None, List[Path]]:
+    """Resolve the manifest transcription path under the frozen two-base rule.
+
+    The benchmark manifest stores paths relative to benchmark/ for its bundled
+    sources, while some compatible manifests may use repository-relative paths.
+    This source-only compatibility rule was frozen before any Voynich score.
+    """
     for field in ("transcription_canonical_file", "transcription_diplomatic_file"):
         rel = record.get(field)
-        if rel:
-            p = root / rel
-            return field, p
-    return None, None
+        if not rel:
+            continue
+        candidates = [root / rel, root / "benchmark" / rel]
+        for path in candidates:
+            if path.is_file():
+                return field, path, candidates
+        return field, candidates[-1], candidates
+    return None, None, []
 
 
 def nonempty_lines(text: str) -> List[str]:
@@ -66,7 +76,10 @@ def line_shape(text: str) -> dict:
     lines = nonempty_lines(text)
     counts = [len(ws_tokens(x)) for x in lines]
     base = len(lines) >= 3 and counts[0] >= 5 and counts[2] >= 5
-    pseudos = [j for j in range(1, max(1, len(lines) - 2)) if j + 2 < len(lines) and counts[j] >= 5 and counts[j + 2] >= 5]
+    pseudos = [
+        j for j in range(1, max(1, len(lines) - 2))
+        if j + 2 < len(lines) and counts[j] >= 5 and counts[j + 2] >= 5
+    ]
     return {
         "nonempty_lines": len(lines),
         "whitespace_tokens_total": sum(counts),
@@ -108,6 +121,7 @@ def main() -> int:
     missing_declared = []
     rights = Counter()
     sources_all = Counter()
+    resolution_modes = Counter()
     for r in records:
         rights[str(r.get("rights_class"))] += 1
         sources_all[str(r.get("source"))] += 1
@@ -117,12 +131,22 @@ def main() -> int:
             continue
         if not date_ok(r):
             continue
-        field, path = declared_transcription(r, root)
+        field, path, attempted = declared_transcription(r, root)
         if field is None or path is None:
             continue
         if not path.is_file():
-            missing_declared.append({"id": r.get("id"), "field": field, "path": str(path.relative_to(root))})
+            missing_declared.append({
+                "id": r.get("id"),
+                "field": field,
+                "declared_path": r.get(field),
+                "attempted_paths": [str(x.relative_to(root)) for x in attempted],
+            })
             continue
+        rel_resolved = str(path.relative_to(root))
+        if rel_resolved.startswith("benchmark/"):
+            resolution_modes["benchmark_relative"] += 1
+        else:
+            resolution_modes["repository_relative"] += 1
         text = path.read_text(encoding="utf-8", errors="replace")
         filtered.append({
             "id": r.get("id"),
@@ -140,7 +164,8 @@ def main() -> int:
             "manuscript_page": r.get("manuscript_page"),
             "word_boundaries": r.get("word_boundaries"),
             "transcription_field": field,
-            "transcription_file": str(path.relative_to(root)),
+            "transcription_declared_path": r.get(field),
+            "transcription_file": rel_resolved,
             "transcription_sha256": sha256_file(path),
             "line_shape": line_shape(text),
             "source_url": r.get("source_url"),
@@ -169,7 +194,12 @@ def main() -> int:
     source_eligible_counts = Counter(str(x["source"]) for x in eligible_entries)
     source_record_counts = Counter(str(x["source"]) for x in filtered)
 
-    if len(first_entries) >= 20 and len(source_entry_counts) >= 2 and len(eligible_entries) >= 10 and len(source_eligible_counts) >= 2:
+    if (
+        len(first_entries) >= 20
+        and len(source_entry_counts) >= 2
+        and len(eligible_entries) >= 10
+        and len(source_eligible_counts) >= 2
+    ):
         classification = "P72-BENCH READY"
     elif len(first_entries) >= 20:
         classification = "P72-BENCH TEXT READY / ENTRY-SHAPE BLOCKED"
@@ -185,6 +215,11 @@ def main() -> int:
             "schema_git_blob_expected": "f07533cce267bb17110c8a3327385d7e586eee20",
             "manifest_sha256": sha256_file(manifest),
             "schema_sha256": sha256_file(schema),
+        },
+        "source_path_compatibility": {
+            "rule": ["repository_relative", "benchmark_relative"],
+            "resolution_mode_counts": dict(resolution_modes.most_common()),
+            "first_zero_record_audit_disposition": "SOURCE_PATH_BASE_MISMATCH_NOT_UNDERPOWERED",
         },
         "filters": {
             "synthetic_false_or_absent": True,
@@ -229,6 +264,8 @@ def main() -> int:
         "source_collections_with_eligible_entries": len(source_eligible_counts),
         "source_record_counts": dict(source_record_counts.most_common()),
         "source_eligible_counts": dict(source_eligible_counts.most_common()),
+        "path_resolution_modes": dict(resolution_modes.most_common()),
+        "missing_declared_transcriptions": len(missing_declared),
         "classification": classification,
         "scientific_metrics_called": False,
     }, ensure_ascii=False, indent=2))
