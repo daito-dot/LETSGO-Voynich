@@ -4,6 +4,8 @@ Status: **FROZEN BEFORE ANY PHASE71 VOYNICH SCORE**
 
 Date: 2026-08-31
 
+Pre-science representation correction: the first draft treated Alberti's capital alignment signal as a standalone token. Before implementation or any Phase71 score, this was replaced by the more conservative rule below: a capital signal is **prefixed to the following encrypted plaintext word inside the same token**. Alberti's example writes the signal intermingled in the ciphertext rather than establishing it as a separate word. This preserves one output token per retained plaintext word and prevents an invented one-character token from trivially changing line-entry token counts. This correction is frozen before science.
+
 ## Motivation
 
 Phase70 showed a sharp mechanistic split. An exactly recoverable meaningful-plaintext construction with the already-frozen A1 local selector reproduced the tested short-range recurrence / H62 regime and aggregate line-position structure, but it reached only about `0.151×` of the Voynich paragraph-entry projection. The blinded Phase70 Route P forbids tuning that construction or inventing `SC2` to repair the entry failure.
@@ -107,12 +109,14 @@ For any chosen capital indicator `C` from the 20 stationary letters, rotate the 
 
 Indicator capitals are not optimized.
 
-For each manuscript × realization × signal event, choose the capital by a deterministic SHA-256-derived pseudorandom index over the 20 stationary letters. The seed namespace and event index are fixed in code before science.
+For each manuscript × realization × signal event, choose the capital by a deterministic SHA-256-derived pseudorandom index over the 20 stationary letters. The seed namespace and event index are fixed in code before science. Within one message, a periodic alphabet change is forced to a different alignment from the current one if the deterministic draw happens to repeat it.
 
 ### Word/token representation
 
-- each projected plaintext word becomes one ciphertext token containing its encrypted movable-ring symbols;
-- each alignment signal is represented as a one-unit uppercase ciphertext token, preserving Alberti's explicit signal-vs-data case distinction;
+- each retained plaintext word produces exactly **one** ciphertext token;
+- ordinary token content is the encrypted movable-ring symbol sequence for that plaintext word;
+- when Alberti requires an alignment signal before a word, the uppercase signal unit is **prefixed to that encrypted word inside the same token**;
+- therefore an initial signal modifies the first retained token of a message rather than creating an extra token;
 - source paragraph and line layout is preserved;
 - no optional Alberti nulls, numeral supercipher or nomenclator is used because their placement/use is not uniquely fixed by the historical rule needed here.
 
@@ -183,11 +187,12 @@ Before any Phase71 scientific score is authorized, verify without calling S1/S2/
 2. exact ring lengths `24/24` and unique movable symbols;
 3. index `k` exists exactly once;
 4. for every capital alignment, all 20 plaintext letters map one-to-one to 20 movable symbols;
-5. deterministic reproducibility of indicator sequences;
-6. `PARA` emits exactly one message-initial indicator per nonempty paragraph;
-7. `CONT` emits no paragraph-boundary reset after the first manuscript item;
-8. identical projected plaintext word sequence in paired arms;
-9. no plaintext recovery claim is made here; this is a deterministic substitution-control construction.
+5. deterministic reproducibility of indicator sequences/ciphertext;
+6. `PARA` prefixes exactly one message-initial indicator per nonempty paragraph;
+7. `CONT` prefixes no paragraph-boundary reset after the first nonempty manuscript item;
+8. identical projected plaintext word sequence and output token count in paired arms;
+9. every retained output token contains at least one encrypted data unit even when prefixed by a signal;
+10. no plaintext recovery claim is made here; this is a deterministic substitution-control construction.
 
 Preflight must print **`NO PHASE71 SCIENTIFIC SCORE COMPUTED`**.
 
