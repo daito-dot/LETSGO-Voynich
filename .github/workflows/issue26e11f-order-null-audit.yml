@@ -1,0 +1,76 @@
+name: Issue26E11F refitted order-null audit
+
+on:
+  push:
+    branches: [issue26-music-e11f-order-null-audit]
+    paths:
+      - 'experiments/issue26-music/PLAN_E11F.md'
+      - 'experiments/issue26-music/phaseE11f_order_null_audit.py'
+      - '.github/workflows/issue26e11f-order-null-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e11f-order-null-audit
+          fetch-depth: 0
+      - name: Verify plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E11F.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE11f_order_null_audit.py | tail -1)
+          echo plan=$PLAN script=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+      - name: Acquire exact official STA1 target
+        shell: bash
+        run: |
+          curl -fsSL --retry 3 https://www.voynich.nu/data/sta/ZL3b.txt -o ZL3b-STA1.txt
+          echo '8438ba1c45f47fe1d06b5262cbcdf60ce69158a0edbd4dd802612896f3217e2a  ZL3b-STA1.txt' | sha256sum -c -
+          test "$(head -1 ZL3b-STA1.txt)" = '#=IVTFF STA1 2.0 M 5'
+      - name: Checkout frozen CREMMA comparator
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+      - name: Verify Latin commit
+        run: test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1 numba==0.61.2
+      - name: Run E11F audit
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE11f_order_null_audit.py ZL3b-STA1.txt external/cremma > issue26e11f_results.json
+      - name: Print E11F summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e11f_results.json'))
+          print('classification=',r['classification'])
+          print('replay=',r['replay'])
+          if 'summary' in r:
+              print('real=',r['real']['pooled_cross_entropy'],r['real']['mean_pairwise_occurrence_weighted_key_stability'],r['real']['exact_full_key_recurrence'])
+              print('summary=',r['summary'])
+          PY
+          sha256sum issue26e11f_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue26e11f-order-null-${{ github.sha }}
+          path: issue26e11f_results.json
+          retention-days: 90
