@@ -1,0 +1,111 @@
+name: Issue26E8 Philip duration-group screen
+
+on:
+  push:
+    branches: [issue26-music-e8-philip-cipher]
+    paths:
+      - 'experiments/issue26-music/PLAN_E8.md'
+      - 'experiments/issue26-music/phaseE8_philip_duration.py'
+      - 'experiments/issue26-music/issue26e_core.py'
+      - '.github/workflows/issue26e8-philip-duration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout E8 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e8-philip-cipher
+          fetch-depth: 0
+
+      - name: Verify E8 plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E8.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE8_philip_duration.py | tail -1)
+          echo plan_first=$PLAN script_first=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout frozen CREMMA comparator
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact external inputs
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run E8 first reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE8_philip_duration.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma > issue26e8_results.json
+
+      - name: Print audit summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e8_results.json'))
+          print('classification=',r['frozen_primary_classification'])
+          print('latin_population=',r['latin_population'])
+          for k in ['primary_min','max_sensitivity']:
+              x=r[k]
+              print('\n',k)
+              print('classification=',x['classification'])
+              print('target=',x['target_mean_distance'])
+              print('null_median=',x['null_mean_distance_median'])
+              print('null_q05=',x['null_mean_distance_q05'])
+              print('null_min=',x['null_mean_distance_min'])
+              print('p=',x['p_lower'])
+              print('foldwins=',x['fold_median_wins'])
+              print('key_recurrence=',x['exact_key_recurrence'])
+              print('key=',x['most_recurrent_key'])
+              print('conditions=',x['conditions'])
+              for f in x['target_folds']:
+                  print(' fold',f['fold'],'D=',f['held_distance'],'null=',f['null_fold_median'],
+                        'slot=',f['slot'],'perm=',f['perm'],'events=',f['held_events'],'pairs=',f['held_pairs'])
+          print('hashes=',r['inputs'])
+          PY
+          sha256sum issue26e8_results.json
+
+      - name: Upload E8 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e8-first-reveal-${{ github.sha }}
+          path: issue26e8_results.json
+          if-no-files-found: error
+          retention-days: 90
