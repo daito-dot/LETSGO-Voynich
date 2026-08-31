@@ -13,15 +13,16 @@ Do not reconstruct the project from old chat when GitHub contains a newer state.
 5. `research/hypothesis-ledger.md`
 6. `research/HYPOTHESIS_LEDGER_ADDENDUM_20260831.md`
 7. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE55.md`
-8. `experiments/issue26-music/RESEARCH_SUMMARY.md`
-9. `experiments/slot35-dependency/PLAN_A.md`
-10. `experiments/slot35-dependency/REPORT_A.md`
-11. `experiments/slot35-dependency/PLAN_B.md`
-12. `experiments/slot35-dependency/REPORT_B.md`
-13. `experiments/occupancy-graph/PLAN_A.md`
-14. `experiments/occupancy-graph/REPORT_A.md`
-15. `experiments/occupancy-graph/first-reveal/PROVENANCE.md`
-16. exact executable/source files before changing any numerical interpretation
+8. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE58.md`
+9. `experiments/issue26-music/RESEARCH_SUMMARY.md`
+10. `experiments/slot35-dependency/PLAN_A.md`
+11. `experiments/slot35-dependency/REPORT_A.md`
+12. `experiments/slot35-dependency/PLAN_B.md`
+13. `experiments/slot35-dependency/REPORT_B.md`
+14. `experiments/occupancy-graph/PLAN_A.md`
+15. `experiments/occupancy-graph/REPORT_A.md`
+16. `experiments/occupancy-graph/first-reveal/PROVENANCE.md`
+17. exact executable/source files before changing any numerical interpretation
 
 ## Authority hierarchy
 
