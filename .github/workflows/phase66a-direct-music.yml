@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          fetch-depth: 0
 
       - name: Verify frozen plan precedes implementation
         shell: bash
