@@ -1,0 +1,258 @@
+name: Issue68 Stage0 finalize after verified replay
+
+on:
+  push:
+    branches: [issue68-joint-constraint-tournament]
+    paths:
+      - 'experiments/joint-constraint-tournament/stage0/STAGE0_REPLAY_VERIFIED.md'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue68-joint-constraint-tournament
+          fetch-depth: 0
+
+      - name: Require verified Stage0 machine outcome
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/joint-constraint-tournament/stage0/STAGE0_REPLAY_VERIFIED.md
+          python - <<'PY'
+          import json
+          p='experiments/joint-constraint-tournament/stage0/STAGE0_OUTCOME.json'
+          r=json.load(open(p))
+          assert r['all_checks_pass'] is True
+          assert r['new_joint_candidate_scores_computed'] is False
+          PY
+
+      - name: Write Stage0 report and hypothesis record
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, pathlib
+          root=pathlib.Path('experiments/joint-constraint-tournament')
+          a=json.load(open(root/'stage0/authority_audit.json'))
+          o=json.load(open(root/'stage0/STAGE0_OUTCOME.json'))
+          run=pathlib.Path(root/'stage0/STAGE0_REPLAY_VERIFIED.md').read_text()
+          report=f'''# Issue #68 Stage 0 — joint-constraint authority/replay audit report
+
+Status: **JOINT TOURNAMENT AUTHORITY READY — NO NEW JOINT CANDIDATE SCORE COMPUTED**
+
+Exact plan authority: `STAGE0_PLAN.md`.
+
+Machine audit: `stage0/authority_audit.json`.
+
+Replay outcome: `stage0/STAGE0_OUTCOME.json` and `stage0/STAGE0_REPLAY_VERIFIED.md`.
+
+## 1. Purpose
+
+Before scoring any mechanism on a combined Voynich battery, Stage 0 asked whether the three hard scientific responsibilities can be reused prospectively without changing their historical definitions, whether they share a compatible held-out framework, and what information/reversibility obligations the baseline mechanisms actually have.
+
+The three core responsibilities are:
+
+- **R1:** cross-reading residual token construction from #58C/#58D;
+- **R2:** H62 short-range near-family recurrence geometry;
+- **R3:** signed S1 paragraph-entry specialization.
+
+No new candidate was scored jointly in Stage 0. Machine flag: `{a['new_joint_candidate_scores_computed']}`.
+
+## 2. Frozen authority/replay result
+
+> **`JOINT TOURNAMENT AUTHORITY READY`**
+
+The verification workflow established all required authority checks, including exact current-main Phase62C and Phase62P semantic JSON replay from their frozen ZL3b + CREMMA sources.
+
+Machine checks all pass: `{o['all_checks_pass']}`.
+
+## 3. R1 — replicated token-construction responsibility
+
+Stage 0 classification: **`REPLAYABLE_WITH_FROZEN_WRAPPER`**.
+
+Authority is the completed #58C/#58D first-reveal science. #58D's exact raw first reveal remains:
+
+`f26db8123f8f2b7a4148495fdeebe81c8c042a23606eb7c22e1c0687faaf86a6`.
+
+The prospective tournament must retain all 66 edges or a summary frozen entirely from the already completed #58C/#58D results before candidate outcomes are seen.
+
+For a candidate output, R1 needs a candidate-owned line-local null calibration; ZL3b/IT2a edge-wise null distributions must not be reused as if universal. The natural first-tournament object is pooled `ALL`: candidate residual existence plus complete-66 topology agreement against both frozen ZL3b and IT2a references.
+
+No candidate-driven edge selection is authorized.
+
+## 4. R2 — H62 recurrence responsibility
+
+Stage 0 classification: **`REPLAY_READY`**.
+
+The existing current-main implementation can be applied to arbitrary candidate `Item` outputs through the frozen `raw_profile`, `profile_distance`, and `C_short` machinery.
+
+The verification run exactly reproduced the committed Phase62P JSON from frozen sources; no scientific-definition repair is required.
+
+Historical benchmark remains:
+
+- A1 mean D_profile about `0.7626`, 5/5 unique wins;
+- A1 mean absolute C_short difference about `0.1162`, 5/5 unique wins;
+- N0/C0 remain substantially worse historical anchors.
+
+R2 stays a separate hard responsibility rather than being averaged into R1.
+
+## 5. R3 — signed S1 paragraph-entry responsibility
+
+Stage 0 classification: **`REPLAY_READY`**.
+
+The frozen Phase62 training-side procedure remains usable prospectively:
+
+1. training feature standardization;
+2. training real-vs-pseudo contrast direction;
+3. held-out signed projection through `s1_projection`.
+
+The same current-main Phase62C replay reproduced its committed JSON exactly. No S1 threshold/sign convention may be changed for the tournament.
+
+S1 remains a hard responsibility because several otherwise plausible mechanism families reproduce easier structure but fail or reverse paragraph-entry specialization.
+
+## 6. Common held-out framework
+
+R1, R2 and R3 share the same **99 physical-leaf five-fold authority**.
+
+Stage 0 therefore authorizes one common leaf-level held-out framework with each responsibility retaining its own historical eligibility inside each held-out fold.
+
+Do **not** force all responsibilities onto a tiny token-level intersection merely to make row counts identical.
+
+## 7. Baseline/candidate roles
+
+### B0 — N0
+
+Role: **control/null**.
+
+R2/R3 replay anchor. It is not a Voynich-EVA/12-slot surface candidate and therefore cannot be called joint-constraint competitive.
+
+### B1 — C0-4 digraph
+
+Role: **bounded reversible-transform control**.
+
+Stage 0 inverse audit confirms exact source glyph-stream recovery. However C0-4 destroys original source token boundaries by flattening/re-pairing, so exact structured-plaintext closure requires source token-boundary side information.
+
+C0 is not an EVA/12-slot Voynich-surface candidate, so it is a reversibility/H62/S1 anchor rather than a serious R1 joint explanation.
+
+### B2 — published Naibbe C1-E0
+
+Role: **serious prior reversible-transform / decoder candidate, but requires a frozen decoder/side-information wrapper before tournament promotion**.
+
+The pinned publication commit/files match the already accepted Phase64 source audit. Published defaults are intact. The public script exposes encryption and respacing but no explicit `decrypt`/`decode` function, and the primary view removes 3% spaces.
+
+Therefore Stage 0 does not pretend exact structured reversal has already been demonstrated. A provenance-preserving inverse wrapper/closure rule must be frozen before target scoring and any boundary side-information must be charged.
+
+Historical Phase64B status remains `PARTIAL`: H62 substantially better than C0 but below A1, while S1 is wrong-sign.
+
+### B3 — A1/A1-R1
+
+Role: **surface generator only**.
+
+It is R1/R2/R3-scorable but is not a decoder. Its information access must be explicit:
+
+- training-side empirical Voynich vocabulary/morphology/neighbor structure;
+- historically selected parameters;
+- true held-out paragraph/line/token-count layout;
+- no held-out token identities.
+
+Its empirical vocabulary and held-out layout access must be charged rather than compared to reversible transforms as if inputs were equal.
+
+## 8. Candidate-independent complexity/accounting schema
+
+Stage 0 freezes the dimensions that must be reported before target scoring:
+
+- candidate role;
+- free scalar parameters;
+- learned table cells;
+- fixed external table cells;
+- training-vocabulary size / empirical target inventory access;
+- state-space size and memory order;
+- section/paragraph-conditioned parameters;
+- held-out layout access;
+- held-out target-statistic access (must be false);
+- external plaintext source;
+- candidate-specific preprocessing;
+- decoder side information;
+- per-item adaptation (normally forbidden).
+
+Stage 0 deliberately **does not** choose a scalar complexity weighting after observing model performance. The tournament plan must freeze ceilings/penalty logic before candidate scoring.
+
+## 9. Candidate output contract
+
+A future scorer should receive, at minimum:
+
+- item/page identity and physical leaf;
+- paragraph and physical-line boundaries;
+- ordered token sequences;
+- deterministic token-string serialization for edit-distance scorers;
+- for reversible candidates: source plaintext identity, ciphertext output, declared decoder side information, and exact decode/re-encode closure record.
+
+The contract is model-independent. Hidden model-specific target access is forbidden.
+
+## 10. Stage-0 decision
+
+The three scientific responsibilities can be combined without redefining them, and the common physical-leaf split is compatible.
+
+Therefore:
+
+> **`JOINT TOURNAMENT AUTHORITY READY`**
+
+The next allowed step is a **separate tournament `PLAN_A.md`**, committed before any new candidate joint-score executable. That plan must freeze candidate eligibility, Naibbe decoder/side-info treatment, exact R1/R2/R3 pass gates, complexity ceilings/penalty, and overall responsibility-based outcome classes.
+'''
+          (root/'STAGE0_REPORT.md').write_text(report)
+          ledger=f'''# Hypothesis ledger addendum — Issue #68 Stage 0
+
+Date: 2026-09-01
+
+## H68-AUTH — the strongest responsibilities can be combined without changing their scientific definitions
+
+Prediction: R1 (#58C/#58D), R2 (H62), and R3 (S1) can be put under one common physical-leaf held-out authority while preserving responsibility-specific historical eligibility and exact metric definitions.
+
+Observed: **SUPPORTED**.
+
+- all three share the same 99-leaf five-fold authority;
+- R2/Phase62P exact semantic JSON replay: PASS;
+- R3/Phase62C exact semantic JSON replay: PASS;
+- R1 is available through a frozen wrapper around completed #58C/#58D science;
+- no new joint candidate score was computed.
+
+Disposition: `JOINT TOURNAMENT AUTHORITY READY`.
+
+## H68-REV — historical baselines have unequal reversibility/information access and must not be treated as equivalent
+
+Observed: **SUPPORTED**.
+
+- N0: control/null, not decoder;
+- C0-4: exact glyph stream but original token boundaries require side information;
+- Naibbe: published encryption/respacing exists, explicit published decoder absent; closure wrapper and 3% space-removal side information remain to be frozen;
+- A1/A1-R1: surface generator only, with empirical Voynich training vocabulary and true held-out layout counts supplied.
+
+Consequence: the tournament must classify model role and charge information/side access explicitly before outcome scoring.
+
+## H68-SCORE — a single weighted omnibus should not define success
+
+Status: **RETAINED DESIGN CONSTRAINT**.
+
+R1, R2, R3, reversibility and complexity remain separate responsibilities. In particular, strong H62 or token construction cannot compensate for wrong-sign S1.
+
+## Next hypothesis
+
+After freezing a Naibbe inverse/closure wrapper and candidate-independent complexity rules, test whether any predeclared mechanism family is `JOINT-CONSTRAINT COMPETITIVE` on held-out leaves.
+'''
+          pathlib.Path('research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE68_STAGE0.md').write_text(ledger)
+          PY
+
+      - name: Commit finalized Stage0 report only after verified gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experiments/joint-constraint-tournament/STAGE0_REPORT.md research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE68_STAGE0.md
+          git commit -m 'Finalize Issue68 Stage0 authority audit'
+          git push origin HEAD:issue68-joint-constraint-tournament
