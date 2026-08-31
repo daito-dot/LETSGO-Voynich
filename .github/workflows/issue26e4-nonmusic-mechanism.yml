@@ -1,0 +1,93 @@
+name: Issue26E4 non-musical slot mechanism audit
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/issue26-music/PLAN_E4.md'
+      - 'experiments/issue26-music/POPULATION_AMENDMENT_E4A.md'
+      - 'experiments/issue26-music/phaseE4_nonmusic_mechanism.py'
+      - 'experiments/issue26-music/issue26e_core.py'
+      - 'experiments/issue26-music/E3_EXACT_PAIR_ALTERNATIVES.json'
+      - '.github/workflows/issue26e4-nonmusic-mechanism.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout E4 branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Verify preregistration chronology
+        shell: bash
+        run: |
+          PLAN=$(git log -1 --format=%H -- experiments/issue26-music/PLAN_E4.md)
+          AMEND=$(git log -1 --format=%H -- experiments/issue26-music/POPULATION_AMENDMENT_E4A.md)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE4_nonmusic_mechanism.py | tail -1)
+          echo plan_last=$PLAN amendment_last=$AMEND script_first=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          test "$AMEND" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$AMEND" "$SCRIPT"
+
+      - name: Acquire frozen ZL3b discovery transcription
+        shell: bash
+        run: |
+          curl -fsSL --retry 3 \
+            https://raw.githubusercontent.com/matthewdgreen/cipher_benchmark/315f0cad4de3d021bd4185765c037cf2a28d341c/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            -o ZL3b-n.txt
+          python - <<'PY'
+          import hashlib
+          b=open('ZL3b-n.txt','rb').read()
+          got=hashlib.sha1(f'blob {len(b)}\0'.encode('ascii')+b).hexdigest()
+          exp='2a4533ab9bdfa85db9bad602d590978953055df1'
+          print('ZL blob SHA1=',got)
+          assert got == exp
+          PY
+
+      - name: Acquire frozen IT2a prospective transcription
+        shell: bash
+        run: |
+          curl -fsSL --retry 3 https://www.voynich.nu/data/IT2a-n.txt -o IT2a-n.txt
+          echo '7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  IT2a-n.txt' | sha256sum -c -
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run E4 first reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE4_nonmusic_mechanism.py ZL3b-n.txt IT2a-n.txt > issue26e4_results.json
+
+      - name: Print verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e4_results.json'))
+          print('classification=',r['frozen_classification'])
+          print('primary=',r['primary'])
+          print('topology=',r['topology_diagnostics'])
+          print('replay=',r['e2c_replay'])
+          print('folds=',[(x['fold'],x['guidonian_accuracy'],x['nonmusic_accuracy'],x['guidonian_minus_nonmusic']) for x in r['folds']])
+          print('learner=',r['zl_discovery']['learner_audit'])
+          print('inputs=',r['inputs'])
+          PY
+          sha256sum issue26e4_results.json
+
+      - name: Upload E4 first-reveal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e4-first-reveal
+          path: issue26e4_results.json
+          if-no-files-found: error
+          retention-days: 90
