@@ -42,7 +42,8 @@ jobs:
           data=p.read_bytes()
           lines=data.decode('utf-8').splitlines()
           locus=re.compile(r'^<(?P<loc>f[^,>]+),(?P<kind>[^>]+)>\s+(?P<body>.*)$')
-          alt=re.compile(r'\[([^\]:]+):[^\]]+\]')
+          # First reading is authoritative; either alternative may be empty.
+          alt=re.compile(r'\[([^\]:]*):[^\]]*\]')
           angle=re.compile(r'<[^>]*>')
           code=re.compile(r'[A-Z][0-9a-z*]')
           families=collections.Counter()
@@ -57,11 +58,9 @@ jobs:
               body=alt.sub(lambda x:x.group(1),m.group('body'))
               body=body.replace('{','').replace('}','')
               body=angle.sub(' ',body).replace('[','').replace(']','')
-              # separators/interruptions do not become characters.
               found=code.findall(body)
               if found:
                   line_count += 1
-              # verify all remaining alphanumeric STA-looking content is explained by 2-byte codes.
               residue=code.sub('',body)
               residue=re.sub(r'[\s.,?<>\-=$%:]','',residue)
               if residue:
