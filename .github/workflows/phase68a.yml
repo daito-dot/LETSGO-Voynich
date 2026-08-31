@@ -1,0 +1,33 @@
+name: Phase 68A exact Lf-to-body family test
+
+on:
+  push:
+    branches:
+      - phase68-label-body-science
+    paths:
+      - 'experiments/phase68/**'
+      - 'experiments/phase67/BLOCK_MANIFEST_A.json'
+      - 'experiments/phase67/TEXT_TABLE_A.json'
+      - '.github/workflows/phase68a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-label-body-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run exact Phase68A test
+        run: |
+          python experiments/phase68/run_phase68a.py \
+            --out experiments/phase68/RESULT_A.json
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase68a-result
+          path: experiments/phase68/RESULT_A.json
