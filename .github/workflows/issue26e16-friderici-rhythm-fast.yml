@@ -1,0 +1,102 @@
+name: Issue26E16 vectorized Friderici rhythm probe
+
+on:
+  push:
+    branches: [issue26-music-e16-friderici-rhythm]
+    paths:
+      - 'experiments/issue26-music/PLAN_E16_PERFORMANCE_AMENDMENT.md'
+      - 'experiments/issue26-music/phaseE16_friderici_rhythm_fast.py'
+      - '.github/workflows/issue26e16-friderici-rhythm-fast.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e16-friderici-rhythm
+          fetch-depth: 0
+      - name: Verify original plan and performance amendment predate fast executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E16.md | tail -1)
+          AMEND=$(git log --format=%H -- experiments/issue26-music/PLAN_E16_PERFORMANCE_AMENDMENT.md | tail -1)
+          FAST=$(git log --format=%H -- experiments/issue26-music/phaseE16_friderici_rhythm_fast.py | tail -1)
+          echo plan=$PLAN amend=$AMEND fast=$FAST
+          git merge-base --is-ancestor "$PLAN" "$FAST"
+          git merge-base --is-ancestor "$AMEND" "$FAST"
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+      - name: Checkout frozen CREMMA comparator
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+      - name: Verify exact external inputs
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+      - name: Run E16 vectorized reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE16_friderici_rhythm_fast.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma > issue26e16_results.json
+      - name: Print E16 summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e16_results.json'))
+          print('classification=',r['classification'])
+          print('flags=',r.get('flags'))
+          print('equivalence=',r.get('equivalence'))
+          print('positive_control=',r['positive_control'])
+          print('latin_ce=',r['latin_self_baseline']['mean_cross_entropy'])
+          print('latin_top5=',r['latin_self_baseline']['pooled_top5_char_fraction'])
+          if 'primary_min' in r:
+              p=r['primary_min']
+              print('pooled=',p['pooled'])
+              print('recurrence=',p['exact_key_recurrence'],'modal=',p['modal_key'])
+              print('diagnostics_ce=',p['diagnostics']['cross_entropy'],'top5=',p['diagnostics']['top5_char_fraction'])
+              print('words6=',p['diagnostics']['distinct_words_ge6_count'],p['diagnostics']['distinct_words_ge6'][:30])
+              print('word_folds=',p['diagnostics']['word_folds_ge6'])
+              print('gates=',r.get('gates'))
+              print('order_null=',r.get('order_null_summary'))
+              for f in p['folds']:
+                  print('fold',f['fold'],'slot=',f['slot'],'phase=',f['phase'],'perm=',f['permutation'],'train=',f['training'],'held=',f['held'])
+              for s in p['diagnostics']['samples'][:10]: print('sample',s['page'],s['text'])
+              if 'max_sensitivity' in r:
+                  mm=r['max_sensitivity']
+                  print('max_pooled=',mm['pooled'],'max_recurrence=',mm['exact_key_recurrence'],'max_modal=',mm['modal_key'],'max_top5=',mm['diagnostics']['top5_char_fraction'],'max_words6=',mm['diagnostics']['distinct_words_ge6_count'])
+          PY
+          sha256sum issue26e16_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue26e16-friderici-rhythm-fast-${{ github.sha }}
+          path: issue26e16_results.json
+          retention-days: 90
