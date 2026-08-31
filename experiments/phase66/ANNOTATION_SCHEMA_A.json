@@ -1,0 +1,33 @@
+{
+  "schema": "phase66a-morphology-annotation-schema-v1",
+  "unknown": "U",
+  "fields": {
+    "leaf_visible": [0,1,"U"],
+    "stem_axis_visible": [0,1,"U"],
+    "root_or_subterranean_visible": [0,1,"U"],
+    "flower_or_inflorescence_visible": [0,1,"U"],
+    "fruit_or_seed_body_visible": [0,1,"U"],
+    "leaf_composition": ["simple","compound_pinnate","compound_palmate","deeply_divided_uncertain_leaflet_status","U"],
+    "leaf_arrangement": ["alternate","opposite","whorled_3plus","basal_or_rosette","single_or_insufficient_nodes","U"],
+    "leaf_blade_shape": ["linear_or_very_narrow","lanceolate_or_elliptic_narrow","elliptic_or_ovate_broad","obovate_or_broader_distally","orbicular_or_suborbicular","cordate_or_sagittate_base_dominant","lobed_or_divided_shape_dominant","heteromorphic_no_single_dominant_state","U"],
+    "leaf_margin": ["entire_or_nearly_entire","serrate_or_dentate","crenate_or_rounded_teeth","lobed_or_incised","spiny_or_aculeate_margin","mixed","U"],
+    "leaf_apex": ["acute_or_acuminate","obtuse_or_rounded","truncate_or_emarginate","mucronate_apiculate_or_distinct_tip","mixed","U"],
+    "leaf_base": ["attenuate_or_cuneate","rounded_or_obtuse","cordate","sagittate_or_hastate","truncate","mixed","U"],
+    "venation_depiction": ["single_midvein_laterals_not_evident","pinnate_laterals_evident","palmate_or_actinodromous_like","parallel_or_subparallel","reticulate_network_evident","mixed","U"],
+    "stem_branching_architecture": ["unbranched_visible_axis","one_or_more_lateral_branches","repeated_forking_or_dichotomy_like","tufted_multiple_axes_from_base","mixed","U"],
+    "root_subterranean_architecture": ["single_primary_root_like","branched_root_system","fibrous_tufted_roots","swollen_tuberous_or_storage_like","bulb_corm_or_compact_storage_body_like","rhizome_or_horizontal_axis_like","mixed","U"],
+    "reproductive_architecture": ["solitary_terminal_or_axillary_unit","cluster_or_head_like","spike_or_raceme_like","umbel_like","branched_panicle_like","multiple_units_architecture_unclear","U"],
+    "reproductive_symmetry": ["radial_or_actinomorphic_like","bilateral_or_zygomorphic_like","asymmetrical_or_irregular","not_resolvable","U"]
+  },
+  "secondary_fields": {
+    "petiole_visible": [0,1,"U"],
+    "leaflet_count_class": ["1","2","3","4_6","7plus","U"],
+    "lobe_count_class": ["0","1_2","3_4","5plus","U"],
+    "branch_order_count_class": ["0","1","2","3plus","U"],
+    "reproductive_unit_count_class": ["0","1","2_3","4_6","7plus","U"],
+    "spine_thorn_prickle_visible": [0,1,"U"],
+    "tendril_like_visible": [0,1,"U"]
+  },
+  "required_metadata": ["object_id","crop_sha256","annotation_pass","annotation_instruction_sha256","model_identity","states","evidence_notes"],
+  "evidence_note_rule": "Each note may describe only directly visible geometry supporting the chosen state. No taxon names, semantic guesses, label references, pairwise similarity judgments, or historical identifications are allowed."
+}
