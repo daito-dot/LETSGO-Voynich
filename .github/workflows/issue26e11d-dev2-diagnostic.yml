@@ -1,0 +1,82 @@
+name: Issue26E11D DEV2 solver diagnostic
+
+on:
+  push:
+    branches: [issue26-music-e11d-solver-validation]
+    paths:
+      - 'experiments/issue26-music/PLAN_E11D_DEV2.md'
+      - 'experiments/issue26-music/PLAN_E11D_DEV2_AMENDMENT.md'
+      - 'experiments/issue26-music/phaseE11d_dev2_diagnostic.py'
+      - 'experiments/issue26-music/phaseE11d_dev2_runner.py'
+      - '.github/workflows/issue26e11d-dev2-diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout E11D branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e11d-solver-validation
+          fetch-depth: 0
+      - name: Verify plan and amendment predate runner
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E11D_DEV2.md | tail -1)
+          AMEND=$(git log --format=%H -- experiments/issue26-music/PLAN_E11D_DEV2_AMENDMENT.md | tail -1)
+          RUNNER=$(git log --format=%H -- experiments/issue26-music/phaseE11d_dev2_runner.py | tail -1)
+          echo plan=$PLAN amend=$AMEND runner=$RUNNER
+          git merge-base --is-ancestor "$PLAN" "$RUNNER"
+          git merge-base --is-ancestor "$AMEND" "$RUNNER"
+      - name: Assert target data absent
+        shell: bash
+        run: |
+          test ! -e ZL3b-STA1.txt
+          test ! -d external/cipher-benchmark
+      - name: Checkout frozen CREMMA only
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+      - name: Verify Latin commit
+        run: test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 numba==0.61.2
+      - name: Run DEV2 diagnostic only
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE11d_dev2_runner.py external/cremma > issue26e11d_dev2.json
+      - name: Print diagnostic summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e11d_dev2.json'))
+          print('events=',r['diagnostic_events'],'runs=',r['diagnostic_runs'],'omitted=',r['omitted_plaintext_letter'])
+          for x in r['stages']:
+              print(x['stage'],'direct=',x['direct_ce'],'shared=',x['shared_full_score_ce'],'diff=',x['full_score_abs_diff'],'exact=',x['exact_key_accuracy'],'weighted=',x['occurrence_weighted_key_accuracy'],'accepted=',x.get('accepted_swaps'))
+          d=r['incremental_delta_audit']
+          print('delta_max_abs_diff=',d['max_abs_diff'],'delta_mean_abs_diff=',d['mean_abs_diff'])
+          for x in r['annealing']:
+              print(x['stage'],'direct=',x['direct_ce'],'kernel=',x['kernel_reported_ce'],'exact=',x['exact_key_accuracy'],'weighted=',x['occurrence_weighted_key_accuracy'])
+          PY
+          sha256sum issue26e11d_dev2.json
+      - name: Upload diagnostic artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e11d-dev2-${{ github.sha }}
+          path: issue26e11d_dev2.json
+          retention-days: 90
