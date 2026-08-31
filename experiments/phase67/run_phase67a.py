@@ -169,7 +169,7 @@ def residualize_visual_on_coverage(Xc, Cc):
     """Regress centered visual coordinates on centered coverage, with no intercept."""
     if Xc.shape[0] == 0 or Cc.shape[0] == 0:
         return Xc.copy()
-    ss = float(Cc.T @ Cc)
+    ss = float((Cc.T @ Cc).item())
     if ss <= 1e-15:
         return Xc.copy()
     beta = (Cc.T @ Xc) / ss
