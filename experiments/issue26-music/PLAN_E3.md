@@ -91,9 +91,11 @@ A complete combinatorial enumeration was performed before the E3 executable and 
 
 There are exactly **four** feasible row-neighborhood multisets, one Guidonian and **three non-Guidonian alternatives**.
 
-The complete frozen enumeration is `E3_EXACT_PAIR_ALTERNATIVES.json` with expected SHA-256:
+The complete frozen enumeration is `E3_EXACT_PAIR_ALTERNATIVES.json`. It is stored compactly as sorted six-bit row-neighborhood masks; row order carries no information because every candidate receives a fitted cluster→row bijection.
 
-`8debd0aabeba75d15e73f0819e0466028324138c5360b9d8856af2f99774cbfa`
+Expected SHA-256:
+
+`652e23fa08701a87e0aaab961f4a267f2389ccc19769eb31ed05e651c2bedfaf`
 
 All four candidates receive identical training-only row assignment freedom and the same fixed six-state column mapping.
 
@@ -110,7 +112,7 @@ If any exact-pair alternative matches or beats Guidonian in mean held-out accura
 
 E3-A holds the labeled pair matrix fixed and leaves only triple/higher row-neighborhood choices. E3-B asks whether the Guidonian arrangement of which column pairs receive overlap 0/2/3/4 is itself special.
 
-The frozen catalog `E3_STRUCTURED_NULLS.json` contains exactly 100 distinct non-Guidonian row-neighborhood multisets. Every catalog matrix has:
+The frozen catalog `E3_STRUCTURED_NULLS.json` contains exactly 100 distinct non-Guidonian row-neighborhood multisets. It is stored as 100 sorted lists of twenty six-bit row-neighborhood masks. Every catalog matrix has:
 
 - 20 rows / six columns / 42 cells;
 - row-degree multiset exactly `1×4, 2×10, 3×6`;
@@ -124,7 +126,7 @@ The catalog was generated before the scientific executable by deterministic rand
 
 Expected catalog SHA-256:
 
-`dd32a66b93d7250a3244b14cfc496d4a760cbdca826bbc1bbdf3e792e1ae273d`
+`3ded6745d58701d1a1c38a38f268c57396afffbbbf0a681ec9b16bb09f1e47bd`
 
 Generation label:
 
