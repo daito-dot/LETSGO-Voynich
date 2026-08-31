@@ -33,10 +33,11 @@ jobs:
           echo plan=$PLAN script=$SCRIPT
           git merge-base --is-ancestor "$PLAN" "$SCRIPT"
 
-      - name: Assert no Voynich input in workflow
+      - name: Assert target data absent
         shell: bash
         run: |
-          ! grep -Ei 'ZL3|STA1|voynich\.nu|cipher_benchmark' .github/workflows/issue26e11d-solver-dev.yml
+          test ! -e ZL3b-STA1.txt
+          test ! -d external/cipher-benchmark
 
       - name: Checkout frozen CREMMA only
         uses: actions/checkout@v4
