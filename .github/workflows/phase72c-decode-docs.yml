@@ -1,0 +1,101 @@
+name: Phase 72C DECODE document surface audit
+
+on:
+  push:
+    branches: [phase72-real-historical-cipher]
+    paths:
+      - 'experiments/phase72/FEASIBILITY_C.md'
+      - '.github/workflows/phase72c-decode-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check requests
+      - name: Probe fixed public document surfaces only
+        run: |
+          python - <<'PY' | tee phase72c_decode_surface.json
+          import hashlib, json, requests
+          BASE='https://de-crypt.org/decrypt-web/api'
+          TABLES=['documents','document','record_documents','recorddocuments','document_types','documenttypes','files']
+          PROBES=['1205','1206','939','338','347','358','344','331','1491','1819','345','1379']
+          S=requests.Session(); S.headers['User-Agent']='LETSGO-Voynich-Phase72C-source-audit/1.0'
+
+          def safe_get(url, params=None):
+              try:
+                  r=S.get(url,params=params,timeout=30)
+                  out={'url':r.url,'status':r.status_code,'content_type':r.headers.get('content-type'),'bytes':len(r.content)}
+                  try:
+                      out['json']=r.json()
+                  except Exception:
+                      text=r.text
+                      out['text_prefix']=text[:500]
+                      out['body_sha256']=hashlib.sha256(r.content).hexdigest()
+                  return out
+              except Exception as e:
+                  return {'url':url,'error':f'{type(e).__name__}: {e}'}
+
+          def summarize(value):
+              if isinstance(value,dict):
+                  return {'type':'dict','keys':sorted(value.keys()),'size':len(value)}
+              if isinstance(value,list):
+                  first=value[0] if value else None
+                  return {'type':'list','size':len(value),'first':summarize(first) if first is not None else None}
+              if isinstance(value,str):
+                  return {'type':'str','chars':len(value),'sha256':hashlib.sha256(value.encode()).hexdigest() if value else None,'prefix':value[:120]}
+              return {'type':type(value).__name__,'value':value}
+
+          def relevant(obj,path=''):
+              rows=[]
+              if isinstance(obj,dict):
+                  for k,v in obj.items():
+                      p=f'{path}.{k}' if path else k
+                      kl=k.lower()
+                      if any(x in kl for x in ('document','file','transcript','ciphertext','cleartext','plaintext','record_id','recordid')):
+                          rows.append({'path':p,'summary':summarize(v)})
+                      rows.extend(relevant(v,p))
+              elif isinstance(obj,list):
+                  for i,v in enumerate(obj[:100]): rows.extend(relevant(v,f'{path}[{i}]'))
+              return rows
+
+          out={'phase':'72C','status':'SOURCE_DISCOVERY_ONLY_NO_VOYNICH_SCORE','record_probes':{},'table_probes':{}}
+          for rid in PROBES:
+              q=safe_get(f'{BASE}/view/records/{rid}')
+              out['record_probes'][rid]={k:v for k,v in q.items() if k!='json'}
+              if 'json' in q:
+                  out['record_probes'][rid]['top']=summarize(q['json'])
+                  out['record_probes'][rid]['relevant']=relevant(q['json'])
+          for table in TABLES:
+              q=safe_get(f'{BASE}/list/{table}',{'page':'1','page_size':'100'})
+              out['table_probes'][table]={k:v for k,v in q.items() if k!='json'}
+              if 'json' in q:
+                  out['table_probes'][table]['top']=summarize(q['json'])
+                  out['table_probes'][table]['relevant']=relevant(q['json'])[:500]
+                  rec=q['json'].get('records') if isinstance(q['json'],dict) else None
+                  if isinstance(rec,list):
+                      out['table_probes'][table]['first_record']=summarize(rec[0]) if rec else None
+                      out['table_probes'][table]['first_record_relevant']=relevant(rec[0]) if rec else []
+          out['scientific_metrics_called']=False
+          print(json.dumps(out,ensure_ascii=False,indent=2))
+          print('NO PHASE72 VOYNICH SCIENTIFIC SCORE COMPUTED')
+          PY
+          grep -q 'NO PHASE72 VOYNICH SCIENTIFIC SCORE COMPUTED' phase72c_decode_surface.json
+      - name: Hash and archive source audit
+        run: |
+          sha256sum experiments/phase72/FEASIBILITY_C.md phase72c_decode_surface.json > phase72c_sha256s.txt
+          cat phase72c_sha256s.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase72c-decode-document-surface
+          path: |
+            phase72c_decode_surface.json
+            phase72c_sha256s.txt
+          if-no-files-found: error
