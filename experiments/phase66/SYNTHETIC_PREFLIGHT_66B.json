@@ -1,0 +1,37 @@
+{
+  "aligned_primary": {
+    "T_observed": 1.0,
+    "n_permutations": 86400,
+    "p_exact_one_sided": 4.6296296296296294e-05,
+    "page_pass": true,
+    "permutation_quantiles": {"max":1.0,"median":-0.01657142857142862,"min":-0.5483809523809523,"q01":-0.4112380952380953,"q025":-0.36171428571428577,"q05":-0.31752380952380954,"q95":0.37657142857142856,"q975":0.4611428571428573,"q99":0.5577142857142857},
+    "row_pair_counts":{"R1":15,"R2":10},
+    "row_rho":{"R1":1.0000000000000002,"R2":0.9999999999999998},
+    "status":"OK"
+  },
+  "aligned_replication": {
+    "T_observed":0.9999999999999999,
+    "n_permutations":69120,
+    "p_exact_one_sided":0.00011574074074074075,
+    "page_pass":true,
+    "permutation_quantiles":{"max":0.9999999999999999,"median":-0.013636363636363624,"min":-0.7439393939393938,"q01":-0.5166666666666666,"q025":-0.4227272727272727,"q05":-0.3439393939393939,"q95":0.3939393939393939,"q975":0.4924242424242424,"q99":0.5833333333333331},
+    "row_pair_counts":{"R1":6,"R2":10,"R3":6},
+    "row_rho":{"R1":0.9999999999999999,"R2":0.9999999999999998,"R3":0.9999999999999999},
+    "status":"OK"
+  },
+  "all_pass":true,
+  "checks":{"aligned_primary_positive_low_p":true,"aligned_replication_positive_low_p":true,"independent_not_forced_positive_pass":true,"optimized_equals_direct_spearman":true,"primary_perm_count":true,"replication_perm_count":true,"u_morphology_not_imputed":true},
+  "independence_control": {
+    "T_observed":-0.37566201313073594,
+    "n_permutations":86400,
+    "p_exact_one_sided":0.9966666666666667,
+    "page_pass":false,
+    "permutation_quantiles":{"max":0.8098780306383838,"median":-0.016851334792304,"min":-0.39832867979740255,"q01":-0.36632867979740263,"q025":-0.33832867979740255,"q05":-0.3272926768794613,"q95":0.41254469730505067,"q975":0.47707083005467316,"q99":0.5410780306381046},
+    "row_pair_counts":{"R1":15,"R2":10},
+    "row_rho":{"R1":-0.29277002188455997,"R2":-0.4999999999999999},
+    "status":"OK"
+  },
+  "schema":"phase66b-synthetic-preflight-v1",
+  "u_handling":{"distance":0.41666666666666663,"parts":{"I1":null,"I2":0.5,"I3":0.3333333333333333}},
+  "provenance":{"workflow_run":33361388517,"job":99393280603,"artifact":9746798875,"artifact_digest":"sha256:b3d754b51f19f717801a7b79ade8a7fdc56b5a4bc69a8fa5a48f493b6ad7b240","executable_sha256":"698252876f7a6187ac8c80f1e95372e2afa3c8e3dc30f7e62170b3ad492a3290","generated_result_sha256":"0abbf7762cfe129c82957023494d8dc584afd84722c5f0f1991ec192ced98483","runtime":{"python":"3.13.15","numpy":"2.2.6","scipy":"1.16.1"}}
+}
