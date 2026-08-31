@@ -8,7 +8,11 @@
     "source_repository": "Aspect-Research/voynich-autoexploration",
     "source_path": "data/transcriptions/eva_zl3b.txt"
   },
-  "block_rule": "A block is a contiguous Lc/Lf or Lf-only illustration-label group immediately followed in ZL3b/page order by one unambiguous P0 paragraph. Lc loci delimit blocks but are not image morphology observations. Lf loci define the plant-fragment objects; split loci sharing one Petersen object number are one object.",
+  "block_rule": "A block is a contiguous Lc/Lf or Lf-only illustration-label group immediately followed in ZL3b/page order by one unambiguous P0 paragraph. Lc loci delimit blocks but are not image morphology observations. Lf loci define the plant-fragment objects; split loci that belong to one physical Petersen fragment are one object.",
+  "pre_annotation_corrections": [
+    "The initial draft excluded the f99v tail after re-audit because its sole Lf occurs after the paragraph rather than before it.",
+    "Before any Phase67 image annotation, physical-row counts were cross-checked against the Quire 19 page inventory. f99r loci 85a/85b, f99r loci 87b/87c, and f99v loci 110/110b are split labels on one physical plant fragment each and are grouped as one image object. Block count and paragraph assignments are unchanged."
+  ],
   "population_n": 14,
   "folios": {
     "f99r": 4,
@@ -49,8 +53,7 @@
         {"object_id":"82","loci":["f99r.22"]},
         {"object_id":"83","loci":["f99r.23"]},
         {"object_id":"84","loci":["f99r.24"]},
-        {"object_id":"85a","loci":["f99r.25"]},
-        {"object_id":"85b","loci":["f99r.26"]},
+        {"object_id":"85","loci":["f99r.25","f99r.26"]},
         {"object_id":"86a","loci":["f99r.27"]}
       ],
       "paragraph_loci": ["f99r.28","f99r.29","f99r.30","f99r.31"]
@@ -60,8 +63,7 @@
       "folio": "f99r",
       "container_loci": ["f99r.32"],
       "fragment_objects": [
-        {"object_id":"87b","loci":["f99r.33"]},
-        {"object_id":"87c","loci":["f99r.34"]},
+        {"object_id":"87","loci":["f99r.33","f99r.34"]},
         {"object_id":"88","loci":["f99r.35"]},
         {"object_id":"89","loci":["f99r.36"]},
         {"object_id":"90","loci":["f99r.37"]},
@@ -116,8 +118,7 @@
       "container_loci": ["f99v.25"],
       "fragment_objects": [
         {"object_id":"109b","loci":["f99v.26"]},
-        {"object_id":"110","loci":["f99v.27"]},
-        {"object_id":"110b","loci":["f99v.28"]},
+        {"object_id":"110","loci":["f99v.27","f99v.28"]},
         {"object_id":"111","loci":["f99v.29"]},
         {"object_id":"112","loci":["f99v.30"]},
         {"object_id":"113","loci":["f99v.31"]}
