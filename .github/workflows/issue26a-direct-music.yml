@@ -1,0 +1,118 @@
+name: Issue26A direct-music screen
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/issue26-music/**'
+      - '.github/workflows/issue26a-direct-music.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout Issue26 music branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Verify frozen plan precedes repackaged executable
+        shell: bash
+        run: |
+          test -f experiments/issue26-music/PLAN_A.md
+          test -f experiments/issue26-music/phaseA_direct_music.py
+          PLAN_COMMIT=$(git log --format=%H -- experiments/issue26-music/PLAN_A.md | tail -1)
+          SCRIPT_COMMIT=$(git log --format=%H -- experiments/issue26-music/phaseA_direct_music.py | tail -1)
+          echo "plan_first_commit=$PLAN_COMMIT"
+          echo "script_first_commit=$SCRIPT_COMMIT"
+          test "$PLAN_COMMIT" != "$SCRIPT_COMMIT"
+          git merge-base --is-ancestor "$PLAN_COMMIT" "$SCRIPT_COMMIT"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout frozen CREMMA comparator
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout frozen plainchant comparator
+        uses: actions/checkout@v4
+        with:
+          repository: bacor/ISMIR2020
+          ref: ab3edb742a718fe5c3fd40550c54f104fe9b6078
+          path: external/ismir2020
+          sparse-checkout: |
+            data/run-0/antiphon/subset/test-chants.csv
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact external inputs
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/ismir2020 rev-parse HEAD)" = "ab3edb742a718fe5c3fd40550c54f104fe9b6078"
+          test "$(git -C external/ismir2020 hash-object data/run-0/antiphon/subset/test-chants.csv)" = "616fcd986226873cb1f58b8711c1936ad0794af4"
+
+      - name: Install frozen numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6
+
+      - name: Replay frozen scientific calculation
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseA_direct_music.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma \
+            external/ismir2020/data/run-0/antiphon/subset/test-chants.csv \
+            > issue26a_results.json
+
+      - name: Print verdict and audit summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26a_results.json'))
+          p=r['primary']
+          print('classification=', r['frozen_primary_classification'])
+          print('voynich_mean_Z=', p['voynich_mean_Z_vector'])
+          print('chant_Z=', p['chant']['Z_vector'])
+          print('latin_Z=', p['latin_equal_weight_Z_vector'])
+          print('music_closer_folds=', p['distance_summary']['music_closer_folds'])
+          print('mean_D_music=', p['distance_summary']['mean_D_music'])
+          print('mean_D_latin=', p['distance_summary']['mean_D_latin'])
+          print('conditions=', p['conditions'])
+          print('plan_sha256=', r['inputs']['plan_sha256'])
+          print('script_sha256=', r['inputs']['script_sha256'])
+          PY
+          sha256sum issue26a_results.json
+
+      - name: Upload replay artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26a-replay
+          path: issue26a_results.json
+          if-no-files-found: error
+          retention-days: 90
