@@ -1,0 +1,90 @@
+name: Issue26E7 prospective Guidonian sequence test
+
+on:
+  push:
+    branches: [issue26-music-e7-guidonian-sequence]
+    paths:
+      - 'experiments/issue26-music/PLAN_E7.md'
+      - 'experiments/issue26-music/phaseE7_guidonian_sequence.py'
+      - 'experiments/issue26-music/issue26e_core.py'
+      - '.github/workflows/issue26e7-guidonian-sequence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout E7 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e7-guidonian-sequence
+          fetch-depth: 0
+
+      - name: Verify E7 plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E7.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE7_guidonian_sequence.py | tail -1)
+          echo plan_first=$PLAN script_first=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Acquire frozen IT2a transcription
+        shell: bash
+        run: |
+          curl -fsSL --retry 3 https://www.voynich.nu/data/IT2a-n.txt -o IT2a-n.txt
+          echo '7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  IT2a-n.txt' | sha256sum -c -
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run E7 first sequence reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE7_guidonian_sequence.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            IT2a-n.txt > issue26e7_results.json
+
+      - name: Print audit summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e7_results.json'))
+          print('classification=',r['frozen_classification'])
+          print('primary_decision=',r['primary_decision'])
+          for k in ['ZL_min_primary','ZL_max_sensitivity','IT_min_transcription_sensitivity','IT_max_transcription_sensitivity']:
+              x=r[k]
+              print('\n',k)
+              print('replay=',x['static_replay'])
+              print('observed=',x['global_observed'])
+              print('D1=',x['global_D1_shuffle'])
+              print('D2=',x['global_D2_shuffle'])
+              print('folds D1+',x['D1_positive_folds'],'D2+',x['D2_positive_eligible_folds'],'eligible=',x['D2_eligible_folds_ge10_switches'])
+          print('hashes=',r['inputs'])
+          PY
+          sha256sum issue26e7_results.json
+
+      - name: Upload E7 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e7-first-reveal-${{ github.sha }}
+          path: issue26e7_results.json
+          if-no-files-found: error
+          retention-days: 90
