@@ -10,7 +10,7 @@ The Voynich Manuscript is **not deciphered**.
 
 The project has nevertheless established several reproducible structural constraints and eliminated a large number of attractive semantic, historical-cipher and direct-music interpretations under controlled tests.
 
-The research objective remains constructive: use reproducible constraints to narrow the space of viable generation/transformation mechanisms and, when sufficiently constrained, attack the inverse/decoding problem. Falsification is the discipline, not the objective.
+The research objective remains constructive: use reproducible constraints to narrow viable generation/transformation mechanisms and, when sufficiently constrained, attack the inverse/decoding problem. Falsification is the discipline, not the objective.
 
 ## Read the current token-construction lane correctly
 
@@ -20,140 +20,128 @@ It is **not** sentence-level grammar, and visible spaces are not assumed to be p
 
 Normative orientation: `research/TOKEN_CONSTRUCTION_PROGRAM.md`.
 
-The current strategic question is:
+The strategic question is not merely whether tokens “look structured.” It is whether a non-trivial token-construction layer survives lower-order controls and independent readings strongly enough to become a prospective constraint on later inverse/decoding models.
 
-> Do the non-trivial internal token-construction constraints form one shared manuscript-wide system, or do they change by Currier/register/section/line position?
-
-Equivalently, this lane is partly determining **how many token-generation systems a later inverse/decoding model must explain**.
-
-## Current strongest structural state
+## Other strongest structural state
 
 ### Paragraph-entry and local recurrence
 
-Phase62–64 established the frozen A1/A1-R1 mechanism as the leading tested model for short-range near-family recurrence geometry. It received prospective H62 support, survived training-vocabulary restriction, and transferred to an independent EvaT reading without retuning.
+Phase62–64 established frozen A1/A1-R1 as the leading tested model for short-range near-family recurrence geometry. It received prospective H62 support, survived training-vocabulary restriction, and transferred to an independent EvaT reading without retuning.
 
 This does not identify A1 as the historical production algorithm.
 
-Phase69/70 then demonstrated that strong A1-like local recurrence can coexist with exactly recoverable meaningful plaintext. Therefore:
+Phase69/70 demonstrated that strong A1-like local recurrence can coexist with exactly recoverable meaningful plaintext. Therefore:
 
 > **Short-range recurrence is a formal surface constraint, not evidence by itself that the text lacks semantics or plaintext.**
 
-The harder discriminator remains the signed paragraph-entry effect S1. The tested reversible meaningful-text constructions reproduce much of S2/S3/H62 but remain weak on S1.
+The signed paragraph-entry effect S1 remains harder to reproduce. Phase71's tested Alberti initial-signal/reset mechanism failed in the opposite S1 direction.
 
-### Paragraph-entry boundary mechanism
-
-Phase71 tested an independently motivated Alberti initial-alignment signal and paragraph reset. The reset arm projected in the opposite S1 direction from Voynich and failed in all five folds.
-
-Accepted conclusion:
-
-> **The tested Alberti message-initial signal/reset mechanism is not sufficient to explain the Voynich paragraph-entry direction.**
-
-This is one bounded historical-mechanism failure, not a rejection of all ciphers or boundary mechanisms.
-
-## Token-internal construction program — Issues #55, #58A, #58B
+## Token-internal construction program — #55 → #58A → #58B → #58C
 
 ### Issue #55
 
-#55A found cross-leaf dependence between native slot3 and slot5 factors. #55B showed that essentially all of that signal reduces to the binary fact that the two slots are almost never occupied together:
-
-- five-state gain: `0.04417745 bits/token`;
-- binary EMPTY/nonEMPTY gain: `0.04421504`;
-- subtype residual: `-0.00003747`;
-- subtype-residual null p: `0.26973`;
-- only 3 pooled tokens co-occupy slot3 and slot5;
-- canonical nonempty slot3×slot5 combinations are parser-admissible.
+#55A found cross-leaf slot3×slot5 dependence. #55B showed that essentially all of it reduces to binary occupancy exclusion.
 
 Frozen classification:
 
 > `DEPENDENCE REDUCES TO BINARY OCCUPANCY EXCLUSION`
 
-### Issue #58A — complete 66-edge occupancy graph
+### Issue #58A
 
-#58A removed selection bias around slot3×slot5 by auditing all `C(12,2)=66` binary slot pairs under one frozen family-wise test.
+The complete 66-edge audit removed selection bias around slot3×slot5.
 
-First-reveal result:
-
-- `22/66` edges survive global `p_maxT <= .01` with all five held-out gains positive;
-- selected `(3,5)` ranks only `22/66`;
-- `(3,5)` remains a real exclusion but loses family-wise exceptionality after controlling for other-slot occupancy complexity (`K_other` conditional `p_maxT=0.55644`);
-- all `66/66` canonical two-slot co-occupancies are parser-admissible;
-- the graph contains strong positive co-construction and strong negative exclusion relations;
-- strongest primary edge `(8,10)` has mean held-out gain `0.76767 bits/token`, phi `+0.92378`, and remains family-wise strong after `K_other` conditioning.
+- `22/66` edges survived the frozen family-wise primary rule;
+- selected `(3,5)` ranked only `22/66`;
+- strong positive co-construction and negative exclusion coexist;
+- all `66/66` canonical pair co-occupancies are parser-admissible.
 
 Frozen classification:
 
 > `BROAD OCCUPANCY GRAMMAR; SLOT3xSLOT5 NOT UNIQUE`
 
-Correct interpretation: the selected slot3×slot5 relation was real but not a unique key. The research object became the complete signed token-internal occupancy graph.
+### Issue #58B / #62
 
-### Issue #58B / #62 — graph stability across manuscript strata
+#58B asked whether the raw complete signed graph is stable across Currier/section/line-position strata.
 
-#58B asked whether the complete signed 66-edge graph is the same across externally defined Currier/section/line-position strata.
+Real graph similarities were high, but the line-local marginal-preserving null itself generated whole-graph correlations near the same range (`median maxT ≈ 0.949`). No planned similarity was family-wise exceptional and no practical difference gate was met.
 
-The preregistered test used `K_other`-conditional Yule-Q graph vectors, five physical-leaf folds, directional held-out transfer, and 1,000 deterministic line-local slot-occupancy relocation nulls preserving line×slot marginal counts and metadata.
+Frozen classifications:
 
-Observed real-data graph similarities were mostly high:
+> `CURRIER/SECTION GRAPH STABILITY INCONCLUSIVE`
 
-- register/section `R_full`: `0.6995–0.9613`;
-- position `R_full`: `0.8682–0.9431`;
-- within-stratum reliabilities were approximately `0.94–0.99`;
-- held-out cross-stratum transfers were mostly strong.
+> `LINE-POSITION GRAPH STABILITY INCONCLUSIVE`
 
-But the null itself generated extremely high complete-graph resemblance:
+Scientific consequence: raw whole-graph similarity is substantially contaminated by lower-order line-local slot prevalence / occupancy architecture.
 
-- median maxT: `0.94939`;
-- 95th percentile: `0.96323`.
+### Issue #58C / #64 — residual graph beyond line-local prevalence
 
-None of the seven planned similarities reached the frozen family-wise `p_maxT <= .01` support criterion. At the same time, no contrast approached the frozen practical difference gates (`R<.40` or transfer `<.30`).
+#58C prospectively calibrated every one of the 66 conditional occupancy edges against its own line-local null distribution.
 
-Frozen global classifications:
+To prevent circularity it used:
 
-> **`CURRIER/SECTION GRAPH STABILITY INCONCLUSIVE`**
+- 1,000 reference nulls only to define the residual transform;
+- an independent 1,000 test nulls only to validate residual existence/similarity;
+- a pooled residual-existence gate before any cross-stratum interpretation.
 
-> **`LINE-POSITION GRAPH STABILITY INCONCLUSIVE`**
+Frozen first-reveal overall classification:
 
-This means:
+> **`RESIDUAL GRAPH EXISTS WITH STRATUM MODULATION`**
 
-- **not established:** one deep shared 66-edge interaction graph;
-- **not established:** material Currier/section/position differences;
-- **retained:** strong token-internal occupancy structure and high numerical cross-stratum resemblance;
-- **new constraint:** raw whole-graph similarity is substantially driven by lower-order line-local slot prevalence / occupancy architecture.
+Pooled residual existence:
 
-Exact report: `experiments/occupancy-graph-stability/REPORT_A.md`.
+- real `E_ALL = 3.23155`;
+- test-null median `0.99004`;
+- test-null maximum `1.28318`;
+- `p_exist_ALL = 1/1001`;
+- physical-leaf reliability `W_ALL = 0.94471`.
 
-Program purpose: `research/TOKEN_CONSTRUCTION_PROGRAM.md`.
+Thus the real residual graph is far outside the complete independent test-null ensemble and strongly reproducible across physical leaves.
+
+All seven planned strata separately passed the family-wise residual-existence gate (`p_E,maxT = 1/1001`) with high fold reliability.
+
+All seven cross-stratum residual similarities also exceeded the full independent test-null maxT ensemble (`p_R,maxT = 1/1001` each).
+
+Frozen family classifications:
+
+> **`REGISTER/SECTION RESIDUAL MODULATION`**
+
+> **`LINE-POSITION RESIDUAL MODULATION`**
+
+Stable residual relations included all three Currier-B section comparisons and line interior-vs-final. Currier A-vs-B within Herbal and line-initial comparisons were related but modulated. No planned contrast met the frozen `DIFFERENT_RESIDUAL_OR_MIXTURE` gate.
+
+### Accepted token-construction interpretation
+
+The strongest supported description is now:
+
+> **Under the frozen 12-slot representation, Voynich space-delimited tokens contain a broad, reproducible internal interaction system that cannot be explained by line-local slot prevalence alone. A large shared residual construction core is present across the tested manuscript strata, with measurable Currier/section/line-position modulation rather than evidence for wholly separate token grammars.**
+
+Do **not** reduce this to “one universal grammar”: exact invariance was not supported.
+
+Exact #58C report: `experiments/occupancy-graph-residual/REPORT_A.md`.
+
+First-reveal raw SHA-256:
+
+`fba60daea6e30682065900a4cf15d53d2a2f536d933b588fae447fb43bb4728d`
 
 ## Current token-construction frontier
 
-Do not repeat #58B with a looser threshold or select visually strong individual edges.
+The main remaining threat before using #58C as an inverse-model constraint is **transcription/representation dependence**.
 
-The next plan-first question is:
+Next question:
 
-> **After subtracting/standardizing the interaction expected from line-local slot prevalence, does a graph-level residual token-construction signal exist, and if it exists, does that residual pattern transfer across manuscript strata?**
+> **Does the #58C residual-existence result and its shared-core-plus-modulation geometry survive a materially independent Voynich transcription/reading without retuning the 12-slot interpretation or selecting favorable edges?**
 
-The follow-up should separate two gates:
+This replication must distinguish:
 
-1. **residual existence** — prove that the residual interaction vector itself exceeds an independent null;
-2. **residual transfer** — only then ask whether its signed pattern is shared across Currier/section/position.
+1. residual existence in the independent reading;
+2. cross-reading agreement of the complete 66-edge residual graph;
+3. replication of broad shared-core/modulation geometry.
 
-To avoid circularity, use separately frozen reference-null and test-null ensembles. The reference ensemble defines edge-wise null expectation/scale; the independent test ensemble validates residual existence/transfer and controls multiplicity.
-
-This is a new hypothesis generated by #58B, not a repair of the frozen #58B test.
+Only after that should replicated token-construction constraints be used prospectively to restrict reversible generative/inverse models.
 
 ## Content-relation program
 
-Phase65–68 produced externally grounded object-local image↔text tests and returned null results under frozen representations.
-
-Retained content state:
-
-- Phase65A established a defensible localized pharmaceutical image↔label population;
-- Phase66 explicit morphology/color ↔ attached-label structure: not supported;
-- the same coarse morphology coding detected a known-positive historical botanical image↔description relation;
-- Phase67 visible leaf/root morphology ↔ adjacent body-paragraph surface: not supported;
-- Phase67 formal-channel masking did not reveal a hidden morphology signal;
-- Phase68 morphology ↔ residual lexical/edit1-family selection: strongly not supported.
-
-These results do not establish semantic absence, plant-name absence, or cipher absence.
+Phase65–68 externally grounded object-local image↔text tests were negative under frozen representations. These results do not establish semantic absence, plant-name absence, or cipher absence.
 
 ## Direct-music program — Issue #26
 
@@ -163,33 +151,29 @@ Accepted conclusion:
 
 > **No tested, independently constrained direct-musical or music-cipher model provides held-out evidence that Voynich running text encodes music or readable plaintext through a musical state system.**
 
-Useful residuals remain only after removing musical meaning. slot3×slot5 is now subsumed into the broader token-construction program.
-
 ## Historical real-cipher control lane
 
-The Phase72 source-audit branch remains source-development work, not accepted current science. Public benchmark records did not yet supply two independent historical-practice collections with externally established message-entry boundaries suitable for a fair S1 control.
-
-No Phase72 Voynich target score is authorized until source population and boundary semantics are frozen prospectively.
+The Phase72 source-audit branch remains source-development work, not accepted current science. No Phase72 Voynich target score is authorized until source population and genuine message-entry boundary semantics are frozen prospectively.
 
 ## Interpretation limits
 
 Do not infer:
 
 - that spaces are true linguistic word boundaries;
-- that the manuscript is meaningless or lacks semantics;
-- that A1 is the historical generator;
-- that the manuscript uses or does not use a cipher in general;
+- sentence-level grammar from the token-construction graph;
 - that any slot has a semantic meaning;
-- that the occupancy graph is a cipher table;
-- that #58B proved one shared graph or proved multiple grammars;
-- that direct music is impossible under every conceivable encoding;
-- that negative morphology tests falsify plant names or all plant-related content;
+- that the residual graph is a plaintext alphabet or cipher table;
+- that #58C identifies a historical generator;
+- that exact token grammar is invariant across all strata;
+- that recurrence or token construction proves semantic presence or absence;
+- that the manuscript uses or does not use a cipher in general;
+- that negative morphology tests falsify all plant-related content;
 - that the manuscript is deciphered.
 
 ## Reproducibility / repository state
 
-First-reveal provenance is preserved beyond Actions retention for Issues #55 and #58A. #58B first reveal is now also archived under `experiments/occupancy-graph-stability/first-reveal/` with raw-result SHA-256:
+First-reveal provenance is preserved beyond Actions retention for #55, #58A, #58B and #58C. #58C is archived under `experiments/occupancy-graph-residual/first-reveal/` with raw-result SHA-256:
 
-`45024fd1d15b2d2484ffc26657ccc8007fd6a04dc3ed1b53b243f77ba455f8a0`
+`fba60daea6e30682065900a4cf15d53d2a2f536d933b588fae447fb43bb4728d`
 
 Historical reproducibility debts remain documented in `research/REPRODUCIBILITY_AUDIT.md` and phase-specific reports.
