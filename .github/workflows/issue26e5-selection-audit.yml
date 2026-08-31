@@ -1,0 +1,93 @@
+name: Issue26E5 selection-adjusted external-structure audit
+
+on:
+  push:
+    branches: [issue26-music-e5-selection-audit]
+    paths:
+      - 'experiments/issue26-music/PLAN_E5.md'
+      - 'experiments/issue26-music/phaseE5_selection_audit.py'
+      - '.github/workflows/issue26e5-selection-audit.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/issue26-music/PLAN_E5.md'
+      - 'experiments/issue26-music/phaseE5_selection_audit.py'
+      - '.github/workflows/issue26e5-selection-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout E5 branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Verify E5 plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E5.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE5_selection_audit.py | tail -1)
+          echo plan_first=$PLAN script_first=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Acquire frozen IT2a transcription
+        shell: bash
+        run: |
+          curl -fsSL --retry 3 https://www.voynich.nu/data/IT2a-n.txt -o IT2a-n.txt
+          echo '7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  IT2a-n.txt' | sha256sum -c -
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run E5 first reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE5_selection_audit.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            IT2a-n.txt > issue26e5_results.json
+
+      - name: Print audit summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e5_results.json'))
+          g=r['guidonian_replay_and_selection']
+          print('classification=',r['frozen_classification'])
+          print('guidonian=',{k:g[k] for k in ['selected_policy','selected_recurrence','selected_map','selected_zl_fixed_mean_accuracy','it_fixed_mean_accuracy']})
+          print('degree=',r['primary_degree_matched']['stats'])
+          print('structured=',r['secondary_structured']['stats'])
+          print('exact_any_joint_dominance=',r['exact_pair_any_joint_dominance'])
+          for x in r['exact_pair_alternatives']:
+              print('exact=',{k:x[k] for k in ['label','selected_policy','selected_recurrence','selected_map','it_fixed_mean_accuracy']})
+          print('hashes=',r['inputs'])
+          PY
+          sha256sum issue26e5_results.json
+
+      - name: Upload E5 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e5-first-reveal-${{ github.sha }}
+          path: issue26e5_results.json
+          if-no-files-found: error
+          retention-days: 90
