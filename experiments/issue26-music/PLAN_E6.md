@@ -94,10 +94,10 @@ Before accepting E6 comparisons, Guidonian must replay the already revealed arch
 - `max` mean accuracy: `0.8439032769036159`
 
 ### IT2a
-- `min` mean accuracy: `0.851215` (compare to stored full-precision E2 output if available in executable constants)
-- `max` mean accuracy: `0.840472` (compare to stored full-precision E2 output if available in executable constants)
+- `min` mean accuracy: `0.8512154779726009`
+- `max` mean accuracy: `0.8404723923113318`
 
-The executable must use full-precision constants recovered from `REPORT_E2.md`/known E2 output where available; if exact full precision for IT is not available, the script must report the replay values and enforce the exact fold/implementation path rather than silently inventing digits.
+The IT full-precision constants were recovered from the first-reveal E2 Actions job log (`99378839395`) before the E6 executable existed.
 
 ## Statistics
 
