@@ -19,7 +19,8 @@
     "exact_tail_count": 482,
     "coverage_p": 1.0,
     "coverage_residualized_p": 0.4713541666666667,
-    "operational_gate_pass": false
+    "operational_coverage_gate_pass": true,
+    "detection_gate_pass": false
   },
   "frozen_secondary_n12": {
     "classification": "NOT SUPPORTED",
