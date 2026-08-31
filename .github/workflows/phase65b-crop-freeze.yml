@@ -1,0 +1,41 @@
+name: Phase65B text-blind crop freeze
+
+on:
+  push:
+    branches:
+      - phase65b-image-label-science
+    paths:
+      - experiments/phase65/CROP_SPEC_B.json
+      - experiments/phase65/phase65b_crop_freeze.py
+      - .github/workflows/phase65b-crop-freeze.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  crop-freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned image dependency
+        run: python -m pip install --disable-pip-version-check Pillow==12.3.0
+      - name: Verify exact Yale bytes and materialize frozen crops
+        run: |
+          python experiments/phase65/phase65b_crop_freeze.py \
+            --source-manifest experiments/phase65/SOURCE_MANIFEST_B.json \
+            --crop-spec experiments/phase65/CROP_SPEC_B.json \
+            --out-dir phase65b-crop-artifact \
+            --manifest-out phase65b-crop-artifact/CROP_MANIFEST_B.generated.json
+          sha256sum phase65b-crop-artifact/CROP_MANIFEST_B.generated.json > phase65b-crop-artifact/CROP_MANIFEST_B.generated.sha256
+          find phase65b-crop-artifact/crops -type f -name '*.png' -print0 | sort -z | xargs -0 sha256sum > phase65b-crop-artifact/crop-pngs.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase65b-text-blind-crop-freeze-${{ github.sha }}
+          path: phase65b-crop-artifact/
+          if-no-files-found: error
+          retention-days: 90

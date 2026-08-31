@@ -1,0 +1,54 @@
+name: Phase65B synthetic-only implementation preflight
+
+on:
+  push:
+    branches: [phase65b-image-label-science]
+    paths:
+      - experiments/phase65/phase65b_synthetic_preflight.py
+      - .github/workflows/phase65b-synthetic-preflight.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install frozen runtime dependencies
+        run: |
+          python -m pip install --disable-pip-version-check \
+            torch==2.8.0 torchvision==0.23.0 \
+            numpy==2.2.6 scipy==1.16.1 Pillow==12.3.0 \
+            einops==0.8.1 omegaconf==2.3.0 torchmetrics==1.8.1 fvcore==0.1.5.post20221221 iopath==0.1.10
+      - name: Fetch frozen DINOv2 code and weights
+        run: |
+          git clone -q https://github.com/facebookresearch/dinov2.git dinov2-src
+          git -C dinov2-src checkout -q 7764ea0f912e53c92e82eb78a2a1631e92725fc8
+          python - <<'PY'
+          import urllib.request
+          urllib.request.urlretrieve('https://dl.fbaipublicfiles.com/dinov2/dinov2_vits14/dinov2_vits14_pretrain.pth','dinov2_vits14_pretrain.pth')
+          PY
+      - name: Run synthetic-only gate
+        run: |
+          mkdir -p phase65b-synthetic-artifact
+          python experiments/phase65/phase65b_synthetic_preflight.py \
+            --dinov2-repo dinov2-src \
+            --weights dinov2_vits14_pretrain.pth \
+            --expected-weight-sha256 b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9 \
+            --out phase65b-synthetic-artifact/SYNTHETIC_PREFLIGHT_B.generated.json
+          sha256sum experiments/phase65/phase65b_synthetic_preflight.py > phase65b-synthetic-artifact/executable.sha256
+          sha256sum phase65b-synthetic-artifact/SYNTHETIC_PREFLIGHT_B.generated.json > phase65b-synthetic-artifact/result.sha256
+          python -m pip freeze | sort > phase65b-synthetic-artifact/pip-freeze.txt
+          git -C dinov2-src rev-parse HEAD > phase65b-synthetic-artifact/dinov2-commit.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase65b-synthetic-preflight-${{ github.sha }}
+          path: phase65b-synthetic-artifact/
+          if-no-files-found: error
+          retention-days: 90

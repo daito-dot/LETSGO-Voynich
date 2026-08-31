@@ -1,0 +1,26 @@
+{
+  "schema": "phase65b-primary-summary-v1",
+  "page": "f102v2",
+  "role": "primary",
+  "github_sha": "c6b0c5f5362a4b6d92bbbee09324f68676057663",
+  "workflow_run_id": 33348284648,
+  "artifact_id": 9742817390,
+  "artifact_digest": "sha256:e90aad368dc81b3fb0093a2798c87cc1f5ed950069273e46d732269de1a0e4f3",
+  "frozen_thresholds": {"T_min": 0.20, "p_exact_max": 0.05},
+  "primary": {
+    "T_observed": -0.06343525603959764,
+    "p_exact_one_sided": 0.6155787037037037,
+    "n_permutations": 86400,
+    "page_pass": false,
+    "row_rho": {"L2": 0.15524376203803017, "L3": -0.39145378315603935}
+  },
+  "sensitivities": {
+    "grayscale_zl_w1": {"T": -0.09712667383317583, "p": 0.6598263888888889, "pass": false},
+    "rgb_zl_w2": {"T": -0.06343525603959764, "p": 0.6155787037037037, "pass": false},
+    "rgb_zl_length_only": {"T": 0.10332057506531132, "p": 0.28444444444444444, "pass": false},
+    "rgb_it2a_w1": {"T": 0.1353781973741032, "p": 0.26047453703703705, "pass": false},
+    "rgb_it2a_w2": {"T": 0.1353781973741032, "p": 0.26047453703703705, "pass": false}
+  },
+  "interpretation": "The preregistered f102v2 primary hypothesis did not pass. No tested predeclared sensitivity passed either. This is evidence against a detectable positive local covariance between the frozen DINOv2 drawing representation and attached label-form distance on this page under the Phase65B design; it is not evidence about decipherment in general.",
+  "science_executable_sha256": "9aa07355c5d8a69acc9ee0910cf2d83877d95482f53ca1a048ae8d6cd3c3a486"
+}

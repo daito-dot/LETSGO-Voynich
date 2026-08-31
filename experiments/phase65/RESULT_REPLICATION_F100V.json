@@ -1,0 +1,26 @@
+{
+  "schema": "phase65b-replication-summary-v1",
+  "page": "f100v",
+  "role": "replication",
+  "github_sha": "3da1eed0f0401f5df0eccf846f2f8377f1c8e50e",
+  "workflow_run_id": 33348802316,
+  "artifact_id": 9743019225,
+  "artifact_digest": "sha256:54258ba8f2a5abe48215042967ae5b00ae1679b7e3dfbc083aa2e5d5572c8c10",
+  "frozen_thresholds": {"T_min": 0.20, "p_exact_max": 0.05},
+  "primary": {
+    "T_observed": -0.262995097127963,
+    "p_exact_one_sided": 0.8808159722222222,
+    "n_permutations": 69120,
+    "page_pass": false,
+    "row_rho": {"T": -0.5161002296110789, "M": -0.338501600193165, "B": 0.11595420713048968}
+  },
+  "sensitivities": {
+    "grayscale_zl_w1": {"T": -0.17460320107632288, "p": 0.7829861111111112, "pass": false},
+    "rgb_zl_w2": {"T": -0.262995097127963, "p": 0.8808159722222222, "pass": false},
+    "rgb_zl_length_only": {"T": -0.13377493912900132, "p": 0.7310185185185185, "pass": false},
+    "rgb_it2a_w1": {"T": -0.2201018263480477, "p": 0.8330295138888889, "pass": false},
+    "rgb_it2a_w2": {"T": -0.2201018263480477, "p": 0.8330295138888889, "pass": false}
+  },
+  "classification_consequence": "Together with the failed f102v2 primary, this yields M8-B1 NO DETECTED MORPHOLOGY RELATION under PLAN_B.md.",
+  "science_executable_sha256": "9aa07355c5d8a69acc9ee0910cf2d83877d95482f53ca1a048ae8d6cd3c3a486"
+}
