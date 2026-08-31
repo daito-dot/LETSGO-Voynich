@@ -6,6 +6,8 @@ Issue: #26
 Base research state: Issue26E10 head `ba5f83b67b8ccb25f73b4449b9aaafa04b207513`.
 Historical audit: `HISTORICAL_AUDIT_E11.md`.
 
+Pre-executable amendment: the originally drafted `64 × 100,000` annealing budget was reduced to `16 × 30,000` before any E11 executable existed or any E11 score/plaintext was computed. This is a computational-budget change only. The mandatory matched known-cipher positive control remains the authority on whether the reduced solver is adequate; if it fails, E11 is `SOLVER INADEQUATE` rather than a Voynich negative result.
+
 ## Question
 
 Early medieval León / Visigothic musical cryptography is not a pitch/rhythm product code. The historically attested core mechanism is alphabetic substitution using neume-shaped or neume-like visible signs, with scribal variation and occasional homophony.
@@ -109,11 +111,11 @@ For each physical-leaf fold:
 
 1. use four-fifths of eligible Voynich leaves as training;
 2. optimize the full permutation using deterministic multi-start simulated annealing over pair swaps;
-3. use exactly **64 restarts**;
-4. each restart uses exactly **100,000 proposed swaps**;
+3. use exactly **16 restarts**;
+4. each restart uses exactly **30,000 proposed swaps**;
 5. proposal = uniformly choose two distinct positions in the 24-position full permutation and swap them;
 6. score = mean 4-gram NLL in bits/character over the frozen training streams;
-7. temperature schedule is geometric from `0.05` bits/character at proposal 0 to `0.00005` at proposal 99,999;
+7. temperature schedule is geometric from `0.05` bits/character at proposal 0 to `0.00005` at proposal 29,999;
 8. accept every improving move; accept worsening delta `d` with probability `exp(-d/T)`;
 9. seed restart `r` from SHA-256 of `Issue26E11:LeonMonoSub:v1:{fold}:{r}`;
 10. after annealing, run deterministic steepest pair-swap descent over all `24 choose 2 = 276` swaps until no swap improves by more than `1e-12`;
