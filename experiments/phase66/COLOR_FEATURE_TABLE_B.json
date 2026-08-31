@@ -1,0 +1,38 @@
+{
+  "chosen_k": 3,
+  "cluster_centers_ab": {
+    "C1": [-19.180926592294796, -0.5404159927233365],
+    "C2": [-7.001307787876531, 9.869848950500385],
+    "C3": [-6.891594333596313, -17.501634539504185]
+  },
+  "records": [
+    {"C1_area_fraction":0.4094546912590217,"C1_present":true,"C2_area_fraction":7.217321571772254e-05,"C2_present":false,"C3_area_fraction":0.0,"crop_sha256":"205586f3e45f82d65baa79252db0caf69a30bec7445b9f29739ea91603c5777e","object_id":"B.1","page":"f100v"},
+    {"C1_area_fraction":0.2270011947431302,"C1_present":true,"C2_area_fraction":0.17080645161290323,"C2_present":true,"C3_area_fraction":0.0,"crop_sha256":"f8d72353950b1a8a3240f9e67a80dd9487f44184513028e80e619994cfacf055","object_id":"B.2","page":"f100v"},
+    {"C1_area_fraction":0.2709264069264069,"C1_present":true,"C2_area_fraction":0.0001038961038961039,"C2_present":false,"C3_area_fraction":0.0,"crop_sha256":"5233c978b18cffeb9692ac1a6ced0f8b17fee4af6207940621837b7b2c2d8aa1","object_id":"B.3","page":"f100v"},
+    {"C1_area_fraction":0.5039214113873296,"C1_present":true,"C2_area_fraction":0.0015316760224538893,"C2_present":false,"C3_area_fraction":0.0,"crop_sha256":"919b086eda29d7f96e320dc8497af54b83260e361e951ade40a9120e92c70ac9","object_id":"B.4","page":"f100v"},
+    {"C1_area_fraction":0.0,"C1_present":false,"C2_area_fraction":0.15601139601139602,"C2_present":true,"C3_area_fraction":0.0,"crop_sha256":"e88011abfefff7a6e5bacd9f231b9a4c57e71d16e1f1504de74b17cc5c19edc0","object_id":"M.1","page":"f100v"},
+    {"C1_area_fraction":0.21972822299651568,"C1_present":true,"C2_area_fraction":0.0003554006968641115,"C2_present":false,"C3_area_fraction":4.181184668989547e-05,"crop_sha256":"6243a9b04564b87ac5d1bc73863d48e9fa42eb4978b84d0c88a426aaf1363303","object_id":"M.2","page":"f100v"},
+    {"C1_area_fraction":0.24635096153846153,"C1_present":true,"C2_area_fraction":8.653846153846153e-05,"C2_present":false,"C3_area_fraction":0.00014903846153846155,"crop_sha256":"405411d84e6c3927834959dddd112b4aceb2a8018ec935937c69a73a1a92e8e7","object_id":"M.3","page":"f100v"},
+    {"C1_area_fraction":0.587780701754386,"C1_present":true,"C2_area_fraction":0.01992982456140351,"C2_present":true,"C3_area_fraction":0.0,"crop_sha256":"581ca2aa9b4a498165f9cf66aef85ba03621ce885daa236a8fbb30fdf7fad6ce","object_id":"M.4","page":"f100v"},
+    {"C1_area_fraction":3.3333333333333335e-05,"C1_present":false,"C2_area_fraction":0.06452666666666666,"C2_present":true,"C3_area_fraction":0.0,"crop_sha256":"48e1a87fa3770795f55865bfc983033f798846c3c4c3cb1da35760cdb7913f49","object_id":"M.5","page":"f100v"},
+    {"C1_area_fraction":0.15287001287001287,"C1_present":true,"C2_area_fraction":0.00032175032175032174,"C2_present":false,"C3_area_fraction":0.0006821106821106822,"crop_sha256":"a08cfa1273f9ab321e70a3652df38001ba908da231232d7645f13fdd9cbe2d16","object_id":"T.1","page":"f100v"},
+    {"C1_area_fraction":0.0,"C1_present":false,"C2_area_fraction":0.01971891891891892,"C2_present":true,"C3_area_fraction":0.0,"crop_sha256":"460c62316b5e1a7e0dd08ad2606005624cc32cea48ca3b7bb4cbc412852e6fb5","object_id":"T.2","page":"f100v"},
+    {"C1_area_fraction":0.26872586872586873,"C1_present":true,"C2_area_fraction":0.0016447876447876447,"C2_present":false,"C3_area_fraction":0.000277992277992278,"crop_sha256":"f3de04b4c344fff013a3d8ed89ce4c622b634b089e091ebfb8837aad9e6368b3","object_id":"T.3","page":"f100v"},
+    {"C1_area_fraction":0.19409443269908386,"C1_present":true,"C2_area_fraction":7.047216349541931e-06,"C2_present":false,"C3_area_fraction":0.003883016208597604,"crop_sha256":"1913abf69cc370af21d8c81a9d75fa27eff77cddd50aa3ead6cf83a48adea572","object_id":"T.4","page":"f100v"},
+    {"C1_area_fraction":0.0,"C1_present":false,"C2_area_fraction":0.031578947368421054,"C2_present":true,"C3_area_fraction":0.0,"crop_sha256":"360f02f8d71c03662053a532aaf4830e71e9d2380b3b6c51e79aefd475da496a","object_id":"L2.1","page":"f102v2"},
+    {"C1_area_fraction":0.5596875,"C1_present":true,"C2_area_fraction":0.0005902777777777778,"C2_present":false,"C3_area_fraction":6.944444444444444e-05,"crop_sha256":"fc65f8f9f56fd853138faf3eb40401c2d8a806570ee1c58e46c3f611396340fe","object_id":"L2.2","page":"f102v2"},
+    {"C1_area_fraction":0.00011111111111111112,"C1_present":false,"C2_area_fraction":0.0,"C2_present":false,"C3_area_fraction":0.3999365079365079,"crop_sha256":"ae6cdef93ecbe0d72a2503f4682012fe3e45f90968802a4ec3e7df3456de0ec7","object_id":"L2.3","page":"f102v2"},
+    {"C1_area_fraction":0.2840151515151515,"C1_present":true,"C2_area_fraction":0.0009343434343434344,"C2_present":false,"C3_area_fraction":0.0,"crop_sha256":"89adb1381259f8b1e08394bfecb89bba22113de5fb64e3202669e75d4dcd60ff","object_id":"L2.4","page":"f102v2"},
+    {"C1_area_fraction":0.31626,"C1_present":true,"C2_area_fraction":0.00092,"C2_present":false,"C3_area_fraction":0.0,"crop_sha256":"f18428d86b23c7420ac336b543ec523634c001ef633a2e8323d6d4864d826b52","object_id":"L2.5","page":"f102v2"},
+    {"C1_area_fraction":0.5006448412698413,"C1_present":true,"C2_area_fraction":0.002202380952380952,"C2_present":true,"C3_area_fraction":0.0,"crop_sha256":"94d68ad0a0dfaa5348b3027c6709571ea0294ca75a5353fed9afda6a72c7987f","object_id":"L2.6","page":"f102v2"},
+    {"C1_area_fraction":0.00013580246913580247,"C1_present":false,"C2_area_fraction":0.04716049382716049,"C2_present":true,"C3_area_fraction":0.0,"crop_sha256":"8f5b06688c6656464113c30ed70a1425703ef77722070eb9f827ecc2d99b6480","object_id":"L3.1","page":"f102v2"},
+    {"C1_area_fraction":0.71083203125,"C1_present":true,"C2_area_fraction":0.00330078125,"C2_present":true,"C3_area_fraction":0.0,"crop_sha256":"55ac01e10561931f35dbf9fb7f91bf6f2c42066662f9f658f97d22fac1a775c7","object_id":"L3.2","page":"f102v2"},
+    {"C1_area_fraction":0.0006020408163265307,"C1_present":false,"C2_area_fraction":0.05227551020408163,"C2_present":true,"C3_area_fraction":0.006989795918367347,"crop_sha256":"a0831ef1444a7fde306837eb071e365c609fb84ca1bfcb792a30ee4a47be3572","object_id":"L3.3","page":"f102v2"},
+    {"C1_area_fraction":0.31384615384615383,"C1_present":true,"C2_area_fraction":0.0005889423076923077,"C2_present":false,"C3_area_fraction":0.0,"crop_sha256":"eb67f76f224e8cdaec80d220aa14efbc9c209dd0fc83f84b29f028a2805c2ede","object_id":"L3.4","page":"f102v2"},
+    {"C1_area_fraction":0.0,"C1_present":false,"C2_area_fraction":0.0035622895622895623,"C2_present":true,"C3_area_fraction":0.0,"crop_sha256":"615d7ad713197213e5e33fc9d396edfe1f9ddb124382926c041e1a0c2dbb3d0c","object_id":"L3.5","page":"f102v2"}
+  ],
+  "schema":"phase66a-color-b-feature-table-v1",
+  "source_executable":"experiments/phase66/phase66a_color_b.py",
+  "source_full_result_sha256":"12a2bcc98fba33af0f691e7816da9086fbd228f25d13080c93e64e4200c56cc1",
+  "status":"SEALED BEFORE IMAGE_TEXT_ASSOCIATION"
+}
