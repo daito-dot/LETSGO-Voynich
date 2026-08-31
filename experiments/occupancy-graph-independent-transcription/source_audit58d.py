@@ -13,9 +13,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-import re
 import sys
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).resolve()
@@ -177,6 +176,10 @@ def audit_it2a(path: Path, frozen_folds, frozen_universe):
     clean_position = Counter()
     accepted_group = Counter()
     clean_group = Counter()
+    accepted_group_fold = {g: [0] * 5 for g in META_GROUPS}
+    clean_group_fold = {g: [0] * 5 for g in META_GROUPS}
+    accepted_position_fold = {p: [0] * 5 for p in POSITIONS}
+    clean_position_fold = {p: [0] * 5 for p in POSITIONS}
     page_meta_missing = Counter()
 
     for item in items:
@@ -186,6 +189,8 @@ def audit_it2a(path: Path, frozen_folds, frozen_universe):
         leaf = int(leaf)
         observed_leaves.add(leaf)
         analyzed_pages.add(item["page"])
+        in_frozen = leaf in frozen_universe
+        fold = leaf_to_fold[leaf] if in_frozen else None
         meta = pages.get(item["page"], {})
         lval = meta.get("L", sa.MISSING)
         ival = meta.get("I", sa.MISSING)
@@ -202,6 +207,13 @@ def audit_it2a(path: Path, frozen_folds, frozen_universe):
                 clean_position[pos] += 1
                 if mg:
                     clean_group[mg] += 1
+                if in_frozen:
+                    overlap_clean += 1
+                    fold_clean[fold] += 1
+                    clean_position_fold[pos][fold] += 1
+                    if mg:
+                        clean_group_fold[mg][fold] += 1
+
                 parses = parser.parses(tok)
                 accepted = bool(parses)
                 if len(parses) > 1:
@@ -213,13 +225,12 @@ def audit_it2a(path: Path, frozen_folds, frozen_universe):
                         accepted_group[mg] += 1
                     if parses[0] != parses[-1]:
                         total_minmax_diff += 1
-                if leaf in frozen_universe:
-                    overlap_clean += 1
-                    f = leaf_to_fold[leaf]
-                    fold_clean[f] += 1
-                    if accepted:
+                    if in_frozen:
                         overlap_accepted += 1
-                        fold_accepted[f] += 1
+                        fold_accepted[fold] += 1
+                        accepted_position_fold[pos][fold] += 1
+                        if mg:
+                            accepted_group_fold[mg][fold] += 1
 
     shared = observed_leaves & frozen_universe
     only_it = observed_leaves - frozen_universe
@@ -275,10 +286,14 @@ def audit_it2a(path: Path, frozen_folds, frozen_universe):
             "paragraphs_with_missing_page_metadata": dict(page_meta_missing),
             "clean_token_support_by_group": {g: int(clean_group[g]) for g in META_GROUPS},
             "accepted_token_support_by_group": {g: int(accepted_group[g]) for g in META_GROUPS},
+            "clean_token_support_by_group_fold": clean_group_fold,
+            "accepted_token_support_by_group_fold": accepted_group_fold,
         },
         "token_position": {
             "clean": {p: int(clean_position[p]) for p in POSITIONS},
             "accepted": {p: int(accepted_position[p]) for p in POSITIONS},
+            "clean_by_fold": clean_position_fold,
+            "accepted_by_fold": accepted_position_fold,
         },
         "authorization_gates": gates,
         "disposition": (
