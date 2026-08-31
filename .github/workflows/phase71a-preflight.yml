@@ -1,0 +1,56 @@
+name: Phase 71A Alberti boundary preflight
+
+on:
+  push:
+    branches: [phase71-alberti-boundary]
+    paths:
+      - 'experiments/phase71/**'
+      - '.github/workflows/phase71a-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Compile and run construction-only preflight
+        run: |
+          python -m py_compile experiments/phase71/phase71a_alberti_boundary.py
+          python experiments/phase71/phase71a_alberti_boundary.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma \
+            --preflight-only | tee phase71a_preflight.txt
+          grep -q 'NO PHASE71 SCIENTIFIC SCORE COMPUTED' phase71a_preflight.txt
+          grep -q '"scientific_metrics_called": false' phase71a_preflight.txt
+
+      - name: Record frozen preflight hashes
+        run: |
+          sha256sum \
+            experiments/phase71/PLAN_A.md \
+            experiments/phase71/phase71a_alberti_boundary.py \
+            phase71a_preflight.txt
