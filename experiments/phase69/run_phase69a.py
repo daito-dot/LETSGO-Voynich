@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import bisect
 import hashlib
 import importlib.util
 import json
@@ -12,7 +11,7 @@ import tempfile
 import urllib.request
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Dict, Iterable, List, Sequence, Tuple
+from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
 
@@ -89,21 +88,21 @@ def eligible_leaf_sequences(paragraphs) -> Dict[int, List[str]]:
     }
 
 
-def rolling_bin_rates(
+def rolling_bin_rates_both(
     sequences: Dict[int, Sequence[str]],
     neighbors: Dict[str, set[str]],
-    exact: bool,
-) -> Tuple[List[float], List[int], List[int]]:
-    hits = [0] * len(BINS)
+) -> Tuple[List[float], List[int], List[float], List[int], List[int]]:
+    """Return edit1 and exact recurrence rates in one identical rolling pass."""
+    edit_hits = [0] * len(BINS)
+    exact_hits = [0] * len(BINS)
     available = [0] * len(BINS)
+    empty_neighbors: set[str] = set()
+
     for _leaf, seq in sequences.items():
-        # One rolling token multiset per distance bin.
         windows = [Counter() for _ in BINS]
         for i, tok in enumerate(seq):
+            tok_neighbors = neighbors.get(tok, empty_neighbors)
             for bi, (_name, lo, hi) in enumerate(BINS):
-                # Before testing position i, window should contain positions
-                # [i-hi, i-lo], clipped by availability. We count a bin only
-                # when the whole frozen range exists, i >= hi.
                 add_j = i - lo
                 rem_j = i - hi - 1
                 if add_j >= 0:
@@ -115,21 +114,46 @@ def rolling_bin_rates(
                         del windows[bi][old]
                 if i < hi:
                     continue
+
                 available[bi] += 1
-                if exact:
-                    hit = windows[bi].get(tok, 0) > 0
-                else:
-                    hit = any(windows[bi].get(nb, 0) > 0 for nb in neighbors.get(tok, set()))
-                hits[bi] += int(hit)
+                exact_hits[bi] += int(windows[bi].get(tok, 0) > 0)
+                # Counter.keys() is a set-like view; isdisjoint avoids a Python
+                # loop over every neighbor while preserving the exact relation.
+                edit_hits[bi] += int(
+                    bool(tok_neighbors)
+                    and not windows[bi].keys().isdisjoint(tok_neighbors)
+                )
+
     if any(n == 0 for n in available):
         raise RuntimeError(f"zero long-range availability: {available}")
-    return [hits[i] / available[i] for i in range(len(BINS))], hits, available
+
+    edit_rates = [edit_hits[i] / available[i] for i in range(len(BINS))]
+    exact_rates = [exact_hits[i] / available[i] for i in range(len(BINS))]
+    return edit_rates, edit_hits, exact_rates, exact_hits, available
 
 
 def build_edit1_neighbors(p61, sequences: Dict[int, Sequence[str]]) -> Dict[str, set[str]]:
     vocab = sorted({t for seq in sequences.values() for t in seq})
     raw = p61.build_neighbors(vocab)
     return {k: set(v) for k, v in raw.items()}
+
+
+def restrict_prebuilt_neighbors(
+    sequences: Dict[int, Sequence[str]],
+    prebuilt_neighbors: Dict[str, Sequence[str]],
+) -> Dict[str, set[str]]:
+    """Restrict a superset-vocabulary lev1 graph to the observed dataset types.
+
+    A1-R1 generated tokens are asserted to lie inside the training vocabulary.
+    The edit1 relation itself is vocabulary-independent, so restricting the
+    already-built training graph is exactly equivalent to rebuilding the graph
+    from the generated type subset and is substantially faster.
+    """
+    types = {t for seq in sequences.values() for t in seq}
+    return {
+        t: set(prebuilt_neighbors.get(t, ())).intersection(types)
+        for t in types
+    }
 
 
 def normalize_excess(excess: Sequence[float]) -> dict:
@@ -140,16 +164,24 @@ def normalize_excess(excess: Sequence[float]) -> dict:
     }
 
 
-def profile_dataset(p61, paragraphs, label: str) -> dict:
+def profile_dataset(
+    p61,
+    paragraphs,
+    label: str,
+    prebuilt_neighbors: Dict[str, Sequence[str]] | None = None,
+) -> dict:
     seqs = eligible_leaf_sequences(paragraphs)
     if not seqs:
         raise RuntimeError(f"{label}: no physical leaf has >= {MIN_LEAF_TOKENS} tokens")
-    neighbors = build_edit1_neighbors(p61, seqs)
 
-    obs_edit, obs_edit_hits, avail = rolling_bin_rates(seqs, neighbors, exact=False)
-    obs_exact, obs_exact_hits, avail2 = rolling_bin_rates(seqs, neighbors, exact=True)
-    if avail2 != avail:
-        raise AssertionError("exact/edit availability differs")
+    if prebuilt_neighbors is None:
+        neighbors = build_edit1_neighbors(p61, seqs)
+    else:
+        neighbors = restrict_prebuilt_neighbors(seqs, prebuilt_neighbors)
+
+    obs_edit, obs_edit_hits, obs_exact, obs_exact_hits, avail = rolling_bin_rates_both(
+        seqs, neighbors
+    )
 
     null_edit = []
     null_exact = []
@@ -161,9 +193,8 @@ def profile_dataset(p61, paragraphs, label: str) -> dict:
             row = list(seq)
             rng.shuffle(row)
             shuffled[leaf] = row
-        e, _, a = rolling_bin_rates(shuffled, neighbors, exact=False)
-        x, _, ax = rolling_bin_rates(shuffled, neighbors, exact=True)
-        if a != avail or ax != avail:
+        e, _, x, _, a = rolling_bin_rates_both(shuffled, neighbors)
+        if a != avail:
             raise AssertionError("null availability changed")
         null_edit.append(e)
         null_exact.append(x)
@@ -248,7 +279,6 @@ def main() -> int:
 
         reps = []
         for r in range(A1_REPS):
-            # Extend the established Phase63 training-vocabulary A1 seed family.
             seed = 6190000 + fi * 100000 + int(strength * 10) * 1000 + int(local_p * 100) * 10 + r
             generated = p61.generate_layout(
                 p_test,
@@ -261,7 +291,14 @@ def main() -> int:
             outside = set(p61.all_tokens(generated)) - set(train_vocab)
             if outside:
                 raise RuntimeError(f"fold {fi} rep {r}: generated token outside training vocabulary")
-            reps.append(profile_dataset(p61, generated, f"A1R1:fold{fi}:rep{r}"))
+            reps.append(
+                profile_dataset(
+                    p61,
+                    generated,
+                    f"A1R1:fold{fi}:rep{r}",
+                    prebuilt_neighbors=neighbors,
+                )
+            )
         fold_a1_profiles[fi] = reps
         fold_meta.append({
             "fold": fi,
