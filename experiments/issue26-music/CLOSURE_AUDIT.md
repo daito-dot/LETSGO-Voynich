@@ -1,14 +1,14 @@
 # Issue #26 direct-music research closure audit
 
-Status: **CURRENT BOUNDED RESEARCH PROGRAM COMPLETE — DIRECT MUSICAL ENCODING NOT SUPPORTED BY TESTED MODELS**
+Status: **CURRENT BOUNDED DIRECT-MUSIC PROGRAM COMPLETE — TESTED MUSICAL INTERPRETATIONS NOT SUPPORTED**
 
 ## Scope
 
 Issue #26 asked whether Voynichese could directly encode musical events, a music-theoretical state system, or plaintext through a musical cipher layer. It is separate from Issue #25, where music-analysis methods may be useful as generic sequence-analysis tools without implying musical content.
 
-The current program has reached a defensible stopping boundary for model families that can be specified independently and tested without open-ended remapping.
+The current program has reached a defensible stopping boundary for **direct-musical interpretations** that can currently be specified independently and tested without open-ended remapping.
 
-This is not a proof that no imaginable musical encoding can occur anywhere in the manuscript. It closes the current falsifiable program because tested mechanisms are negative and the main remaining variants lack an independently fixed manuscript-side observable or an auditable historical key.
+This is not a proof that no imaginable musical encoding can occur anywhere in the manuscript. It also does not discard mathematical structures discovered while testing music hypotheses. Consistent with `research/RESEARCH_OBJECTIVE.md`, failed historical interpretations constrain claims while robust residual structure remains available as candidate transformation machinery.
 
 ## Evidence by family
 
@@ -24,7 +24,7 @@ E–E6 found static compatibility between a six-state Voynich factor and some fe
 
 E7 then tested a prospective consequence not used to fit the mapping: historical overlapping-hexachord / same-pitch mutation dynamics on held-out order.
 
-Result: **STATIC COMPATIBILITY DOES NOT PREDICT GUIDONIAN DYNAMICS**. The surviving object is generic morphology/dependency structure, not evidence that the states are literal Guidonian pitches or voces.
+Result: **STATIC COMPATIBILITY DOES NOT PREDICT GUIDONIAN DYNAMICS**. Literal Guidonian interpretation fails; the six-state morphology/dependency factor remains a reusable structural object.
 
 ### H3 — music theory / musica mundana / astronomical relation
 
@@ -44,7 +44,7 @@ Multiple structurally distinct historical mechanisms were tested rather than rep
 - Friderici pure rhythm: negative;
 - Friderici 8×3 grid: negative after exact positive-control validation.
 
-The León sequence is especially important methodologically: a low fitted language-model CE is not enough to identify a Latin plaintext model. The final residual is a sequence/model-identifiability question, not a decipherment.
+The León sequence is especially useful methodologically: a low fitted language-model CE is not enough to identify a Latin plaintext model. E11F's order effect remains real, but E11G removes the specifically Latin interpretation. The residual therefore becomes input to the broader transform-discovery program rather than a reason to keep rescuing León.
 
 ## Untested remainder
 
@@ -64,29 +64,31 @@ Disposition: **under-specified / non-identifying without a new external anchor**
 
 Circular geometry alone is non-identifying. A future test requires an additional independently specified label, textual marker, or graphical relation that distinguishes a musical diagram from an ordinary astronomical/astrological one.
 
-## Stopping rule
+## Stopping rule for the direct-music branch
 
 Do not continue Issue #26 by adding named ciphers or musical mappings one at a time merely because another historical example can be found.
 
-Reopen only when at least one of the following exists before looking at a new target score:
+Reopen the direct-musical interpretation only when at least one of the following exists before looking at a new target score:
 
 1. an auditable exact historical key;
 2. a manuscript-local feature that independently selects pitch/duration/voice/cipher mapping;
 3. a finite historical candidate family whose complete membership and family-level multiplicity are frozen in advance;
 4. a new historical source that supplies a genuinely new testable consequence.
 
-Without such a constraint, continued search mainly increases researcher degrees of freedom.
+Without such a constraint, continued historical-music search mainly increases researcher degrees of freedom.
 
-## Residuals moved out of music interpretation
+This stopping rule does **not** prohibit constructive follow-up on residual mathematical structure under a newly frozen non-musical transform hypothesis.
 
-Three observations remain scientifically useful but must leave the music hypothesis:
+## Retained transform constraints
 
-- **E10 slot3×slot5 recurrence:** test native 5×5 cross-leaf dependency under hypothesis-neutral frequency-preserving controls, excluding the Sloane table and Latin/music objectives.
-- **E11 STA-family order residual:** characterize the manuscript-native local sequential constraints that separate real order from matched order nulls, without León/Latin substitution rescue models.
-- **E–E7 six-state factor:** explain the stable morphology/dependency regularity with generic token-grammar models rather than literal solmization/pitch labels.
+Three observations remain scientifically useful and should be transferred into the broader constructive program:
+
+- **E10 slot3×slot5 recurrence:** test native 5×5 cross-leaf dependency and whether it can serve as a stable predictive/reversible transform component, excluding the Sloane table and Latin/music objectives.
+- **E11 STA-family order residual:** characterize manuscript-native local sequential constraints that separate real order from matched order nulls; test them directly as transform constraints rather than through León/Latin substitution rescue models.
+- **E–E7 six-state factor:** explain and reuse the stable morphology/dependency regularity with generic token-grammar or reversible surface models rather than literal solmization/pitch labels.
 
 ## Closure conclusion
 
-> **No tested, independently constrained direct-musical or music-cipher model provides held-out evidence that Voynich running text encodes music or readable plaintext through a musical state system. Several apparent static or low-CE fits were eliminated by prospective historical predictions, stronger matched nulls, solver validation, readability checks, or identifiability controls.**
+> **No tested, independently constrained direct-musical or music-cipher model provides held-out evidence that Voynich running text encodes music or readable plaintext through a musical state system. Several apparent static or low-CE fits lost their historical-music interpretation under prospective predictions, stronger matched nulls, solver validation, readability checks, or identifiability controls. The robust structural residuals remain active candidate constraints for transform discovery.**
 
-The experiment-level branches remain research evidence. This documentation PR proposes only the consolidated interpretation and stopping boundary for `main`; it does not merge the individual exploratory experiment branches wholesale.
+The experiment-level branches remain research evidence. This documentation PR proposes the consolidated interpretation boundary for `main`; it does not merge the individual exploratory experiment branches wholesale.
