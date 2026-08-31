@@ -49,9 +49,9 @@
     "coverage_residualized_global_tail_count": 612,
     "operational_coverage_gate_pass": true,
     "null_maxT": {
-      "mean": 0.6064355772418568,
-      "q95": 0.6895903819596103,
-      "max": 0.7253757611966641
+      "mean": 0.6039082733938799,
+      "q95": 0.6877521096029146,
+      "max": 0.7073786929837304
     }
   },
   "frozen_secondary_n12": {
@@ -61,7 +61,17 @@
     "global_exact_p": 0.15625,
     "global_exact_tail_count": 180,
     "coverage_residualized_maxT": 0.5406877076855864,
-    "coverage_residualized_global_exact_p": 0.4114583333333333
+    "coverage_residualized_global_exact_p": 0.4114583333333333,
+    "null_maxT": {
+      "mean": 0.6064355772418568,
+      "q95": 0.6895903819596103,
+      "max": 0.7253757611966641
+    }
   },
+  "raw_result_sha256": {
+    "primary_n123": "6a82bdc71164828559d627077072a419752e24208ace1fe40cbedaa0248efa94",
+    "secondary_n12": "fab34687c7423941d196ae96a721c7b03d6190e726d17812ef443578e544dfed"
+  },
+  "post_recording_correction": "The previous RESULT_A_RECORD copied the n=1,2 null-summary mean/q95/max into the primary null-summary field. Observed RV values, p-values, tail counts, gate and classification were unaffected. This record now preserves the first successful primary and sensitivity null summaries separately.",
   "interpretation": "Within the frozen Quire 19 pharmaceutical blocks, leaf-composition, leaf-arrangement, and leaf-margin distributions did not predict the immediately following body-paragraph character-ngram structure beyond within-folio permutations. The null persists in the frozen n=1,2 sensitivity and becomes weaker after coverage residualization. This rejects this leaf-morphology-to-local-body-surface detector, not all semantic relation between illustrations and running text."
 }
