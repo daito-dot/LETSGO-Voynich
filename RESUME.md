@@ -6,9 +6,9 @@ Do not reconstruct the project from old chat when GitHub contains a newer state.
 
 ## First sentence a future agent should be able to say
 
-> We are currently studying how one **space-delimited Voynich token** is internally assembled under a frozen 12-slot representation. We already know occupancy is strongly constrained. The unresolved question is whether the part of those constraints that cannot be explained by simple line-local slot prevalence is shared across the manuscript.
+> We are studying how one **space-delimited Voynich token** is internally assembled under a frozen 12-slot representation, not whole-sentence grammar. #58C established that strong slot-to-slot construction rules remain after controlling for simple line-local slot prevalence, with a shared residual core plus measurable manuscript-stratum modulation. The next question is whether that result survives an independent transcription/reading without retuning.
 
-This is not sentence-level grammar, and visible spaces are not assumed to be proven linguistic word boundaries.
+Visible spaces are not assumed to be proven linguistic word boundaries.
 
 ## Read in this order
 
@@ -19,26 +19,23 @@ This is not sentence-level grammar, and visible spaces are not assumed to be pro
 5. `ROADMAP.md`
 6. `research/NEXT_RESEARCH_FRONTIER.md`
 7. `research/hypothesis-ledger.md`
-8. `research/HYPOTHESIS_LEDGER_ADDENDUM_20260831.md`
-9. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE55.md`
-10. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE58.md`
-11. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE62.md`
+8. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE55.md`
+9. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE58.md`
+10. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE62.md`
+11. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE64.md`
 12. `experiments/slot35-dependency/REPORT_B.md`
-13. `experiments/occupancy-graph/PLAN_A.md`
-14. `experiments/occupancy-graph/REPORT_A.md`
-15. `experiments/occupancy-graph/first-reveal/PROVENANCE.md`
-16. `experiments/occupancy-graph-stability/SOURCE_AUDIT_PLAN.md`
-17. `experiments/occupancy-graph-stability/source-audit/SOURCE_AUDIT_REPORT.md`
-18. `experiments/occupancy-graph-stability/PLAN_A.md`
-19. `experiments/occupancy-graph-stability/REPORT_A.md`
-20. `experiments/occupancy-graph-stability/first-reveal/PROVENANCE.md`
-21. exact executable/source files before changing any numerical interpretation.
+13. `experiments/occupancy-graph/REPORT_A.md`
+14. `experiments/occupancy-graph-stability/REPORT_A.md`
+15. `experiments/occupancy-graph-residual/PLAN_A.md`
+16. `experiments/occupancy-graph-residual/REPORT_A.md`
+17. `experiments/occupancy-graph-residual/first-reveal/PROVENANCE.md`
+18. exact source/executable files before changing any numerical interpretation.
 
 ## Authority hierarchy
 
 1. phase/issue-specific frozen plan, first-reveal artifact and report control exact historical method and numerical result;
 2. `research/STATUS.md` controls current accepted interpretation;
-3. `research/TOKEN_CONSTRUCTION_PROGRAM.md` controls the purpose/object of the current token-construction lane;
+3. `research/TOKEN_CONSTRUCTION_PROGRAM.md` controls the purpose/object of the token-construction lane;
 4. hypothesis ledgers control hypothesis status/history;
 5. reproducibility audits control exact-replay claims;
 6. `ROADMAP.md` and `research/NEXT_RESEARCH_FRONTIER.md` control current sequencing;
@@ -48,96 +45,104 @@ This is not sentence-level grammar, and visible spaces are not assumed to be pro
 
 The manuscript is not deciphered.
 
-A1/A1-R1 remains the leading tested mechanism for short-range near-family recurrence geometry, but Phase69/70 showed that comparable recurrence can coexist with exactly recoverable meaningful plaintext. Recurrence is therefore a surface constraint, not evidence of semantic absence.
+A1/A1-R1 remains the leading tested mechanism for short-range near-family recurrence geometry. Phase69/70 showed that comparable recurrence can coexist with exactly recoverable meaningful plaintext, so recurrence is a surface constraint rather than evidence of semantic absence.
 
-The signed paragraph-entry effect S1 remains harder to reproduce. Phase71's tested Alberti initial-signal/reset mechanism failed in the opposite S1 direction.
+S1 paragraph-entry specialization remains a harder discriminator. Phase71's tested Alberti initial-signal/reset mechanism failed in the opposite S1 direction.
 
-The bounded direct-music program in Issue #26 is closed with no supported tested direct-musical interpretation. Residual structure is retained only after removing musical meaning.
+The bounded direct-music program in Issue #26 is closed with no supported tested direct-musical interpretation.
 
 ## Token-construction history
 
 ### #55
 
-#55A found slot3×slot5 dependence. #55B showed it reduces almost entirely to binary occupancy exclusion.
-
-Frozen classification:
+#55A found slot3×slot5 dependence; #55B reduced it almost entirely to binary occupancy exclusion.
 
 > `DEPENDENCE REDUCES TO BINARY OCCUPANCY EXCLUSION`
 
 ### #58A
 
-#58A audited all 66 unordered slot pairs under one selection-aware family-wise test.
-
-Key result:
-
-- 22/66 edges qualify under the frozen primary family-wise rule;
-- selected `(3,5)` ranks 22/66;
-- `(3,5)` is real but not uniquely exceptional;
-- strong positive and negative relations coexist;
-- all 66 canonical pair co-occupancies are parser-admissible.
-
-Frozen classification:
+The selection-aware complete 66-edge audit showed a broad signed occupancy network rather than a unique slot3×slot5 key.
 
 > `BROAD OCCUPANCY GRAMMAR; SLOT3xSLOT5 NOT UNIQUE`
 
-#58A first reveal is permanently archived. Raw SHA-256:
+#58A first-reveal raw SHA-256:
 
 `ae0db7dc72cb890a325ef5313a3375a43efde7c27c9bd5b3fcb0632fb808e152`
 
 ### #58B / Issue #62
 
-#58B asked whether the complete signed graph is stable across source-grounded Currier/section/line-position strata.
-
-Scientific first reveal ran at exact branch head:
-
-`ebc794567574e20eac82df6a856d5ea4dd72b9cb`
-
-Actions run: `33437742982`.
-
-Raw result SHA-256:
-
-`45024fd1d15b2d2484ffc26657ccc8007fd6a04dc3ed1b53b243f77ba455f8a0`
-
-Observed graph correlations were numerically high and strata were internally reliable, but the frozen line-local occupancy null itself generated extremely high complete-graph correlations (median maxT approximately `0.949`). None of the seven planned similarities was family-wise exceptional at `p_maxT <= .01`. No contrast met practical difference/mixture gates either.
-
-Frozen classifications:
+Raw graph stability across Currier/section/line-position was inconclusive because the line-local marginal-preserving null itself produced whole-graph correlations near `0.95`.
 
 > `CURRIER/SECTION GRAPH STABILITY INCONCLUSIVE`
 
 > `LINE-POSITION GRAPH STABILITY INCONCLUSIVE`
 
+#58B first-reveal raw SHA-256:
+
+`45024fd1d15b2d2484ffc26657ccc8007fd6a04dc3ed1b53b243f77ba455f8a0`
+
+### #58C / Issue #64
+
+#58C prospectively removed the #58B ambiguity by calibrating each of all 66 conditional edges against its own line-local null baseline. It used 1,000 reference nulls to define residuals and an independent 1,000 test nulls for validation.
+
+Frozen overall classification:
+
+> **`RESIDUAL GRAPH EXISTS WITH STRATUM MODULATION`**
+
+Primary result:
+
+- `E_ALL = 3.2315507868`;
+- test-null median `0.9900432214`;
+- test-null maximum `1.2831839812`;
+- `p_exist_ALL = 1/1001`;
+- `W_ALL = 0.9447148364`.
+
+All seven planned strata passed family-wise residual existence (`p_E,maxT = 1/1001`). All seven planned cross-stratum residual similarities exceeded the entire independent test-null maxT ensemble (`p_R,maxT = 1/1001`).
+
+Frozen family classes:
+
+> `REGISTER/SECTION RESIDUAL MODULATION`
+
+> `LINE-POSITION RESIDUAL MODULATION`
+
+Stable: the three Currier-B section comparisons and interior-vs-final position.
+
+Related but modulated: Currier A-vs-B within Herbal, initial-vs-interior, initial-vs-final.
+
+No planned contrast met the `DIFFERENT_RESIDUAL_OR_MIXTURE` gate.
+
 Correct interpretation:
 
-- do **not** claim a shared deep manuscript-wide graph;
-- do **not** claim Currier/section/position-specific grammars from this result;
-- retain strong token-internal occupancy structure;
-- recognize that raw graph resemblance is dominated in part by lower-order line-local slot prevalence / occupancy architecture.
+> **A broad non-trivial token-internal construction system survives lower-order line-local occupancy controls. A large residual core is shared across tested manuscript strata, but exact invariance is not supported.**
+
+#58C first-reveal raw SHA-256:
+
+`fba60daea6e30682065900a4cf15d53d2a2f536d933b588fae447fb43bb4728d`
 
 ## Current frontier
 
 When asked simply to continue:
 
-1. verify current `main`, open PRs and active branch state;
-2. ensure #58B first-reveal archive/report and purpose documentation are integrated before new target science;
-3. do not rerun the same raw graph-correlation question with a different threshold;
-4. create a new plan-first residual-graph phase;
-5. retain all 66 edges — do not select #58A/#58B leaders;
-6. freeze a residual representation that removes/null-centers line-local prevalence effects;
-7. use **separate reference-null and test-null ensembles** so residual definition and validation are independent;
-8. require a graph-level **residual-existence gate** before interpreting cross-stratum residual similarity;
-9. if residual exists, test transfer across the already source-grounded Currier/section/position contrasts with prospective multiplicity control;
-10. keep parser `min` primary / `max` non-promoting unless a new plan prospectively justifies otherwise;
-11. only after a stable residual graph exists consider representation/transcription invariance and then a prospectively constrained reversible/inverse transform family.
+1. verify current `main`, open PRs/issues and active branch state;
+2. ensure #58C report, exact first-reveal archive and accepted-state documents are integrated before new target science;
+3. do **not** rerun residual existence on ZL3b — that question is answered under the frozen representation;
+4. audit a materially independent Voynich transcription/reading suitable for replication;
+5. freeze source provenance, physical-leaf overlap and parser compatibility before residual target scoring;
+6. retain all 66 edges;
+7. freeze any glyph/encoding compatibility normalization without inspecting independent residual scores;
+8. separately test independent residual existence, cross-reading complete-graph agreement, and shared-core/modulation geometry;
+9. do not tune the independent mapping to increase agreement with #58C;
+10. only if independent-reading replication succeeds use the replicated residual constraints prospectively to restrict reversible generative/inverse models.
 
 ## Scientific purpose of that frontier
 
-The point is not to accumulate another graph statistic.
+#58C has established a strong structural constraint under one transcription/representation. The next decision is whether the constraint belongs to the manuscript rather than to the representation.
 
-The decision needed for later decipherment work is:
+If it replicates independently, the token-construction core becomes a credible prospective rejection criterion for decipherment/generative models.
 
-> **Are space-delimited Voynich tokens generated by one non-trivial internal construction system across the manuscript, or must a later inverse model account for multiple/hierarchical generators?**
+If residual existence replicates but topology changes, retain only the representation-invariant coarser constraint.
 
-If no residual interaction graph survives after lower-order occupancy architecture is removed, stop treating the raw #58A graph as a deep grammar candidate.
+If residual existence itself fails independently, downgrade #58C to a ZL3b/parser-dependent result.
 
 ## Stop rules
 
@@ -145,14 +150,14 @@ Do not:
 
 - assume visible spaces are proven word boundaries;
 - drift from token-internal construction into sentence syntax without a new explicit program;
-- tune a failed model after seeing its frozen result and call it the same hypothesis;
-- use a residual to inherit the meaning of the hypothesis that exposed it;
-- select individual #58A/#58B high-scoring edges as fresh confirmatory targets without a selection-aware new plan;
-- use the same null realizations to both estimate residual normalization and claim validation if an independent split is feasible;
-- interpret residual cross-stratum correlation if residual existence itself fails;
+- reinterpret #58C as semantic or plaintext evidence;
+- claim exact universal grammar when modulation was frozen-supported;
+- select individual saturated #58C edges as fresh confirmatory targets;
+- tune independent-transcription glyph normalization/slot mapping after seeing graph agreement;
+- use ZL3b edge ranks to choose a replication subset;
 - infer semantic slot meanings or a cipher table from occupancy structure;
 - describe structural fit as decipherment;
-- merge old diverged research branches wholesale into current main when selective provenance-preserving integration is possible.
+- merge diverged historical research branches wholesale when provenance-preserving selective integration is possible.
 
 ## Parallel lane
 
