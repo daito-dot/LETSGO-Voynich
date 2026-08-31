@@ -1,0 +1,98 @@
+name: Issue26E14 Kircher 6x4 probe
+
+on:
+  push:
+    branches: [issue26-music-e14-kircher-6x4-probe]
+    paths:
+      - 'experiments/issue26-music/PLAN_E14.md'
+      - 'experiments/issue26-music/PLAN_E14_AMENDMENT.md'
+      - 'experiments/issue26-music/phaseE14_kircher_6x4_probe.py'
+      - '.github/workflows/issue26e14-kircher-6x4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e14-kircher-6x4-probe
+          fetch-depth: 0
+      - name: Verify plans predate executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E14.md | tail -1)
+          AMEND=$(git log --format=%H -- experiments/issue26-music/PLAN_E14_AMENDMENT.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE14_kircher_6x4_probe.py | tail -1)
+          echo plan=$PLAN amend=$AMEND script=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          test "$AMEND" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$AMEND" "$SCRIPT"
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+      - name: Checkout frozen CREMMA comparator
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+      - name: Verify exact external inputs
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+      - name: Install frozen numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+      - name: Run E14 reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE14_kircher_6x4_probe.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma > issue26e14_results.json
+      - name: Print E14 summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e14_results.json'))
+          print('classification=',r['classification'])
+          print('anti_collapse=',r['anti_collapse'])
+          print('latin_ce=',r['latin_self_baseline']['mean_cross_entropy'])
+          print('latin_top5=',r['latin_self_baseline']['pooled_top5_char_fraction'])
+          p=r['positive_control']
+          print('positive_pass=',p['passed'],'exact=',p['exact_hidden_perm_controls'],'acc=',p['mean_weighted_accuracy'],'ce_excess=',p['mean_ce_excess'])
+          for name in ['primary_min','max_sensitivity','ordinal_reversal_sensitivity']:
+              x=r[name]
+              print('\n'+name,'ce=',x['mean_fold_cross_entropy'],'pooled=',x['pooled_cross_entropy'],'recurrence=',x['exact_key_recurrence'],'modal=',x['modal_key'],'top5=',x['pooled_top5_char_fraction'],'words6=',x['distinct_words_ge6_count'],'word_folds=',x['folds_with_words_ge6'])
+              for f in x['folds']:
+                  print(' fold',f['fold'],'slot=',f['count_slot'],'direction=',f['count_direction'],'perm=',f['instrument_perm'],'train=',f['training_cross_entropy'],'held=',f['held']['cross_entropy'],'coverage=',f['coverage']['coverage'])
+                  for s in f['held']['samples'][:3]: print('  sample',s['page'],s['text'])
+                  print('  long_words=',f['held']['distinct_words_ge6'][:10])
+          print('gates=',r['interpretation']['gates'])
+          PY
+          sha256sum issue26e14_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue26e14-kircher-6x4-${{ github.sha }}
+          path: issue26e14_results.json
+          retention-days: 90
