@@ -1,0 +1,89 @@
+name: Issue26E11E validated Leon reanalysis
+
+on:
+  push:
+    branches: [issue26-music-e11e-leon-validated-reanalysis]
+    paths:
+      - 'experiments/issue26-music/PLAN_E11E.md'
+      - 'experiments/issue26-music/phaseE11e_leon_validated_reanalysis.py'
+      - '.github/workflows/issue26e11e-leon-validated-reanalysis.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e11e-leon-validated-reanalysis
+          fetch-depth: 0
+      - name: Verify plan and solver validation predate executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E11E.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE11e_leon_validated_reanalysis.py | tail -1)
+          FREEZE=$(git log --format=%H -- experiments/issue26-music/E11D_SOLVER_FREEZE.md | tail -1)
+          VALID=$(git log --format=%H -- experiments/issue26-music/REPORT_E11D_VALIDATION.md | tail -1)
+          echo plan=$PLAN solver_freeze=$FREEZE solver_validation=$VALID script=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$FREEZE" "$SCRIPT"
+          git merge-base --is-ancestor "$VALID" "$SCRIPT"
+      - name: Acquire exact official STA1 target
+        shell: bash
+        run: |
+          curl -fsSL --retry 3 https://www.voynich.nu/data/sta/ZL3b.txt -o ZL3b-STA1.txt
+          echo '8438ba1c45f47fe1d06b5262cbcdf60ce69158a0edbd4dd802612896f3217e2a  ZL3b-STA1.txt' | sha256sum -c -
+          test "$(head -1 ZL3b-STA1.txt)" = '#=IVTFF STA1 2.0 M 5'
+      - name: Checkout frozen CREMMA comparator
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+      - name: Verify Latin commit
+        run: test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1 numba==0.61.2
+      - name: Run E11E target re-analysis
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE11e_leon_validated_reanalysis.py ZL3b-STA1.txt external/cremma > issue26e11e_results.json
+      - name: Print E11E summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e11e_results.json'))
+          p=r['pooled']
+          print('classification=',r['classification'])
+          print('population=',r['sta_population'])
+          print('latin_ce=',r['latin_self_baseline']['mean_cross_entropy'],'latin_top5=',r['latin_self_baseline']['top5_char_fraction'])
+          print('pooled_ce=',p['pooled_cross_entropy'],'pooled_top5=',p['pooled_top5_char_fraction'])
+          print('weighted_stability=',p['mean_pairwise_occurrence_weighted_key_stability'],'exact_recurrence=',p['exact_full_key_recurrence'])
+          print('words_ge6=',p['distinct_whole_token_words_ge6_count'],p['distinct_whole_token_words_ge6'][:50],'word_folds=',p['folds_with_words_ge6'])
+          print('gates=',p['gates'])
+          for f in r['folds']:
+              print('\nfold',f['fold'],'train_ce=',f['training_cross_entropy'],'held_ce=',f['held']['held_cross_entropy'],'unused=',f['unused_plaintext_letter'],'swaps=',f['accepted_swaps'],'score_diff=',f['score_discrepancy'])
+              print(' mapping=',f['mapping'])
+              print(' words6=',f['held']['distinct_words_ge6'][:20])
+              for s in f['held']['samples'][:4]: print('  sample',s['page'],s['text'])
+              for s in f['held']['tokenized_samples'][:2]: print('  tokens',s['page'],s['text'])
+          PY
+          sha256sum issue26e11e_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue26e11e-validated-reanalysis-${{ github.sha }}
+          path: issue26e11e_results.json
+          retention-days: 90
