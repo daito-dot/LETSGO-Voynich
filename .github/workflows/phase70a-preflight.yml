@@ -1,0 +1,80 @@
+name: Phase 70A semantic A1 preflight
+
+on:
+  push:
+    branches: [phase70-semantic-a1-compat]
+    paths:
+      - 'experiments/phase70/**'
+      - '.github/workflows/phase70a-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Compile and validate frozen construction without scoring
+        run: |
+          python -m py_compile experiments/phase70/phase70a_semantic_a1.py
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path('experiments/phase70').resolve()))
+          import phase70a_semantic_a1 as m
+          vp=Path('external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt').resolve()
+          nr=Path('external/naibbe').resolve()
+          cr=Path('external/cremma').resolve()
+          module=m.core.load_naibbe(nr)
+          gm=dict(module.placeholder_to_glyph); m.core.set_glyph_map(module, gm)
+          cat,inv,card=m.p69.build_candidate_catalog(module,gm)
+          assert len(cat)==552 and all(len(v)==1 for v in inv.values())
+          p61=m.load_json(m.PHASE61/'phase61c_results.json')
+          expected=[(0.5,0.2),(0.5,0.2),(0.5,0.3),(0.5,0.3),(0.5,0.2)]
+          got=[(float(x['selected']['entry_strength']),float(x['selected']['local_family_p'])) for x in p61['folds']]
+          assert got==expected, got
+          p62=m.load_json(m.core.PHASE62/'phase62c_c0_a1_results.json')
+          p63=m.load_json(m.core.PHASE63/'phase63a_training_vocab_results.json')
+          ctx,_=m.core.fold_contexts(vp,p62,p63)
+          pars,_=m.a1.parse(str(vp)); folds=m.a1.physical_leaf_folds(pars)
+          assert [sorted(x) for x in folds]==[sorted(x['test_leaves']) for x in ctx]
+          train=m.a1.subset(pars,folds[0],include=False)
+          scores=m.a1.learn_shape_scores(train,sorted(inv))
+          src=m.core.b.parse_latin_manuscript(cr,'BIS193',m.core.b.PRIMARY_MANUSCRIPTS['BIS193'])
+          pair=m.encrypt_pair_for_fold(module,src[:1],'BIS193',0,0,0,cat,inv,scores,0.5,0.2)
+          d=pair['diagnostics']
+          assert d['sc0_decode_accuracy']==1.0 and d['sc1_decode_accuracy']==1.0
+          assert d['local_activation_with_opportunity']==d['selected_local_hits']
+          print({'catalog_units':len(cat),'cipher_tokens':len(inv),'fold_parameters':got,'smoke_plaintext_units':d['plaintext_units']})
+          print('NO PHASE70 STRUCTURAL SCORE COMPUTED')
+          PY
