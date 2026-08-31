@@ -2,6 +2,24 @@
 
 This document defines the methodological contract for the LETSGO-Voynich research program. It exists so that a new session can continue the work without silently changing what counts as evidence.
 
+For research purpose and prioritization, `research/RESEARCH_OBJECTIVE.md` is normative. This protocol defines how evidence is tested; it does not make falsification itself the goal.
+
+## 0. Research objective versus research method
+
+The program seeks a constrained mathematical account of Voynich structure that can progressively approach explanatory reconstruction and, where possible, decipherment.
+
+The working loop is:
+
+1. identify reproducible structure;
+2. find transformations or mechanisms that reproduce parts of it;
+3. retain the parts that survive strong controls;
+4. test whether those parts can coexist with meaningful information under constrained/reversible mappings;
+5. when a sufficiently constrained reversible family exists, formulate and test the inverse problem on unseen Voynich material.
+
+Falsifiable hypotheses, negative controls, held-out tests and model comparison are methods for keeping this search honest. They are not a target count to maximize.
+
+A failed sufficient-model gate rejects sufficiency, not automatically every component of the model. A robust partial mechanism may remain useful as a transformation primitive, comparison tool, or component of a later model.
+
 ## 1. Claim ladder
 
 Keep these levels separate:
@@ -17,6 +35,10 @@ Do not promote a claim merely because the lower-level result is statistically st
 ## 2. Falsifiability
 
 Every serious hypothesis must say what would weaken or reject it. Preserve negative results in the ledger. Do not repeatedly modify a hypothesis after failures without recording the new degrees of freedom and treating the modified version as a new/nested model.
+
+The aim is not to maximize rejections. State exactly what a failed test rejects: a complete model, a specific mechanism role, a parameterization, or a narrower prediction. Do not discard a partial mechanism merely because it is insufficient as a full explanation if its own prospective/held-out predictions remain supported.
+
+Likewise, when a second mechanism reproduces the same statistic, downgrade the statistic's power to discriminate mechanisms; do not infer that the first mechanism has therefore lost all constructive value.
 
 ## 3. Validation vocabulary
 
@@ -82,6 +104,8 @@ A deceptive-cipher hypothesis must specify bounded nuisance capacity, for exampl
 
 Failure of a semantic test is not positive evidence for deception. The bounded cipher must predict held-out observations better than simpler alternatives after complexity charge.
 
+When a cipher/surface transform is exactly reversible and reproduces supported Voynich structure, that construction should also be considered as a candidate inverse-problem family. Its value is not limited to serving as a null or competitor.
+
 ## 8. Generator hypotheses
 
 Showing that a generator *can* reproduce one or two Voynich statistics is a mechanism demonstration, not evidence that it generated the manuscript.
@@ -89,6 +113,8 @@ Showing that a generator *can* reproduce one or two Voynich statistics is a mech
 A generator should be tested against a joint fingerprint. If mechanisms are added after observing failures, compare nested versions and charge incremental complexity using predictive code length / MDL or an equivalent predeclared framework.
 
 Good code length alone is insufficient if the observed multivariate fingerprint lies outside the model's predictive distribution.
+
+Failure of a generator as a sufficient manuscript-wide model does not erase a supported component mechanism. If a generator exposes a transformation principle that transfers to a reversible meaningful-text construction, retain that principle as an active transformation candidate and test whether it helps define a constrained inverse mapping.
 
 ## 9. External controls
 
@@ -142,6 +168,6 @@ For each experiment retain:
 - result and uncertainty
 - limitations
 - resulting hypothesis-status change
-- highest-value next falsification test
+- highest-value next experiment, selected for expected progress toward the research objective; this may be a falsification/discrimination test, a constructive transformation test, an inverse/decoding test, or an external/content prediction test
 
 Phase reports control exact numerical results. `research/STATUS.md` controls the current interpretation after later evidence.
