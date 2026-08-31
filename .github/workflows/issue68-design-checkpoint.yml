@@ -1,0 +1,108 @@
+name: Issue68 checkpoint verified design
+
+on:
+  push:
+    branches: [issue68-joint-constraint-tournament]
+    paths:
+      - 'experiments/joint-constraint-tournament/PLAN_A.md'
+
+permissions:
+  contents: write
+
+jobs:
+  checkpoint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue68-joint-constraint-tournament
+          fetch-depth: 0
+
+      - name: Require verified Stage0 and plan-before-implementation state
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/joint-constraint-tournament/STAGE0_REPORT.md
+          test -f experiments/joint-constraint-tournament/stage0/STAGE0_REPLAY_VERIFIED.md
+          test -f experiments/joint-constraint-tournament/PLAN_A.md
+          python - <<'PY'
+          import json
+          r=json.load(open('experiments/joint-constraint-tournament/stage0/STAGE0_OUTCOME.json'))
+          assert r['all_checks_pass'] is True
+          assert r['new_joint_candidate_scores_computed'] is False
+          PY
+          test ! -e experiments/joint-constraint-tournament/target.py
+          test ! -e experiments/joint-constraint-tournament/tournament.py
+
+      - name: Write design checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          STAGE0=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/STAGE0_PLAN.md | tail -1)
+          AUDIT=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/authority_audit.py | tail -1)
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/PLAN_A.md | tail -1)
+          cat > experiments/joint-constraint-tournament/DESIGN_CHECKPOINT.md <<EOF
+          # Issue #68 design checkpoint — authority ready, tournament preregistered
+
+          Status: **DESIGN COMPLETE; TARGET IMPLEMENTATION NOT STARTED**.
+
+          - post-#58D base main: \`a7a0f4bf9a0b8e5b0df665761702fe8881289d15\`
+          - Stage0 plan first-add: \`${STAGE0}\`
+          - Stage0 audit executable first-add: \`${AUDIT}\`
+          - tournament PLAN_A first-add: \`${PLAN}\`
+          - checkpoint workflow run: \`${GITHUB_RUN_ID}\`
+
+          Stage0 frozen conclusion:
+
+          > **\`JOINT TOURNAMENT AUTHORITY READY\`**
+
+          No new joint candidate score has been computed.
+
+          The first tournament is now frozen around:
+
+          - B0 N0 control;
+          - B1 C0-4 reversible/control anchor;
+          - B2 published Naibbe C1-E0 decoder-role candidate;
+          - B3 A1/A1-R1 surface-generator comparator.
+
+          Hard responsibilities remain separate:
+
+          1. R1 complete-66 cross-reading residual token construction;
+          2. R2 H62 recurrence geometry;
+          3. R3 signed S1 paragraph-entry specialization;
+          4. reversibility/closure where claimed;
+          5. hard information-access / complexity ceilings.
+
+          The next allowed repository action after this checkpoint is target/preflight implementation on a new post-design branch. Target code must verify that \`PLAN_A.md\` predates the executable before any new R1 candidate graph is scored.
+          EOF
+
+      - name: Remove one-off Stage0 orchestration workflows and stale diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            .github/workflows/issue68-stage0-authority-audit.yml \
+            .github/workflows/issue68-stage0-authority-audit-v2.yml \
+            .github/workflows/issue68-stage0-authority-audit-v3.yml \
+            .github/workflows/issue68-stage0-authority-audit-v4.yml \
+            .github/workflows/issue68-stage0-authority-diagnostic.yml \
+            .github/workflows/issue68-stage0-authority-diagnostic-record.yml \
+            .github/workflows/issue68-stage0-propagate-gate.yml \
+            .github/workflows/issue68-stage0-finalize.yml \
+            .github/workflows/issue68-freeze-target-plan.yml \
+            .github/workflows/issue68-propagate-target-plan.yml \
+            .github/workflows/issue68-design-checkpoint.yml
+          rm -rf experiments/joint-constraint-tournament/stage0-diagnostic
+          rm -f \
+            experiments/joint-constraint-tournament/stage0/STAGE0_FAILURE.md \
+            experiments/joint-constraint-tournament/stage0/STAGE0_GATE_BLOCKED.md
+
+      - name: Commit clean design checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m 'Issue68: freeze verified tournament design checkpoint'
+          git push origin HEAD:issue68-joint-constraint-tournament
