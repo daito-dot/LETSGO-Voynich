@@ -1,0 +1,84 @@
+name: Issue58A 12-slot occupancy graph
+
+on:
+  push:
+    branches: [issue58-occupancy-graph]
+    paths:
+      - 'experiments/occupancy-graph/PLAN_A.md'
+      - 'experiments/occupancy-graph/phase58a_occupancy_graph.py'
+      - '.github/workflows/issue58a-occupancy-graph.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue58-occupancy-graph
+          fetch-depth: 0
+
+      - name: Verify frozen plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log -1 --format=%H -- experiments/occupancy-graph/PLAN_A.md)
+          SCRIPT=$(git log -1 --format=%H -- experiments/occupancy-graph/phase58a_occupancy_graph.py)
+          echo plan=$PLAN script=$SCRIPT
+          test "$PLAN" = "84243646f5276ed1959f41f2e4c179c7357ead87"
+          test "$SCRIPT" = "37968752114524de1ac4aa0c21489d55cbaa5239"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact input
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run Issue58A first reveal
+        shell: bash
+        run: |
+          python experiments/occupancy-graph/phase58a_occupancy_graph.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue58a_results.json
+
+      - name: Print Issue58A summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue58a_results.json'))
+          print('classification=', r['classification'])
+          print('gates=', r['gates'])
+          print('selected=', r['primary_min']['selected_edge'])
+          print('familywise_qualifying_edges=', r['primary_min']['familywise_qualifying_edges'])
+          print('top10=')
+          for x in r['primary_min']['top10_by_mean_gain']:
+              print({k:x[k] for k in ('pair','rank_by_mean_gain','mean_gain','maxT_p','phi','cooccupancy_ratio','conditional_mean_gain_k_other','conditional_maxT_p_k_other')})
+          print('parser_admissibility=', {k:r['parser_admissibility'][k] for k in ('tested_pairs','admitted_pairs','failures')})
+          print('max_selected=', r['max_sensitivity']['selected_edge'])
+          PY
+          sha256sum issue58a_results.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue58a-occupancy-graph-${{ github.sha }}
+          path: issue58a_results.json
+          retention-days: 90
