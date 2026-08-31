@@ -1,0 +1,83 @@
+name: Issue26E11D locked validation
+
+on:
+  push:
+    branches: [issue26-music-e11d-solver-validation]
+    paths:
+      - 'experiments/issue26-music/E11D_SOLVER_FREEZE.md'
+      - 'experiments/issue26-music/PLAN_E11D_VALIDATION_AMENDMENT.md'
+      - 'experiments/issue26-music/phaseE11d_locked_validation.py'
+      - '.github/workflows/issue26e11d-locked-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e11d-solver-validation
+          fetch-depth: 0
+      - name: Verify all freezes predate validation executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E11D.md | tail -1)
+          FREEZE=$(git log --format=%H -- experiments/issue26-music/E11D_SOLVER_FREEZE.md | tail -1)
+          AMEND=$(git log --format=%H -- experiments/issue26-music/PLAN_E11D_VALIDATION_AMENDMENT.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE11d_locked_validation.py | tail -1)
+          echo plan=$PLAN freeze=$FREEZE amendment=$AMEND script=$SCRIPT
+          test "$FREEZE" != "$SCRIPT"
+          test "$AMEND" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$FREEZE" "$SCRIPT"
+          git merge-base --is-ancestor "$AMEND" "$SCRIPT"
+      - name: Assert Voynich target data absent
+        shell: bash
+        run: |
+          test ! -e ZL3b-STA1.txt
+          test ! -d external/cipher-benchmark
+      - name: Checkout frozen CREMMA only
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+      - name: Verify frozen Latin input
+        run: test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1 numba==0.61.2
+      - name: Run first locked validation reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE11d_locked_validation.py external/cremma > issue26e11d_validation.json
+      - name: Print locked validation summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e11d_validation.json'))
+          print('classification=',r['classification'])
+          print('rarity_order=',r['rarity_order'])
+          print('gates=',r['gates'])
+          for v in r['validations']:
+              print('v%02d'%v['validation_index'],'unused=',v['unused_letter'],'shift=',v['run_rotation_shift'],'runs=',v['plaintext_runs'],'acc=',v['mean_weighted_accuracy'],'rec_ce=',v['mean_recovered_held_ce'],'true_ce=',v['mean_true_held_ce'],'delta=',v['mean_ce_excess'],'score_diff=',v['max_score_discrepancy'])
+              print(' fold_acc=',[x['occurrence_weighted_key_accuracy'] for x in v['folds']])
+              print(' fold_delta=',[x['ce_excess'] for x in v['folds']])
+          PY
+          sha256sum issue26e11d_validation.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue26e11d-locked-validation-${{ github.sha }}
+          path: issue26e11d_validation.json
+          retention-days: 90
