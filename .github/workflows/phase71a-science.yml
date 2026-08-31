@@ -1,0 +1,106 @@
+name: Phase 71A Alberti boundary science
+
+on:
+  push:
+    branches: [phase71-alberti-boundary]
+    paths:
+      - '.github/workflows/phase71a-science.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen scientific head
+        uses: actions/checkout@v4
+
+      - name: Checkout frozen ZL3b authority
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Checkout frozen CREMMA plaintext panel
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Verify frozen authorities and contract
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          grep -q 'FROZEN BEFORE ANY PHASE71 VOYNICH SCORE' experiments/phase71/PLAN_A.md
+          grep -q 'BEFORE ANY PHASE71 SCIENTIFIC SCORE' experiments/phase71/DECISION_A_BLIND.md
+          echo 'e3fe1580737fb67072a9e2c321421c7b735b070749ff2ab376083b65055e3083  experiments/phase71/PLAN_A.md' | sha256sum -c -
+          echo '9eca0459e868524499341159da963806f962c1c78eaf2f472dc6772fb9e23b42  experiments/phase71/phase71a_alberti_boundary.py' | sha256sum -c -
+          python -m py_compile experiments/phase71/phase71a_alberti_boundary.py
+
+      - name: First authorized Phase71 scientific reveal
+        run: |
+          python experiments/phase71/phase71a_alberti_boundary.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma \
+            > phase71a_results.json
+          python -m json.tool phase71a_results.json > /dev/null
+          sha256sum phase71a_results.json
+
+      - name: Print frozen verdict summary
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase71a_results.json'))
+          def short(arm):
+              e=arm['evaluation']
+              return {
+                  'ratios': e['candidate_ratio_of_means_to_voynich'],
+                  'H62': e['H62P1_summary'],
+              }
+          print(json.dumps({
+              'classification': x['frozen_primary_classification'],
+              'primary_decision': x['primary_4word']['decision'],
+              'primary_CONT': short(x['primary_4word']['CONT']),
+              'primary_PARA': short(x['primary_4word']['PARA']),
+              'sensitivity_decision': x['sensitivity_3word_nonrescuing']['decision'],
+              'sensitivity_CONT': short(x['sensitivity_3word_nonrescuing']['CONT']),
+              'sensitivity_PARA': short(x['sensitivity_3word_nonrescuing']['PARA']),
+          }, indent=2))
+          PY
+
+      - name: Record provenance hashes
+        run: |
+          sha256sum \
+            experiments/phase71/PLAN_A.md \
+            experiments/phase71/DECISION_A_BLIND.md \
+            experiments/phase71/phase71a_alberti_boundary.py \
+            phase71a_results.json \
+            > phase71a_sha256s.txt
+          git rev-parse HEAD > phase71a_scientific_head.txt
+          cat phase71a_sha256s.txt
+          cat phase71a_scientific_head.txt
+
+      - name: Upload first-reveal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase71a-first-reveal
+          path: |
+            phase71a_results.json
+            phase71a_sha256s.txt
+            phase71a_scientific_head.txt
+          if-no-files-found: error

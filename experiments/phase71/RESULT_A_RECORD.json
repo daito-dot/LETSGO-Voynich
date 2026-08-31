@@ -1,0 +1,100 @@
+{
+  "schema": "phase71a-result-record-v1",
+  "status": "SEALED_RESULT",
+  "hypothesis": "P71-AB1 historically grounded Alberti message-initial alignment signal/reset can generate the Voynich paragraph-entry direction when applied at paragraph boundaries",
+  "classification": "P71-AB1 BOUNDARY-SIGNAL NOT SUPPORTED",
+  "workflow": {
+    "run_id": 33388952000,
+    "job_id": 99477868519,
+    "scientific_head_sha": "edfccb25a3a4241ae72595ed411c0bc179deed5a",
+    "artifact_id": 9756744780,
+    "artifact_name": "phase71a-first-reveal",
+    "artifact_digest": "sha256:41baa98522ca5707294ad81b2e18d63d2bb6629857ece4bb396cc44ddfc49e7d",
+    "raw_result_sha256": "ac80ad575f20c769bb989a27693402855129cbc3263fb57dfd8b826b4e47f1fc"
+  },
+  "frozen_contract_hashes": {
+    "PLAN_A_sha256": "e3fe1580737fb67072a9e2c321421c7b735b070749ff2ab376083b65055e3083",
+    "DECISION_A_BLIND_sha256": "d4921996a131d5cd502a6e44246b9168f2740cc990548909aa48fc6cbe4abd28",
+    "executable_sha256": "9eca0459e868524499341159da963806f962c1c78eaf2f472dc6772fb9e23b42",
+    "preflight_output_sha256": "46e9c573ff3a59c199eb3ddb054fb7f1efef714ef107e3bf385fcd410037118d"
+  },
+  "primary_4word": {
+    "decision": {
+      "R_CONT": -0.8713341232962402,
+      "R_PARA": -0.9521490424454837,
+      "PARA_positive_S1_folds": 0,
+      "PARA_broad_gate_0.5_to_2.0": false,
+      "PARA_closer_to_target_than_CONT": false,
+      "PARA_strictly_higher_than_CONT": false,
+      "classification": "P71-AB1 BOUNDARY-SIGNAL NOT SUPPORTED"
+    },
+    "CONT": {
+      "ratios": {
+        "S1": -0.8713341232962402,
+        "S2": 0.2768454697108109,
+        "S3": 0.9105453403316998
+      },
+      "S1_fold_values": [
+        -0.7679340554723361,
+        -0.8165609853870073,
+        -0.7331546552451937,
+        -0.742503837079873,
+        -0.7562643544987591
+      ],
+      "H62": {
+        "mean_D_profile": 1.005641018617373,
+        "median_D_profile": 0.8683424098303919,
+        "mean_abs_C_short_diff": 0.12273456889088383
+      }
+    },
+    "PARA": {
+      "ratios": {
+        "S1": -0.9521490424454837,
+        "S2": 0.2910492901220639,
+        "S3": 0.8776043040319826
+      },
+      "S1_fold_values": [
+        -0.8274821546844624,
+        -0.8660564690474732,
+        -0.8255707090129895,
+        -0.8083968431621709,
+        -0.8428786858526559
+      ],
+      "H62": {
+        "mean_D_profile": 1.0101440689543988,
+        "median_D_profile": 0.8269901783386959,
+        "mean_abs_C_short_diff": 0.181443038564071
+      }
+    }
+  },
+  "sensitivity_3word_nonrescuing": {
+    "decision": {
+      "R_CONT": -1.1993507903203067,
+      "R_PARA": -1.143990948925656,
+      "PARA_positive_S1_folds": 0,
+      "PARA_broad_gate_0.5_to_2.0": false,
+      "PARA_closer_to_target_than_CONT": true,
+      "PARA_strictly_higher_than_CONT": true,
+      "descriptive_internal_classification": "P71-AB1 BOUNDARY-SIGNAL PARTIAL",
+      "can_rescue_primary": false
+    },
+    "CONT_ratios": {
+      "S1": -1.1993507903203067,
+      "S2": 0.19722862453067777,
+      "S3": 0.9367589967504484
+    },
+    "PARA_ratios": {
+      "S1": -1.143990948925656,
+      "S2": 0.12846768740424097,
+      "S3": 0.8413681525517074
+    },
+    "PARA_S1_fold_values": [
+      -0.989124690360923,
+      -1.0235668409843202,
+      -1.0052259248187343,
+      -0.9882513970778373,
+      -1.0044779286278318
+    ]
+  },
+  "interpretation": "The exact source-grounded Alberti boundary-reset construction fails in the opposite direction from Voynich on the primary S1 paragraph-entry statistic. All five PARA fold projections are negative, and adding a paragraph-initial reset/signal makes the primary 4-word S1 ratio slightly more negative than the continuous-message control (-0.952x versus -0.871x). The predeclared 3-word sensitivity moves PARA slightly toward the target relative to CONT but remains negative in all five folds and is explicitly non-rescuing. S3 is comparatively close to the Voynich scalar and H62 C-short error is modest, reinforcing that those easier formal summaries are less discriminating here. The result sharpens S1 as an unresolved mechanism constraint and rejects this exact Alberti-style paragraph-boundary control without implying that all meaningful-text ciphers, all boundary mechanisms, or Alberti historically are ruled out. Blinded Route N applies: no nearby interval, signal placement, projection, or Alberti-variant search is allowed as a rescue."
+}
