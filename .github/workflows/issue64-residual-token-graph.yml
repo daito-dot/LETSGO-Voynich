@@ -1,0 +1,158 @@
+name: Issue64 null-residual token-construction graph
+
+on:
+  push:
+    branches: [issue64-residual-token-graph]
+    paths:
+      - 'experiments/occupancy-graph-residual/PLAN_A.md'
+      - 'experiments/occupancy-graph-residual/phase58c_residual_graph.py'
+      - 'experiments/occupancy-graph-residual/preflight58c.py'
+      - '.github/workflows/issue64-residual-token-graph.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/occupancy-graph-residual/**'
+      - '.github/workflows/issue64-residual-token-graph.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Verify target plan predates executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/occupancy-graph-residual/PLAN_A.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/occupancy-graph-residual/phase58c_residual_graph.py | tail -1)
+          test -n "$PLAN"
+          test -n "$SCRIPT"
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          echo "target plan first-add: $PLAN"
+          echo "target script first-add: $SCRIPT"
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source input
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd _cipher_benchmark
+          test "$(git rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Syntax and synthetic tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            experiments/occupancy-graph-residual/phase58c_residual_graph.py \
+            experiments/occupancy-graph-residual/preflight58c.py
+          python experiments/occupancy-graph-residual/phase58c_residual_graph.py --self-test
+
+      - name: Reproduce frozen population without pair scoring
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/occupancy-graph-residual/preflight58c.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue64_preflight.json
+          cat issue64_preflight.json
+          python - <<'PY'
+          import json
+          r=json.load(open('issue64_preflight.json'))
+          assert r['scope'] == 'preflight_only_no_real_or_null_pair_graph_scoring'
+          assert r['visible_tokens'] == 32570
+          assert r['parsed_tokens'] == 25071
+          assert r['all_fold_parsed_tokens'] == [4430,4810,5516,5447,4868]
+          assert r['pair_count'] == 66
+          assert r['n_reference'] == 1000
+          assert r['n_test'] == 1000
+          assert r['reference_namespace'] != r['test_namespace']
+          PY
+
+  target-first-reveal:
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source input
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd _cipher_benchmark
+          test "$(git rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Execute frozen Issue58C target
+        shell: bash
+        env:
+          TARGET_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          python experiments/occupancy-graph-residual/phase58c_residual_graph.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue64_residual_graph_results.json
+
+      - name: Print preregistered summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue64_residual_graph_results.json'))
+          print('overall:', r['overall_classification'])
+          print('pooled existence:', r['primary_existence'])
+          print('register/section:', r['register_section_classification'])
+          print('position:', r['position_classification'])
+          print('null pooled energy:', r['test_null']['pooled_energy_summary'])
+          print('null group-energy maxT:', r['test_null']['group_energy_maxT_summary'])
+          print('null similarity maxT:', r['test_null']['contrast_similarity_maxT_summary'])
+          for name,c in r['contrasts'].items():
+              print(name, c['classification'], 'R=', c['pearson_full'], 'p=', c['p_R_maxT'])
+          PY
+
+      - name: Upload exact first-reveal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue64-residual-graph-${{ github.event.pull_request.head.sha || github.sha }}
+          path: issue64_residual_graph_results.json
+          if-no-files-found: error
+          retention-days: 90
