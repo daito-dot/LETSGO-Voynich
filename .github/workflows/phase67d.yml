@@ -1,0 +1,46 @@
+name: Phase 67D exact lexical-family image-body test
+
+on:
+  push:
+    branches:
+      - phase67-image-body-science
+    paths:
+      - 'experiments/phase67/PLAN_D.md'
+      - 'experiments/phase67/run_phase67d.py'
+      - 'experiments/phase67/BLOCK_MANIFEST_A.json'
+      - 'experiments/phase67/TEXT_TABLE_A.json'
+      - 'experiments/phase67/IMAGE_ANNOTATION_A.json'
+      - 'experiments/phase67/ROOT_ANNOTATION_B.json'
+      - '.github/workflows/phase67d.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-lexical-family-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install NumPy
+        run: python -m pip install --disable-pip-version-check numpy
+      - name: Primary closed-edit1-family test
+        run: |
+          python experiments/phase67/run_phase67d.py \
+            --mode family \
+            --out experiments/phase67/RESULT_D.json
+      - name: Frozen exact-token sensitivity
+        run: |
+          python experiments/phase67/run_phase67d.py \
+            --mode exact \
+            --out experiments/phase67/RESULT_D_EXACT.json
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase67d-results
+          path: |
+            experiments/phase67/RESULT_D.json
+            experiments/phase67/RESULT_D_EXACT.json
