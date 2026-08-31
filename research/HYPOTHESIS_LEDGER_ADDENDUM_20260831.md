@@ -151,29 +151,45 @@ Post-result tuning of LH1 history length/edit distance/local strength is prohibi
 
 ## P70-SC1 — frozen A1 formal surface is compatible with reversible meaningful plaintext
 
-Status: **FROZEN / RUN PENDING**.
+Prediction:
 
-Question:
+- use the already selected Phase61C fold-specific A1 entry strength/local probability as a surface-selection layer over fixed uniquely reversible Naibbe homophone candidate sets for meaningful Latin plaintext;
+- fit no Phase70 parameter to Phase69 or Phase70 outcomes;
+- if semantic recoverability and the A1 formal layer are constructively compatible, SC1 should improve the paired SC0 control and enter the frozen S1/S2/S3 + H62 broad regime.
 
-- use the already selected Phase61C fold-specific A1 entry strength/local probability as a surface-selection layer over the fixed uniquely reversible Naibbe homophone candidate sets for meaningful Latin plaintext;
-- no parameter is fit to Phase69 outcomes;
-- determine whether the resulting ciphertext enters the same broad held-out S1/S2/S3 + H62 regime.
+Result:
 
-This is an A1-semantic-compatibility construction, not an independent cipher challenger.
+- exact raw decode accuracy = **1.000** for both SC0 and SC1 over 864,323 plaintext units;
+- SC1-vs-SC0 paired causal check passes all four preregistered improvement directions;
+- SC1 S1 ratio = **`0.1506514389×` — FAIL**;
+- SC1 S2 ratio = **`1.4256684696×` — PASS**;
+- SC1 S3 ratio = **`0.5977513661×` — PASS**;
+- SC1 H62 mean D = **`0.7598964665`**;
+- SC1 H62 mean C-short error = **`0.2239155861`**;
+- H62 viability vs N0/C0 passes with **5/5 wins against both on both diagnostics**;
+- SC1 mean H62 D is slightly lower than A1-R1 (`0.75990` vs `0.76660`) but C-short mismatch remains larger (`0.22392` vs `0.11769`);
+- raw-token sensitivity gives the same outcome: S2/S3/H62 pass while S1 remains only `0.15651×`.
 
-Falsification:
+Status: **P70-SC1 PARTIAL COMPATIBILITY**.
 
-- exact reversibility fails;
-- or SC1 does not causally improve paired semantic SC0 in the preregistered entry/local/H62 directions;
-- or full broad regime gate fails.
+Supported narrow claim:
 
-Allowed positive claim only:
+> The frozen A1 local/line-position formal layer is constructively compatible with exactly recoverable meaningful plaintext to a substantial degree: the composite reproduces the tested locality regime and passes H62 against N0/C0 without sacrificing reversibility.
 
-> the strongest currently supported formal layer can coexist constructively with recoverable meaningful plaintext.
+Controlling failure:
 
-Not allowed:
+> The same construction does not reproduce Voynich paragraph-entry specialization. The sole primary broad-gate failure is S1, at about 15% of the Voynich target.
 
-- historical cipher identification;
-- Latin plaintext claim for Voynich;
-- glyph meaning;
+Interpretive promotion:
+
+> Local near-family recurrence is not evidence of semantic absence. Paragraph-entry specialization now carries more discriminatory weight because it remains strong in Voynich/A1 but resists transfer into the tested reversible meaningful-text composite.
+
+Not established:
+
+- historical cipher identity;
+- Latin plaintext for Voynich;
+- Naibbe or A1 as historical mechanisms;
+- glyph meanings;
 - decipherment.
+
+Blinded Route P applies. No Phase70 parameter tuning or `SC2` rescue is allowed. The next hypothesis must be orthogonal and externally/source grounded, with multiplicity and search freedom frozen before outcome inspection.
