@@ -1,0 +1,79 @@
+name: Issue55A slot3xslot5 dependency audit
+
+on:
+  push:
+    branches: [issue55-slot35-dependency-audit]
+    paths:
+      - 'experiments/slot35-dependency/PLAN_A.md'
+      - 'experiments/slot35-dependency/phase55a_slot35_dependency.py'
+      - '.github/workflows/issue55a-slot35-dependency.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue55-slot35-dependency-audit
+          fetch-depth: 0
+      - name: Verify plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/slot35-dependency/PLAN_A.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/slot35-dependency/phase55a_slot35_dependency.py | tail -1)
+          echo plan=$PLAN script=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+      - name: Verify exact input
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+      - name: Run Issue55A reveal
+        shell: bash
+        run: |
+          python experiments/slot35-dependency/phase55a_slot35_dependency.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue55a_results.json
+      - name: Print Issue55A summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue55a_results.json'))
+          print('classification=',r['classification'])
+          print('gates=',r['gates'])
+          for name in ('primary_min','max_sensitivity'):
+              x=r[name]
+              print(name,'population=',x['population'])
+              print(name,'real_mean=',x['real']['equal_weight_mean_symmetric_gain'])
+              print(name,'weighted=',x['real']['occurrence_weighted_symmetric_gain'])
+              print(name,'folds=',[(f['fold'],f['symmetric_gain'],f['gain_slot5_from_slot3'],f['gain_slot3_from_slot5']) for f in x['real']['folds']])
+              print(name,'MI=',x['descriptive']['empirical_mutual_information_bits'],'V=',x['descriptive']['cramers_v'])
+              print(name,'shuffle=',x['within_line_shuffle_null'])
+              print(name,'rotate=',x['within_line_cyclic_shift_sensitivity'])
+              print(name,'contingency=',x['descriptive']['contingency'])
+          PY
+          sha256sum issue55a_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue55a-slot35-${{ github.sha }}
+          path: issue55a_results.json
+          retention-days: 90

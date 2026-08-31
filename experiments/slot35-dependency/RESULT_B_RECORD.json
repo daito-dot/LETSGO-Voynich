@@ -1,0 +1,35 @@
+{
+  "experiment": "Issue55B slot3xslot5 occupancy-versus-subtype decomposition",
+  "classification": "DEPENDENCE REDUCES TO BINARY OCCUPANCY EXCLUSION",
+  "first_reveal": {
+    "plan_commit": "5cf723eec1df82f3d55dd02e39458afe97d4d273",
+    "executable_commit": "0849607d580889baf8469128f6f41543c43f69c4",
+    "head": "cd724664fec4145c129789478c3b4f0473f3c829",
+    "actions_run": 33394659964,
+    "job": 99496194136,
+    "artifact_id": 9758969505,
+    "artifact_zip_sha256": "0411671f38515dcd1be0c434bb2e3068ae1c4db53a0c941cb212e95702b63ba6",
+    "raw_json_sha256": "46dbd7a40b8585f97063ba60b38f0e98f4801ff6e8e7d9c882de13b6762d77d0"
+  },
+  "population": {
+    "visible_tokens": 32570,
+    "parsed_tokens": 25071,
+    "parse_coverage": 0.7697574455019957,
+    "physical_lines_with_parsed_tokens": 4082,
+    "movable_lines": 3953,
+    "movable_tokens": 24942
+  },
+  "primary": {
+    "mean_full_gain": 0.04417744543665992,
+    "mean_binary_gain": 0.044215044496825735,
+    "occupancy_fraction_of_full_gain": 1.0008510917685298,
+    "mean_residual_symmetric_gain": -0.00003747070307945633,
+    "residual_positive_folds": 2,
+    "subtype_null_p": 0.26973026973026976,
+    "residual_advantage_over_null_median": 0.00005862119411774725,
+    "parser_tested_nonempty_pairs": 24,
+    "parser_exact_pairs_admitted": 24,
+    "rare_cooccupancy_count": 3
+  },
+  "interpretation": "The Issue55A dependence is retained as a real cross-leaf morphotactic occupancy exclusion. No stable subtype-level 5x5 code remains after EMPTY/nonEMPTY occupancy is modeled."
+}

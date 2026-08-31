@@ -1,0 +1,76 @@
+name: Issue55B slot3xslot5 occupancy decomposition
+
+on:
+  push:
+    branches: [issue55-slot35-occupancy-decomposition]
+    paths:
+      - 'experiments/slot35-dependency/PLAN_B.md'
+      - 'experiments/slot35-dependency/phase55b_occupancy_decomposition.py'
+      - '.github/workflows/issue55b-slot35-occupancy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue55-slot35-occupancy-decomposition
+          fetch-depth: 0
+      - name: Verify plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/slot35-dependency/PLAN_B.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/slot35-dependency/phase55b_occupancy_decomposition.py | tail -1)
+          echo plan=$PLAN script=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+      - name: Verify exact input
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+      - name: Run Issue55B reveal
+        shell: bash
+        run: |
+          python experiments/slot35-dependency/phase55b_occupancy_decomposition.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue55b_results.json
+      - name: Print Issue55B summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue55b_results.json'))
+          print('classification=',r['classification'])
+          print('gates=',r['gates'])
+          print('parser_admissibility=',{k:r['parser_admissibility'][k] for k in ('tested_nonempty_pairs','exact_pairs_admitted','failures')})
+          for name in ('primary_min','max_sensitivity'):
+              x=r[name]; z=x['real']; n=x['subtype_null']
+              print(name,'full=',z['mean_full_gain'],'binary=',z['mean_binary_gain'],'fraction=',z['occupancy_fraction_of_full_gain'],'residual=',z['mean_residual_symmetric_gain'])
+              print(name,'residual_folds=',[(q['fold'],q['residual_symmetric_gain'],q['residual_gain_slot5'],q['residual_gain_slot3']) for q in z['residual_fold_rows']])
+              print(name,'null=',n)
+              print(name,'rare=',x['rare_cooccupancy'])
+          PY
+          sha256sum issue55b_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue55b-slot35-${{ github.sha }}
+          path: issue55b_results.json
+          retention-days: 90

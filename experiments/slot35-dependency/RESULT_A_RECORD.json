@@ -1,0 +1,20 @@
+{
+  "experiment": "Issue55A hypothesis-neutral slot3xslot5 dependency audit",
+  "classification": "CROSS-LEAF SLOT3xSLOT5 DEPENDENCE",
+  "first_reveal": {
+    "head": "2848c52b4a18a98da8275f7687735943db1a5a2a",
+    "actions_run": 33393775999,
+    "job": 99493337424,
+    "artifact_id": 9758673652,
+    "artifact_zip_sha256": "b05e1237e5bcab5c25906a7c039f680b49b56cd2b7b2bc467538019f1f42aa6f",
+    "raw_json_sha256": "a9a09260f136f2fbdee42186e7992c91a21ce2eba568aca38f57459ab8462e8c"
+  },
+  "primary": {
+    "mean_symmetric_gain_bits_per_token": 0.04417745,
+    "all_five_folds_positive": true,
+    "within_line_shuffle_p": 0.000999001,
+    "advantage_over_null_median_bits_per_token": 0.04113104,
+    "cyclic_shift_p": 0.000999001
+  },
+  "interpretation": "A cross-leaf slot3xslot5 relation exists, but this record makes no claim about Sloane 351, music, plaintext, semantics, or a 25-cell code. Issue55B controls the current interpretation."
+}
