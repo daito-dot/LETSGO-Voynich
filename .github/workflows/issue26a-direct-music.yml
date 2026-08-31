@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'experiments/issue26-music/**'
-      - '.github/workflows/phase66a-direct-music.yml'
+      - '.github/workflows/issue26a-direct-music.yml'
   workflow_dispatch:
 
 permissions:
