@@ -1,0 +1,58 @@
+name: Phase 72A DECODE source schema diagnostic
+
+on:
+  push:
+    branches: [phase72-real-historical-cipher]
+    paths:
+      - '.github/workflows/phase72a-schema-diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Glottocrisio/Decode2LOD
+          ref: 1ab5dac5da1fbb65b3b851b31e21f2257f715c6d
+          path: external/decode2lod
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check rdflib
+      - name: Inspect controlled-value encoding only
+        run: |
+          python - <<'PY'
+          from collections import Counter
+          from rdflib import Graph, Namespace, RDF
+          g=Graph(); g.parse('external/decode2lod/populated_decryptontology.ttl', format='turtle')
+          D=Namespace('https://de-crypt.org/r/')
+          def one(s,p):
+              x=list(g.objects(s,p)); return str(x[0]) if x else None
+          rows=[]
+          for s in set(g.subjects(RDF.type,D.Record)):
+              rid=one(s,D.hasID)
+              try: year=int(one(s,D.hasStartYear))
+              except Exception: year=None
+              rows.append((rid,year,one(s,D.hasRecordType),one(s,D.hasStatus),one(s,D.hasPrivateCiphertext),one(s,D.hasName)))
+          byid={r[0]:r for r in rows}
+          print('KNOWN_WEB_LABEL_ANCHORS')
+          for rid in ['4417','205','1439','4959','4435']:
+              print(rid, byid.get(rid))
+          win=[r for r in rows if r[1] is not None and 1400<=r[1]<=1600]
+          print('WINDOW_TOTAL',len(win))
+          print('WINDOW_RECORD_TYPE_CODES',Counter(r[2] for r in win).most_common())
+          print('WINDOW_PRIVATE_CODES',Counter(r[4] for r in win).most_common())
+          print('WINDOW_STATUS_CODES',Counter(r[3] for r in win).most_common())
+          print('TYPE2_WINDOW',sum(r[2]=='2' for r in win))
+          print('TYPE1_WINDOW',sum(r[2]=='1' for r in win))
+          print('TYPE2_PUBLIC_FALSE_OR_NULL',sum(r[2]=='2' and (r[4] or '').lower() not in {'true','1','yes'} for r in win))
+          print('NO PHASE72 VOYNICH SCIENTIFIC SCORE COMPUTED')
+          PY
