@@ -1,0 +1,126 @@
+{
+  "schema": "phase70a-result-record-v1",
+  "status": "SEALED_RESULT",
+  "hypothesis": "P70-SC1 frozen A1 formal surface can coexist with exactly recoverable meaningful plaintext",
+  "classification": "P70-SC1 PARTIAL COMPATIBILITY",
+  "workflow": {
+    "run_id": 33385619434,
+    "job_id": 99467454328,
+    "scientific_head_sha": "22c8969a88dd0e18d3c889cebc148fe6aecbadc5",
+    "artifact_id": 9756239580,
+    "artifact_name": "phase70a-first-reveal",
+    "artifact_digest": "sha256:dbbb5e1f027b492375d590390c23546a9ae272482b6a32c9ad4ff3da547e63da",
+    "raw_result_sha256": "03ede283ec8ad6ea0c1002b582dc98db346ec6b996ff3fdd081659c3c2695fd3"
+  },
+  "frozen_authorities": {
+    "cremma_commit": "292525969ad98380b398e6606a9c2a36d51913ae",
+    "naibbe_commit": "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2",
+    "candidate_catalog_plaintext_units": 552,
+    "candidate_cipher_tokens": 18848,
+    "realizations_per_manuscript_per_fold": 5,
+    "phase61_fold_parameters": [
+      {"entry_strength": 0.5, "local_family_p": 0.2},
+      {"entry_strength": 0.5, "local_family_p": 0.2},
+      {"entry_strength": 0.5, "local_family_p": 0.3},
+      {"entry_strength": 0.5, "local_family_p": 0.3},
+      {"entry_strength": 0.5, "local_family_p": 0.2}
+    ]
+  },
+  "reversibility_and_utilization": {
+    "plaintext_units_across_5_folds_x_4_manuscripts_x_5_realisations": 864323,
+    "entry_units": 66412,
+    "body_units": 797911,
+    "SC0_decode_accuracy": 1.0,
+    "SC1_decode_accuracy": 1.0,
+    "local_candidate_opportunities": 447398,
+    "local_activations": 191455,
+    "local_activation_with_opportunity": 107697,
+    "selected_local_hits": 107697,
+    "local_opportunity_fraction_body": 0.5607116583177824,
+    "local_activation_fraction_body": 0.2399453071833826,
+    "selected_local_hit_fraction_body": 0.13497370007431905
+  },
+  "paired_control_SC0_primary": {
+    "ratio_of_means_to_voynich": {
+      "S1": 0.011856933154747956,
+      "S2": -0.025183277032774846,
+      "S3": 0.6396486349723153
+    },
+    "H62": {
+      "mean_D_profile": 1.3428350779761038,
+      "median_D_profile": 1.349722037086296,
+      "mean_abs_C_short_diff": 0.8162645854481385
+    },
+    "H62_viable_vs_N0_C0": false,
+    "broad_regime_pass": false
+  },
+  "A1_surface_SC1_primary": {
+    "ratio_of_means_to_voynich": {
+      "S1": 0.15065143893952704,
+      "S2": 1.425668469576031,
+      "S3": 0.5977513660748449
+    },
+    "exposed_gate_0.5_to_2.0": {
+      "S1": false,
+      "S2": true,
+      "S3": true
+    },
+    "H62": {
+      "mean_D_profile": 0.7598964664666245,
+      "median_D_profile": 0.8436545313413761,
+      "mean_abs_C_short_diff": 0.22391558612277906,
+      "D_profile_fold_values": [
+        0.3989555826599983,
+        0.8436545313413761,
+        1.082405989986446,
+        0.5811174836295876,
+        0.8933487447157133
+      ],
+      "abs_C_short_diff_fold_values": [
+        0.10035285848148223,
+        0.3504958279160934,
+        0.36926371298636007,
+        0.02709113515709738,
+        0.2723743960728622
+      ]
+    },
+    "H62_viable_vs_N0_C0": true,
+    "H62_fold_wins": {
+      "vs_N0": {"D_profile": 5, "abs_C_short_diff": 5},
+      "vs_C0": {"D_profile": 5, "abs_C_short_diff": 5}
+    },
+    "H62_vs_A1_R1_reference": {
+      "A1_R1_mean_D_profile": 0.7666010579060121,
+      "A1_R1_median_D_profile": 0.8094482492784203,
+      "A1_R1_mean_abs_C_short_diff": 0.1176867910510351,
+      "SC1_lower_mean_D_profile": true,
+      "SC1_D_profile_fold_wins": 3,
+      "SC1_lower_mean_C_short_error": false,
+      "SC1_C_short_fold_wins": 2
+    },
+    "broad_regime_pass": false,
+    "sole_primary_broad_gate_failure": "S1 paragraph-entry projection is only 0.150651x of Voynich, below the frozen 0.5 lower bound; S2, S3 and all H62-vs-N0/C0 gates pass"
+  },
+  "raw_token_sensitivity_SC1": {
+    "ratio_of_means_to_voynich": {
+      "S1": 0.15651079198828693,
+      "S2": 1.5460673214832914,
+      "S3": 0.5928622359089419
+    },
+    "H62": {
+      "mean_D_profile": 0.7716255684962482,
+      "median_D_profile": 0.8612024270027974,
+      "mean_abs_C_short_diff": 0.2306574440407295
+    },
+    "H62_viable_vs_N0_C0": true,
+    "broad_regime_pass": false
+  },
+  "paired_A1_surface_causal_check": {
+    "S1_abs_ratio_error_lower": true,
+    "S2_abs_ratio_error_lower": true,
+    "mean_D_profile_lower": true,
+    "mean_abs_C_short_diff_lower": true,
+    "pass": true
+  },
+  "interpretation": "The frozen A1-style entry/local selectors causally move a fully reversible meaningful-plaintext homophonic encoding toward Voynich on every preregistered paired direction. SC1 lands inside the frozen S2 and S3 ranges and passes the complete H62 viability rule against N0/C0, with H62 mean profile distance essentially equal to and slightly lower than the A1-R1 reference. However, the paragraph-entry projection remains only about 0.151x Voynich, so the full semantic-compatibility gate fails. The supported result is therefore partial: meaningful plaintext is strongly compatible with the tested locality/line-position formal layer, but the frozen A1 entry selector does not transfer strongly enough through this fixed reversible codebook. Per the blinded route, Phase70 will not be tuned or repaired after this result. This is not a historical cipher identification, Latin plaintext claim, or decipherment."
+}
