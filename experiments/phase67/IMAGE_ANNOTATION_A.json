@@ -1,0 +1,191 @@
+{
+  "schema": "phase67a-image-annotation-v1",
+  "status": "SEALED_BEFORE_MORPHOLOGY_TEXT_ASSOCIATION",
+  "annotation_date": "2026-08-31",
+  "characters": ["leaf_composition","leaf_arrangement","leaf_margin"],
+  "rule": "Only directly visible image geometry was used. U is retained when a leaf, attachment pattern, or margin is not sufficiently visible. No taxon identification, label spelling, body-text feature, or morphology-text score was used to choose states.",
+  "blinding_note": "The annotating runtime had already handled the raw Voynich transcription while freezing paragraph boundaries, so this is not a claim of textual blinding. No Phase67 morphology-text association statistic had been computed or inspected before this file was sealed; the annotation decisions use image geometry only.",
+  "sources": {
+    "f99r": "https://www.voynich.com/folios/color/099r.jpg",
+    "f99v": "https://www.voynich.com/folios/color/099v.jpg",
+    "f100r": "https://www.voynich.com/folios/color/100r.jpg",
+    "f100v": "reused from sealed Phase66 MORPHOLOGY_TABLE_A.json / Phase65 crop manifest",
+    "f102v2": "Phase66 sealed states reused for row2/row3 where available; row1 inspected on https://www.voynich.com/folios/f102v2.jpg",
+    "f102v1": "https://voynich.nu/q19/f102v1_crd.jpg and color f102v folio scan"
+  },
+  "reuse_rule": "Where the same physical object had a sealed Phase66 aggregate state, that pre-existing state is reused verbatim rather than re-annotated. New Phase67 states are conservative single-pass image-only readings; uncertain cases are U.",
+  "records": [
+    {
+      "block_id":"f99r_b1",
+      "objects":[
+        {"object_id":"68b","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment; no leaf blade resolved."},
+        {"object_id":"69","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment; no leaf blade resolved."},
+        {"object_id":"70","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment; no leaf blade resolved."},
+        {"object_id":"71","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment; no leaf blade resolved."},
+        {"object_id":"72","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"No sufficiently resolved leaf attachment or margin."},
+        {"object_id":"73","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Rounded structures are not treated as leaves."},
+        {"object_id":"74","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment; no leaf blade resolved."},
+        {"object_id":"75","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment; no leaf blade resolved."},
+        {"object_id":"76","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment; no leaf blade resolved."},
+        {"object_id":"77","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"One painted green blade is visibly attached to the long root-like fragment; only one attachment position is interpretable and the blade edge is smooth."},
+        {"object_id":"78","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"The pale storage-like form does not expose a separately interpretable leaf blade."},
+        {"object_id":"79","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Long root-like structure; no leaf blade resolved."}
+      ]
+    },
+    {
+      "block_id":"f99r_b2",
+      "objects":[
+        {"object_id":"80b","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"81","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"82","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"83","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"84","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"85","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Split label loci belong to one root-dominant physical fragment; no leaf blade resolved."},
+        {"object_id":"86a","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"A single broad green blade is visible at the right edge of the row; one node only is interpretable and the margin is smooth."}
+      ]
+    },
+    {
+      "block_id":"f99r_b3",
+      "objects":[
+        {"object_id":"87","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root/storage-like fragment; split label loci grouped; no leaf blade resolved."},
+        {"object_id":"88","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"89","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"90","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"91","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"92","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"93","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."}
+      ]
+    },
+    {
+      "block_id":"f99r_b4",
+      "objects":[
+        {"object_id":"94b","states":{"leaf_composition":"simple","leaf_arrangement":"alternate","leaf_margin":"lobed_or_incised"},"evidence_notes":"Multiple distinct green blades occur at successive positions along one visible vine-like axis; each blade is a single deeply lobed outline."}
+      ]
+    },
+    {
+      "block_id":"f99v_b1",
+      "objects":[
+        {"object_id":"95b","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"96","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"97","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"98","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"99","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"100","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"101","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Curved root-like fragment; no leaf blade resolved."},
+        {"object_id":"102","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."}
+      ]
+    },
+    {
+      "block_id":"f99v_b2",
+      "objects":[
+        {"object_id":"103b","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"104","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"105","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Dark root-like structure; no leaf blade resolved."},
+        {"object_id":"106","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"107","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Rounded storage/root-like structure; no leaf blade resolved."},
+        {"object_id":"108","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Radiating root-like structure; no leaf blade resolved."}
+      ]
+    },
+    {
+      "block_id":"f99v_b3",
+      "objects":[
+        {"object_id":"109b","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant fragment."},
+        {"object_id":"110","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Split label loci grouped on one root/storage-like fragment; no leaf blade resolved."},
+        {"object_id":"111","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Pale root-like structure; no leaf blade resolved."},
+        {"object_id":"112","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Red root/storage-like structure; no leaf blade resolved."},
+        {"object_id":"113","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Striped cap/root-like structure is not forced into a leaf category."}
+      ]
+    },
+    {
+      "block_id":"f100r_b1",
+      "objects":[
+        {"object_id":"115","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Several separate broad blades arise together near the visible base; margins appear smooth."},
+        {"object_id":"116","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Curled geometry does not allow stable leaf-unit and attachment interpretation."},
+        {"object_id":"117","states":{"leaf_composition":"simple","leaf_arrangement":"alternate","leaf_margin":"serrate_or_dentate"},"evidence_notes":"Multiple single narrow blades attach at successive sides of a clear vertical axis; blade edges are visibly toothed."},
+        {"object_id":"118","states":{"leaf_composition":"deeply_divided_uncertain_leaflet_status","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"lobed_or_incised"},"evidence_notes":"One visible green unit is deeply divided into several lobes; leaflet attachment cannot be resolved and only one node is readable."},
+        {"object_id":"119","states":{"leaf_composition":"simple","leaf_arrangement":"alternate","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Several separate blades occur on a visible axis at alternating positions; margins are smooth."},
+        {"object_id":"120","states":{"leaf_composition":"deeply_divided_uncertain_leaflet_status","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"lobed_or_incised"},"evidence_notes":"Single visible unit has deep broad divisions; one attachment position is interpretable."},
+        {"object_id":"121","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Many narrow separate blades radiate from one basal center; blade edges appear smooth."},
+        {"object_id":"122","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"serrate_or_dentate"},"evidence_notes":"One elongated blade is clearly visible with a toothed outline; only one attachment position is usable."},
+        {"object_id":"123","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Dark tuft/root region does not resolve a stable leaf blade."},
+        {"object_id":"124","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Several broad simple blades arise together above the root region; margins appear smooth."},
+        {"object_id":"125","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"serrate_or_dentate"},"evidence_notes":"Large separate blades arise from the lower root region and show clearly toothed edges."}
+      ]
+    },
+    {
+      "block_id":"f100r_b2",
+      "objects":[
+        {"object_id":"126","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Several long simple blades rise together from the visible base; margins are smooth."},
+        {"object_id":"127","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"crenate_or_rounded_teeth"},"evidence_notes":"A rounded blade/crown with repeated rounded edge scallops is visible; node pattern is insufficient."},
+        {"object_id":"128","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"serrate_or_dentate"},"evidence_notes":"One dominant elongated blade is visible with a toothed outline; only one attachment position is clear."},
+        {"object_id":"130","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"serrate_or_dentate"},"evidence_notes":"Large separate blades arise from the root region; their outer edges are conspicuously toothed."},
+        {"object_id":"129","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"crenate_or_rounded_teeth"},"evidence_notes":"Rounded simple blades/crown arise near one base and show rounded scalloping."}
+      ]
+    },
+    {
+      "block_id":"f100v_b1",
+      "objects":[
+        {"object_id":"131","states":{"leaf_composition":"simple","leaf_arrangement":"alternate","leaf_margin":"serrate_or_dentate"},"evidence_notes":"Reused sealed Phase66 aggregate T.1."},
+        {"object_id":"132","states":{"leaf_composition":"simple","leaf_arrangement":"alternate","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Reused sealed Phase66 aggregate T.2."},
+        {"object_id":"133","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Reused sealed Phase66 aggregate T.3."},
+        {"object_id":"134","states":{"leaf_composition":"simple","leaf_arrangement":"alternate","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Reused sealed Phase66 aggregate T.4."},
+        {"object_id":"135","states":{"leaf_composition":"simple","leaf_arrangement":"opposite","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Reused sealed Phase66 aggregate M.1."},
+        {"object_id":"136","states":{"leaf_composition":"simple","leaf_arrangement":"alternate","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Reused sealed Phase66 aggregate M.2."},
+        {"object_id":"137","states":{"leaf_composition":"deeply_divided_uncertain_leaflet_status","leaf_arrangement":"alternate","leaf_margin":"lobed_or_incised"},"evidence_notes":"Reused sealed Phase66 aggregate M.3."},
+        {"object_id":"138","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"crenate_or_rounded_teeth"},"evidence_notes":"Reused sealed Phase66 aggregate M.4."},
+        {"object_id":"139","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Reused sealed Phase66 aggregate M.5."},
+        {"object_id":"140","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"lobed_or_incised"},"evidence_notes":"Reused sealed Phase66 aggregate B.1."},
+        {"object_id":"141","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"serrate_or_dentate"},"evidence_notes":"Reused sealed Phase66 aggregate B.2."},
+        {"object_id":"142","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"serrate_or_dentate"},"evidence_notes":"Reused sealed Phase66 aggregate B.3."},
+        {"object_id":"143","states":{"leaf_composition":"deeply_divided_uncertain_leaflet_status","leaf_arrangement":"basal_or_rosette","leaf_margin":"lobed_or_incised"},"evidence_notes":"Reused sealed Phase66 aggregate B.4."}
+      ]
+    },
+    {
+      "block_id":"f102v2_b1",
+      "objects":[
+        {"object_id":"214c","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"First-row object is not resolved into a stable leaf unit."},
+        {"object_id":"215","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"One narrow simple blade/unit is visible; only one attachment position is clear and its edge is smooth."},
+        {"object_id":"216","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"serrate_or_dentate"},"evidence_notes":"A single broad curved blade is visible with repeated pointed edge projections; node pattern is insufficient."},
+        {"object_id":"217","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"The small painted block is not treated as a leaf."},
+        {"object_id":"218","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"One dominant broad blade/unit is visible with a smooth edge; one attachment position only."},
+        {"object_id":"219","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"lobed_or_incised"},"evidence_notes":"One broad blade-like unit shows deep edge lobes; node pattern is insufficient."},
+        {"object_id":"220","states":{"leaf_composition":"deeply_divided_uncertain_leaflet_status","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"lobed_or_incised"},"evidence_notes":"The far-right first-row unit is deeply divided into multiple rounded lobes; leaflet attachment is not resolvable."},
+        {"object_id":"221","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Reused sealed Phase66 aggregate L2.1."},
+        {"object_id":"222","states":{"leaf_composition":"deeply_divided_uncertain_leaflet_status","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"lobed_or_incised"},"evidence_notes":"Reused sealed Phase66 aggregate L2.2."},
+        {"object_id":"223","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Reused sealed Phase66 aggregate L2.3."},
+        {"object_id":"224","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Reused sealed Phase66 aggregate L2.4."},
+        {"object_id":"225","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"crenate_or_rounded_teeth"},"evidence_notes":"Reused sealed Phase66 aggregate L2.5."},
+        {"object_id":"226","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"lobed_or_incised"},"evidence_notes":"Reused sealed Phase66 aggregate L2.6."},
+        {"object_id":"227","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Previously outside the sealed Phase66 crop-confidence set and not resolved conservatively from the current whole-page view."}
+      ]
+    },
+    {
+      "block_id":"f102v2_b2",
+      "objects":[
+        {"object_id":"229","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Reused sealed Phase66 aggregate L3.1."},
+        {"object_id":"230","states":{"leaf_composition":"deeply_divided_uncertain_leaflet_status","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"lobed_or_incised"},"evidence_notes":"Reused sealed Phase66 aggregate L3.2."},
+        {"object_id":"231","states":{"leaf_composition":"U","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"U"},"evidence_notes":"Reused sealed Phase66 aggregate L3.3."},
+        {"object_id":"232","states":{"leaf_composition":"simple","leaf_arrangement":"opposite","leaf_margin":"crenate_or_rounded_teeth"},"evidence_notes":"Reused sealed Phase66 aggregate L3.4."},
+        {"object_id":"233","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Reused sealed Phase66 aggregate L3.5."}
+      ]
+    },
+    {
+      "block_id":"f102v1_b1",
+      "objects":[
+        {"object_id":"234","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Root-dominant left fragment; no stable leaf blade resolved."},
+        {"object_id":"235","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Pigment/root mass obscures stable leaf-unit interpretation."},
+        {"object_id":"236","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"U"},"evidence_notes":"Several narrow green blades visibly arise together above a root region; fine margins are not reliably resolved."},
+        {"object_id":"237","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"A broad simple blade/unit is visible above the roots; only one attachment zone is interpretable and the edge is smooth."},
+        {"object_id":"238","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence_notes":"Rightmost top fragment is root-dominant with no stable blade interpretation."}
+      ]
+    },
+    {
+      "block_id":"f102v1_b2",
+      "objects":[
+        {"object_id":"239b","states":{"leaf_composition":"simple","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"One broad green blade is clearly visible; only one attachment position is interpretable and the margin is smooth."},
+        {"object_id":"240","states":{"leaf_composition":"deeply_divided_uncertain_leaflet_status","leaf_arrangement":"single_or_insufficient_nodes","leaf_margin":"lobed_or_incised"},"evidence_notes":"Green distal unit is divided into several deep hanging divisions; leaflet boundaries are not secure, so the uncertain divided state is used."},
+        {"object_id":"241","states":{"leaf_composition":"simple","leaf_arrangement":"basal_or_rosette","leaf_margin":"entire_or_nearly_entire"},"evidence_notes":"Several narrow green blades arise together from the root/storage region and have smooth edges."}
+      ]
+    }
+  ]
+}
