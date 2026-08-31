@@ -1,0 +1,40 @@
+name: Phase66B synthetic-only preflight
+
+on:
+  push:
+    branches: [phase66-attribute-label-preregister]
+    paths:
+      - experiments/phase66/phase66b_science.py
+      - .github/workflows/phase66b-synthetic-preflight.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install frozen runtime dependencies
+        run: |
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+      - name: Run synthetic-only gate
+        run: |
+          mkdir -p phase66b-synthetic-artifact
+          python experiments/phase66/phase66b_science.py \
+            --mode synthetic \
+            --out phase66b-synthetic-artifact/SYNTHETIC_PREFLIGHT_66B.generated.json
+          sha256sum experiments/phase66/phase66b_science.py > phase66b-synthetic-artifact/executable.sha256
+          sha256sum phase66b-synthetic-artifact/SYNTHETIC_PREFLIGHT_66B.generated.json > phase66b-synthetic-artifact/result.sha256
+          python -m pip freeze | sort > phase66b-synthetic-artifact/pip-freeze.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase66b-synthetic-preflight-${{ github.sha }}
+          path: phase66b-synthetic-artifact/
+          if-no-files-found: error
+          retention-days: 90
