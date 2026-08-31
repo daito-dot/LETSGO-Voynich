@@ -1,0 +1,81 @@
+name: Issue26E3 structured-null specificity challenge
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/issue26-music/PLAN_E3.md'
+      - 'experiments/issue26-music/E3_STRUCTURED_NULLS.json'
+      - 'experiments/issue26-music/E3_EXACT_PAIR_ALTERNATIVES.json'
+      - 'experiments/issue26-music/phaseE3_structured_null.py'
+      - '.github/workflows/issue26e3-structured-null.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout E3 branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Verify plan and catalogs predate scorer
+        shell: bash
+        run: |
+          PLAN=$(git log -1 --format=%H -- experiments/issue26-music/PLAN_E3.md)
+          STRUCT=$(git log --format=%H -- experiments/issue26-music/E3_STRUCTURED_NULLS.json | tail -1)
+          EXACT=$(git log --format=%H -- experiments/issue26-music/E3_EXACT_PAIR_ALTERNATIVES.json | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE3_structured_null.py | tail -1)
+          echo plan_last=$PLAN structured_first=$STRUCT exact_first=$EXACT script_first=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          test "$STRUCT" != "$SCRIPT"
+          test "$EXACT" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$STRUCT" "$SCRIPT"
+          git merge-base --is-ancestor "$EXACT" "$SCRIPT"
+          echo '3ded6745d58701d1a1c38a38f268c57396afffbbbf0a681ec9b16bb09f1e47bd  experiments/issue26-music/E3_STRUCTURED_NULLS.json' | sha256sum -c -
+          echo '652e23fa08701a87e0aaab961f4a267f2389ccc19769eb31ed05e651c2bedfaf  experiments/issue26-music/E3_EXACT_PAIR_ALTERNATIVES.json' | sha256sum -c -
+
+      - name: Acquire frozen IT2a independent transcription
+        shell: bash
+        run: |
+          curl -fsSL --retry 3 https://www.voynich.nu/data/IT2a-n.txt -o IT2a-n.txt
+          echo '7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  IT2a-n.txt' | sha256sum -c -
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run E3 first reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE3_structured_null.py IT2a-n.txt > issue26e3_results.json
+
+      - name: Print verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e3_results.json'))
+          print('classification=',r['frozen_classification'])
+          print('e2c_replay=',r['e2c_replay'])
+          print('E3A=',r['E3A_exact_pair_tournament'])
+          print('E3B=',r['E3B_structured_null'])
+          print('folds=',[(x['fold'],x['guidonian_accuracy'],x['structured_null_median'],x['structured_p_fold']) for x in r['folds']])
+          print('hashes=',r['inputs'])
+          PY
+          sha256sum issue26e3_results.json
+
+      - name: Upload E3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e3-first-reveal
+          path: issue26e3_results.json
+          if-no-files-found: error
+          retention-days: 90
