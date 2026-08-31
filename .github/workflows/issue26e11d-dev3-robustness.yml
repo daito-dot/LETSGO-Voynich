@@ -1,0 +1,78 @@
+name: Issue26E11D DEV3 robustness battery
+
+on:
+  push:
+    branches: [issue26-music-e11d-solver-validation]
+    paths:
+      - 'experiments/issue26-music/PLAN_E11D_DEV3.md'
+      - 'experiments/issue26-music/phaseE11d_dev3_robustness.py'
+      - '.github/workflows/issue26e11d-dev3-robustness.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  development:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e11d-solver-validation
+          fetch-depth: 0
+      - name: Verify DEV3 plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E11D_DEV3.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE11d_dev3_robustness.py | tail -1)
+          echo plan=$PLAN script=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+      - name: Assert Voynich target data absent
+        shell: bash
+        run: |
+          test ! -e ZL3b-STA1.txt
+          test ! -d external/cipher-benchmark
+      - name: Checkout frozen CREMMA only
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+      - name: Verify frozen Latin input
+        run: test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1 numba==0.61.2
+      - name: Run DEV3 development battery
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE11d_dev3_robustness.py external/cremma > issue26e11d_dev3.json
+      - name: Print DEV3 summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e11d_dev3.json'))
+          print('preferred=',r['aggregate']['preferred_robust_candidate'])
+          for name,x in r['aggregate'].items():
+              if isinstance(x,dict):
+                  print(name,'robust=',x['development_robust'],'mean_acc=',x['mean_weighted_accuracy'],'worst_acc=',x['worst_weighted_accuracy'],'ge95=',x['cases_weighted_ge_0_95'],'mean_ce_excess=',x['mean_ce_excess'],'worst_ce_excess=',x['worst_ce_excess'],'exact=',x['exact_keys'],'score_diff=',x['max_score_discrepancy'])
+          for c in r['cases']:
+              print('\nomitted=',c['omitted'],'true_ce=',c['true_ce'])
+              for x in c['candidates']:
+                  print(' ',x['candidate'],'ce=',x['direct_ce'],'excess=',x['ce_excess'],'exact=',x['exact_key_accuracy'],'weighted=',x['occurrence_weighted_key_accuracy'])
+          PY
+          sha256sum issue26e11d_dev3.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue26e11d-dev3-${{ github.sha }}
+          path: issue26e11d_dev3.json
+          retention-days: 90
