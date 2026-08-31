@@ -1,0 +1,86 @@
+name: Issue26D public direct-music claim audit
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/issue26-music/PLAN_D.md'
+      - 'experiments/issue26-music/VENI_CREATOR_STANZA1_PITCH_GROUPS.txt'
+      - 'experiments/issue26-music/phaseD_public_music_claim.py'
+      - '.github/workflows/issue26d-public-music-claim.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Issue26D branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Verify freeze order
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_D.md | tail -1)
+          CHANT=$(git log --format=%H -- experiments/issue26-music/VENI_CREATOR_STANZA1_PITCH_GROUPS.txt | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseD_public_music_claim.py | tail -1)
+          echo plan=$PLAN chant=$CHANT script=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          test "$CHANT" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$CHANT" "$SCRIPT"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify ZL3b
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Run first scientific reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseD_public_music_claim.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue26d_results.json
+
+      - name: Print frozen verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26d_results.json'))
+          print('classification=', r['frozen_classification'])
+          print('passed_components=', r['passed_components'])
+          print('D1=', r['D1_tetrachord_presence_claim'])
+          print('D2=', r['D2_ain_daiin_opposition'])
+          print('D3=', r['D3_word_for_word_respond'])
+          d4=r['D4_veni_creator_mapping']
+          print('D4_summary=', {k:d4[k] for k in ['mapping_coverage','published_dtw_interval_distance','published_mapping_rank','p_map','eligible_three_paragraph_windows','target_window_rank','p_window','pass']})
+          print('hashes=', r['inputs'])
+          PY
+          sha256sum issue26d_results.json
+
+      - name: Upload first-reveal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26d-first-reveal
+          path: issue26d_results.json
+          if-no-files-found: error
+          retention-days: 90

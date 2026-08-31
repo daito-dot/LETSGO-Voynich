@@ -1,0 +1,36 @@
+# Source: GregoBase score id 14258, Veni Creator Spiritus, Solesmes 1983 / Liber Hymnarius p.90
+# GABC source retrieved 2026-08-31. This file retains only first-stanza pitch groups, in syllabic order.
+# Clef: c3
+
+e
+f
+ed
+e
+fe
+h
+i
+h
+h
+e
+f
+h
+ih
+i
+j
+i
+h
+ij
+hg
+fe
+hi
+e
+f
+h
+gh
+f
+ed
+f
+fgf
+e
+de
+e
