@@ -1,0 +1,115 @@
+name: Issue66 independent-transcription source audit
+
+on:
+  push:
+    branches: [issue66-independent-transcription-residual]
+    paths:
+      - 'experiments/occupancy-graph-independent-transcription/SOURCE_AUDIT_PLAN.md'
+      - 'experiments/occupancy-graph-independent-transcription/source_audit58d.py'
+      - '.github/workflows/issue66-independent-transcription-source-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-audit-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify source-audit plan predates executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/occupancy-graph-independent-transcription/SOURCE_AUDIT_PLAN.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/occupancy-graph-independent-transcription/source_audit58d.py | tail -1)
+          test -n "$PLAN"
+          test -n "$SCRIPT"
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          echo "source-audit plan first-add: $PLAN"
+          echo "source-audit script first-add: $SCRIPT"
+
+      - name: Checkout frozen ZL3b reference source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify frozen ZL3b reference identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd _cipher_benchmark
+          test "$(git rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Retrieve current canonical independent transcriptions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _independent_sources
+          curl --fail --location --silent --show-error --retry 3 \
+            https://www.voynich.nu/data/IT2a-n.txt \
+            -o _independent_sources/IT2a-n.txt
+          curl --fail --location --silent --show-error --retry 3 \
+            https://www.voynich.nu/data/GC2a-n.txt \
+            -o _independent_sources/GC2a-n.txt
+          wc -c -l _independent_sources/IT2a-n.txt _independent_sources/GC2a-n.txt
+          sha256sum _independent_sources/IT2a-n.txt _independent_sources/GC2a-n.txt
+          head -n 3 _independent_sources/IT2a-n.txt
+          head -n 3 _independent_sources/GC2a-n.txt
+
+      - name: Install frozen parser dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Syntax check
+        run: python -m py_compile experiments/occupancy-graph-independent-transcription/source_audit58d.py
+
+      - name: Execute source and population audit only
+        shell: bash
+        run: |
+          set -euo pipefail
+          RETRIEVED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          python experiments/occupancy-graph-independent-transcription/source_audit58d.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            _independent_sources/IT2a-n.txt \
+            _independent_sources/GC2a-n.txt \
+            "$RETRIEVED_AT" \
+            > issue66_source_audit.json
+          cat issue66_source_audit.json
+
+      - name: Enforce Stage-A firewall and print authorization summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('issue66_source_audit.json'))
+          assert r['scope'] == 'source_identity_population_parser_compatibility_only_no_pair_or_residual_scoring'
+          assert r['scientific_pair_or_residual_metrics_computed'] is False
+          assert r['IT2a']['authorization_gates']['scientific_pair_or_residual_metrics_computed'] is False
+          print('IT2a disposition:', r['IT2a']['disposition'])
+          print('IT2a exact historical bytes:', r['IT2a']['identity']['matches_phase63b_exact_bytes'])
+          print('IT2a shared leaves:', r['IT2a']['shared_universe']['shared_physical_leaves'])
+          print('IT2a shared coverage:', r['IT2a']['shared_universe']['slot_parser_coverage_on_shared_leaves'])
+          print('IT2a fold accepted:', r['IT2a']['shared_universe']['fold_accepted_tokens'])
+          print('IT2a accepted groups:', r['IT2a']['metadata']['accepted_token_support_by_group'])
+          print('IT2a accepted positions:', r['IT2a']['token_position']['accepted'])
+          print('GC2a exact historical bytes:', r['GC2a']['identity']['matches_phase63b_exact_bytes'])
+          PY
+
+      - name: Upload exact source-audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue66-source-audit-${{ github.sha }}
+          path: issue66_source_audit.json
+          if-no-files-found: error
+          retention-days: 90
