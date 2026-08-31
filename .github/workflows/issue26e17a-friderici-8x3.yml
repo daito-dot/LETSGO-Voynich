@@ -1,0 +1,100 @@
+name: Issue26E17A Friderici 8x3 plaintext probe
+
+on:
+  push:
+    branches: [issue26-music-e17-friderici-8x3-grid]
+    paths:
+      - 'experiments/issue26-music/PLAN_E17A.md'
+      - 'experiments/issue26-music/phaseE17a_friderici_8x3.py'
+      - '.github/workflows/issue26e17a-friderici-8x3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e17-friderici-8x3-grid
+          fetch-depth: 0
+      - name: Verify plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E17A.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE17a_friderici_8x3.py | tail -1)
+          echo plan=$PLAN script=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+      - name: Checkout frozen CREMMA comparator
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+      - name: Verify exact external inputs
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+      - name: Run E17A reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE17a_friderici_8x3.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma > issue26e17a_results.json
+      - name: Print E17A summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e17a_results.json'))
+          print('classification=',r['classification'])
+          pc=r['positive_control']
+          print('positive_control=',{k:pc[k] for k in ('passed','exact_key_folds','total_folds','min_decoded_accuracy','max_ce_abs_diff','max_accepted_move_verify_diff')})
+          print('latin_ce=',r['latin_self_baseline']['mean_cross_entropy'])
+          print('latin_top5=',r['latin_self_baseline']['pooled_top5_char_fraction'])
+          if 'primary_min' in r:
+              p=r['primary_min']; d=p['diagnostics']
+              print('population=',p['population'])
+              print('recurrence=',p['exact_key_recurrence'],'modal=',p['modal_key'])
+              print('pooled_ce=',d['cross_entropy'],'top5=',d['top5_char_fraction'])
+              print('words6=',d['distinct_words_ge6_count'],d['distinct_words_ge6'][:40])
+              print('word_folds=',d['word_folds_ge6'])
+              print('gates=',r['gates'])
+              for f in p['folds']:
+                  print('fold',f)
+              for s in d['samples'][:10]:
+                  print('sample',s['fold'],s['page'],s['text'])
+              m=r['max_sensitivity']; md=m['diagnostics']
+              print('max_recurrence=',m['exact_key_recurrence'],'max_modal=',m['modal_key'])
+              print('max_ce=',md['cross_entropy'],'max_top5=',md['top5_char_fraction'],'max_words6=',md['distinct_words_ge6_count'])
+          PY
+          sha256sum issue26e17a_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue26e17a-friderici-8x3-${{ github.sha }}
+          path: issue26e17a_results.json
+          retention-days: 90
