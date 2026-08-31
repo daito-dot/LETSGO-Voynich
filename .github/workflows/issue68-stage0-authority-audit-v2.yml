@@ -1,0 +1,184 @@
+name: Issue68 Stage0 authority replay verification
+
+on:
+  push:
+    branches: [issue68-joint-constraint-tournament]
+    paths:
+      - '.github/workflows/issue68-stage0-authority-audit-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue68-joint-constraint-tournament
+          fetch-depth: 0
+
+      - name: Verify Stage0 chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/STAGE0_PLAN.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/authority_audit.py | tail -1)
+          test -n "$PLAN" && test -n "$SCRIPT"
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          echo "STAGE0_PLAN=$PLAN" >> "$GITHUB_ENV"
+          echo "STAGE0_SCRIPT=$SCRIPT" >> "$GITHUB_ENV"
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout frozen CREMMA controls
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: _cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout pinned Naibbe publication code
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: _naibbe
+          sparse-checkout: |
+            naibbe_v2.py
+            sixteentables.csv
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact external authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cipher_benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C _cipher_benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C _cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C _naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C _naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C _naibbe hash-object sixteentables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+
+      - name: Install frozen scientific dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run repository authority audit and cross-fold checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/joint-constraint-tournament/authority_audit.py
+          python experiments/joint-constraint-tournament/authority_audit.py > /tmp/issue68_stage0_authority.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.load(open('/tmp/issue68_stage0_authority.json'))
+          assert r['new_joint_candidate_scores_computed'] is False
+          assert r['authorities']['R1_token_construction']['status'] == 'REPLAYABLE_WITH_FROZEN_WRAPPER'
+          assert r['authorities']['R2_H62']['status'] == 'REPLAY_READY'
+          assert r['authorities']['R3_S1']['status'] == 'REPLAY_READY'
+          c=json.load(open('experiments/phase62/phase62c_c0_a1_results.json'))
+          d=json.load(open('experiments/occupancy-graph-independent-transcription/first-reveal/issue66_independent_residual_results.json'))
+          folds_c=[x['test_leaves'] for x in c['folds']]
+          folds_d=d['population']['physical_leaf_folds']
+          assert folds_c == folds_d, (folds_c, folds_d)
+          assert len(set(sum(folds_c, []))) == 99
+          print('R1/R2/R3 common physical-leaf fold authority: PASS')
+          PY
+
+      - name: Audit Naibbe published reversibility boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('_naibbe/naibbe_v2.py').read_text(encoding='utf-8')
+          for x in ['UNAMBIGUOUS = True','REMOVE_SPACES = True','REMOVE_SPACES_PERCENTAGE = 3','RANDOM = True','def encrypt(','def respace(']:
+              assert x in s, x
+          assert 'def decrypt(' not in s
+          assert 'def decode(' not in s
+          print('Naibbe: pinned encryption/defaults verified; explicit published decoder absent.')
+          PY
+
+      - name: Replay Phase62C frozen scorecard
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZL=_cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          python experiments/phase62/phase62c_c0_a1.py "$ZL" _cremma > /tmp/phase62c_replay.json
+          python - <<'PY'
+          import json
+          old=json.load(open('experiments/phase62/phase62c_c0_a1_results.json'))
+          new=json.load(open('/tmp/phase62c_replay.json'))
+          assert new == old
+          print('Phase62C full semantic JSON replay: PASS')
+          PY
+
+      - name: Replay Phase62P frozen H62-P1 scorecard
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZL=_cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          python experiments/phase62/phase62p_h62p1.py "$ZL" _cremma > /tmp/phase62p_replay.json
+          python - <<'PY'
+          import json
+          old=json.load(open('experiments/phase62/phase62p_h62p1_results.json'))
+          new=json.load(open('/tmp/phase62p_replay.json'))
+          assert new == old
+          print('Phase62P full semantic JSON replay: PASS')
+          PY
+
+      - name: Record successful Stage0 replay verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/joint-constraint-tournament/stage0
+          cp /tmp/issue68_stage0_authority.json experiments/joint-constraint-tournament/stage0/authority_audit.json
+          AUTH_SHA=$(sha256sum /tmp/issue68_stage0_authority.json | awk '{print $1}')
+          cat > experiments/joint-constraint-tournament/stage0/STAGE0_REPLAY_VERIFIED.md <<EOF
+          # Issue #68 Stage 0 replay verification
+
+          Status: **VERIFIED — no new joint candidate score computed**.
+
+          - workflow run: \`${GITHUB_RUN_ID}\`
+          - Stage0 plan first-add: \`${STAGE0_PLAN}\`
+          - authority-audit executable first-add: \`${STAGE0_SCRIPT}\`
+          - machine audit JSON SHA-256: \`${AUTH_SHA}\`
+          - ZL3b authority: \`315f0cad4de3d021bd4185765c037cf2a28d341c\` / blob \`2a4533ab9bdfa85db9bad602d590978953055df1\`
+          - CREMMA authority: \`292525969ad98380b398e6606a9c2a36d51913ae\`
+          - Naibbe authority: \`f2675ec5dd275268bc64dd48ea64fc0e0e9827a2\`
+
+          Verified in this run:
+
+          1. Stage0 plan predates the audit executable.
+          2. R1 (#58C/#58D), R2 (H62), and R3 (S1) use the same 99 physical-leaf fold authority; responsibility-specific eligibility may remain inside those folds.
+          3. Current-main Phase62C replays the committed frozen semantic JSON exactly from frozen ZL3b + CREMMA.
+          4. Current-main Phase62P/H62 replays the committed frozen semantic JSON exactly from the same authorities.
+          5. The pinned Naibbe source/defaults match the frozen Phase64B source audit; the published script exposes encryption/respace but no explicit decrypt/decode function.
+          6. C0 inverse-structure audit confirms exact glyph-stream recovery for all four transforms; C0-4 destroys original token boundaries and therefore needs source-boundary side information for exact structured plaintext closure.
+          7. \`new_joint_candidate_scores_computed\` remains \`false\`.
+
+          This record authorizes final Stage0 interpretation/reporting. It does **not** authorize a tournament target until a separate \`PLAN_A.md\` freezes candidate families, access, complexity treatment and numerical outcome gates.
+          EOF
+
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experiments/joint-constraint-tournament/stage0
+          git commit -m "Record Issue68 Stage0 replay verification"
+          git push origin HEAD:issue68-joint-constraint-tournament
