@@ -1,0 +1,60 @@
+{
+  "schema": "phase69a-result-record-v1",
+  "status": "SEALED_RESULT",
+  "classification": "A1 LONG-RANGE UNDERPREDICTION — PERSISTENT STATE REQUIRED",
+  "workflow": {
+    "run_id": 33384824865,
+    "head_sha": "15a578190e31d43412346d21427f0a99620d603d",
+    "artifact_id": 9755221510,
+    "artifact_name": "phase69a-result",
+    "artifact_digest": "sha256:fa505774f2c710e4bcba700a9297dfa65fb72cad3d23c0659344972194002dc2"
+  },
+  "source": {
+    "zl3b_git_blob_sha1": "2a4533ab9bdfa85db9bad602d590978953055df1",
+    "source_commit": "31819c914061cc6b63bbf4983e33d643ede52e46"
+  },
+  "primary_edit1": {
+    "bins": ["41-80", "81-160", "161-320"],
+    "voynich_mean_E_long": -0.028924721532873545,
+    "a1_mean_E_long": -0.1183938918624054,
+    "delta_voynich_minus_a1": 0.08946917032953186,
+    "p_upper_plus_one": 0.0196078431372549,
+    "a1_predictive_q025": -0.12904022,
+    "a1_predictive_q975": -0.10773829,
+    "voynich_mean_excess_by_bin": [
+      -0.0022650157374280006,
+      -0.01465365230780008,
+      -0.012006053487645463
+    ],
+    "a1_mean_excess_by_bin": [
+      -0.02027459819934642,
+      -0.03732436663794794,
+      -0.060794927025111035
+    ],
+    "voynich_normalized_profile": [
+      -0.0783089206774243,
+      -0.5066092662693253,
+      -0.4150818130532504
+    ],
+    "a1_normalized_profile": [
+      -0.17124401343250384,
+      -0.315254138758702,
+      -0.4865018478087943
+    ],
+    "profile_l1_distance": 0.3827102550212465,
+    "target_fold_E_long": [
+      -0.021284902896575614,
+      -0.04021312926190704,
+      -0.06300002653939285,
+      0.004283833116170831,
+      -0.024408382082663056
+    ]
+  },
+  "secondary_exact_token": {
+    "voynich_mean_E_long": -0.08224986490365685,
+    "a1_mean_E_long": -0.08220048441855944,
+    "delta_voynich_minus_a1": -0.000049380485097407556,
+    "p_upper_plus_one": 0.5098039215686274
+  },
+  "interpretation": "The frozen A1 generator systematically depletes long-range non-identical edit1-family recurrence much more strongly than the real manuscript at 41-320-token distances on the same physical leaf. This is not positive clustering relative to within-leaf shuffle: both Voynich and A1 have negative excess. The model failure is that A1 over-concentrates near-family reuse locally and loses too much far-distance family return. Exact-token long-range recurrence is matched almost exactly, so the missing mechanism is family/variant persistence rather than literal token repetition."
+}
