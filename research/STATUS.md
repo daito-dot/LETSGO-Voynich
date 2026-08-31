@@ -1,6 +1,6 @@
 # Current research status
 
-Last consolidated: 2026-08-31
+Last consolidated: 2026-09-01
 
 This file controls the current accepted high-level interpretation. Phase-specific frozen plans, first-reveal results and reports remain authoritative for exact methods and numbers.
 
@@ -36,34 +36,42 @@ Accepted conclusion:
 
 This is one bounded historical mechanism failure, not a rejection of all ciphers or all boundary mechanisms.
 
-### slot3 × slot5 morphotactic exclusion — Issue #55
+### Slot-occupancy grammar — Issues #55 and #58A
 
 Issue #55 followed a residual from the failed Sloane 351 music-cipher experiment while removing all Sloane, music, Latin and plaintext assumptions.
 
-#55A found real cross-leaf predictive dependence between the native five-state slot3 and slot5 factors:
+#55A found real cross-leaf predictive dependence between the native five-state slot3 and slot5 factors. #55B then showed that essentially all of that signal reduces to the binary fact that the two slots are not occupied together:
 
-- equal-fold mean symmetric gain: **0.04417745 bits/token**;
-- all 5 held-out folds positive;
-- within-line pair-destruction p: **1/1001 ≈ 0.000999**;
-- real advantage over null median: **0.041131 bits/token**.
-
-#55B then decomposed that dependence. The result is decisive:
-
-- full five-state gain: **0.04417745**;
+- full five-state gain: **0.04417745 bits/token**;
 - binary EMPTY/nonEMPTY gain: **0.04421504**;
-- occupancy fraction: **1.00085**;
 - subtype residual: **-0.00003747 bits/token**;
 - subtype-residual null p: **0.26973**;
-- only 2/5 residual folds positive;
-- all 24 canonical nonempty slot3×slot5 combinations are syntactically admitted by the parser.
+- only 3 pooled tokens co-occupy slot3 and slot5;
+- the parser admits all canonical nonempty slot3×slot5 subtype combinations.
 
-Frozen classification:
+#55B frozen classification:
 
 > **`DEPENDENCE REDUCES TO BINARY OCCUPANCY EXCLUSION`**
 
-The surviving claim is structural: slot3 and slot5 behave as almost mutually exclusive token-construction channels across physical leaves. This is not evidence for a 25-cell code, Sloane 351, music, plaintext or semantic subtype correspondence.
+Issue #58A then audited the complete `C(12,2)=66` binary slot-occupancy graph under one frozen five-fold held-out statistic and one 1,000-null global maxT family.
 
-See `experiments/slot35-dependency/REPORT_A.md` and `REPORT_B.md`.
+First-reveal result:
+
+- **22/66** edges survive `p_maxT <= .01` with all five held-out gains positive;
+- selected `(3,5)` ranks only **22/66** by mean held-out gain;
+- `(3,5)` still has mean gain **0.04421504 bits/token**, all five folds positive, `p_maxT = 1/1001`, and phi **-0.20648**;
+- after conditioning on occupancy of the other ten slots (`K_other`), `(3,5)` remains positive but is no longer family-wise exceptional: conditional `p_maxT = 0.55644`;
+- all **66/66** canonical two-slot co-occupancies are parser-admissible;
+- the strongest relations are concentrated in a signed network, especially slots 6–11: some pairs strongly co-occur and others strongly exclude one another;
+- strongest primary edge `(8,10)` has mean held-out gain **0.76767 bits/token**, phi **+0.92378**, and remains family-wise significant after `K_other` conditioning.
+
+#58A frozen classification:
+
+> **`BROAD OCCUPANCY GRAMMAR; SLOT3xSLOT5 NOT UNIQUE`**
+
+The correct interpretation is not that #55 was false. slot3 and slot5 really are almost mutually exclusive in this representation. What is rejected is privileging that pair as a unique key: it is one edge inside a substantially stronger signed token-construction grammar.
+
+See `experiments/slot35-dependency/REPORT_A.md`, `REPORT_B.md`, and `experiments/occupancy-graph/REPORT_A.md`.
 
 ## Content-relation program
 
@@ -94,7 +102,7 @@ Accepted bounded conclusion:
 
 Three residuals remain useful outside a musical interpretation:
 
-1. slot3×slot5 dependence — now narrowed by #55B to binary occupancy exclusion;
+1. slot3×slot5 dependence — now subsumed into the broader #58A occupancy grammar;
 2. STA-family order effect — real order contains exploitable sequence structure, but genuine Latin order is not specific;
 3. a six-state morphology/dependency factor — static structure survives, literal Guidonian interpretation does not.
 
@@ -116,26 +124,30 @@ Do not infer any of the following:
 - the manuscript has no semantic content;
 - A1 is the historical generator;
 - the manuscript uses or does not use a cipher in general;
-- slot3 or slot5 has a semantic meaning;
+- any slot has a semantic meaning;
+- the signed occupancy graph is itself a cipher table;
 - direct music is impossible under every conceivable encoding;
 - a negative morphology test falsifies plant names or all plant-related content;
 - the manuscript is deciphered.
 
 ## Active frontier
 
-The immediate structural frontier is to determine what the newly confirmed slot3/slot5 occupancy exclusion actually represents without reusing the failed musical interpretation.
+Issue #58A moves the structural frontier from one selected edge to the **complete signed occupancy grammar**.
 
-The next experiment should be plan-first and should treat slot3×slot5 as a **selected pair**, not as an unseen discovery target. Useful discriminators are:
+The next plan-first phase must test whether that graph is stable across externally defined manuscript strata rather than being an aggregate mixture. In particular:
 
-1. compare the selected pair with the complete 12-slot occupancy graph under multiplicity-aware controls;
-2. test whether the exclusion is stable across manuscript register/Currier/position rather than generated by one subset;
-3. replicate the structural relation under an independent transcription or independently defined representation where possible;
-4. only after structural specificity is established, ask whether the exclusion can constrain an invertible surface-transform family.
+1. freeze register/Currier/section metadata and token-position strata before target scoring;
+2. test graph-level stability / interaction rather than chasing individual #58A top edges post hoc;
+3. preserve physical-leaf separation and multiplicity-aware inference;
+4. independently test whether the graph survives a representation/transcription change only when that mapping can be fixed without using #58A outcomes;
+5. only after structural stability is established ask whether the graph can constrain an invertible surface-transform or decoding family.
+
+The umbrella Issue #58 required register/Currier/token-position tests, but #58A did not preregister their exact definitions before its first reveal. They therefore cannot be retrofitted into #58A as confirmatory science; they belong to a separately frozen #58B.
 
 A parallel external-source lane may continue seeking real historical cipher corpora with genuine message boundaries, but no Voynich comparison should be run until the external population and boundary semantics are frozen.
 
 ## Reproducibility / repository state
 
-Issue #55 first-reveal provenance is now preserved in the corresponding reports. The old #55 working branches diverged substantially from current main and should not be merged wholesale; the authoritative integration copies only the frozen plans, executables, reports and provenance needed for the result.
+Issue #55 first-reveal provenance and Issue #58A first-reveal provenance are preserved beyond Actions artifact retention. #58A stores the exact raw-result hash and a deterministic gzip archive under `experiments/occupancy-graph/first-reveal/`.
 
 Historical reproducibility debts from earlier phases remain documented in `REPRODUCIBILITY_AUDIT.md` and phase-specific reports.
