@@ -4,97 +4,128 @@ Last consolidated: 2026-09-01
 
 This file controls current sequencing. Exact historical methods and results remain controlled by phase/issue-specific frozen plans and reports.
 
+## Program objective
+
+The project is not optimizing for the number of falsified hypotheses. The objective is to move from reproducible Voynich structure toward a constrained generative/transform account that can eventually be inverted and tested on unseen material.
+
+For the current token-construction lane, read `research/TOKEN_CONSTRUCTION_PROGRAM.md` before interpreting the statistical milestones below.
+
 ## Completed milestones relevant to the current frontier
 
 - **M1–M5:** paragraph-entry/local-recurrence mechanism program established A1/A1-R1 as the leading tested structural mechanism, with prospective H62 support, training-vocabulary robustness and independent-reading replication.
 - **M6:** inventory-autonomy stress test was mixed; full autonomy failed on canonical ZL S3 while H62 remained strong.
-- **M7:** published Naibbe provided a materially stronger C-family comparator but remained partial and did not rival A1 on the sealed recurrence geometry.
-- **M8:** localized content-anchor feasibility was established; subsequent Phase66–68 object-local morphology↔text tests were negative under their frozen representations.
-- **M9:** constructive meaningful-plaintext compatibility was demonstrated for the local recurrence layer in Phase69/70; therefore recurrence alone cannot be used as evidence of semantic absence.
+- **M7:** published Naibbe provided a stronger C-family comparator but remained partial and did not rival A1 on sealed recurrence geometry.
+- **M8:** localized content-anchor feasibility was established; Phase66–68 object-local morphology↔text tests were negative under frozen representations.
+- **M9:** Phase69/70 demonstrated compatibility between strong local recurrence and exactly recoverable meaningful plaintext; recurrence alone cannot imply semantic absence.
 - **M10:** Phase71 Alberti paragraph-boundary signal/reset failed in the opposite S1 direction.
 - **M11:** Issue #26 bounded direct-music program closed with no supported tested direct-musical interpretation.
-- **M12:** Issue #55A found cross-leaf slot3×slot5 dependence; Issue #55B reduced that dependence to binary occupancy exclusion.
-- **M13:** Issue #58A audited all 66 binary slot pairs. The selected slot3×slot5 edge is real but ranks 22/66; 22 edges survive global maxT with all five folds positive. Frozen classification: `BROAD OCCUPANCY GRAMMAR; SLOT3xSLOT5 NOT UNIQUE`.
+- **M12:** Issue #55A found cross-leaf slot3×slot5 dependence; Issue #55B reduced it to binary occupancy exclusion.
+- **M13 / #58A:** all 66 binary slot pairs were audited. The selected slot3×slot5 edge is real but ranks 22/66; 22 edges survive global maxT with all five folds positive. Frozen classification: `BROAD OCCUPANCY GRAMMAR; SLOT3xSLOT5 NOT UNIQUE`.
+- **M14 / #58B:** complete signed graph stability was tested across source-grounded Currier/section/line-position strata. Observed graph correlations and transfers were high, but the line-local marginal-preserving null generated similarly high whole-graph correlations. Frozen classifications: `CURRIER/SECTION GRAPH STABILITY INCONCLUSIVE` and `LINE-POSITION GRAPH STABILITY INCONCLUSIVE`.
 - **Decipherment threshold:** not reached.
 
-## Active frontier — signed occupancy-graph stability
+## Current scientific object
 
-Current retained result:
+The current lane concerns **space-delimited token internal construction**, not whole-sentence grammar.
 
-> The 12-slot representation contains a broad signed token-construction graph: strong co-occurrence and strong exclusion coexist, with particularly strong structure among slots 6–11. slot3×slot5 is one valid edge, not a privileged key.
+Visible spaces are treated only as observed delimiters; they are not assumed to be proven linguistic word boundaries.
 
-The #58A first reveal also shows why the next question must be graph-level rather than edge-level. The leading edge `(8,10)` has mean held-out gain `0.76767 bits/token` and phi `+0.92378`, while `(8,11)` and `(10,11)` are strong negative edges. The selected `(3,5)` edge has mean gain `0.04422`, rank `22/66`, and loses family-wise extremeness after conditioning on other-slot occupancy complexity (`p_maxT=0.55644`).
+The 12-slot representation shows strong occupancy constraints. The open question is now whether a **non-trivial residual interaction system**, after removing lower-order occupancy prevalence, is shared across the manuscript.
 
-### Issue #58B target
+## Active frontier — null-residual token-construction graph
 
-Primary question:
+#58B exposed a limitation of raw graph comparison: complete 66-edge correlation remains near `0.95` even in line-local null populations that destroy same-token cross-slot pairings while retaining line×slot marginal occupancy.
 
-> Is the signed occupancy graph a stable manuscript construction grammar across independently defined register/Currier/section and token-position strata, or is the pooled #58A graph substantially generated by mixture between subsets?
+Therefore the next phase must not ask the same raw-similarity question again.
 
-This is now the required next step because the umbrella Issue #58 specified such stratification, but #58A did not freeze exact strata before first reveal. Those tests cannot be retrospectively promoted into #58A.
+### Primary next question
 
-Minimum design requirements before #58B target scoring:
+> After estimating and removing each edge's expected association under the frozen line-local occupancy null, does a graph-level residual interaction signal exist? If it exists, is the signed residual pattern stable across the already frozen Currier/section/position strata?
 
-1. establish source-grounded metadata for every candidate register/Currier/section stratum without using #58A edge outcomes;
-2. freeze token-position definitions before scoring (for example line-initial/interior/final only if population support is adequate under a predeclared rule);
-3. define graph-level stability and interaction statistics over the complete 66-edge vector rather than selecting only #58A leaders;
-4. retain physical-leaf separation and deterministic folds or freeze a justified replacement;
-5. use a null that preserves relevant line-local occupancy/prevalence structure while breaking the tested interaction/stability relation;
-6. account for all planned strata and graph-level tests in multiplicity control;
-7. treat #58A edge ranks as historical/descriptive, not new prospective selection targets;
-8. record sparse/unsupported strata rather than silently dropping them after seeing results.
+### Required plan-first design
 
-### Interpretation branches
+Before any new target reveal, freeze at least:
 
-If the signed graph is stable across externally defined strata:
+1. the exact residual representation for all 66 edges;
+2. the null-reference estimator for edge-wise expected Q and scale;
+3. an independent null-test ensemble so the same simulations are not used both to define and validate residuals;
+4. a graph-level **residual-existence gate**;
+5. residual cross-stratum similarity/transfer statistics that are interpreted only if existence survives;
+6. family-wise correction across all predeclared graph-level tests;
+7. five physical-leaf folds or a justified prospectively frozen replacement;
+8. the same external Currier/section/position contrasts unless a new source audit independently justifies a change;
+9. parser `min` primary and `max` non-promoting sensitivity unless changed prospectively for a representation-specific reason;
+10. exact stop rules preventing edge selection or threshold tuning after reveal.
 
-- retain it as a strong manuscript-wide surface-grammar constraint;
-- next prioritize representation/transcription invariance and then a plan-first constructive transform test.
+### Preferred null separation
 
-If the graph is broadly stable but has a limited number of predeclared interactions:
+A strong design is to use deterministic split null ensembles, for example:
 
-- model a shared core grammar plus register/position modulation;
-- do not infer semantics from the interacting edges alone.
+- **1,000 reference nulls:** estimate each stratum×edge null expectation and robust scale;
+- **1,000 test nulls:** independently generate the null distribution of residual graph existence and residual transfer statistics using the reference parameters only.
 
-If the graph changes strongly across strata:
+The exact counts and robust-scale rule must be frozen before target scoring. The principle — independent estimation versus validation — is mandatory unless a stronger non-circular construction is preregistered.
 
-- treat pooled #58A structure as a mixture and move to a hierarchical/register-specific construction model before any decoding claim.
+### Decision branches
 
-If the graph cannot be defined robustly under an independent representation:
+#### Residual graph exists and transfers across strata
 
-- keep it explicitly representation-specific until a more invariant construction is found.
+- promote a manuscript-wide token-internal construction mechanism as a strong surface constraint;
+- then prioritize representation/transcription invariance;
+- use only the stable residual constraints prospectively to restrict reversible generative/inverse models.
+
+#### Residual graph exists but materially changes across strata
+
+- move to a hierarchical or multiple-generator token-construction model;
+- do not force one manuscript-wide inverse transform.
+
+#### No residual graph survives
+
+- downgrade the current 66-edge graph from “deep grammar candidate” to a lower-order occupancy architecture under this representation;
+- do not keep mining individual #58A/#58B edges;
+- move to a different independently motivated structural representation or inverse constraint.
+
+#### Residual result is inconclusive
+
+- record power/representation limits;
+- do not rescue the result by selecting top edges, changing strata or loosening thresholds.
+
+## Why this frontier matters to decipherment
+
+This lane answers a prerequisite to inversion:
+
+> **Are we trying to invert one token-generation mechanism across the manuscript, or multiple/hierarchical mechanisms?**
+
+Passing the residual-stability test would not decipher the manuscript, but it would provide a substantially stronger and less prevalence-driven generative constraint for later reversible-transform work.
 
 ## Parallel source lane — real historical ciphertext
 
 The Phase72 source-development branch is not accepted current science and should not be merged wholesale into main.
 
-The useful unresolved question is external-data availability:
+Before any historical-cipher S1 comparison:
 
-> Can a public corpus provide real historical ciphertext at the level of independently established messages/documents, with boundaries suitable for an entry-effect control?
+1. fix source authority and availability;
+2. fix genuine message/document boundaries externally;
+3. freeze preprocessing and exact comparison statistic;
+4. only then authorize Voynich comparison.
 
-Before any Voynich score:
-
-1. fix source authority and license/availability;
-2. fix message/document identities and boundary semantics externally;
-3. require at least two genuinely independent historical-practice source collections if that remains the intended comparison claim;
-4. freeze preprocessing and the exact comparison statistic;
-5. only then authorize S1 or other Voynich comparison.
-
-Do not substitute physical page starts for message starts after seeing source metadata.
+Do not substitute physical page starts for message starts after seeing metadata.
 
 ## Deferred lanes
 
 ### Reversible surface-transform grammar
 
-Do not jump directly from #58A to assigning functions to slots or constructing a decoder. First establish whether the signed graph is stable across manuscript strata and, where defensible, representation/transcription changes. A later transform family must be constrained prospectively by those stable graph properties rather than tuned to recover readable output.
+Reversible/inverse work remains first-class, but the token-construction component should now be constrained by the outcome of the residual-existence/stability phase rather than by raw #58A edge strengths.
+
+Do not assign functions or meanings to slots before a stable residual structure is established.
 
 ### Content
 
-The Phase66–68 morphology-correlated object-local lane has reached a stop condition for the current populations and representations. Reopen only when the scientific model changes materially, for example a new independently grounded content variable rather than another similarity/tokenization variant on the same objects.
+Phase66–68 morphology-correlated object-local work is stopped for the current populations/representations. Reopen only with a materially new independently grounded content variable.
 
 ### Direct music
 
-Issue #26 remains closed. Reopen a music-specific interpretation only if a new constraint exists before target scoring: an auditable exact historical key, independent manuscript-local selector, prospectively finite historical family, or new source with a genuinely new consequence.
+Issue #26 remains closed. Reopen music-specific interpretation only with a genuinely new independently fixed historical/manuscript-local constraint before target scoring.
 
 ### A1 extension
 
@@ -105,9 +136,9 @@ Do not add A2 merely to repair known S1/S3/profile residuals. New mechanism term
 Before starting new science:
 
 1. current `main` is the descriptive source of truth;
-2. check open PRs and active research branches;
-3. integrate completed first-reveal work into main through a current-main branch rather than merging highly diverged historical branches wholesale;
-4. ensure `research/STATUS.md`, `ROADMAP.md`, `RESUME.md` and `research/NEXT_RESEARCH_FRONTIER.md` agree on the frontier;
-5. preserve negative results, raw-result hashes and first-reveal provenance;
-6. do not relabel post-reveal exploratory analyses as confirmatory;
-7. close completed research Issues only after their authoritative integration is on main and any explicitly required follow-up scope is accounted for.
+2. check current PRs/issues/branches;
+3. permanently archive completed first reveals before relying on expiring Actions artifacts;
+4. ensure `research/STATUS.md`, `ROADMAP.md`, `RESUME.md`, `research/NEXT_RESEARCH_FRONTIER.md` and `research/TOKEN_CONSTRUCTION_PROGRAM.md` agree on the object and frontier;
+5. preserve negative/inconclusive results and raw-result hashes;
+6. never relabel a post-reveal redesign as the same confirmatory hypothesis;
+7. close completed research issues only after authoritative integration reaches main.

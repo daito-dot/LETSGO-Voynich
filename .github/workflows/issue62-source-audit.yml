@@ -1,0 +1,94 @@
+name: Issue62 occupancy graph source audit
+
+on:
+  push:
+    branches: [issue62-occupancy-graph-stability]
+    paths:
+      - 'experiments/occupancy-graph-stability/SOURCE_AUDIT_PLAN.md'
+      - 'experiments/occupancy-graph-stability/source_audit.py'
+      - '.github/workflows/issue62-source-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify source-audit plan predates implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/occupancy-graph-stability/SOURCE_AUDIT_PLAN.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/occupancy-graph-stability/source_audit.py | tail -1)
+          test -n "$PLAN"
+          test -n "$SCRIPT"
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          echo "source-audit plan first-add: $PLAN"
+          echo "source-audit script first-add: $SCRIPT"
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source input
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd _cipher_benchmark
+          test "$(git rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install frozen parser dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run metadata / population audit only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/occupancy-graph-stability/source_audit.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue62_source_audit.json
+
+      - name: Print support-only summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue62_source_audit.json'))
+          print('scope:', r['audit_scope'])
+          print('population:', {k:r['population'][k] for k in ('visible_tokens','parsed_tokens','parse_coverage','analyzed_paragraphs','physical_lines','analyzed_pages','unique_physical_leaves')})
+          print('eligible L:', r['support_screens']['eligible_L_values'])
+          print('eligible I:', r['support_screens']['eligible_I_values'])
+          print('eligible positions:', r['support_screens']['eligible_position_values'])
+          print('missing pages:', r['page_headers']['missing_analyzed_pages'])
+          print('@ pages:', r['page_headers']['at_analyzed_pages'])
+          print('text tags:', r['text_tag_audit']['analyzed_data_lines_with_tag'])
+          for dim in ('L','I'):
+              print('\n', dim)
+              for key,val in r['token_support_by_page_variable'][dim].items():
+                  print(key, val['parsed_tokens'], [x['parsed_tokens'] for x in val['folds']], val['unique_physical_leaves'])
+          print('\npositions')
+          for key,val in r['token_position_support'].items():
+              print(key, val['parsed_tokens'], [x['parsed_tokens'] for x in val['folds']])
+          PY
+          sha256sum issue62_source_audit.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue62-source-audit-${{ github.sha }}
+          path: issue62_source_audit.json
+          retention-days: 90
