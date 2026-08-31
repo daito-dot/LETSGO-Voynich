@@ -4,6 +4,9 @@
 Reproduces only frozen source/population support and archive identity. It does
 not calculate any real IT2a pair Q, residual Z, residual energy, graph
 similarity, sign agreement, or target p-value.
+
+The Stage-A support file is verified byte-for-byte against the exact workflow
+artifact before population reproduction.
 """
 from __future__ import annotations
 
