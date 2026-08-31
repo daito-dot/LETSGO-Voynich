@@ -4,6 +4,12 @@ Status: **FROZEN BEFORE IMAGE-BLOCK ANNOTATION AND MORPHOLOGY↔TEXT ASSOCIATION
 
 Date: 2026-08-31
 
+## Pre-annotation population correction
+
+The first freeze draft counted a fourth f99v block. Before any Phase67 image annotation or morphology↔text association was inspected, the ZL3b sequence was re-audited and showed that `f99v.36` (`@Lc`) is followed by the body paragraph `f99v.37-43`, while the only associated `@Lf` locus `f99v.44` occurs **after** that paragraph. This breaks the prospective rule that a visual label/fragment group must objectively precede its paired paragraph. The ambiguous tail is therefore excluded now, before science.
+
+The corrected population below is final: **14 blocks**, with an exact within-folio permutation space of **2,304** assignments.
+
 ## Question
 
 Phase 66B found no detectable relation between the frozen visual plant attributes and the short attached `Lf` label strings. That result does not test whether the longer running text associated with the same pharmaceutical illustration block carries morphology-related information.
@@ -22,10 +28,10 @@ Phase 41's earlier `Lf label -> correct body row` test is therefore not reused a
 
 ## Frozen population
 
-Use exactly the 15 blocks in `BLOCK_MANIFEST_A.json` from Quire 19:
+Use exactly the 14 blocks in `BLOCK_MANIFEST_A.json` from Quire 19:
 
 - f99r: 4 blocks
-- f99v: 4 blocks
+- f99v: 3 blocks
 - f100r: 2 blocks
 - f100v: 1 block
 - f102v2: 2 blocks
@@ -35,10 +41,11 @@ These pages were selected because the page layout and ZL3b sequence define the v
 
 Excluded prospectively:
 
-- f101r: no labels and two paragraphs occupy the same inter-row zone;
-- f101v: three paragraphs are all at the bottom of a foldout and the row↔paragraph mapping is not unique;
-- f102r1: multiple paragraphs lie between the middle and lower illustrations;
-- f102r2: two paragraphs are together below the second row and the row↔paragraph mapping is not unique.
+- f99v tail (`f99v.36`, paragraph `37-43`, `Lf` at `44`): the plant-fragment label occurs after the paragraph, so the visual-block boundary is not objective under the frozen rule;
+- f101r: no labels and multiple paragraphs occupy the same inter-row zone;
+- f101v: multiple paragraphs are at the bottom of a foldout and the row↔paragraph mapping is not unique;
+- f102r1: multiple paragraphs lie between illustration groups;
+- f102r2: lower labels/containers and two paragraphs do not yield a unique row↔paragraph mapping.
 
 No block may be added or removed after the image annotation or primary statistic is opened.
 
@@ -107,7 +114,7 @@ For each body paragraph, count within-token character n-grams for n=1, 2, and 3.
 
 For each n independently:
 
-- vocabulary = grams occurring in at least 2 of the 15 frozen body paragraphs;
+- vocabulary = grams occurring in at least 2 of the 14 frozen body paragraphs;
 - convert counts to relative frequencies within that n;
 - apply the Hellinger transform;
 - concatenate the n=1,2,3 vectors, scaling each n-order block by `1/sqrt(3)`.
@@ -144,13 +151,13 @@ Hold all image annotations and paragraph texts fixed. Permute complete text para
 
 The full assignment space is exactly:
 
-`4! * 4! * 2! * 1! * 2! * 2! = 9,216`.
+`4! * 3! * 2! * 1! * 2! * 2! = 2,304`.
 
-Enumerate all 9,216 assignments; do not Monte Carlo sample them. Recompute the full three-character max statistic for every assignment.
+Enumerate all 2,304 assignments; do not Monte Carlo sample them. Recompute the full three-character max statistic for every assignment.
 
 Exact one-sided p-value:
 
-`p = count(T_perm >= T_obs) / 9216`.
+`p = count(T_perm >= T_obs) / 2304`.
 
 The identity assignment is part of the exhaustive null.
 
