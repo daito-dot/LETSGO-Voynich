@@ -1,0 +1,17 @@
+{
+  "schema": "phase65b-synthetic-preflight-v1",
+  "mode": "SYNTHETIC_ONLY",
+  "p25_inputs_read": false,
+  "workflow_run_id": 33347367075,
+  "workflow_job_id": 99353959487,
+  "workflow_head_sha": "3c5806fba58e57e1d9e433b1b66e8ab2946a5b2f",
+  "artifact_id": 9742452641,
+  "artifact_name": "phase65b-synthetic-preflight-3c5806fba58e57e1d9e433b1b66e8ab2946a5b2f",
+  "artifact_zip_sha256": "072f8ab224d162a05e0c0c21fcb6c0fc736d31277de7d2846d8f688806b28e64",
+  "executable_sha256": "eeb80238582466607988b0fe2c8e1b1ce1336a24fab775a37eabd166a59b8b63",
+  "synthetic_exact_null": {"assignments": 36, "T_observed": 1.0, "p_exact": 0.027777777777777776, "min": -1.0, "max": 1.0},
+  "dino": {"dimension": 384, "norms": [1.0, 1.0], "cosine_distance": 0.005936086177825928},
+  "weights_sha256": "b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9",
+  "versions": {"python": "3.13.15", "numpy": "2.2.6", "pillow": "12.3.0", "scipy": "1.16.1"},
+  "gate": "PASS"
+}
