@@ -1,6 +1,6 @@
 # Issue #26 direct-music research status
 
-Updated after Issue26E8 first reveal.
+Updated after Issue26E8-A2 first emitted reveal.
 
 | Track | Direct question | Result | Narrow interpretation |
 |---|---|---|---|
@@ -15,7 +15,8 @@ Updated after Issue26E8 first reveal.
 | E5 | After matching the ZL parser/map selection freedom used to obtain E2-C, is Guidonian fixed-map transfer unusual? | **SELECTION FREEDOM EXPLAINS FIXED-MAP SURPRISE** | 86/200 degree-matched alternatives transfer at least as well as Guidonian (`p≈.433`). Draft PR #36 remains unmerged. |
 | E6 | Under full per-fold 720-map refitting, does Guidonian beat stronger pair-overlap-matched mathematical alternatives? | **PRIMARY STATIC SPECIFICITY FAILS** | `min`: structured-null p=.376 (ZL), .525 (IT). `max` retains a narrow static topology-class preference. Draft PR #37 remains unmerged. |
 | E7 | Does the sequence-blind static Guidonian mapping prospectively predict historical hexachord/mutation dynamics? | **STATIC COMPATIBILITY DOES NOT PREDICT GUIDONIAN DYNAMICS** | ZL/min D1 p=.515, mutation D2 p=.253; `max` and IT sensitivities also negative. Draft PR #38 remains unmerged. |
-| E8-A | Is the 1436 Nicholas Philip four-duration alphabet partition unusually compatible with a natural four-state Voynich slot, versus equal-capacity external alphabet partitions? | **PHILIP DURATION-GROUP NOT SUPPORTED; STABLE NEAR-HIT** | `min`: target D=.19130 vs null median .28564, 5/5 fold median wins and identical slot0/key in 5/5, but frozen p=.06294 fails the `.05` gate. Strongest alternative is generic vowel-group structure. |
+| E8-A | Is the 1436 Nicholas Philip four-duration alphabet partition unusually compatible with a natural four-state Voynich slot, versus equal-capacity external alphabet partitions? | **PHILIP DURATION-GROUP NOT SUPPORTED; STABLE NEAR-HIT** | `min`: target D=.19130 vs null median .28564, 5/5 fold median wins and identical slot0/key in 5/5, but frozen p=.06294 fails the `.05` gate. |
+| E8-A2 | Conditional on keeping `aeiou` intact, is Philip's exact consonant subdivision special among all 126,126 equal 5+5+5 consonant partitions? | **VOWEL ISOLATION EXPLAINS E8A NEAR-HIT** | Philip rank 61,261/126,126, conditional p=.4857, only 3/5 fold median wins. The exact historical consonant subdivision is ordinary once vowels are fixed. |
 
 ## Current interpretation
 
@@ -27,7 +28,7 @@ The robust positive object from E/E2 remains narrower:
 
 But E3–E6 establish mathematical flexibility/non-uniqueness, and E7 shows that interpreting the static fit as actual Guidonian pitches/voces does not predict held-out order.
 
-E8 therefore moved to a different model family rather than rescuing the Guidonian mapping: historically attested music-as-cipher.
+E8 moved to a genuinely different model family rather than rescuing the Guidonian mapping: historically attested music-as-cipher.
 
 ## E8-A — Nicholas Philip 1436 intermediate-cipher screen
 
@@ -38,7 +39,7 @@ The tested historical construction has four duration groups of five letters:
 - `klmnp`
 - `qrstz`
 
-The full five-pitch × four-duration product was **not** tested, because a generic 5×4 product is only a twenty-symbol substitution code unless a historical feature first predicts something new.
+The full five-pitch × four-duration product was deliberately **not** tested. A generic 5×4 product is only a twenty-symbol substitution code unless a historical feature first predicts something new.
 
 E8-A compared the historical four-way alphabet partition against 1,000 deterministic alternative partitions of the same twenty letters into four equal groups of five. Every target/null partition received identical training-only freedom to choose among the three natural four-state Zattera slots and all 24 state↔group bijections before held-out scoring.
 
@@ -46,40 +47,81 @@ Primary `min`:
 
 - Philip mean held-out JSD distance: `0.1912990849`;
 - null median: `0.2856364100`;
-- null q05: `0.1862773689`;
-- null minimum: `0.1241821903`;
 - lower-tail p: **`.0629370629`**;
 - target beats null-fold median: **5/5**;
 - exact target key recurrence: **5/5**;
 - recurrent key: slot0, permutation `[0,3,1,2]`.
 
-So the observed pattern is stable and substantially better than the typical equal-capacity partition, but it fails the preregistered significance gate. It must remain classified:
+So the pattern was stable but failed the preregistered significance gate. The frozen result remains:
 
 **`PHILIP DURATION-GROUP NOT SUPPORTED`**.
 
-The `max` sensitivity is weaker (`p=.142857`) despite 5/5 fold direction and key recurrence.
+The stability nevertheless justified one adversarial explanation test because the target's first group is exactly the five Latin vowels.
 
-## Why E8-A is still worth following up
+## E8-A2 — exhaustive vowel-fixed control
 
-The near-hit has a major non-musical alternative explanation: Philip's first group is exactly the five Latin vowels `aeiou`.
+E8-A2 fixed `aeiou` in **every** comparator and exhaustively enumerated every unordered partition of the remaining fifteen consonants into three groups of five.
 
-Random equal-capacity null partitions normally destroy the vowel class. Therefore a stable four-state match could be caused by **generic vowel-vs-consonant sequence structure**, not by Philip's musical-cipher design.
+Complete universe:
 
-The next high-information control is therefore external and adversarial:
+**126,126 partitions** including Philip.
 
-> Fix `aeiou` as one group in every comparator, and vary only the remaining fifteen consonants among three five-letter groups. Ask whether Philip's exact consonant groups `bcdfg / klmnp / qrstz` remain unusually close under the same training-only Voynich slot/key search.
+Primary `min`:
 
-This is a stronger interpretation test than increasing random-null resolution or immediately testing the reserved five-pitch dimension.
+- Philip target D: `0.1912990849`;
+- exhaustive-universe median: `0.1921073411`;
+- strict rank: **61,261 / 126,126**;
+- conditional p: **`.4857127000`**;
+- fold median wins: **3/5**;
+- target key remains slot0 / `[0,3,1,2]` in 5/5 folds.
 
-If the effect collapses, the E8-A near-hit is explained by vowel isolation and should not motivate a Philip-like cipher claim.
+The best non-Philip partition,
 
-If it survives a vowel-fixed control, only then is a new prospective cipher-specific test warranted. The full pitch dimension still requires separate preregistration and cannot rescue the already-negative E8-A result.
+`aeiou | bfgkz | cdnst | lmpqr`,
+
+reaches D=`0.1071589913`, far closer than Philip, and itself has a 5/5 stable slot6 key.
+
+The `max` sensitivity is less favorable still:
+
+- conditional p=`.5772640058`;
+- fold median wins=`0/5`.
+
+Therefore the E8-A near-hit is not specific to Nicholas Philip's musical-cipher consonant grouping. Once the obvious linguistic condition `aeiou` is held fixed, Philip is approximately a median member of the complete candidate universe.
+
+Frozen E8-A2 classification:
+
+**`VOWEL ISOLATION EXPLAINS E8A NEAR-HIT`**.
+
+This is a mechanistic explanation of the near-hit, not merely a failure to cross `.05`.
+
+## What E8-A2 changes
+
+The specific 1436 Philip intermediate-cipher hypothesis is now **not supported** at the duration-group signature level.
+
+Do **not** run the reserved five-pitch E8-B as a rescue. The pitch stage was gated behind a positive duration-group necessary condition; that condition failed, and E8-A2 identifies a straightforward non-musical reason for the apparent stability.
+
+There is a potentially useful non-music observation embedded here:
+
+> a natural four-state Voynich slot can show stable sequence-level compatibility with a Latin partition that isolates vowels from consonants.
+
+That observation belongs to a linguistic/morphological hypothesis family, not to evidence for a musical cipher. It should only be developed elsewhere with its own controls if it is scientifically useful.
+
+## H4 research boundary after E8
+
+H4 — music as an intermediate cipher — is not globally falsified by the failure of one historical scheme. However, testing historical musical ciphers one by one until one happens to fit would create a new uncontrolled model-selection problem.
+
+Before testing another cipher, one of the following must be true:
+
+1. a **finite historically justified candidate family** is frozen before seeing any new Voynich score, with multiplicity charged across the whole family; or
+2. an independent manuscript-local visual/textual anchor selects a specific historical cipher family before the text statistic is inspected.
+
+Without one of those selectors, do not proceed by opportunistically trying Martinus Polonus, Sloane 351, or later musical ciphers in sequence.
 
 ## Research boundaries
 
 - Do not retune E7 sequence rules or promote `max`.
 - Do not reinterpret E8-A as positive because it has 5/5 stability; `p=.06294` failed the frozen gate.
-- Do not run the five-pitch E8-B as a rescue after the negative E8-A classification.
-- Do not claim that constructed E3–E6 alternatives establish real-world base rates.
+- Do not run the five-pitch E8-B after E8-A2.
+- Do not claim constructed E3–E6 alternatives establish real-world base rates.
 - Preserve the distinction between mathematical non-uniqueness, historical theory-internal prediction, and external historical cipher comparison.
 - No current Issue #26 result identifies plaintext, melody, pitches, rhythm, or a decipherment.
