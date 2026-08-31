@@ -1,0 +1,47 @@
+name: Phase66B primary science f102v2
+
+on:
+  push:
+    branches: [phase66-attribute-label-preregister]
+    paths:
+      - .github/workflows/phase66b-primary-science.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  primary-science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install frozen runtime dependencies
+        run: |
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+      - name: Verify frozen executable
+        run: |
+          test "$(sha256sum experiments/phase66/phase66b_science.py | cut -d' ' -f1)" = "698252876f7a6187ac8c80f1e95372e2afa3c8e3dc30f7e62170b3ad492a3290"
+      - name: Run primary reveal
+        run: |
+          mkdir -p phase66b-primary-artifact
+          python experiments/phase66/phase66b_science.py \
+            --mode science --page f102v2 --role primary \
+            --morphology experiments/phase66/MORPHOLOGY_TABLE_A.json \
+            --color-features experiments/phase66/COLOR_FEATURE_TABLE_B.json \
+            --source-manifest experiments/phase65/SOURCE_MANIFEST_B.json \
+            --text-freeze experiments/phase66/TEXT_FEATURE_FREEZE_A.json \
+            --out phase66b-primary-artifact/SCIENTIFIC_RESULT_F102V2.json
+          sha256sum experiments/phase66/phase66b_science.py > phase66b-primary-artifact/executable.sha256
+          sha256sum experiments/phase66/MORPHOLOGY_TABLE_A.json experiments/phase66/COLOR_FEATURE_TABLE_B.json experiments/phase65/SOURCE_MANIFEST_B.json experiments/phase66/TEXT_FEATURE_FREEZE_A.json > phase66b-primary-artifact/inputs.sha256
+          sha256sum phase66b-primary-artifact/SCIENTIFIC_RESULT_F102V2.json > phase66b-primary-artifact/result.sha256
+          python -m pip freeze | sort > phase66b-primary-artifact/pip-freeze.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase66b-primary-f102v2-${{ github.sha }}
+          path: phase66b-primary-artifact/
+          if-no-files-found: error
+          retention-days: 90
