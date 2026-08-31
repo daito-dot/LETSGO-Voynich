@@ -1,0 +1,93 @@
+name: Issue26B Ptolemy tonos-zodiac test
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/issue26-music/PLAN_B.md'
+      - 'experiments/issue26-music/PARSER_AMENDMENT_B1.md'
+      - 'experiments/issue26-music/REPRESENTATION_AMENDMENT_B2.md'
+      - 'experiments/issue26-music/phaseB_ptolemy_tonoi.py'
+      - '.github/workflows/issue26b-ptolemy-tonoi.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Issue26B branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Verify freeze order
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_B.md | tail -1)
+          PARSER=$(git log --format=%H -- experiments/issue26-music/PARSER_AMENDMENT_B1.md | tail -1)
+          REP=$(git log --format=%H -- experiments/issue26-music/REPRESENTATION_AMENDMENT_B2.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseB_ptolemy_tonoi.py | tail -1)
+          echo plan=$PLAN parser=$PARSER representation=$REP script=$SCRIPT
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$PARSER" "$SCRIPT"
+          git merge-base --is-ancestor "$REP" "$SCRIPT"
+          test "$PLAN" != "$SCRIPT"
+          test "$PARSER" != "$SCRIPT"
+          test "$REP" != "$SCRIPT"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify ZL3b
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Run first scientific reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseB_ptolemy_tonoi.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue26b_results.json
+
+      - name: Print frozen verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26b_results.json'))
+          p=r['primary']
+          print('classification=', r['frozen_classification'])
+          print('target_score=', p['target_score'])
+          print('exact_p_ge=', p['exact_p_ge'])
+          print('rank_desc=', p['rank_desc'], '/', p['exact_matchings'])
+          print('chronology_slope=', p['chronology_ols']['slope_per_page_distance'])
+          print('pairs=')
+          for x in p['target_pairs']:
+              print(x)
+          print('sensitivities=', {k: (v.get('target_score'), v.get('exact_p_ge')) if isinstance(v, dict) else v for k,v in r['sensitivities'].items()})
+          print('hashes=', r['inputs'])
+          PY
+          sha256sum issue26b_results.json
+
+      - name: Upload first-reveal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26b-first-reveal
+          path: issue26b_results.json
+          if-no-files-found: error
+          retention-days: 90
