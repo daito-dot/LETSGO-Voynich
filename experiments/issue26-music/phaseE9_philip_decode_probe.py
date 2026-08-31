@@ -13,7 +13,7 @@ from pathlib import Path
 
 import issue26e_core as e
 
-ALPHABET = tuple("abcdefghiklmnopqrstuz")
+ALPHABET = tuple("abcdefgiklmnopqrstuz")
 # Historical Philip alphabet as low->high pitch rank within each duration class.
 TABLE = (
     tuple("aeiou"),
