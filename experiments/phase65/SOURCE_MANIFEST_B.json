@@ -1,0 +1,421 @@
+{
+  "anti_leak": {
+    "correlation_computed": false,
+    "dino_embeddings_computed": false,
+    "p25_visual_text_association_computed": false,
+    "permutation_statistic_computed": false,
+    "text_distance_computed": false
+  },
+  "mode": "SOURCE_ONLY_PREFLIGHT",
+  "normative_plan": "experiments/phase65/PLAN_B.md",
+  "p25_locus_freeze": {
+    "confidence_eligible_count_by_page": {
+      "f100v": 13,
+      "f102v2": 11
+    },
+    "confidence_excluded_before_science": [
+      "L2.7"
+    ],
+    "f102v2_top_row_excluded_before_science": true,
+    "mapping_authority": "Phase65A VIB/Stolfi physical row order and object-label localization; no Phase65B score used",
+    "selected_count": 25,
+    "units": [
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "T.1",
+        "page": "f100v",
+        "source_payload": "<!131>tolchd",
+        "transcription_raw": "tolchd",
+        "zl3b_locus": "f100v.1"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "T.2",
+        "page": "f100v",
+        "source_payload": "<!132>chols",
+        "transcription_raw": "chols",
+        "zl3b_locus": "f100v.2"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "T.3",
+        "page": "f100v",
+        "source_payload": "<!133>opchor",
+        "transcription_raw": "opchor",
+        "zl3b_locus": "f100v.3"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "T.4",
+        "page": "f100v",
+        "source_payload": "<!134>solsy",
+        "transcription_raw": "solsy",
+        "zl3b_locus": "f100v.4"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "M.1",
+        "page": "f100v",
+        "source_payload": "<!135>soleesos",
+        "transcription_raw": "soleesos",
+        "zl3b_locus": "f100v.5"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "M.2",
+        "page": "f100v",
+        "source_payload": "<!136>ykchochdy",
+        "transcription_raw": "ykchochdy",
+        "zl3b_locus": "f100v.6"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "M.3",
+        "page": "f100v",
+        "source_payload": "<!137>ykchdy",
+        "transcription_raw": "ykchdy",
+        "zl3b_locus": "f100v.7"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "M.4",
+        "page": "f100v",
+        "source_payload": "<!138>dchdy",
+        "transcription_raw": "dchdy",
+        "zl3b_locus": "f100v.8"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "M.5",
+        "page": "f100v",
+        "source_payload": "<!139>dalsy",
+        "transcription_raw": "dalsy",
+        "zl3b_locus": "f100v.9"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "B.1",
+        "page": "f100v",
+        "source_payload": "<!140>okcheor",
+        "transcription_raw": "okcheor",
+        "zl3b_locus": "f100v.10"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "B.2",
+        "page": "f100v",
+        "source_payload": "<!141>ytchol",
+        "transcription_raw": "ytchol",
+        "zl3b_locus": "f100v.11"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "B.3",
+        "page": "f100v",
+        "source_payload": "<!142>dykchal",
+        "transcription_raw": "dykchal",
+        "zl3b_locus": "f100v.12"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "B.4",
+        "page": "f100v",
+        "source_payload": "<!143>chos.ctharal",
+        "transcription_raw": "chos.ctharal",
+        "zl3b_locus": "f100v.13"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L2.1",
+        "page": "f102v2",
+        "source_payload": "<!221>okody",
+        "transcription_raw": "okody",
+        "zl3b_locus": "f102v2.10"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L2.2",
+        "page": "f102v2",
+        "source_payload": "<!222>cheor",
+        "transcription_raw": "cheor",
+        "zl3b_locus": "f102v2.11"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L2.3",
+        "page": "f102v2",
+        "source_payload": "<!223>okoroeey",
+        "transcription_raw": "okoroeey",
+        "zl3b_locus": "f102v2.12"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L2.4",
+        "page": "f102v2",
+        "source_payload": "<!224>opchy",
+        "transcription_raw": "opchy",
+        "zl3b_locus": "f102v2.13"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L2.5",
+        "page": "f102v2",
+        "source_payload": "<!225>sarol",
+        "transcription_raw": "sarol",
+        "zl3b_locus": "f102v2.14"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L2.6",
+        "page": "f102v2",
+        "source_payload": "<!226>olrodar",
+        "transcription_raw": "olrodar",
+        "zl3b_locus": "f102v2.15"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": true,
+          "contains_question_mark": true,
+          "phase63b_65b_confidence_eligible": false
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L2.7",
+        "page": "f102v2",
+        "source_payload": "<!227>to[d:?]?",
+        "transcription_raw": "to[d:?]?",
+        "zl3b_locus": "f102v2.16"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L3.1",
+        "page": "f102v2",
+        "source_payload": "<!229>osain",
+        "transcription_raw": "osain",
+        "zl3b_locus": "f102v2.25"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L3.2",
+        "page": "f102v2",
+        "source_payload": "<!230>aiky",
+        "transcription_raw": "aiky",
+        "zl3b_locus": "f102v2.26"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L3.3",
+        "page": "f102v2",
+        "source_payload": "<!231>okeeoraiin",
+        "transcription_raw": "okeeoraiin",
+        "zl3b_locus": "f102v2.27"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L3.4",
+        "page": "f102v2",
+        "source_payload": "<!232>okockhy",
+        "transcription_raw": "okockhy",
+        "zl3b_locus": "f102v2.28"
+      },
+      {
+        "confidence_flags": {
+          "contains_bracket_alternative": false,
+          "contains_question_mark": false,
+          "phase63b_65b_confidence_eligible": true
+        },
+        "ivtff_locator": "@Lf",
+        "object_id": "L3.5",
+        "page": "f102v2",
+        "source_payload": "<!233>os",
+        "transcription_raw": "os",
+        "zl3b_locus": "f102v2.29"
+      }
+    ]
+  },
+  "phase": "65B0",
+  "project_commit": "1e6aa9824084dadec2bd43b65da9f7f47d3e1cbb",
+  "schema": "phase65b-source-manifest-v1",
+  "sources": {
+    "dinov2": {
+      "commit": "7764ea0f912e53c92e82eb78a2a1631e92725fc8",
+      "model": "dinov2_vits14",
+      "repository": "facebookresearch/dinov2",
+      "repository_url": "https://github.com/facebookresearch/dinov2.git",
+      "weights": {
+        "byte_size": 88283115,
+        "content_type": "binary/octet-stream",
+        "final_url": "https://dl.fbaipublicfiles.com/dinov2/dinov2_vits14/dinov2_vits14_pretrain.pth",
+        "requested_url": "https://dl.fbaipublicfiles.com/dinov2/dinov2_vits14/dinov2_vits14_pretrain.pth",
+        "sha256": "b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9"
+      },
+      "weights_loaded_for_inference": false
+    },
+    "it2a": {
+      "artifact_filename": "IT2a-n.source.txt",
+      "byte_size": 342104,
+      "content_type": "text/plain",
+      "final_url": "https://www.voynich.nu/data/IT2a-n.txt",
+      "ivtff_header": "#=IVTFF EvaT 2.0 M 3",
+      "requested_url": "https://www.voynich.nu/data/IT2a-n.txt",
+      "sha256": "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+    },
+    "yale_images": {
+      "f100v": {
+        "artifact_filename": "yale_f100v_1006249.jpg",
+        "authority": "Yale Beinecke Library digital collections",
+        "byte_size": 6794523,
+        "catalog_url": "https://collections.library.yale.edu/catalog/2002046?child_oid=1006249",
+        "content_type": "image/jpeg",
+        "decoded_format": "JPEG",
+        "decoded_mode": "RGB",
+        "final_url": "https://collections.library.yale.edu/iiif/2/1006249/full/full/0/default.jpg",
+        "height_px": 3715,
+        "image_id": "1006249",
+        "note": "Yale child image is the combined f100v + f101r scan; later crop freeze isolates f100v text-blindly.",
+        "requested_url": "https://collections.library.yale.edu/iiif/2/1006249/full/full/0/default.jpg",
+        "sha256": "72637b9770f40f7a8ff6b96a551e64775e88994ae69bafec0b43d48974364c33",
+        "width_px": 7486
+      },
+      "f102v2": {
+        "artifact_filename": "yale_f102v2_1006252.jpg",
+        "authority": "Yale Beinecke Library digital collections",
+        "byte_size": 2576704,
+        "catalog_url": "https://collections.library.yale.edu/catalog/2002046?child_oid=1006252",
+        "content_type": "image/jpeg",
+        "decoded_format": "JPEG",
+        "decoded_mode": "RGB",
+        "final_url": "https://collections.library.yale.edu/iiif/2/1006252/full/full/0/default.jpg",
+        "height_px": 3795,
+        "image_id": "1006252",
+        "note": "Yale child image containing f102v2.",
+        "requested_url": "https://collections.library.yale.edu/iiif/2/1006252/full/full/0/default.jpg",
+        "sha256": "8cdb1030d805b968932146124915cb0d86f7abf853167ffec028b59599820fad",
+        "width_px": 2981
+      }
+    },
+    "zl3b": {
+      "byte_size": 411671,
+      "commit": "315f0cad4de3d021bd4185765c037cf2a28d341c",
+      "git_blob_sha1": "2a4533ab9bdfa85db9bad602d590978953055df1",
+      "relative_path": "benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt",
+      "repository": "matthewdgreen/cipher_benchmark",
+      "repository_url": "https://github.com/matthewdgreen/cipher_benchmark.git",
+      "sha256": "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+    }
+  }
+}
