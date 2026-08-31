@@ -1,0 +1,70 @@
+name: Issue68 Stage0 authority diagnostic
+
+on:
+  push:
+    branches: [issue68-joint-constraint-tournament]
+    paths:
+      - '.github/workflows/issue68-stage0-authority-diagnostic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue68-joint-constraint-tournament
+          fetch-depth: 0
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout frozen CREMMA controls
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: _cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout pinned Naibbe publication code
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: _naibbe
+          sparse-checkout: |
+            naibbe_v2.py
+            sixteentables.csv
+          sparse-checkout-cone-mode: false
+
+      - name: Print actual authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "ZL_COMMIT=$(git -C _cipher_benchmark rev-parse HEAD)"
+          echo "ZL_BLOB=$(git -C _cipher_benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)"
+          echo "CREMMA_COMMIT=$(git -C _cremma rev-parse HEAD)"
+          echo "NAIBBE_COMMIT=$(git -C _naibbe rev-parse HEAD)"
+          echo "NAIBBE_PY_BLOB=$(git -C _naibbe hash-object naibbe_v2.py)"
+          echo "NAIBBE_TABLE_BLOB=$(git -C _naibbe hash-object sixteentables.csv)"
+          echo "EXPECTED_ZL_COMMIT=315f0cad4de3d021bd4185765c037cf2a28d341c"
+          echo "EXPECTED_ZL_BLOB=2a4533ab9bdfa85db9bad602d590978953055df1"
+          echo "EXPECTED_CREMMA_COMMIT=292525969ad98380b398e6606a9c2a36d51913ae"
+          echo "EXPECTED_NAIBBE_COMMIT=f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          echo "EXPECTED_NAIBBE_PY_BLOB=b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          echo "EXPECTED_NAIBBE_TABLE_BLOB=5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
