@@ -1,0 +1,111 @@
+name: Issue26E10 Sloane 351 plaintext probe
+
+on:
+  push:
+    branches: [issue26-music-e10-sloane351-probe]
+    paths:
+      - 'experiments/issue26-music/PLAN_E10.md'
+      - 'experiments/issue26-music/phaseE10_sloane351_probe.py'
+      - 'experiments/issue26-music/issue26e_core.py'
+      - '.github/workflows/issue26e10-sloane351-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout E10 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e10-sloane351-probe
+          fetch-depth: 0
+
+      - name: Verify plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E10.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE10_sloane351_probe.py | tail -1)
+          echo plan_first=$PLAN script_first=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout frozen CREMMA comparator
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact external inputs
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run Sloane 351 plaintext probe
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE10_sloane351_probe.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma > issue26e10_probe.json
+
+      - name: Print probe summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e10_probe.json'))
+          print('classification=',r['classification'])
+          print('latin_self_baseline=',r['latin_self_baseline']['mean_cross_entropy'])
+          print('candidate_keys=',r['candidate_keys'])
+          for name in ['primary_min','max_sensitivity']:
+              x=r[name]
+              print('\n'+name)
+              print('TRACK A')
+              for a in x['track_a_literal']:
+                  d=a['diagnostics']
+                  print(a['key'], 'CE=',d['cross_entropy'],'top5=',d['top5_char_fraction'],'hits6=',d['distinct_lexicon_hits_ge6'])
+                  for s in d['samples'][:3]: print(' sample',s['page'],s['text'])
+              b=x['track_b_fitted']
+              print('TRACK B pooled=',b['pooled_cross_entropy'],'mean_fold=',b['mean_fold_cross_entropy'],'recurrence=',b['exact_key_recurrence'])
+              print('recurrent=',b['most_recurrent_key'])
+              for f in b['folds']:
+                  print(' fold',f['fold'],'train=',f['training_cross_entropy'],'held=',f['held']['cross_entropy'],'key=',f['key'])
+                  for s in f['held']['samples'][:2]: print('  sample',s['page'],s['text'])
+              print('pooled top5=',b['pooled_diagnostics_using_fold_specific_keys']['top5_char_fraction'], 'hits6=',b['pooled_diagnostics_using_fold_specific_keys']['distinct_lexicon_hits_ge6'])
+              print('long hits=',b['pooled_diagnostics_using_fold_specific_keys']['lexicon_hits'][:15])
+          PY
+          sha256sum issue26e10_probe.json
+
+      - name: Upload E10 probe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e10-sloane351-probe-${{ github.sha }}
+          path: issue26e10_probe.json
+          if-no-files-found: error
+          retention-days: 90
