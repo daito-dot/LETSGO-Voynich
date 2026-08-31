@@ -6,6 +6,7 @@ on:
     paths:
       - 'experiments/issue26-music/PLAN_E8A2.md'
       - 'experiments/issue26-music/phaseE8A2_vowel_fixed.py'
+      - 'experiments/issue26-music/phaseE8A2_json_runner.py'
       - 'experiments/issue26-music/phaseE8_philip_duration.py'
       - 'experiments/issue26-music/issue26e_core.py'
       - '.github/workflows/issue26e8a2-vowel-fixed.yml'
@@ -26,14 +27,16 @@ jobs:
           ref: issue26-music-e8-philip-cipher
           fetch-depth: 0
 
-      - name: Verify E8A2 plan predates executable
+      - name: Verify E8A2 plan predates executable and serialization wrapper
         shell: bash
         run: |
           PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E8A2.md | tail -1)
           SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE8A2_vowel_fixed.py | tail -1)
-          echo plan_first=$PLAN script_first=$SCRIPT
+          RUNNER=$(git log --format=%H -- experiments/issue26-music/phaseE8A2_json_runner.py | tail -1)
+          echo plan_first=$PLAN script_first=$SCRIPT runner_first=$RUNNER
           test "$PLAN" != "$SCRIPT"
           git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$RUNNER"
 
       - name: Checkout frozen ZL3b mirror
         uses: actions/checkout@v4
@@ -68,10 +71,10 @@ jobs:
       - name: Install frozen numerical dependencies
         run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
 
-      - name: Run E8A2 exhaustive first reveal
+      - name: Run E8A2 exhaustive first emitted reveal
         shell: bash
         run: |
-          python experiments/issue26-music/phaseE8A2_vowel_fixed.py \
+          python experiments/issue26-music/phaseE8A2_json_runner.py \
             external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
             external/cremma > issue26e8a2_results.json
 
@@ -101,7 +104,7 @@ jobs:
       - name: Upload E8A2 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: issue26e8a2-first-reveal-${{ github.sha }}
+          name: issue26e8a2-first-emitted-reveal-${{ github.sha }}
           path: issue26e8a2_results.json
           if-no-files-found: error
           retention-days: 90
