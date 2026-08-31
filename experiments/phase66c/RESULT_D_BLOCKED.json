@@ -1,0 +1,42 @@
+{
+  "schema": "phase66cd-image-body-result-v1",
+  "status": "BLOCKED_SOURCE_IMAGE_ACCESS",
+  "preregistered_plan": "experiments/phase66c/PLAN_D_IMAGE_BODY.md",
+  "body_state_table": "experiments/phase66c/BODY_STATE_TABLE_D.json",
+  "frozen_gate": {
+    "minimum_jointly_observed_cells": 12,
+    "minimum_agreement": 0.60,
+    "maximum_p": 0.05,
+    "permutations": 100000,
+    "seed": 6603001
+  },
+  "source_audit": {
+    "control_work": "Canadian wild flowers (1868)",
+    "public_source_verified": true,
+    "commons_category_verified": true,
+    "commons_pdf_verified": true,
+    "missing_pixel_auditable_plate": "Plate 2 Canadian wild flowers.jpg",
+    "missing_plate_species": [
+      "Pyrola elliptica",
+      "Moneses uniflora",
+      "Rubus odoratus",
+      "Veronica americana"
+    ],
+    "note": "The exact public-domain Plate 2 file is catalogued by Wikimedia Commons and PICRYL, but its image pixels could not be retrieved into the current execution/inspection path despite the file record and source PDF being verified. No morphology states were inferred from species knowledge or prose to repair this access failure."
+  },
+  "coverage_consequence": {
+    "body_non_u_cells_total": 12,
+    "body_non_u_cells_on_missing_plate": 3,
+    "body_non_u_cells_outside_missing_plate": 9,
+    "maximum_possible_jointly_observed_cells_without_missing_plate": 9,
+    "preregistered_minimum": 12,
+    "gate_mathematically_unreachable": true
+  },
+  "statistics": {
+    "A": null,
+    "p_one_sided": null,
+    "permutation_run": false
+  },
+  "classification": "BLOCKED, NOT NEGATIVE",
+  "interpretation": "The direct image-to-body categorical positive control cannot be scientifically classified under the frozen plan because source-image access makes the minimum coverage gate unreachable. The already completed body-text availability calibration remains valid and positive: genuine illustrated botanical prose frequently states morphology whereas literal short plant names need not."
+}
