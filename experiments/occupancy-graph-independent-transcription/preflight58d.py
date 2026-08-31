@@ -9,7 +9,8 @@ The Stage-A support file is verified byte-for-byte against the exact workflow
 artifact before population reproduction. The frozen #58C reference is likewise
 reconstructed and hash-verified from the repaired permanent transport copy;
 the repair itself is documented under the #58C first-reveal archive and did not
-change the original scientific bytes.
+change the original scientific bytes. This final pre-PR trigger exists only to
+verify the exact branch head after the one-off repair workflow was removed.
 """
 from __future__ import annotations
 
