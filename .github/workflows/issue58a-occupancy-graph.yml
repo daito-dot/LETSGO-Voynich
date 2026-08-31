@@ -7,6 +7,12 @@ on:
       - 'experiments/occupancy-graph/PLAN_A.md'
       - 'experiments/occupancy-graph/phase58a_occupancy_graph.py'
       - '.github/workflows/issue58a-occupancy-graph.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/occupancy-graph/PLAN_A.md'
+      - 'experiments/occupancy-graph/phase58a_occupancy_graph.py'
+      - '.github/workflows/issue58a-occupancy-graph.yml'
   workflow_dispatch:
 
 permissions:
