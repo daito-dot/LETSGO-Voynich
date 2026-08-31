@@ -1,10 +1,10 @@
-name: Phase66A direct-music screen
+name: Issue26A direct-music screen
 
 on:
   pull_request:
     branches: [main]
     paths:
-      - 'experiments/phase66/**'
+      - 'experiments/issue26-music/**'
       - '.github/workflows/phase66a-direct-music.yml'
   workflow_dispatch:
 
@@ -17,19 +17,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
-      - name: Checkout Phase66A branch
+      - name: Checkout Issue26 music branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
           fetch-depth: 0
 
-      - name: Verify frozen plan precedes implementation
+      - name: Verify frozen plan precedes repackaged executable
         shell: bash
         run: |
-          test -f experiments/phase66/PLAN_A.md
-          test -f experiments/phase66/phase66a_direct_music.py
-          PLAN_COMMIT=$(git log --format=%H -- experiments/phase66/PLAN_A.md | tail -1)
-          SCRIPT_COMMIT=$(git log --format=%H -- experiments/phase66/phase66a_direct_music.py | tail -1)
+          test -f experiments/issue26-music/PLAN_A.md
+          test -f experiments/issue26-music/phaseA_direct_music.py
+          PLAN_COMMIT=$(git log --format=%H -- experiments/issue26-music/PLAN_A.md | tail -1)
+          SCRIPT_COMMIT=$(git log --format=%H -- experiments/issue26-music/phaseA_direct_music.py | tail -1)
           echo "plan_first_commit=$PLAN_COMMIT"
           echo "script_first_commit=$SCRIPT_COMMIT"
           test "$PLAN_COMMIT" != "$SCRIPT_COMMIT"
@@ -80,21 +80,21 @@ jobs:
       - name: Install frozen numerical dependency
         run: python -m pip install --disable-pip-version-check numpy==2.2.6
 
-      - name: Run first scientific reveal
+      - name: Replay frozen scientific calculation
         shell: bash
         run: |
-          python experiments/phase66/phase66a_direct_music.py \
+          python experiments/issue26-music/phaseA_direct_music.py \
             external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
             external/cremma \
             external/ismir2020/data/run-0/antiphon/subset/test-chants.csv \
-            > phase66a_results.json
+            > issue26a_results.json
 
-      - name: Print frozen verdict and audit summary
+      - name: Print verdict and audit summary
         shell: bash
         run: |
           python - <<'PY'
           import json
-          r=json.load(open('phase66a_results.json'))
+          r=json.load(open('issue26a_results.json'))
           p=r['primary']
           print('classification=', r['frozen_primary_classification'])
           print('voynich_mean_Z=', p['voynich_mean_Z_vector'])
@@ -104,17 +104,15 @@ jobs:
           print('mean_D_music=', p['distance_summary']['mean_D_music'])
           print('mean_D_latin=', p['distance_summary']['mean_D_latin'])
           print('conditions=', p['conditions'])
-          for row in p['distances']:
-              print('fold', row['fold'], 'D_music', row['D_music'], 'D_latin', row['D_latin'], 'music_closer', row['music_closer'])
           print('plan_sha256=', r['inputs']['plan_sha256'])
           print('script_sha256=', r['inputs']['script_sha256'])
           PY
-          sha256sum phase66a_results.json
+          sha256sum issue26a_results.json
 
-      - name: Upload first-reveal artifact
+      - name: Upload replay artifact
         uses: actions/upload-artifact@v4
         with:
-          name: phase66a-first-reveal
-          path: phase66a_results.json
+          name: issue26a-replay
+          path: issue26a_results.json
           if-no-files-found: error
           retention-days: 90
