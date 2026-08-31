@@ -4,68 +4,57 @@ Status: **SEALED BEFORE ANY PHASE66 IMAGE↔TEXT ASSOCIATION**
 
 ## Why B exists
 
-Color A was a useful preflight failure: fixed HSV bins classified brown/yellow-ochre in all 24 crops, indicating substantial parchment/scan-color leakage. This was diagnosed before any text-side association. Per the research decision, ordinary imaging noise is therefore removed rather than preserved as if it were plant signal.
-
-Color A is retained unchanged for audit. Color B is the scientific color measurement.
+Color A was a useful preflight failure: fixed HSV bins classified brown/yellow-ochre in all 24 crops, indicating substantial parchment/scan-color leakage. This was diagnosed before any text-side association. Color A remains archived; Color B is the scientific color measurement.
 
 ## Frozen correction
 
 Color B estimates parchment from each crop's outer 12% border under fixed brightness/chroma criteria, maps that median Lab background to neutral bright Lab `(230,128,128)`, removes very dark ink and near-background pixels, and clusters the remaining chromatic pixels without pre-naming colors.
 
-No Voynich text feature or morphology↔text result was available to this procedure.
+No Voynich text feature or image↔text result was used.
 
 ## Data-driven cluster count
 
 Pooled retained chromatic pixels: **823,956**.
 
-Silhouette scores:
+Silhouette scores: k=2 0.608025; k=3 0.644603; k=4 0.412643; k=5 0.422851; k=6 0.390209. The frozen smallest-within-0.01-of-best rule selected **k=3**.
 
-- k=2: 0.6080
-- k=3: **0.6446**
-- k=4: 0.4126
-- k=5: 0.4229
-- k=6: 0.3902
-
-The frozen smallest-within-0.01-of-best rule therefore selected **k=3**.
-
-Normalized Lab a/b centers, deterministically ordered:
+Normalized Lab `(a-128,b-128)` centers:
 
 - C1 = (-19.181, -0.540)
 - C2 = (-7.001, +9.870)
 - C3 = (-6.892, -17.502)
 
-These are deliberately not assigned pigment names for scientific use.
+These remain operational cluster IDs rather than pigment names.
 
-## Binary presence
+## Frozen eligibility outcome
 
-Using the frozen >=25 pixels and >=0.20% crop-area presence rule:
+Binary presence under the sealed result summary:
 
-- C1: 17/24 present — **eligible**
-- C2: 10/24 present — **eligible**
-- C3: 3/24 present — **not eligible as binary primary feature**
+- C1: **16/24 — eligible**
+- C2: **11/24 — eligible**
+- C3: **3/24 — not eligible**
 
-C1 and C2 satisfy the predeclared page/row distribution firewall. C3 fails the minimum prevalence rule and remains descriptive only in binary form.
+Present-row counts are C1: B=4, M=3, T=3, L2=4, L3=2; C2: B=1, M=3, T=1, L2=2, L3=4; C3: T=1, L2=1, L3=1.
 
-## Continuous area fraction
+Continuous area fractions satisfy the already frozen Color-B continuous eligibility rule for C1, C2, and C3. C3 is sparse: its binary feature fails prevalence. That fact is retained explicitly and cannot be repaired by changing the threshold after text association.
 
-- C1: 20 nonzero objects; median 0.23668; p90 0.54296 — **eligible**
-- C2: 23 nonzero objects; median 0.00159; p90 0.06085 — **eligible**
-- C3: 8 nonzero objects; median 0; p90 0.00292 — **eligible under the frozen continuous rule**
+## Diagnostic inspection
 
-The C3 continuous result is retained because the rule was frozen before measurement. Its sparsity must be considered when the statistical plan is frozen; it cannot be promoted simply because it later associates with text.
+A parchment-neutralized image sheet was inspected before any text-side association. The gross all-object brown/yellow contamination observed in Color A is no longer present. The normalized crops retain visibly localized chromatic plant regions rather than turning the entire parchment field into a single named-color signal.
 
-## Interpretation
+This diagnostic inspection was permitted by `COLOR_PLAN_B.md`; no thresholds or k were manually changed from association behavior.
 
-The main improvement over Color A is conceptual: the analysis no longer asks whether hand-picked named colors are present. It measures deviations from each crop's estimated parchment baseline and lets the image population define the chromatic classes.
+## Image-side Phase66 state
 
-This is still scan-level colorimetry, not pigment chemistry. It cannot establish original pigment identity or botanical meaning.
+The image side is now sealed with two independent measurement families:
 
-## Next firewall
+1. externally grounded botanical morphology characters that passed the morphology eligibility firewall;
+2. deterministic background-normalized chromatic clusters that passed the Color-B firewall.
 
-Image-side scientific candidates are now frozen before text association:
+Color does not repair morphology, and morphology does not define the color clusters.
 
-- morphology: the Phase66A characters that passed `ELIGIBILITY_REPORT_A.md`;
-- color binary: C1, C2;
-- color continuous area: C1, C2, C3.
+## Claim boundary
 
-No image↔text association has been computed at this point. The next step is to freeze the text feature family and `PLAN_B.md` statistical design before revealing any cross-modal result.
+This is scan-level colorimetry, not pigment chemistry. It does not establish original pigment identity, botanical organ color, taxon identity, semantics, or glyph values.
+
+The next step is to freeze the text-side feature family and Phase66B statistical design before the first image↔text association is computed.
