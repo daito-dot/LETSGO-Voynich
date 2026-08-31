@@ -1,0 +1,77 @@
+name: Phase 72A real historical ciphertext feasibility
+
+on:
+  push:
+    branches: [phase72-real-historical-cipher]
+    paths:
+      - 'experiments/phase72/**'
+      - '.github/workflows/phase72a-feasibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  feasibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout pinned Decode2LOD metadata snapshot
+        uses: actions/checkout@v4
+        with:
+          repository: Glottocrisio/Decode2LOD
+          ref: 1ab5dac5da1fbb65b3b851b31e21f2257f715c6d
+          path: external/decode2lod
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install source-audit runtime
+        run: python -m pip install --disable-pip-version-check requests rdflib
+
+      - name: Verify external metadata authority
+        run: |
+          test "$(git -C external/decode2lod rev-parse HEAD)" = "1ab5dac5da1fbb65b3b851b31e21f2257f715c6d"
+          test "$(git -C external/decode2lod hash-object populated_decryptontology.ttl)" = "943f1f4896ad004e5292a8348737706f09c9b729"
+          grep -q 'NO VOYNICH SCIENTIFIC SCORE AUTHORIZED' experiments/phase72/FEASIBILITY_A.md
+          python -m py_compile experiments/phase72/phase72a_decode_audit.py
+
+      - name: Audit metadata and public record details only
+        run: |
+          python experiments/phase72/phase72a_decode_audit.py \
+            external/decode2lod/populated_decryptontology.ttl \
+            --out phase72a_audit.json \
+            --details-out phase72a_external_details.json \
+            | tee phase72a_summary.txt
+          grep -q 'NO PHASE72 VOYNICH SCIENTIFIC SCORE COMPUTED' phase72a_summary.txt
+          grep -q '"scientific_metrics_called": false' phase72a_summary.txt
+          python -m json.tool phase72a_audit.json > /dev/null
+          python -m json.tool phase72a_external_details.json > /dev/null
+
+      - name: Record source hashes
+        run: |
+          sha256sum \
+            experiments/phase72/FEASIBILITY_A.md \
+            experiments/phase72/phase72a_decode_audit.py \
+            external/decode2lod/populated_decryptontology.ttl \
+            phase72a_audit.json \
+            phase72a_external_details.json \
+            phase72a_summary.txt \
+            > phase72a_sha256s.txt
+          cat phase72a_sha256s.txt
+
+      - name: Upload source-audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase72a-source-audit
+          path: |
+            phase72a_audit.json
+            phase72a_external_details.json
+            phase72a_summary.txt
+            phase72a_sha256s.txt
+          if-no-files-found: error
