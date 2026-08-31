@@ -1,0 +1,44 @@
+{
+  "schema": "phase67d-result-record-v1",
+  "status": "SEALED_RESULT",
+  "classification": "NOT SUPPORTED",
+  "workflow": {
+    "run_id": 33383847456,
+    "job_id": 99461919730,
+    "head_sha": "ca084d3be1e1a9c39b508a970be66ba88e5671ea",
+    "artifact_id": 9754792280,
+    "artifact_name": "phase67d-results",
+    "artifact_digest": "sha256:f5ac49b42602c38bf69f69b8bf89a87de069e6712653d2c26bf51559783e2331"
+  },
+  "formal_residual_vocabulary_size": 279,
+  "primary_closed_edit1_family": {
+    "rv": {
+      "leaf_composition": 0.4274226326005171,
+      "leaf_arrangement": 0.5784089926953797,
+      "leaf_margin": 0.5522905108585604,
+      "root_subterranean_architecture": 0.5281705938097147
+    },
+    "winner": "leaf_arrangement",
+    "maxT": 0.5784089926953797,
+    "global_exact_p": 0.7361111111111112,
+    "global_exact_tail_count": 848,
+    "uncorrected_winner_p": 0.052083333333333336,
+    "retention_only_p_for_winner": 0.13541666666666666,
+    "retention_residualized_winner": "root_subterranean_architecture",
+    "retention_residualized_maxT": 0.4962126220916163,
+    "retention_residualized_global_p": 0.8628472222222222,
+    "coverage_gate_pass": true
+  },
+  "frozen_secondary_exact_token": {
+    "winner": "root_subterranean_architecture",
+    "maxT": 0.5838783740238652,
+    "global_exact_p": 0.6762152777777778,
+    "global_exact_tail_count": 779,
+    "retention_only_p_for_winner": 0.4114583333333333,
+    "retention_residualized_winner": "root_subterranean_architecture",
+    "retention_residualized_maxT": 0.5439868749551086,
+    "retention_residualized_global_p": 0.6631944444444444
+  },
+  "exact_null_assignments": 1152,
+  "interpretation": "Among tokens retained after the Phase67C A1-compatible formal mask, neither closed edit1 lexical-neighborhood selection nor exact token-type selection is associated with the sealed image morphology under the exact within-folio null. The apparently low uncorrected leaf-arrangement family p=0.0521 does not survive the predeclared four-character maxT family correction (global p=0.7361) and weakens after retention residualization."
+}
