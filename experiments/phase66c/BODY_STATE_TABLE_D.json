@@ -1,0 +1,54 @@
+{
+  "schema": "phase66cd-body-state-table-v1",
+  "status": "SEALED_BEFORE_IMAGE_STATE_COMPARISON",
+  "source": {
+    "ebook": "Project Gutenberg 56288, North American Wild Flowers",
+    "parent_audit": "experiments/phase66c/BODY_AUDIT_C.json",
+    "mapping_schema": "experiments/phase66/ANNOTATION_SCHEMA_A.json"
+  },
+  "rule": "Only prose statements that determine one exact frozen Phase66 state are non-U. Taxon knowledge and illustration evidence are forbidden.",
+  "records": [
+    {"species":"Arum triphyllum","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Orchis spectabilis","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Castilleia coccinea","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Rudbeckia fulgida","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"mixed"},"evidence":"Leaves are broadly lanceolate and only sometimes once or twice lobed; the entry therefore explicitly describes mixed margin states across the depicted plant rather than a uniformly lobed margin."},
+    {"species":"Pyrola elliptica","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"crenate_or_rounded_teeth"},"evidence":"Leaves are explicitly described as slightly waved and scalloped at the edges."},
+    {"species":"Moneses uniflora","states":{"leaf_composition":"U","leaf_arrangement":"basal_or_rosette","leaf_margin":"U"},"evidence":"Leaves are explicitly clustered at the base of the running root-stalk."},
+    {"species":"Rubus odoratus","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"mixed"},"evidence":"Leaves are explicitly three- to five-lobed and the lobes are roughly toothed."},
+    {"species":"Veronica americana","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Erythronium americanum","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Trillium grandiflorum","states":{"leaf_composition":"U","leaf_arrangement":"whorled_3plus","leaf_margin":"U"},"evidence":"The Trillium description explicitly states three large leaves closely set round the stem below the flower."},
+    {"species":"Aquilegia canadensis","states":{"leaf_composition":"deeply_divided_uncertain_leaflet_status","leaf_arrangement":"U","leaf_margin":"lobed_or_incised"},"evidence":"Each larger leaf is explicitly divided into three and each division is again twice or thrice lobed and unequally notched; the prose does not use leaflet attachment language sufficient for a pinnate/palmate compound state."},
+    {"species":"Dicentra canadensis","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Trillium erectum","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Geranium maculatum","states":{"leaf_composition":"deeply_divided_uncertain_leaflet_status","leaf_arrangement":"U","leaf_margin":"mixed"},"evidence":"Leaves are explicitly divided into about five principal segments; these are again lobed and cut into sharply pointed irregular teeth."},
+    {"species":"Trientalis americana","states":{"leaf_composition":"U","leaf_arrangement":"whorled_3plus","leaf_margin":"U"},"evidence":"The entry explicitly says the leaves form a whorl at the upper part of the stem, mostly five to eight leaves."},
+    {"species":"Cypripedium parviflorum","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Cypripedium pubescens","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Iris versicolor","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Vaccinium oxycoccus","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Lilium philadelphicum","states":{"leaf_composition":"U","leaf_arrangement":"whorled_3plus","leaf_margin":"U"},"evidence":"The entry explicitly says the narrow-pointed leaves grow in whorls at intervals round the stem."},
+    {"species":"Campanula rotundifolia","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Cypripedium spectabile","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"}},
+    {"species":"Rosa blanda","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"U"},"evidence":"The prose gives five to seven leaflets but does not determine the frozen pinnate versus palmate compound state; it is conservatively U."},
+    {"species":"Pentstemon pubescens","states":{"leaf_composition":"U","leaf_arrangement":"U","leaf_margin":"serrate_or_dentate"},"evidence":"Root leaves are explicitly broadly lanceolate and coarsely toothed."}
+  ],
+  "summary": {
+    "non_u_cells": 12,
+    "leaf_composition": 2,
+    "leaf_arrangement": 4,
+    "leaf_margin": 6
+  },
+  "source_text_locations": {
+    "Rudbeckia fulgida": "Gutenberg HTML around line 1116",
+    "Pyrola elliptica": "Gutenberg HTML around line 566",
+    "Moneses uniflora": "Gutenberg Plate IV entry immediately after Pyrola",
+    "Rubus odoratus": "Gutenberg Plate IV entry",
+    "Trillium grandiflorum": "Gutenberg HTML around line 428",
+    "Aquilegia canadensis": "Gutenberg HTML around line 455",
+    "Geranium maculatum": "Gutenberg HTML around line 519",
+    "Trientalis americana": "Gutenberg HTML around line 536",
+    "Lilium philadelphicum": "Gutenberg HTML around line 743",
+    "Pentstemon pubescens": "Gutenberg HTML around line 891"
+  }
+}
