@@ -1,72 +1,66 @@
-# Next research frontier — Phase65A independent content-anchor audit
+# Next research frontier — Issue #55C occupancy-graph specificity
 
-Status: current frontier after Phase64B.
+Status: current frontier after Issue #55B integration.
 
-## Why the frontier moves now
+## Why the frontier moves here
 
-The project has accumulated a sequential mechanism-evidence staircase rather than one target-aware fit:
+Issue #55A established a cross-leaf slot3×slot5 dependence. Issue #55B showed that the signal is almost entirely the binary fact that the two slots are not occupied together:
 
-- frozen A1 structural gate;
-- fair N0/C0/A1 held-out tournament;
-- sealed prospective H62-P1 success;
-- held-out-vocabulary restriction;
-- independent GC/IT transcription replication;
-- empirical-inventory autonomy stress;
-- serious independently published Naibbe C1 fairness challenge.
+- full gain `0.0441774454 bits/token`;
+- binary occupancy gain `0.0442150445`;
+- subtype residual `-0.00003747`;
+- residual-null p `0.26973`.
 
-Phase64B is especially important because it shows both sides of the comparison. Published Naibbe can outperform weak C0 substantially on recurrence-profile geometry, so C mechanisms cannot be dismissed as powerless. Yet it still fails Voynich entry S1, local-prev10 S2 and the sealed short-range concentration geometry and is not an A1 rival.
+The result is therefore a morphotactic exclusion, not a rich 5×5 paired-state code.
 
-Continuing to add mechanisms to A1 or searching unlimited cipher variants now has poor information value and increasing researcher degrees of freedom.
+The next question is specificity. slot3×slot5 was selected through the failed E10 Sloane path, so simply retesting the same pair would not provide an unseen confirmation.
 
-## Phase65A question
+## Primary next question
 
-> Is there a localized external content anchor that can be fixed independently of Voynichese and support a genuinely prospective content-relation test?
+> Relative to the complete 12-slot occupancy graph, is the previously selected slot3×slot5 exclusion unusually strong, unusually transferable across physical leaves, or otherwise structurally distinctive?
 
-This is a prerequisite audit before semantic modeling. It is not permission to mine plant names, labels or translations until something looks good.
+## Required design
 
-## Candidate-anchor admissibility
+Before scoring:
 
-A primary anchor must satisfy all of the following:
+1. freeze binary occupancy for all 12 parser slots;
+2. define the full set of slot pairs and the same cross-leaf predictive statistic for every pair;
+3. freeze a null preserving line-local slot occupancy rates and relevant token structure;
+4. account explicitly for the previous selection of slot3×slot5;
+5. freeze the exceptional-pair criterion and multiplicity correction;
+6. predeclare register/Currier/token-position stratification or interaction tests;
+7. report the full pairwise matrix, including negative and redundant relations.
 
-1. **Independent origin** — the identification/localization comes from catalog, iconographic, manuscript, historical or other external evidence rather than Voynichese string similarity.
-2. **Useful localization** — object, label or paragraph-level localization is available; broad Herbal/Balneological/Zodiac page class alone is insufficient.
-3. **Pre-freezable mapping** — the mapping and confidence rule can be written down before target text features are evaluated.
-4. **Non-circular selection** — candidate objects/items are not chosen because their nearby tokens fit a proposed reading.
-5. **Replicable source identity** — image/catalog/dataset/version identifiers can be pinned.
-6. **Unseen prediction** — at least one held-out item/content relation can be predicted after training or rule construction.
-7. **Strong null** — physical layout, section, Currier/hand and token-family confounds are preserved where relevant.
+Independent-transcription replication should be added only if the relevant slot states can be defined without choosing a mapping from the target outcome.
 
-## Candidate classes to audit
+## What each outcome means
 
-Audit, without textual scoring, whether any of these can meet the requirements:
+### Selected pair remains exceptional
 
-- externally identifiable zodiac/astronomical iconography with localized neighboring labels or paragraphs;
-- catalogued object classes in pharmaceutical/recipe pages where object-text adjacency is unambiguous;
-- repeated diagram elements whose identity/order is fixed by geometry rather than text;
-- independently annotated localized illustration features from scholarly/digital collections;
-- any public object/label alignment dataset with stable item identifiers and provenance.
+Retain a specific slot3↔slot5 incompatibility and test whether it behaves like an alternative-construction constraint in a reversible surface grammar.
 
-Plant-species identifications are admissible only if the primary mapping is independently established strongly enough to be frozen without using Voynichese. Contested resemblance-based identifications should normally be sensitivity material, not primary truth labels.
+### Many pairs have comparable exclusion
 
-## Phase65A deliverables
+Promote the object of study from one pair to the complete slot-occupancy grammar. The E10/#55 pair then becomes one example rather than a privileged code candidate.
 
-Before any content score is computed:
+### Pair is subset-specific
 
-1. source audit with exact URLs/commit/version/date or image IDs;
-2. candidate mapping table with item IDs, localization and confidence provenance;
-3. independence audit explaining why the text was not used to choose the mapping;
-4. confound audit for section/page/layout/hand/Currier leakage;
-5. preregistered prediction and null;
-6. hard feasibility verdict: `ANCHOR READY` or `EXTERNALLY BLOCKED`.
+Narrow the claim to the relevant register/Currier/position domain. Do not describe it as manuscript-wide.
 
-Only `ANCHOR READY` authorizes Phase65B content-relation science.
+### Pair fails independent representation
 
-## Stop rule
+Treat the effect as representation-specific until a more invariant construction is identified.
 
-If no defensible anchor satisfies the requirements, do not lower the standard and do not call a page-class correlation semantic evidence. Record the blocker explicitly.
+## Prohibited shortcuts
 
-The fallback is one separately frozen **historically motivated residual C hypothesis** chosen for a prediction that distinguishes it from A1 and published Naibbe. It must not be a post-result locality/reuse patch to Naibbe and must carry an explicit complexity/target-dependence charge.
+Do not:
 
-## Claim boundary
+- assign semantic meanings to `t/k/p/f` or `cth/ckh/cph/cfh` from the exclusion alone;
+- return to Sloane/music interpretation without new external evidence;
+- optimize which slot pairs to report after seeing the complete matrix;
+- infer a cipher table from binary mutual exclusion;
+- add an invertible-transform interpretation before structural specificity is established.
 
-Even a successful Phase65B content relation would not by itself decipher the manuscript. It would be the first justified promotion from mechanism evidence toward content evidence. Translation/decipherment still requires an executable mapping, substantial unseen prediction and interpretable output.
+## Parallel external-source work
+
+Real historical ciphertext controls remain useful, but the current source-development work has not yet supplied externally established message-entry boundaries sufficient for a fair S1 comparison. That lane remains source-only until the population and boundary semantics are fixed before Voynich scoring.
