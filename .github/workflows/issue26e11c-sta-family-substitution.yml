@@ -1,0 +1,104 @@
+name: Issue26E11C STA family substitution
+
+on:
+  push:
+    branches: [issue26-music-e11-leon-substitution]
+    paths:
+      - 'experiments/issue26-music/PLAN_E11C.md'
+      - 'experiments/issue26-music/PLAN_E11C_AMENDMENT.md'
+      - 'experiments/issue26-music/phaseE11c_sta_family_substitution.py'
+      - 'experiments/issue26-music/phaseE11c_runner.py'
+      - '.github/workflows/issue26e11c-sta-family-substitution.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout E11C branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e11-leon-substitution
+          fetch-depth: 0
+
+      - name: Verify plan and amendment predate executables
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E11C.md | tail -1)
+          AMEND=$(git log --format=%H -- experiments/issue26-music/PLAN_E11C_AMENDMENT.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE11c_sta_family_substitution.py | tail -1)
+          RUNNER=$(git log --format=%H -- experiments/issue26-music/phaseE11c_runner.py | tail -1)
+          echo plan=$PLAN amend=$AMEND script=$SCRIPT runner=$RUNNER
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$AMEND" "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$RUNNER"
+          git merge-base --is-ancestor "$AMEND" "$RUNNER"
+
+      - name: Acquire frozen official ZL3b STA1
+        shell: bash
+        run: |
+          curl -fsSL --retry 3 https://www.voynich.nu/data/sta/ZL3b.txt -o ZL3b-STA1.txt
+          echo '8438ba1c45f47fe1d06b5262cbcdf60ce69158a0edbd4dd802612896f3217e2a  ZL3b-STA1.txt' | sha256sum -c -
+          test "$(head -1 ZL3b-STA1.txt)" = '#=IVTFF STA1 2.0 M 5'
+
+      - name: Checkout frozen CREMMA comparator
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+
+      - name: Verify Latin commit
+        shell: bash
+        run: test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1 numba==0.61.2
+
+      - name: Run E11C reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE11c_runner.py ZL3b-STA1.txt external/cremma > issue26e11c_results.json
+
+      - name: Print E11C summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e11c_results.json'))
+          print('classification=',r['classification'])
+          print('gates=',r['classification_gates'])
+          print('STA=',r['sta_population'])
+          print('latin_baseline=',r['latin_self_baseline']['mean_cross_entropy'],'top5=',r['latin_self_baseline']['top5_char_fraction'])
+          p=r['positive_control']
+          print('positive_pass=',p['passed'],'true=',p['mean_true_held_cross_entropy'],'recovered=',p['mean_recovered_held_cross_entropy'],'weighted_acc=',p['mean_occurrence_weighted_key_accuracy'],'rec=',p['exact_recovered_key_recurrence'])
+          v=r['voynich_primary']
+          print('voy_mean=',v['mean_held_cross_entropy'],'pooled=',v['pooled_held_cross_entropy'])
+          print('weighted_stability=',v['weighted_key_stability'],'exact_rec=',v['exact_full_key_recurrence'])
+          print('top5=',v['pooled_top5_char_fraction'],'hits6=',v['distinct_whole_token_hits_ge6_count'],'hit_folds=',v['folds_with_hits_ge6'])
+          for f in v['folds']:
+              print('\nfold',f['fold'],'train=',f['training_cross_entropy'],'held=',f['held']['cross_entropy'],'unused=',f['unused_plaintext_letter'])
+              print('mapping=',f['mapping'])
+              for s in f['held']['samples'][:5]: print(' sample',s['page'],s['text'])
+              print(' hits=',f['held']['whole_token_lexicon_hits'][:10])
+          PY
+          sha256sum issue26e11c_results.json
+
+      - name: Upload E11C artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e11c-sta-family-${{ github.sha }}
+          path: issue26e11c_results.json
+          if-no-files-found: error
+          retention-days: 90
