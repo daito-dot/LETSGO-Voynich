@@ -1,0 +1,45 @@
+{
+  "schema": "phase68a-result-record-v1",
+  "status": "SEALED_RESULT",
+  "classification": "NOT SUPPORTED",
+  "workflow": {
+    "run_id": 33383915585,
+    "job_id": 99462131137,
+    "head_sha": "919f7a85fc3f14a13ec421970ee17106a80a58af",
+    "artifact_id": 9754810200,
+    "artifact_name": "phase68a-lexical-results",
+    "artifact_digest": "sha256:d8cec404ce38d7cc677d51267aaaa1460cd9c584bfcc81f5a2408afdfafc3029"
+  },
+  "formal_residual_lexicon": {
+    "retained_tokens": 423,
+    "retained_distinct_types": 279,
+    "recurrent_exact_vocab_size_df2": 59,
+    "exact_token_nonzero_paragraphs": 14,
+    "edit1_anchor_nonzero_paragraphs": 14,
+    "text_only_feasibility_gate_pass": true
+  },
+  "primary": {
+    "winner_character": "leaf_arrangement",
+    "winner_lane": "edit1_anchor_family",
+    "maxT": 0.5201980385567532,
+    "global_exact_p": 0.9939236111111112,
+    "exact_tail_count": 1145,
+    "coverage_gate_pass": true,
+    "null_maxT_mean": 0.603232163923488,
+    "null_maxT_q95": 0.6790993994107627,
+    "null_maxT_max": 0.699335393428312
+  },
+  "retention_residualized": {
+    "winner_character": "root_subterranean_architecture",
+    "winner_lane": "exact_token",
+    "maxT": 0.5043366374481169,
+    "global_exact_p": 0.8498263888888888,
+    "exact_tail_count": 979,
+    "coverage_gate_pass": true
+  },
+  "minimum_uncorrected_cell_p": 0.3854166666666667,
+  "minimum_uncorrected_cell": "leaf_arrangement::exact_token",
+  "exact_null_assignments": 1152,
+  "result_sha256": "e159fd20dd0225f91ec9cdc5381ed2288858f154a47d79ebe67cd24c6d762817",
+  "interpretation": "After masking paragraph-entry and previous-ten edit1-compatible tokens, neither recurrent exact token identity nor exact-or-edit1 lexical-anchor neighborhood selection is associated with the sealed leaf/root morphology under the exact within-folio null. The observed family maximum is lower than almost all correct reassignments (p≈0.994). This closes further representational tweaking of the same 14 object-local morphology pairs as the current content frontier."
+}
