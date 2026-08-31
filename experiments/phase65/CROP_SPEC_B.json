@@ -1,0 +1,57 @@
+{
+  "schema": "phase65b-text-blind-crop-spec-v1",
+  "phase": "65B1",
+  "mode": "TEXT_BLIND_CROP_FREEZE_SPEC",
+  "normative_plan": "experiments/phase65/PLAN_B.md",
+  "source_manifest": "experiments/phase65/SOURCE_MANIFEST_B.json",
+  "source_manifest_git_blob": "0698c0c451ad525d74b976fb241e338373166ad0",
+  "selection_rule": "One fixed integer axis-aligned rectangle per transcription-confidence-eligible object, chosen from the exact Yale scan by visible drawing/layout geometry only. The rectangle is bounded before associated label glyphs or another plant fragment enter it. No label string, embedding, text distance, correlation, retrieval score, or permutation statistic is used.",
+  "manual_audit": {
+    "label_text_used_for_crop_choice": false,
+    "association_metric_computed": false,
+    "dino_embedding_computed": false,
+    "text_distance_computed": false,
+    "correlation_computed": false,
+    "permutation_statistic_computed": false
+  },
+  "confidence_excluded_before_crop": [
+    {
+      "page": "f102v2",
+      "row": "L2",
+      "object_id": "L2.7",
+      "reason": "Frozen Phase63B/65B transcription-confidence firewall; excluded before crop inspection/science."
+    }
+  ],
+  "units": [
+    {"page":"f100v","row":"T","object_id":"T.1","rect":[1020,150,420,370],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"T","object_id":"T.2","rect":[1540,150,250,370],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"T","object_id":"T.3","rect":[1900,150,370,350],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"T","object_id":"T.4","rect":[2470,150,430,330],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"M","object_id":"M.1","rect":[700,850,360,390],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"M","object_id":"M.2","rect":[1100,880,410,350],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"M","object_id":"M.3","rect":[1600,820,520,400],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"M","object_id":"M.4","rect":[2250,850,300,380],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"M","object_id":"M.5","rect":[2580,650,300,500],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"B","object_id":"B.1","rect":[670,1570,430,290],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"B","object_id":"B.2","rect":[1180,1570,620,270],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"B","object_id":"B.3","rect":[1900,1520,350,330],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f100v","row":"B","object_id":"B.4","rect":[2380,1540,290,430],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f102v2","row":"L2","object_id":"L2.1","rect":[700,730,160,190],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f102v2","row":"L2","object_id":"L2.2","rect":[920,800,180,160],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f102v2","row":"L2","object_id":"L2.3","rect":[1240,780,350,180],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f102v2","row":"L2","object_id":"L2.4","rect":[1630,700,180,220],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f102v2","row":"L2","object_id":"L2.5","rect":[1870,790,250,200],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f102v2","row":"L2","object_id":"L2.6","rect":[2180,760,420,240],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f102v2","row":"L3","object_id":"L3.1","rect":[590,1600,450,180],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f102v2","row":"L3","object_id":"L3.2","rect":[1100,1600,800,320],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f102v2","row":"L3","object_id":"L3.3","rect":[1990,1600,280,350],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f102v2","row":"L3","object_id":"L3.4","rect":[2300,1580,320,260],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}},
+    {"page":"f102v2","row":"L3","object_id":"L3.5","rect":[2350,1800,330,450],"quality_flags":{"label_glyphs":false,"other_plant":false,"page_edge":false,"fold":false,"scan_damage":false,"mapping_ambiguous":false}}
+  ],
+  "expected_coverage_if_source_and_crops_verify": {
+    "total_retained": 24,
+    "by_page": {"f100v": 13, "f102v2": 11},
+    "by_row": {"f100v/T": 4, "f100v/M": 5, "f100v/B": 4, "f102v2/L2": 6, "f102v2/L3": 5},
+    "coverage_firewall_pass": true
+  }
+}
