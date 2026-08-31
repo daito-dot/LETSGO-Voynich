@@ -1,0 +1,112 @@
+name: Issue26E9 Philip plaintext probe
+
+on:
+  push:
+    branches: [issue26-music-e9-philip-decode-probe]
+    paths:
+      - 'experiments/issue26-music/PLAN_E9.md'
+      - 'experiments/issue26-music/phaseE9_philip_decode_probe.py'
+      - 'experiments/issue26-music/issue26e_core.py'
+      - '.github/workflows/issue26e9-philip-decode-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout E9 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e9-philip-decode-probe
+          fetch-depth: 0
+
+      - name: Verify plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E9.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE9_philip_decode_probe.py | tail -1)
+          echo plan_first=$PLAN script_first=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout frozen CREMMA comparator
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact external inputs
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run target-only plaintext probe
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE9_philip_decode_probe.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma > issue26e9_probe.json
+
+      - name: Print probe summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e9_probe.json'))
+          print('status=',r['status'])
+          print('latin=',r['latin_population'])
+          for k in ['primary_min','max_sensitivity']:
+              x=r[k]
+              print('\n',k)
+              print('mean_held_cross_entropy=',x['mean_held_cross_entropy'])
+              print('key_recurrence=',x['exact_pitch_key_recurrence'])
+              print('recurrent_key=',x['most_recurrent_pitch_key'])
+              for f in x['folds']:
+                  print(' fold',f['fold'],'train=',f['selected_key']['cross_entropy'],'held=',f['held_cross_entropy'],'key=',f['selected_key']['slot'],f['selected_key']['perm'])
+              print('samples:')
+              for fold in x['samples']:
+                  for s in fold['samples'][:5]:
+                      print(' ',fold['fold'],s['page'],s['text'])
+              print('long lexicon hits:')
+              hits=[]
+              for fold in x['lexicon_hits']:
+                  hits.extend(fold['hits'])
+              hits.sort(key=lambda z:(-z['length'],-z['corpus_frequency'],z['word']))
+              for z in hits[:25]: print(' ',z)
+          PY
+          sha256sum issue26e9_probe.json
+
+      - name: Upload E9 probe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e9-plaintext-probe-${{ github.sha }}
+          path: issue26e9_probe.json
+          if-no-files-found: error
+          retention-days: 90
