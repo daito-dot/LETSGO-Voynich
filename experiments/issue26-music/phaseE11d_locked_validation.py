@@ -17,7 +17,7 @@ ALPHABET = dev.ALPHABET
 AI = dev.AI
 A = 24
 M = 23
-TARGET = 140_423
+TARGET = 70_000
 NVALID = 12
 assert len(ALPHABET) == A
 
@@ -185,7 +185,7 @@ def main():
         "experiment":"Issue26E11D locked 12-cipher monoalphabetic solver validation",
         "classification":classification,
         "solver":"FREQ-HILL frozen in E11D_SOLVER_FREEZE.md",
-        "validation_population":"PLAN_E11D.md + PLAN_E11D_VALIDATION_AMENDMENT.md",
+        "validation_population":"PLAN_E11D.md + PLAN_E11D_VALIDATION_AMENDMENT.md + PLAN_E11D_VALIDATION_CAPACITY_AMENDMENT.md",
         "latin_population":latin_meta,"rarity_order":"".join(rarity),"target_chars_per_cipher":TARGET,
         "gates":gates,"validations":vals,
     }
