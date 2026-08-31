@@ -1,0 +1,101 @@
+name: Issue26E15 Bacon biliteral carrier probe
+
+on:
+  push:
+    branches: [issue26-music-e15-bacon-biliteral-carrier]
+    paths:
+      - 'experiments/issue26-music/PLAN_E15.md'
+      - 'experiments/issue26-music/phaseE15_bacon_biliteral_carrier.py'
+      - '.github/workflows/issue26e15-bacon-biliteral.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e15-bacon-biliteral-carrier
+          fetch-depth: 0
+      - name: Verify plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E15.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE15_bacon_biliteral_carrier.py | tail -1)
+          echo plan=$PLAN script=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+      - name: Checkout frozen CREMMA comparator
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+      - name: Verify exact external inputs
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+      - name: Run E15 reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE15_bacon_biliteral_carrier.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma > issue26e15_results.json
+      - name: Print E15 summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e15_results.json'))
+          print('classification=',r['classification'])
+          print('flags=',r.get('flags'))
+          print('positive_control=',r['positive_control'])
+          print('latin_ce=',r['latin_self_baseline']['mean_cross_entropy'])
+          print('latin_top5=',r['latin_self_baseline']['pooled_top5_char_fraction'])
+          if 'primary_min' in r:
+              p=r['primary_min']
+              print('population=',r['primary_population'])
+              print('pooled=',p['pooled'])
+              print('recurrence=',p['exact_key_recurrence'],'modal=',p['modal_key'])
+              print('diagnostics_ce=',p['diagnostics']['cross_entropy'],'top5=',p['diagnostics']['top5_char_fraction'])
+              print('words6=',p['diagnostics']['distinct_words_ge6_count'],p['diagnostics']['distinct_words_ge6'][:30])
+              print('word_folds=',p['diagnostics']['word_folds_ge6'])
+              print('gates=',r['gates'])
+              print('order_null=',r['order_null_summary'])
+              for f in p['folds']:
+                  print('fold',f['fold'],'phase=',f['phase'],'orientation=',f['orientation'],'train=',f['training'],'held=',f['held'])
+              for s in p['diagnostics']['samples'][:10]: print('sample',s['page'],s['text'])
+              print('literal_phase0=',r['literal_phase0'])
+              m=r['max_sensitivity']
+              print('max_pooled=',m['pooled'],'max_recurrence=',m['exact_key_recurrence'],'max_modal=',m['modal_key'],'max_top5=',m['diagnostics']['top5_char_fraction'],'max_words6=',m['diagnostics']['distinct_words_ge6_count'])
+          PY
+          sha256sum issue26e15_results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue26e15-bacon-biliteral-${{ github.sha }}
+          path: issue26e15_results.json
+          retention-days: 90
