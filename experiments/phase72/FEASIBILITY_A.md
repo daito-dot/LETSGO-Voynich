@@ -4,6 +4,20 @@ Status: **NO VOYNICH SCIENTIFIC SCORE AUTHORIZED**
 
 Date: 2026-08-31
 
+## Pre-science source-schema amendment
+
+The first source-only audit parsed **7,959** DECODE records but returned zero candidates because the pinned Decode2LOD RDF snapshot stores controlled vocabulary fields as numeric IDs rather than display labels: for example `hasRecordType` is predominantly `"1"` / `"2"`, not the strings `Key` / `Cipher`. No Voynich score was computed in that run (`scientific_metrics_called=false`).
+
+Before any scientific score, the source parser is therefore corrected at the interface layer only:
+
+- DECODE web record `4417` and other independently displayed cipher records establish record-type ID **`2 = Cipher`**;
+- DECODE web record `205` and `1439` independently display **Key**, establishing **`1 = Key`**;
+- Phase72 keeps only record-type ID `2` (or a literal display value containing `cipher/crypt` if a future compatible snapshot exposes labels);
+- the 1400–1600 date window and privacy criterion are unchanged;
+- all corrected candidates must still be reported, and no candidate is ranked or chosen using Voynich outcomes.
+
+The original zero-candidate result is retained as a source-schema compatibility failure, **not** as `P72-EXT UNDERPOWERED`. Correcting a controlled-value decoding mismatch is allowed because Phase72A is explicitly a no-score source audit and no Voynich statistic has been revealed.
+
 ## Why this frontier
 
 Phase69–70 showed that meaningful plaintext can carry much of the Voynich short-range recurrence structure under a reversible surface encoder. Phase71 then showed that one explicit near-period Alberti message-initial reset/signal mechanism does not reproduce the Voynich paragraph-entry S1 direction; the primary S1 projection is opposite-signed in 5/5 folds.
@@ -41,7 +55,8 @@ The candidate historical population must be formed without inspecting any Voynic
 Initial feasibility window is deliberately broad:
 
 - `start_year` from **1400 through 1600 inclusive**;
-- record type contains `cipher` or `crypt` and is not a key-only record when that distinction is available;
+- record type = decoded DECODE **Cipher** controlled value (`2` in the pinned RDF snapshot), or an equivalent literal `cipher/crypt` display label;
+- key-only records are excluded;
 - public/non-private record where metadata exposes the flag.
 
 The audit must report all matching records, not hand-pick attractive examples.
@@ -85,7 +100,7 @@ Classify `P72-EXT READY` only if the objective external audit identifies at leas
 
 If the database has machine-readable ciphertext but not reliable boundaries, classify `P72-EXT TRANSCRIPTION READY / BOUNDARY BLOCKED`.
 
-If fewer than 10 usable transcribed records exist, classify `P72-EXT UNDERPOWERED`.
+If fewer than 10 usable transcribed records exist after the corrected source schema, classify `P72-EXT UNDERPOWERED`.
 
 These are source-availability classifications only, not scientific results about Voynich.
 
