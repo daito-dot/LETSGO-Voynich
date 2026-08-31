@@ -1,0 +1,40 @@
+name: Phase 67A exact image-body test
+
+on:
+  push:
+    branches:
+      - phase67-image-body-science
+    paths:
+      - 'experiments/phase67/**'
+      - '.github/workflows/phase67a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install NumPy
+        run: python -m pip install --disable-pip-version-check numpy
+      - name: Primary exact test
+        run: |
+          python experiments/phase67/run_phase67a.py \
+            --out experiments/phase67/RESULT_A.json
+      - name: Frozen secondary 1,2-gram sensitivity
+        run: |
+          python experiments/phase67/run_phase67a.py \
+            --orders 1,2 \
+            --out experiments/phase67/RESULT_A_N12.json
+      - name: Upload sealed results
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase67a-results
+          path: |
+            experiments/phase67/RESULT_A.json
+            experiments/phase67/RESULT_A_N12.json
