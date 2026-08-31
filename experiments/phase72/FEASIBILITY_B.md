@@ -4,6 +4,18 @@ Status: **NO VOYNICH SCIENTIFIC SCORE AUTHORIZED**
 
 Date: 2026-08-31
 
+## Pre-science source-path amendment
+
+The first Phase72B source-only audit parsed all **905** manifest records but reported zero usable transcriptions because manifest paths such as `sources/copiale/transcriptions/...` are relative to the repository's `benchmark/` directory, not the repository root. The run recorded 102 declared transcription paths as missing, with the path prefix mismatch visible directly in the audit. No Voynich score was computed (`scientific_metrics_called=false`).
+
+Before any scientific score, path resolution is therefore corrected deterministically:
+
+1. if `<repo>/<declared_path>` exists, use it;
+2. otherwise use `<repo>/benchmark/<declared_path>`;
+3. if neither exists, retain the record in the missing-path audit.
+
+No record/date/source/rights/eligibility criterion changes. The first zero-record result is retained as a source-interface compatibility failure, not as evidence that the benchmark is genuinely underpowered.
+
 ## Why a second source audit is necessary
 
 Phase72A's corrected DECODE audit found 2,267 cipher records dated 1400–1600 in the pinned metadata snapshot, but **2,257 are explicitly marked private ciphertext**. Only ten records satisfy the frozen non-private filter, and their public record-detail responses expose metadata only, not machine-readable ciphertext transcription. The public unauthenticated DECODE surface is therefore underpowered for the intended real-cipher boundary test.
@@ -38,7 +50,7 @@ Audit **all** manifest records satisfying:
 1. `synthetic` is false or absent/false;
 2. `rights_class == "open"`;
 3. a canonical or diplomatic transcription file is declared;
-4. the declared transcription file exists in the pinned checkout;
+4. the declared transcription file exists under the deterministic repository/`benchmark/` path rule above;
 5. the record has a historical upper date bound at or before **1900** when a parseable bound is present.
 
 The broad 1900 cutoff is a source-feasibility screen only. No later scientific population may be chosen by Voynich similarity.
@@ -73,7 +85,7 @@ If >=20 historical entries exist but fewer than 10 satisfy line/token shape, cla
 
 `P72-BENCH TEXT READY / ENTRY-SHAPE BLOCKED`.
 
-If fewer than 20 historical first-page/source-record entries exist, classify:
+If fewer than 20 historical first-page/source-record entries exist after the corrected path rule, classify:
 
 `P72-BENCH UNDERPOWERED`.
 
