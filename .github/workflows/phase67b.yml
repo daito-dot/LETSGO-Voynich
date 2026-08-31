@@ -1,0 +1,44 @@
+name: Phase 67B exact root-body test
+
+on:
+  push:
+    branches:
+      - phase67-image-body-science
+    paths:
+      - 'experiments/phase67/PLAN_B.md'
+      - 'experiments/phase67/ROOT_ANNOTATION_B.json'
+      - 'experiments/phase67/run_phase67b.py'
+      - 'experiments/phase67/TEXT_TABLE_A.json'
+      - 'experiments/phase67/BLOCK_MANIFEST_A.json'
+      - '.github/workflows/phase67b.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-root-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install NumPy
+        run: python -m pip install --disable-pip-version-check numpy
+      - name: Primary root exact test
+        run: |
+          python experiments/phase67/run_phase67b.py \
+            --out experiments/phase67/RESULT_B.json
+      - name: Frozen secondary 1,2-gram sensitivity
+        run: |
+          python experiments/phase67/run_phase67b.py \
+            --orders 1,2 \
+            --out experiments/phase67/RESULT_B_N12.json
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase67b-results
+          path: |
+            experiments/phase67/RESULT_B.json
+            experiments/phase67/RESULT_B_N12.json

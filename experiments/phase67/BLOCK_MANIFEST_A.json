@@ -1,0 +1,248 @@
+{
+  "schema": "phase67a-block-manifest-v1",
+  "status": "FROZEN_BEFORE_IMAGE_ANNOTATION",
+  "transcription": {
+    "name": "ZL3b",
+    "version": "3b",
+    "date": "2025-05-13",
+    "source_repository": "Aspect-Research/voynich-autoexploration",
+    "source_path": "data/transcriptions/eva_zl3b.txt"
+  },
+  "block_rule": "A block is a contiguous Lc/Lf or Lf-only illustration-label group immediately followed in ZL3b/page order by one unambiguous P0 paragraph. Lc loci delimit blocks but are not image morphology observations. Lf loci define the plant-fragment objects; split loci that belong to one physical Petersen fragment are one object.",
+  "pre_annotation_corrections": [
+    "The initial draft excluded the f99v tail after re-audit because its sole Lf occurs after the paragraph rather than before it.",
+    "Before any Phase67 image annotation, physical-row counts were cross-checked against the Quire 19 page inventory. f99r loci 85a/85b, f99r loci 87b/87c, and f99v loci 110/110b are split labels on one physical plant fragment each and are grouped as one image object. Block count and paragraph assignments are unchanged."
+  ],
+  "population_n": 14,
+  "folios": {
+    "f99r": 4,
+    "f99v": 3,
+    "f100r": 2,
+    "f100v": 1,
+    "f102v2": 2,
+    "f102v1": 2
+  },
+  "blocks": [
+    {
+      "block_id": "f99r_b1",
+      "folio": "f99r",
+      "container_loci": ["f99r.1"],
+      "fragment_objects": [
+        {"object_id":"68b","loci":["f99r.2"]},
+        {"object_id":"69","loci":["f99r.3"]},
+        {"object_id":"70","loci":["f99r.4"]},
+        {"object_id":"71","loci":["f99r.5"]},
+        {"object_id":"72","loci":["f99r.6","f99r.7"]},
+        {"object_id":"73","loci":["f99r.8"]},
+        {"object_id":"74","loci":["f99r.9"]},
+        {"object_id":"75","loci":["f99r.10"]},
+        {"object_id":"76","loci":["f99r.11"]},
+        {"object_id":"77","loci":["f99r.12"]},
+        {"object_id":"78","loci":["f99r.13"]},
+        {"object_id":"79","loci":["f99r.14"]}
+      ],
+      "paragraph_loci": ["f99r.15","f99r.16","f99r.17","f99r.18"]
+    },
+    {
+      "block_id": "f99r_b2",
+      "folio": "f99r",
+      "container_loci": ["f99r.19"],
+      "fragment_objects": [
+        {"object_id":"80b","loci":["f99r.20"]},
+        {"object_id":"81","loci":["f99r.21"]},
+        {"object_id":"82","loci":["f99r.22"]},
+        {"object_id":"83","loci":["f99r.23"]},
+        {"object_id":"84","loci":["f99r.24"]},
+        {"object_id":"85","loci":["f99r.25","f99r.26"]},
+        {"object_id":"86a","loci":["f99r.27"]}
+      ],
+      "paragraph_loci": ["f99r.28","f99r.29","f99r.30","f99r.31"]
+    },
+    {
+      "block_id": "f99r_b3",
+      "folio": "f99r",
+      "container_loci": ["f99r.32"],
+      "fragment_objects": [
+        {"object_id":"87","loci":["f99r.33","f99r.34"]},
+        {"object_id":"88","loci":["f99r.35"]},
+        {"object_id":"89","loci":["f99r.36"]},
+        {"object_id":"90","loci":["f99r.37"]},
+        {"object_id":"91","loci":["f99r.38"]},
+        {"object_id":"92","loci":["f99r.39"]},
+        {"object_id":"93","loci":["f99r.40"]}
+      ],
+      "paragraph_loci": ["f99r.41","f99r.42","f99r.43","f99r.44"]
+    },
+    {
+      "block_id": "f99r_b4",
+      "folio": "f99r",
+      "container_loci": ["f99r.45"],
+      "fragment_objects": [
+        {"object_id":"94b","loci":["f99r.46"]}
+      ],
+      "paragraph_loci": ["f99r.47","f99r.48","f99r.49","f99r.50","f99r.51","f99r.52"]
+    },
+    {
+      "block_id": "f99v_b1",
+      "folio": "f99v",
+      "container_loci": ["f99v.1"],
+      "fragment_objects": [
+        {"object_id":"95b","loci":["f99v.2"]},
+        {"object_id":"96","loci":["f99v.3"]},
+        {"object_id":"97","loci":["f99v.4"]},
+        {"object_id":"98","loci":["f99v.5"]},
+        {"object_id":"99","loci":["f99v.6"]},
+        {"object_id":"100","loci":["f99v.7"]},
+        {"object_id":"101","loci":["f99v.8"]},
+        {"object_id":"102","loci":["f99v.9"]}
+      ],
+      "paragraph_loci": ["f99v.10","f99v.11","f99v.12","f99v.13"]
+    },
+    {
+      "block_id": "f99v_b2",
+      "folio": "f99v",
+      "container_loci": ["f99v.14"],
+      "fragment_objects": [
+        {"object_id":"103b","loci":["f99v.15"]},
+        {"object_id":"104","loci":["f99v.16"]},
+        {"object_id":"105","loci":["f99v.17"]},
+        {"object_id":"106","loci":["f99v.18"]},
+        {"object_id":"107","loci":["f99v.19"]},
+        {"object_id":"108","loci":["f99v.20"]}
+      ],
+      "paragraph_loci": ["f99v.21","f99v.22","f99v.23","f99v.24"]
+    },
+    {
+      "block_id": "f99v_b3",
+      "folio": "f99v",
+      "container_loci": ["f99v.25"],
+      "fragment_objects": [
+        {"object_id":"109b","loci":["f99v.26"]},
+        {"object_id":"110","loci":["f99v.27","f99v.28"]},
+        {"object_id":"111","loci":["f99v.29"]},
+        {"object_id":"112","loci":["f99v.30"]},
+        {"object_id":"113","loci":["f99v.31"]}
+      ],
+      "paragraph_loci": ["f99v.32","f99v.33","f99v.34","f99v.35"]
+    },
+    {
+      "block_id": "f100r_b1",
+      "folio": "f100r",
+      "container_loci": [],
+      "fragment_objects": [
+        {"object_id":"115","loci":["f100r.1"]},
+        {"object_id":"116","loci":["f100r.2"]},
+        {"object_id":"117","loci":["f100r.3"]},
+        {"object_id":"118","loci":["f100r.4"]},
+        {"object_id":"119","loci":["f100r.5"]},
+        {"object_id":"120","loci":["f100r.6"]},
+        {"object_id":"121","loci":["f100r.7"]},
+        {"object_id":"122","loci":["f100r.8"]},
+        {"object_id":"123","loci":["f100r.9"]},
+        {"object_id":"124","loci":["f100r.10"]},
+        {"object_id":"125","loci":["f100r.11"]}
+      ],
+      "paragraph_loci": ["f100r.12","f100r.13","f100r.14","f100r.15"]
+    },
+    {
+      "block_id": "f100r_b2",
+      "folio": "f100r",
+      "container_loci": [],
+      "fragment_objects": [
+        {"object_id":"126","loci":["f100r.16","f100r.18"]},
+        {"object_id":"127","loci":["f100r.17"]},
+        {"object_id":"128","loci":["f100r.19"]},
+        {"object_id":"130","loci":["f100r.20"]},
+        {"object_id":"129","loci":["f100r.21"]}
+      ],
+      "paragraph_loci": ["f100r.22","f100r.23","f100r.24","f100r.25","f100r.26","f100r.27"]
+    },
+    {
+      "block_id": "f100v_b1",
+      "folio": "f100v",
+      "container_loci": [],
+      "fragment_objects": [
+        {"object_id":"131","loci":["f100v.1"]},
+        {"object_id":"132","loci":["f100v.2"]},
+        {"object_id":"133","loci":["f100v.3"]},
+        {"object_id":"134","loci":["f100v.4"]},
+        {"object_id":"135","loci":["f100v.5"]},
+        {"object_id":"136","loci":["f100v.6"]},
+        {"object_id":"137","loci":["f100v.7"]},
+        {"object_id":"138","loci":["f100v.8"]},
+        {"object_id":"139","loci":["f100v.9"]},
+        {"object_id":"140","loci":["f100v.10"]},
+        {"object_id":"141","loci":["f100v.11"]},
+        {"object_id":"142","loci":["f100v.12"]},
+        {"object_id":"143","loci":["f100v.13"]}
+      ],
+      "paragraph_loci": ["f100v.14","f100v.15","f100v.16","f100v.17","f100v.18","f100v.19","f100v.20","f100v.21","f100v.22"]
+    },
+    {
+      "block_id": "f102v2_b1",
+      "folio": "f102v2",
+      "container_loci": ["f102v2.1","f102v2.2"],
+      "fragment_objects": [
+        {"object_id":"214c","loci":["f102v2.3"]},
+        {"object_id":"215","loci":["f102v2.4"]},
+        {"object_id":"216","loci":["f102v2.5"]},
+        {"object_id":"217","loci":["f102v2.6"]},
+        {"object_id":"218","loci":["f102v2.7"]},
+        {"object_id":"219","loci":["f102v2.8"]},
+        {"object_id":"220","loci":["f102v2.9"]},
+        {"object_id":"221","loci":["f102v2.10"]},
+        {"object_id":"222","loci":["f102v2.11"]},
+        {"object_id":"223","loci":["f102v2.12"]},
+        {"object_id":"224","loci":["f102v2.13"]},
+        {"object_id":"225","loci":["f102v2.14"]},
+        {"object_id":"226","loci":["f102v2.15"]},
+        {"object_id":"227","loci":["f102v2.16"]}
+      ],
+      "paragraph_loci": ["f102v2.17","f102v2.18","f102v2.19","f102v2.20","f102v2.21","f102v2.22","f102v2.23"]
+    },
+    {
+      "block_id": "f102v2_b2",
+      "folio": "f102v2",
+      "container_loci": ["f102v2.24"],
+      "fragment_objects": [
+        {"object_id":"229","loci":["f102v2.25"]},
+        {"object_id":"230","loci":["f102v2.26"]},
+        {"object_id":"231","loci":["f102v2.27"]},
+        {"object_id":"232","loci":["f102v2.28"]},
+        {"object_id":"233","loci":["f102v2.29"]}
+      ],
+      "paragraph_loci": ["f102v2.30","f102v2.31","f102v2.32","f102v2.33","f102v2.34","f102v2.35","f102v2.36","f102v2.37","f102v2.38","f102v2.39"]
+    },
+    {
+      "block_id": "f102v1_b1",
+      "folio": "f102v1",
+      "container_loci": ["f102v1.1"],
+      "fragment_objects": [
+        {"object_id":"234","loci":["f102v1.2"]},
+        {"object_id":"235","loci":["f102v1.3"]},
+        {"object_id":"236","loci":["f102v1.4"]},
+        {"object_id":"237","loci":["f102v1.5"]},
+        {"object_id":"238","loci":["f102v1.6"]}
+      ],
+      "paragraph_loci": ["f102v1.7","f102v1.8","f102v1.9","f102v1.10","f102v1.11","f102v1.12","f102v1.13","f102v1.14"]
+    },
+    {
+      "block_id": "f102v1_b2",
+      "folio": "f102v1",
+      "container_loci": ["f102v1.15"],
+      "fragment_objects": [
+        {"object_id":"239b","loci":["f102v1.16"]},
+        {"object_id":"240","loci":["f102v1.17"]},
+        {"object_id":"241","loci":["f102v1.18"]}
+      ],
+      "paragraph_loci": ["f102v1.19","f102v1.20","f102v1.21","f102v1.22","f102v1.23","f102v1.24"]
+    }
+  ],
+  "excluded_tail": {
+    "folio": "f99v",
+    "container_loci": ["f99v.36"],
+    "paragraph_loci": ["f99v.37","f99v.38","f99v.39","f99v.40","f99v.41","f99v.42","f99v.43"],
+    "post_paragraph_fragment_loci": ["f99v.44"],
+    "reason": "The Lf occurs after the paragraph, so the frozen preceding-visual-block rule does not define a unique pair."
+  }
+}

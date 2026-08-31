@@ -1,0 +1,49 @@
+{
+  "schema": "phase67c-result-record-v1",
+  "status": "SEALED_RESULT",
+  "classification": "NOT SUPPORTED",
+  "workflow": {
+    "run_id": 33383613195,
+    "job_id": 99461202330,
+    "head_sha": "27123ff8e4e567dc39827fc91d4fb5eafd1aa086",
+    "artifact_id": 9754699347,
+    "artifact_name": "phase67c-results",
+    "artifact_digest": "sha256:34620cf4108cc2796cc1bd609360871083c629ddab2b7205bee2b5208a4603a4"
+  },
+  "formal_mask": {
+    "cleaned_tokens": 685,
+    "entry_masked": 107,
+    "local_edit1_masked": 155,
+    "innovation_retained": 423,
+    "retained_fraction": 0.6175182481751825
+  },
+  "primary_n123": {
+    "winner": "leaf_margin",
+    "maxT": 0.5776971295416312,
+    "global_exact_p": 0.6571180555555556,
+    "exact_tail_count": 757,
+    "retention_only_p_for_winner": 0.16666666666666666,
+    "retention_residualized_winner": "root_subterranean_architecture",
+    "retention_residualized_maxT": 0.4275715654120578,
+    "retention_residualized_global_exact_p": 0.9557291666666666,
+    "coverage_gate_pass": true,
+    "null_maxT": {
+      "mean": 0.5992290036745014,
+      "q95": 0.6956841717855402,
+      "max": 0.7510637904170786
+    },
+    "raw_result_sha256": "c7c8e5f4ee1db8e4c59d2c1069dc9a9f52e925e518bf6a308a27e918d631a04c"
+  },
+  "frozen_secondary_n12": {
+    "winner": "leaf_arrangement",
+    "maxT": 0.5470091860216955,
+    "global_exact_p": 0.7543402777777778,
+    "exact_tail_count": 869,
+    "retention_residualized_winner": "root_subterranean_architecture",
+    "retention_residualized_maxT": 0.385983541001171,
+    "retention_residualized_global_exact_p": 0.9826388888888888,
+    "raw_result_sha256": "a1c68d19829b07824d7f41699a86982e942acc4c0e20f6ef52bb72f9d96d101f"
+  },
+  "exact_null_assignments": 1152,
+  "interpretation": "Masking paragraph-line-0 tokens and all non-line0 tokens that are edit-distance-1 compatible with the preceding ten cleaned folio tokens does not reveal an image-morphology relation in the remaining body-token surface character structure. The negative is stronger after retention residualization and repeats under the frozen n=1,2 sensitivity. This closes this A1-compatible formal-mask -> residual character-ngram detector, not lexical/family-level or nonlocal semantic hypotheses."
+}

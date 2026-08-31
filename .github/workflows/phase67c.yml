@@ -1,0 +1,45 @@
+name: Phase 67C exact formal-residual image-body test
+
+on:
+  push:
+    branches:
+      - phase67-image-body-science
+    paths:
+      - 'experiments/phase67/PLAN_C.md'
+      - 'experiments/phase67/run_phase67c.py'
+      - 'experiments/phase67/BLOCK_MANIFEST_A.json'
+      - 'experiments/phase67/TEXT_TABLE_A.json'
+      - 'experiments/phase67/IMAGE_ANNOTATION_A.json'
+      - 'experiments/phase67/ROOT_ANNOTATION_B.json'
+      - '.github/workflows/phase67c.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-formal-residual-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install NumPy
+        run: python -m pip install --disable-pip-version-check numpy
+      - name: Primary exact formal-residual test
+        run: |
+          python experiments/phase67/run_phase67c.py \
+            --out experiments/phase67/RESULT_C.json
+      - name: Frozen secondary 1,2-gram sensitivity
+        run: |
+          python experiments/phase67/run_phase67c.py \
+            --orders 1,2 \
+            --out experiments/phase67/RESULT_C_N12.json
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase67c-results
+          path: |
+            experiments/phase67/RESULT_C.json
+            experiments/phase67/RESULT_C_N12.json

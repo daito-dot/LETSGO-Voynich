@@ -1,0 +1,37 @@
+{
+  "schema": "phase67b-result-record-v1",
+  "status": "SEALED_RESULT",
+  "classification": "NOT SUPPORTED",
+  "workflow": {
+    "run_id": 33383282015,
+    "job_id": 99460176681,
+    "head_sha": "5c0af4d23c5b92615ebad73cb39f22c967f53b9a",
+    "artifact_id": 9754575208,
+    "artifact_name": "phase67b-results",
+    "artifact_digest": "sha256:20ec3b78b96425cf406251f223e699ca0ae32417d9866d478c7d636a85e03ea4"
+  },
+  "primary_n123": {
+    "n_blocks": 14,
+    "centered_usable_blocks": 13,
+    "contributing_folios": ["f100r","f102v1","f102v2","f99r","f99v"],
+    "rv": 0.6128791566446704,
+    "exact_p": 0.4184027777777778,
+    "exact_tail_count": 482,
+    "coverage_p": 1.0,
+    "coverage_residualized_p": 0.4713541666666667,
+    "operational_coverage_gate_pass": true,
+    "detection_gate_pass": false
+  },
+  "frozen_secondary_n12": {
+    "classification": "NOT SUPPORTED",
+    "rv": 0.6174245526572875,
+    "exact_p": 0.3055555555555556,
+    "exact_tail_count": 352,
+    "coverage_p": 1.0,
+    "coverage_residualized_p": 0.3116319444444444,
+    "centered_usable_blocks": 13,
+    "contributing_folios": ["f100r","f102v1","f102v2","f99r","f99v"]
+  },
+  "exact_null_assignments": 1152,
+  "interpretation": "Root/subterranean architecture distributions do not predict the immediately following body-paragraph character-ngram structure beyond exact within-folio reassignment. The frozen 1,2-gram sensitivity is also null. This rejects this local root-morphology-to-surface-body detector, not all semantic relation between pharmaceutical illustrations and running text."
+}

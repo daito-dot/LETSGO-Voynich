@@ -1,0 +1,77 @@
+{
+  "schema": "phase67a-result-record-v1",
+  "status": "SEALED_RESULT",
+  "classification": "NOT SUPPORTED",
+  "workflow": {
+    "run_id": 33382775064,
+    "head_sha": "1c1f4bd69ac0d994130c5991dbd4a3390a86fefa",
+    "artifact_id": 9754391675,
+    "artifact_name": "phase67a-results",
+    "artifact_digest": "sha256:8fa56e61402300abfdde89c019360c9717c1f5895664a775dfcfe011fae11451",
+    "note": "Run 1 failed before scientific output because of a NumPy scalar-extraction compatibility bug. Run 2 succeeded after the one-line scalar extraction fix; no Phase67 association result had been observed before that fix."
+  },
+  "exact_null": {
+    "frozen_expression": "4! * 3! * 2! * 1! * 2! * 2!",
+    "correct_assignment_count": 1152,
+    "note": "PLAN_A.md stated 2304 by arithmetic error; ARITHMETIC_CORRECTION_A.md records the post-reveal clerical correction. The executable derived and exhausted all 1152 assignments."
+  },
+  "primary_n123": {
+    "n_blocks": 14,
+    "usable_centered_blocks_each_character": 9,
+    "contributing_folios_each_character": ["f100r","f102v1","f102v2","f99r"],
+    "rv": {
+      "leaf_composition": 0.3669316600180217,
+      "leaf_arrangement": 0.6480915976415201,
+      "leaf_margin": 0.651104888344988
+    },
+    "winner": "leaf_margin",
+    "maxT": 0.651104888344988,
+    "global_exact_p": 0.19791666666666666,
+    "global_exact_tail_count": 228,
+    "uncorrected_character_p": {
+      "leaf_composition": 0.75,
+      "leaf_arrangement": 0.17708333333333334,
+      "leaf_margin": 0.16666666666666666
+    },
+    "coverage_control_p": {
+      "leaf_composition": 0.09895833333333333,
+      "leaf_arrangement": 0.14583333333333334,
+      "leaf_margin": 0.11979166666666667
+    },
+    "coverage_residualized_rv": {
+      "leaf_composition": 0.3687771700561055,
+      "leaf_arrangement": 0.5069540035895537,
+      "leaf_margin": 0.5465896440283683
+    },
+    "coverage_residualized_winner": "leaf_margin",
+    "coverage_residualized_maxT": 0.5465896440283683,
+    "coverage_residualized_global_exact_p": 0.53125,
+    "coverage_residualized_global_tail_count": 612,
+    "operational_coverage_gate_pass": true,
+    "null_maxT": {
+      "mean": 0.6039082733938799,
+      "q95": 0.6877521096029146,
+      "max": 0.7073786929837304
+    }
+  },
+  "frozen_secondary_n12": {
+    "classification": "NOT SUPPORTED",
+    "winner": "leaf_arrangement",
+    "maxT": 0.6627630368895434,
+    "global_exact_p": 0.15625,
+    "global_exact_tail_count": 180,
+    "coverage_residualized_maxT": 0.5406877076855864,
+    "coverage_residualized_global_exact_p": 0.4114583333333333,
+    "null_maxT": {
+      "mean": 0.6064355772418568,
+      "q95": 0.6895903819596103,
+      "max": 0.7253757611966641
+    }
+  },
+  "raw_result_sha256": {
+    "primary_n123": "6a82bdc71164828559d627077072a419752e24208ace1fe40cbedaa0248efa94",
+    "secondary_n12": "fab34687c7423941d196ae96a721c7b03d6190e726d17812ef443578e544dfed"
+  },
+  "post_recording_correction": "The previous RESULT_A_RECORD copied the n=1,2 null-summary mean/q95/max into the primary null-summary field. Observed RV values, p-values, tail counts, gate and classification were unaffected. This record now preserves the first successful primary and sensitivity null summaries separately.",
+  "interpretation": "Within the frozen Quire 19 pharmaceutical blocks, leaf-composition, leaf-arrangement, and leaf-margin distributions did not predict the immediately following body-paragraph character-ngram structure beyond within-folio permutations. The null persists in the frozen n=1,2 sensitivity and becomes weaker after coverage residualization. This rejects this leaf-morphology-to-local-body-surface detector, not all semantic relation between illustrations and running text."
+}

@@ -1,0 +1,123 @@
+name: Phase 69A adaptive homophone science
+
+on:
+  push:
+    branches: [phase69-adaptive-homophone]
+    paths:
+      - 'experiments/phase69/PLAN_A.md'
+      - 'experiments/phase69/phase69a_adaptive_naibbe.py'
+      - '.github/workflows/phase69a-science.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen scientific head
+        uses: actions/checkout@v4
+
+      - name: Checkout frozen ZL3b authority
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Checkout frozen CREMMA plaintext panel
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout exact published Naibbe source
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Verify exact external authorities
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+
+      - name: Verify frozen plan and compile
+        run: |
+          grep -q 'FROZEN BEFORE FIRST C2-LH1 VOYNICH SCORE' experiments/phase69/PLAN_A.md
+          python -m py_compile experiments/phase69/phase69a_adaptive_naibbe.py
+
+      - name: First authorized Phase69A scientific reveal
+        run: |
+          python experiments/phase69/phase69a_adaptive_naibbe.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            external/cremma \
+            external/naibbe \
+            > phase69a_results.json
+          python -m json.tool phase69a_results.json > /dev/null
+          sha256sum phase69a_results.json
+
+      - name: Print frozen verdict summary
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase69a_results.json'))
+          out={
+            'classification':x['classification'],
+            'reversibility_and_utilization':{
+              'LH0_decode_accuracy':x['reversibility_and_utilization']['LH0_decode_accuracy'],
+              'LH1_decode_accuracy':x['reversibility_and_utilization']['LH1_decode_accuracy'],
+              'LH1_opportunity_fraction_global':x['reversibility_and_utilization']['LH1_opportunity_fraction_global'],
+            },
+            'mechanism_check':x['local_adaptation_mechanism_check'],
+            'LH0':{
+              'ratios':x['arms']['LH0']['primary_evaluation']['candidate_ratio_of_means_to_voynich'],
+              'H62':x['arms']['LH0']['primary_evaluation']['H62P1_summary'],
+            },
+            'LH1':{
+              'ratios':x['arms']['LH1']['primary_evaluation']['candidate_ratio_of_means_to_voynich'],
+              'H62':x['arms']['LH1']['primary_evaluation']['H62P1_summary'],
+              'structurally_viable':x['arms']['LH1']['primary_evaluation']['structurally_viable'],
+              'A1_R1_rival':x['arms']['LH1']['primary_evaluation']['A1_R1_rival'],
+            },
+            'vs_sealed_C1':x['descriptive_comparison_to_sealed_published_C1_E0'],
+          }
+          print(json.dumps(out, indent=2))
+          PY
+
+      - name: Record provenance hashes
+        run: |
+          sha256sum \
+            experiments/phase69/PLAN_A.md \
+            experiments/phase69/phase69a_adaptive_naibbe.py \
+            experiments/phase64/phase64b_naibbe.py \
+            experiments/phase64/phase64b_science_results.json \
+            phase69a_results.json \
+            > phase69a_sha256s.txt
+          cat phase69a_sha256s.txt
+
+      - name: Upload first-reveal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase69a-first-reveal
+          path: |
+            phase69a_results.json
+            phase69a_sha256s.txt
+          if-no-files-found: error
