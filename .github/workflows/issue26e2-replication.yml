@@ -1,0 +1,88 @@
+name: Issue26E2 high-resolution and IT replication
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/issue26-music/PLAN_E2.md'
+      - 'experiments/issue26-music/phaseE2_replication.py'
+      - '.github/workflows/issue26e2-replication.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout E2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Verify E2 plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E2.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE2_replication.py | tail -1)
+          echo plan_first=$PLAN script_first=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Acquire frozen IT2a independent transcription
+        shell: bash
+        run: |
+          curl -fsSL --retry 3 https://www.voynich.nu/data/IT2a-n.txt -o IT2a-n.txt
+          echo '7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  IT2a-n.txt' | sha256sum -c -
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run E2 reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE2_replication.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            IT2a-n.txt > issue26e2_results.json
+
+      - name: Print verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e2_results.json'))
+          print('classification=',r['frozen_classification'])
+          print('gates=',r['gates'])
+          for k in ['E2A_ZL_min_1000','E2A_ZL_max_1000','E2B_IT_min_refit','E2B_IT_max_refit','E2C_IT_max_fixed_map']:
+              x=r[k]
+              print(k, 'coverage=',x['mean_parse_coverage'], 'A=',x['mean_guidonian_accuracy'],
+                    'null=',x['paired_null_mean_median'], 'adv=',x['global_advantage'],
+                    'p=',x['p_global'], 'wins=',x['fold_null_median_wins'])
+              print('folds=',[(f['fold'],f['guidonian_accuracy'],f['null_median_accuracy'],f['p_fold']) for f in x['folds']])
+          print('replay=',r['first100_replay_assertions'])
+          print('hashes=',r['inputs'])
+          PY
+          sha256sum issue26e2_results.json
+
+      - name: Upload E2 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e2-first-reveal
+          path: issue26e2_results.json
+          if-no-files-found: error
+          retention-days: 90
