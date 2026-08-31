@@ -1,0 +1,150 @@
+name: Issue62 signed occupancy graph stability
+
+on:
+  push:
+    branches: [issue62-occupancy-graph-stability]
+    paths:
+      - 'experiments/occupancy-graph-stability/PLAN_A.md'
+      - 'experiments/occupancy-graph-stability/phase58b_graph_stability.py'
+      - 'experiments/occupancy-graph-stability/preflight58b.py'
+      - '.github/workflows/issue62-graph-stability.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/occupancy-graph-stability/**'
+      - '.github/workflows/issue62-graph-stability.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Verify target plan predates executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/occupancy-graph-stability/PLAN_A.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/occupancy-graph-stability/phase58b_graph_stability.py | tail -1)
+          test -n "$PLAN"
+          test -n "$SCRIPT"
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          echo "target plan first-add: $PLAN"
+          echo "target script first-add: $SCRIPT"
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source input
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd _cipher_benchmark
+          test "$(git rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Syntax and synthetic tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            experiments/occupancy-graph-stability/source_audit.py \
+            experiments/occupancy-graph-stability/preflight58b.py \
+            experiments/occupancy-graph-stability/phase58b_graph_stability.py
+          python experiments/occupancy-graph-stability/phase58b_graph_stability.py --self-test
+
+      - name: Reproduce frozen populations without pair scoring
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/occupancy-graph-stability/preflight58b.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue62_preflight.json
+          cat issue62_preflight.json
+          python - <<'PY'
+          import json
+          r=json.load(open('issue62_preflight.json'))
+          assert r['scope'] == 'preflight_only_no_pair_graph_scoring'
+          assert r['visible_tokens'] == 32570
+          assert r['parsed_tokens'] == 25071
+          PY
+
+  target-first-reveal:
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source input
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd _cipher_benchmark
+          test "$(git rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Execute frozen Issue58B target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/occupancy-graph-stability/phase58b_graph_stability.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue62_graph_stability_results.json
+
+      - name: Print preregistered summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue62_graph_stability_results.json'))
+          p=r['primary_min']
+          print('register/section:', p['register_section_classification'])
+          print('position:', p['position_classification'])
+          print('null maxT:', p['null']['maxT_summary'])
+          for name,c in p['contrast_classifications'].items():
+              print(name, c['classification'], 'R=',c['pearson_full'], 'p=',c['p_maxT'],
+                    'W=',c['within_source'],c['within_target'],
+                    'X=',c['source_to_target'],c['target_to_source'])
+          PY
+          sha256sum issue62_graph_stability_results.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue62-graph-stability-${{ github.event.pull_request.head.sha || github.sha }}
+          path: issue62_graph_stability_results.json
+          retention-days: 90
