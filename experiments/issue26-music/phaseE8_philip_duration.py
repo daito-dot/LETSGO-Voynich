@@ -4,7 +4,6 @@ from __future__ import annotations
 import hashlib
 import itertools
 import json
-import math
 import random
 import statistics
 import sys
@@ -59,8 +58,7 @@ def make_null_partitions(n=NULL_N):
             chars = list(ALPHABET)
             rng = random.Random(stable_seed(f"Issue26E8:PhilipPartitionNull:v1:{j}:{attempt}"))
             rng.shuffle(chars)
-            groups = [chars[k:k + 5] for k in range(0, 20, 5)]
-            key = canonical_partition(groups)
+            key = canonical_partition([chars[k:k + 5] for k in range(0, 20, 5)])
             if key not in seen:
                 seen.add(key)
                 out.append(key)
@@ -84,10 +82,23 @@ def normalize_latin_char(ch: str):
     return c
 
 
-def latin_letter_runs(root: Path):
-    runs = []
-    file_count = 0
-    line_count = 0
+def latin_letter_counts(root: Path):
+    c1 = np.zeros(20, dtype=np.int64)
+    c2 = np.zeros((20, 20), dtype=np.int64)
+    file_count = line_count = retained_runs = retained_letters = retained_pairs = 0
+
+    def add_run(run):
+        nonlocal retained_runs, retained_letters, retained_pairs
+        if len(run) < 5:
+            return
+        retained_runs += 1
+        retained_letters += len(run)
+        retained_pairs += len(run) - 1
+        for x in run:
+            c1[x] += 1
+        for a, b in zip(run, run[1:]):
+            c2[a, b] += 1
+
     for rel in MANUSCRIPT_DIRS:
         d = root / rel
         if not d.is_dir():
@@ -104,18 +115,22 @@ def latin_letter_runs(root: Path):
                     if c is None:
                         continue
                     if c in ALPHABET_INDEX:
-                        cur.append(c)
+                        cur.append(ALPHABET_INDEX[c])
                     else:
-                        if len(cur) >= 5:
-                            runs.append(tuple(cur))
+                        add_run(cur)
                         cur = []
-                if len(cur) >= 5:
-                    runs.append(tuple(cur))
-    if not runs:
+                add_run(cur)
+
+    if retained_runs == 0:
         raise RuntimeError("no Latin runs")
-    return runs, {"files": file_count, "physical_lines": line_count, "retained_runs": len(runs),
-                  "retained_letters": sum(len(r) for r in runs),
-                  "retained_pairs": sum(len(r) - 1 for r in runs)}
+    meta = {
+        "files": file_count,
+        "physical_lines": line_count,
+        "retained_runs": retained_runs,
+        "retained_letters": retained_letters,
+        "retained_pairs": retained_pairs,
+    }
+    return {"c1": c1, "c2": c2}, meta
 
 
 def partition_assignment(groups):
@@ -128,19 +143,6 @@ def partition_assignment(groups):
     return assign
 
 
-def latin_stats(runs, groups):
-    assign = partition_assignment(groups)
-    c1 = np.zeros(4, dtype=np.int64)
-    c2 = np.zeros((4, 4), dtype=np.int64)
-    for run in runs:
-        seq = [int(assign[ALPHABET_INDEX[c]]) for c in run]
-        for x in seq:
-            c1[x] += 1
-        for a, b in zip(seq, seq[1:]):
-            c2[a, b] += 1
-    return normalize_counts(c1), normalize_counts(c2)
-
-
 def normalize_counts(x):
     a = np.asarray(x, dtype=float)
     s = float(a.sum())
@@ -149,13 +151,27 @@ def normalize_counts(x):
     return a / s
 
 
+def latin_stats(base, groups):
+    assign = partition_assignment(groups)
+    c1 = np.zeros(4, dtype=np.int64)
+    c2 = np.zeros((4, 4), dtype=np.int64)
+    for a in range(20):
+        ga = int(assign[a])
+        c1[ga] += int(base["c1"][a])
+        for b in range(20):
+            c2[ga, int(assign[b])] += int(base["c2"][a, b])
+    return normalize_counts(c1), normalize_counts(c2)
+
+
 def jsd(p, q):
     p = np.asarray(p, dtype=float).reshape(-1)
     q = np.asarray(q, dtype=float).reshape(-1)
     m = 0.5 * (p + q)
+
     def kl(a, b):
         mask = a > 0
         return float(np.sum(a[mask] * np.log2(a[mask] / b[mask])))
+
     return 0.5 * kl(p, m) + 0.5 * kl(q, m)
 
 
@@ -169,36 +185,45 @@ def voynich_counts(items, leaves, parser, policy, slot):
     c1 = np.zeros(4, dtype=np.int64)
     c2 = np.zeros((4, 4), dtype=np.int64)
     runs = 0
+
+    def add_run(run):
+        nonlocal runs
+        if len(run) < 5:
+            return
+        runs += 1
+        for x in run:
+            c1[x] += 1
+        for a, b in zip(run, run[1:]):
+            c2[a, b] += 1
+
     for it in items:
         if it["leaf"] not in leaves:
             continue
         for line in it["lines"]:
             cur = []
-            def flush():
-                nonlocal runs, cur
-                if len(cur) >= 5:
-                    runs += 1
-                    for x in cur:
-                        c1[x] += 1
-                    for a, b in zip(cur, cur[1:]):
-                        c2[a, b] += 1
-                cur = []
             for tok in line:
                 p = parser.pick(tok, policy)
                 if p is None:
-                    flush()
+                    add_run(cur)
+                    cur = []
                     continue
                 val = p[1][slot]
                 if val not in si:
                     raise RuntimeError(f"unexpected slot{slot} value {val!r}")
                 cur.append(si[val])
-            flush()
-    return {"c1": c1, "c2": c2, "runs": runs, "events": int(c1.sum()), "pairs": int(c2.sum()),
-            "state_counts": c1.tolist()}
+            add_run(cur)
+
+    return {
+        "c1": c1,
+        "c2": c2,
+        "runs": runs,
+        "events": int(c1.sum()),
+        "pairs": int(c2.sum()),
+        "state_counts": c1.tolist(),
+    }
 
 
 def permute_stats(raw, perm):
-    # perm maps raw-state index -> external-group index.
     c1 = np.zeros(4, dtype=np.int64)
     c2 = np.zeros((4, 4), dtype=np.int64)
     for a in range(4):
@@ -216,8 +241,7 @@ def select_key(train_by_slot, l1, l2):
             continue
         for perm in itertools.permutations(range(4)):
             v1, v2 = permute_stats(raw, perm)
-            d = distance(v1, v2, l1, l2)
-            key = (float(d), slot, tuple(perm))
+            key = (float(distance(v1, v2, l1, l2)), slot, tuple(perm))
             if best is None or key < best:
                 best = key
     if best is None:
@@ -239,41 +263,46 @@ def build_fold_stats(items, parser, policy):
     out = []
     for f, held in enumerate(folds):
         train = universe - held
-        tr = {slot: voynich_counts(items, train, parser, policy, slot) for slot in CANDIDATE_SLOTS}
-        te = {slot: voynich_counts(items, held, parser, policy, slot) for slot in CANDIDATE_SLOTS}
-        out.append({"fold": f, "held_leaves": sorted(held), "train": tr, "held": te})
+        out.append({
+            "fold": f,
+            "held_leaves": sorted(held),
+            "train": {slot: voynich_counts(items, train, parser, policy, slot) for slot in CANDIDATE_SLOTS},
+            "held": {slot: voynich_counts(items, held, parser, policy, slot) for slot in CANDIDATE_SLOTS},
+        })
     return out
 
 
-def evaluate_partition(fold_stats, latin, groups):
-    l1, l2 = latin_stats(latin, groups)
+def evaluate_partition(fold_stats, latin_base, groups):
+    l1, l2 = latin_stats(latin_base, groups)
     rows = []
     for fs in fold_stats:
         key = select_key(fs["train"], l1, l2)
         held_d, held_raw = score_key(fs["held"], key, l1, l2)
-        rows.append({"fold": fs["fold"], "held_distance": float(held_d),
-                     "slot": int(key["slot"]), "perm": list(key["perm"]),
-                     "train_distance": float(key["train_distance"]),
-                     "held_events": held_raw["events"], "held_pairs": held_raw["pairs"],
-                     "held_runs": held_raw["runs"],
-                     "training_state_counts": fs["train"][key["slot"]]["state_counts"]})
+        rows.append({
+            "fold": fs["fold"],
+            "held_distance": float(held_d),
+            "slot": int(key["slot"]),
+            "perm": list(key["perm"]),
+            "train_distance": float(key["train_distance"]),
+            "held_events": held_raw["events"],
+            "held_pairs": held_raw["pairs"],
+            "held_runs": held_raw["runs"],
+            "training_state_counts": fs["train"][key["slot"]]["state_counts"],
+        })
     return rows
 
 
-def evaluate_policy(items, parser, policy, latin, nulls):
+def evaluate_policy(items, parser, policy, latin_base, nulls):
     folds = build_fold_stats(items, parser, policy)
-    target_rows = evaluate_partition(folds, latin, PHILIP_GROUPS)
+    target_rows = evaluate_partition(folds, latin_base, PHILIP_GROUPS)
     target_mean = statistics.fmean(r["held_distance"] for r in target_rows)
 
-    null_rows_by_partition = []
     null_means = []
     fold_nulls = [[] for _ in range(5)]
     for groups in nulls:
-        rows = evaluate_partition(folds, latin, groups)
+        rows = evaluate_partition(folds, latin_base, groups)
         vals = [r["held_distance"] for r in rows]
-        m = statistics.fmean(vals)
-        null_means.append(m)
-        null_rows_by_partition.append(vals)
+        null_means.append(statistics.fmean(vals))
         for f, x in enumerate(vals):
             fold_nulls[f].append(x)
 
@@ -281,11 +310,12 @@ def evaluate_policy(items, parser, policy, latin, nulls):
     fold_wins = sum(target_rows[f]["held_distance"] < fold_medians[f] - EPS for f in range(5))
     key_counts = Counter((r["slot"], tuple(r["perm"])) for r in target_rows)
     recurrent_key, recurrence = min(key_counts.items(), key=lambda kv: (-kv[1], kv[0]))
-    sample_pass = all(r["held_events"] >= 1000 and r["held_pairs"] >= 500 and
-                      min(r["training_state_counts"]) > 0 for r in target_rows)
+    sample_pass = all(
+        r["held_events"] >= 1000 and r["held_pairs"] >= 500 and min(r["training_state_counts"]) > 0
+        for r in target_rows
+    )
     p = (1 + sum(x <= target_mean + EPS for x in null_means)) / (len(null_means) + 1)
     null_med = statistics.median(null_means)
-    q05 = e.quantile(null_means, .05)
     conditions = {
         "p_le_0_05": p <= .05,
         "below_null_median": target_mean < null_med - EPS,
@@ -293,19 +323,24 @@ def evaluate_policy(items, parser, policy, latin, nulls):
         "exact_key_recurrence_ge_4": recurrence >= 4,
         "sample_gate": sample_pass,
     }
+
     if not sample_pass:
         classification = "INSUFFICIENT SAMPLE"
     elif conditions["p_le_0_05"] and conditions["below_null_median"] and conditions["fold_median_wins_ge_4"]:
-        classification = ("PHILIP DURATION-GROUP COMPATIBILITY" if conditions["exact_key_recurrence_ge_4"]
-                          else "UNSTABLE FOUR-STATE MATCH / NOT CIPHER SUPPORT")
+        classification = (
+            "PHILIP DURATION-GROUP COMPATIBILITY"
+            if conditions["exact_key_recurrence_ge_4"]
+            else "UNSTABLE FOUR-STATE MATCH / NOT CIPHER SUPPORT"
+        )
     else:
         classification = "PHILIP DURATION-GROUP NOT SUPPORTED"
+
     return {
         "policy": policy,
         "classification": classification,
         "target_mean_distance": target_mean,
         "null_mean_distance_median": null_med,
-        "null_mean_distance_q05": q05,
+        "null_mean_distance_q05": e.quantile(null_means, .05),
         "null_mean_distance_min": min(null_means),
         "target_minus_null_median": target_mean - null_med,
         "p_lower": p,
@@ -313,9 +348,14 @@ def evaluate_policy(items, parser, policy, latin, nulls):
         "exact_key_recurrence": recurrence,
         "most_recurrent_key": {"slot": recurrent_key[0], "perm": list(recurrent_key[1])},
         "conditions": conditions,
-        "target_folds": [dict(r, null_fold_median=fold_medians[i],
-                              target_minus_null_fold_median=r["held_distance"] - fold_medians[i])
-                         for i, r in enumerate(target_rows)],
+        "target_folds": [
+            dict(
+                r,
+                null_fold_median=fold_medians[i],
+                target_minus_null_fold_median=r["held_distance"] - fold_medians[i],
+            )
+            for i, r in enumerate(target_rows)
+        ],
         "null_count": len(null_means),
     }
 
@@ -324,6 +364,7 @@ def main():
     if len(sys.argv) != 3:
         print(f"usage: {sys.argv[0]} ZL3b-n.txt CREMMA_ROOT", file=sys.stderr)
         return 2
+
     zl = Path(sys.argv[1]).resolve()
     latin_root = Path(sys.argv[2]).resolve()
     if e.git_blob_sha1(zl.read_bytes()) != e.EXPECTED_ZL3B_BLOB:
@@ -332,11 +373,11 @@ def main():
     parser = e.SlotParser()
     validation = e.validate_parser(parser)
     items = e.parse_voynich(zl)
-    latin, latin_meta = latin_letter_runs(latin_root)
+    latin_base, latin_meta = latin_letter_counts(latin_root)
     nulls = make_null_partitions()
 
-    primary = evaluate_policy(items, parser, "min", latin, nulls)
-    sensitivity = evaluate_policy(items, parser, "max", latin, nulls)
+    primary = evaluate_policy(items, parser, "min", latin_base, nulls)
+    sensitivity = evaluate_policy(items, parser, "max", latin_base, nulls)
 
     here = Path(__file__).resolve().parent
     out = {
