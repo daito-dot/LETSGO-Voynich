@@ -11,7 +11,7 @@ Legacy project artifacts retained outside current GitHub do establish the histor
 - tokens were parsed against the **12-position Zattera slot inventory**;
 - ambiguous legal assignments were summarized by **earliest-valid (`min`)** and **latest-valid (`max`)** policies;
 - historical pilot coverage was about 85% of token occurrences;
-- recorded signatures include `0-8-9-10` for `dain/daiin/sain...`, `4-8-10` for `chol/chor/...`, and the examples listed below.
+- recorded earliest-valid signatures include `0-8-9-10` for `dain/daiin/sain...`, `4-8-10` for `chol/chor/...`, plus the min/max examples listed below.
 
 The original parser source itself has **not** been recovered from current GitHub. Therefore Issue26E must not claim to replay the historical implementation.
 
@@ -45,7 +45,9 @@ The parser is intentionally limited to **one legal slot unit per visible token**
 
 ## Historical-signature validation gate
 
-Before any Issue26E scientific statistic is emitted, the fresh parser must reproduce all of these previously recorded examples exactly:
+Before any Issue26E scientific statistic is emitted, the fresh parser must reproduce the following signatures exactly.
+
+The first eight rows are directly preserved min/max examples from the legacy slot-role artifact. For `dain`/`daiin`, the legacy slot-attack artifact explicitly preserves the **earliest-valid** `0-8-9-10` family signature; the corresponding latest-valid `7-8-9-10` is derived mechanically from the independently frozen Zattera table because initial `d` is also legal in slot 7.
 
 | form | expected `min` signature | expected `max` signature |
 |---|---|---|
@@ -57,10 +59,14 @@ Before any Issue26E scientific statistic is emitted, the fresh parser must repro
 | `chedy` | `4-6-7-11` | `4-6-10-11` |
 | `y` | `1` | `11` |
 | `d` | `0` | `10` |
-| `dain` | `0-8-9-10` | `0-8-9-10` |
-| `daiin` | `0-8-9-10` | `0-8-9-10` |
+| `dain` | `0-8-9-10` | `7-8-9-10` |
+| `daiin` | `0-8-9-10` | `7-8-9-10` |
 
-If any assertion fails, Issue26E stops before scientific evaluation. Fixing the parser after seeing a scientific outcome requires a new experiment label.
+### Pre-executable correction record
+
+The first frozen version of this document incorrectly copied the legacy **earliest-valid** `dain/daiin` signature into both the min and max columns. A parser dry-run caught the mismatch **before the Issue26E executable was committed and before any scientific computation**. The correction above follows directly from the already-frozen Zattera table and is therefore made here without looking at the target Guidonian result. The earlier commit remains in branch history.
+
+If any corrected assertion fails, Issue26E stops before scientific evaluation. Fixing the parser after seeing a scientific outcome requires a new experiment label.
 
 ## Why slot 10 is eligible for a six-state music test
 
