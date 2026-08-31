@@ -1,0 +1,99 @@
+name: Issue26E11D substitution solver calibration
+
+on:
+  push:
+    branches: [issue26-music-e11-leon-substitution]
+    paths:
+      - 'experiments/issue26-music/PLAN_E11D_SOLVER_CALIBRATION.md'
+      - 'experiments/issue26-music/phaseE11d_solver_calibration.py'
+      - '.github/workflows/issue26e11d-solver-calibration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  calibration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout E11 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e11-leon-substitution
+          fetch-depth: 0
+
+      - name: Verify calibration plan predates executable
+        shell: bash
+        run: |
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E11D_SOLVER_CALIBRATION.md | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE11d_solver_calibration.py | tail -1)
+          echo plan_first=$PLAN script_first=$SCRIPT
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+
+      - name: Assert information firewall
+        shell: bash
+        run: |
+          ! grep -Eiq 'ZL3b|voynich\.nu/data/sta|cipher_benchmark|parse_voynich|STA1' experiments/issue26-music/phaseE11d_solver_calibration.py
+
+      - name: Checkout frozen CREMMA only
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+          sparse-checkout: |
+            data/BIS-193
+            data/CLM13027
+            data/Mazarine915
+            data/UBL758
+          sparse-checkout-cone-mode: false
+
+      - name: Verify frozen Latin input
+        shell: bash
+        run: |
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 numba==0.61.2
+
+      - name: Run synthetic-only development and certification
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE11d_solver_calibration.py external/cremma > issue26e11d_solver_calibration.json
+
+      - name: Print calibration summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e11d_solver_calibration.json'))
+          print('firewall=',r['information_firewall'])
+          print('control_events=',r['control_events'])
+          print('top23=', ''.join(r['top23_plaintext_letters']), 'omitted=',r['omitted_plaintext_letter'])
+          print('development ranking:')
+          for x in r['development_candidates_ranked']:
+              print(x['candidate'], 'mean_weighted=',x['mean_weighted_accuracy'], 'worst=',x['worst_weighted_accuracy'], 'mean_abs_ce_excess=',x['mean_absolute_ce_excess'])
+          print('selected=',r['selected_candidate'],'T0=',r['selected_T0'])
+          c=r['certification']
+          print('CERT_PASS=',c['passed'])
+          print('mean_weighted=',c['mean_occurrence_weighted_key_accuracy'])
+          print('worst_weighted=',c['worst_occurrence_weighted_key_accuracy'])
+          print('mean_true_ce=',c['mean_true_key_cross_entropy'])
+          print('mean_recovered_ce=',c['mean_recovered_cross_entropy'])
+          print('mean_ce_excess=',c['mean_ce_excess'])
+          print('max_ce_excess=',c['max_individual_ce_excess'])
+          for i,x in enumerate(c['controls']):
+              print(' cert',i,'weighted=',x['occurrence_weighted_key_accuracy'],'exact=',x['exact_key_accuracy'],'true_ce=',x['true_key_cross_entropy'],'rec_ce=',x['recovered_cross_entropy'])
+          PY
+          sha256sum issue26e11d_solver_calibration.json
+
+      - name: Upload E11D calibration artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e11d-solver-calibration-${{ github.sha }}
+          path: issue26e11d_solver_calibration.json
+          if-no-files-found: error
+          retention-days: 90
