@@ -25,33 +25,60 @@ jobs:
         run: |
           curl -fsSL --retry 3 https://www.voynich.nu/data/sta/ZL3b.txt -o ZL3b-STA1.txt
           echo '8438ba1c45f47fe1d06b5262cbcdf60ce69158a0edbd4dd802612896f3217e2a  ZL3b-STA1.txt' | sha256sum -c -
-      - name: Reconcile generic and E11C locus parsers
+      - name: Reconcile source through E11C folio eligibility
         shell: bash
         run: |
           python - <<'PY'
           import json,re
           from pathlib import Path
+
           generic=re.compile(r'^<(?P<loc>f[^,>]+),(?P<kind>[^>]+)>\s+(?P<body>.*)$')
           e11c=re.compile(r'^<(?P<folio>f[^.>,]+)\.(?P<loc>[^,>]+),(?P<kind>[^>]+)>\s+(?P<body>.*)$')
+          leaf_re=re.compile(r'f(\d+)')
           alt=re.compile(r'\[([^\]:]*):[^\]]*\]')
           code=re.compile(r'[A-Z][0-9a-z*]')
-          rows=[]; generic_lines=0; generic_events=0; matched_lines=0; matched_events=0
+
+          regex_unmatched=[]
+          leaf_ineligible=[]
+          generic_lines=generic_events=0
+          regex_lines=regex_events=0
+          eligible_lines=eligible_events=0
+
           for no,raw in enumerate(Path('ZL3b-STA1.txt').read_text().splitlines(),1):
               g=generic.match(raw)
-              if not g or 'P' not in g.group('kind'): continue
+              if not g or 'P' not in g.group('kind'):
+                  continue
               body=alt.sub(lambda m:m.group(1),g.group('body'))
               n=len(code.findall(body))
               generic_lines+=1; generic_events+=n
+
               m=e11c.match(raw)
-              if m:
-                  matched_lines+=1; matched_events+=n
-              else:
-                  header=raw.split('>',1)[0]+'>'
-                  rows.append({'line':no,'header':header,'events':n,'raw':raw[:240]})
-          out={'generic_lines':generic_lines,'generic_events':generic_events,
-               'e11c_regex_matched_lines':matched_lines,'matched_events':matched_events,
-               'unmatched_lines':len(rows),'unmatched_events':sum(x['events'] for x in rows),
-               'unmatched':rows}
+              if not m:
+                  regex_unmatched.append({'line':no,'header':raw.split('>',1)[0]+'>','events':n})
+                  continue
+              regex_lines+=1; regex_events+=n
+
+              lm=leaf_re.match(m.group('folio'))
+              if not lm:
+                  leaf_ineligible.append({'line':no,'folio':m.group('folio'),'header':raw.split('>',1)[0]+'>','events':n})
+                  continue
+              eligible_lines+=1; eligible_events+=n
+
+          out={
+              'generic_lines':generic_lines,
+              'generic_events':generic_events,
+              'e11c_regex_matched_lines':regex_lines,
+              'e11c_regex_matched_events':regex_events,
+              'regex_unmatched_lines':len(regex_unmatched),
+              'regex_unmatched_events':sum(x['events'] for x in regex_unmatched),
+              'regex_unmatched':regex_unmatched,
+              'numeric_leaf_eligible_lines':eligible_lines,
+              'numeric_leaf_eligible_events':eligible_events,
+              'numeric_leaf_ineligible_lines':len(leaf_ineligible),
+              'numeric_leaf_ineligible_events':sum(x['events'] for x in leaf_ineligible),
+              'numeric_leaf_ineligible':leaf_ineligible,
+              'matches_e11c_reported_metadata': eligible_lines==4119 and eligible_events==140423,
+          }
           print(json.dumps(out,indent=2,ensure_ascii=False))
           Path('issue26e11d_source_reconcile.json').write_text(json.dumps(out,indent=2,ensure_ascii=False)+'\n')
           PY
