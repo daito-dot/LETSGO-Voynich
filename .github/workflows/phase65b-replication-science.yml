@@ -1,0 +1,63 @@
+name: Phase 65B f100v replication science
+
+on:
+  push:
+    branches: [phase65b-image-label-science]
+    paths:
+      - '.github/workflows/phase65b-replication-science.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  replication-f100v:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install frozen runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch==2.8.0 torchvision==0.23.0 numpy==2.2.6 scipy==1.16.1 Pillow==12.3.0 einops==0.8.1 omegaconf==2.3.0 torchmetrics==1.8.1 fvcore==0.1.5.post20221221 iopath==0.1.10
+          pip freeze > pip-freeze.txt
+      - name: Fetch frozen DINOv2 and external source
+        run: |
+          git clone -q https://github.com/facebookresearch/dinov2.git _dinov2
+          git -C _dinov2 checkout -q 7764ea0f912e53c92e82eb78a2a1631e92725fc8
+          test "$(git -C _dinov2 rev-parse HEAD)" = "7764ea0f912e53c92e82eb78a2a1631e92725fc8"
+          echo 7764ea0f912e53c92e82eb78a2a1631e92725fc8 > dinov2-commit.txt
+          curl -L --fail --retry 3 -o dinov2_vits14_pretrain.pth https://dl.fbaipublicfiles.com/dinov2/dinov2_vits14/dinov2_vits14_pretrain.pth
+          echo 'b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9  dinov2_vits14_pretrain.pth' | sha256sum -c -
+          curl -L --fail --retry 3 -o IT2a-n.txt https://www.voynich.nu/data/IT2a-n.txt
+          echo '7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  IT2a-n.txt' | sha256sum -c -
+      - name: Verify frozen executable identity
+        run: |
+          echo '9aa07355c5d8a69acc9ee0910cf2d83877d95482f53ca1a048ae8d6cd3c3a486  experiments/phase65/phase65b_science.py' | sha256sum -c -
+          sha256sum experiments/phase65/phase65b_science.py > science-executable.sha256
+          sha256sum experiments/phase65/SOURCE_MANIFEST_B.json > source-manifest.sha256
+          sha256sum experiments/phase65/CROP_MANIFEST_B.json > crop-manifest.sha256
+      - name: Frozen replication - f100v
+        run: |
+          python experiments/phase65/phase65b_science.py \
+            --page f100v --role replication \
+            --source-manifest experiments/phase65/SOURCE_MANIFEST_B.json \
+            --crop-manifest experiments/phase65/CROP_MANIFEST_B.json \
+            --dinov2-repo _dinov2 \
+            --weights dinov2_vits14_pretrain.pth \
+            --it2a-file IT2a-n.txt \
+            --out SCIENTIFIC_RESULT_F100V.generated.json
+          sha256sum SCIENTIFIC_RESULT_F100V.generated.json > result.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase65b-replication-f100v-${{ github.sha }}
+          path: |
+            SCIENTIFIC_RESULT_F100V.generated.json
+            result.sha256
+            science-executable.sha256
+            source-manifest.sha256
+            crop-manifest.sha256
+            pip-freeze.txt
+            dinov2-commit.txt
