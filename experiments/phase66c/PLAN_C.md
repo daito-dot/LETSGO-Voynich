@@ -1,6 +1,6 @@
 # Phase 66C — illustrated-flora positive-control calibration
 
-Status: **FROZEN BEFORE 24-ENTRY BODY-TEXT AUDIT**
+Status: **FROZEN BEFORE COMPLETE 24-ENTRY BODY-TEXT AUDIT**
 
 Base main: `21ca553d0dc7f5e203465d08ae606b4c43305817`
 
@@ -12,9 +12,11 @@ This control asks a narrower question first: in a genuine illustrated botanical 
 
 ## Control source
 
-Catharine Parr Traill and Agnes FitzGibbon, *Canadian Wild Flowers* (1868), public-domain HTML transcription with illustrations at Project Gutenberg Canada.
+Catharine Parr Traill, botanical descriptions; Agnes Fitz Gibbon, paintings/lithographs, *North American Wild Flowers* (1869), Project Gutenberg ebook 56288. The preface states that the first and second editions appeared the previous year as *Canadian Wild Flowers*; the 1869 edition renumbers/reorders plates relative to the earlier Canadian edition.
 
-The source explicitly presents botanical descriptions paired with illustrated plants. The 24-entry population is fixed prospectively as all individual species represented in Plates I–VII, splitting the two separately illustrated yellow lady's-slipper species in the shared entry.
+The source explicitly presents botanical descriptions paired with illustrated plants.
+
+The 24-entry population below is frozen before the complete all-entry audit. In the 1869 Project Gutenberg edition it consists of every individually illustrated species in **Plate II through Plate VII plus Plate X**, splitting the two separately illustrated yellow lady's-slipper species in their shared prose entry. This is the same 24-species set fixed in the initial Phase66C commit; only the edition/plate-number description is corrected here.
 
 ## Frozen population (24 species)
 
@@ -70,6 +72,8 @@ For the two Cypripedium species sharing one prose entry, a statement counts for 
 
 For each of the same 24 species, repeat the audit using only the printed Latin binomial. The expected scientific point is not that Latin names contain zero information in principle, but whether the literal name string explicitly states the frozen morphology characters.
 
+Latin etymology may not be imported from external knowledge. A name counts only if the printed binomial itself transparently states the audited character under the same literal-text rule. Thus a name that would reveal morphology only after translating a Latin epithet does not count in C1.
+
 ## Primary calibration quantities
 
 Predeclared outputs:
@@ -90,4 +94,6 @@ This control does not prove that Voynich labels are prose, names, or meaningful.
 
 ## Contamination disclosure
 
-Before this freeze, a few source excerpts were inspected while choosing the control source, including examples for Dicentra canadensis, Geranium maculatum, Iris versicolor, Lilium philadelphicum, and Cypripedium spp. Therefore this is not a blinded source-discovery exercise. The fixed 24-species population and all-entry audit prevent choosing only examples known to contain morphology after inspection.
+Before the final edition/plate-mapping correction and complete audit, several source excerpts were inspected while selecting and validating the control source, including examples for Dicentra canadensis, Geranium maculatum, Iris versicolor, Lilium philadelphicum, Cypripedium spp., Castilleia coccinea, Orchis spectabilis, Arum triphyllum, Rudbeckia fulgida, Pyrola elliptica, Moneses uniflora, Rubus odoratus, and Veronica americana. Therefore this is not a blinded source-discovery exercise.
+
+The fixed 24-species population and complete all-entry audit prevent choosing only examples known to contain morphology after inspection. No Voynich result is used to decide per-entry coding.
