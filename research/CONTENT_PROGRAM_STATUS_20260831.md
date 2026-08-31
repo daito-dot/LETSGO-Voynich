@@ -163,14 +163,58 @@ Interpretation:
 
 A blinded routing decision committed before the Phase69 result forbids tuning history length, edit distance, or local-selection strength after seeing this overshoot.
 
-## Current frontier — Phase70
+## Phase70A — frozen A1 surface over reversible meaningful plaintext
 
-The next test is explicitly **not** another independent cipher challenger and not a Phase69 repair.
+Phase70 did **not** tune Phase69. It asked a narrower logical compatibility question: can the already-frozen Phase61C A1 entry/local selectors operate over a fixed uniquely reversible meaningful-plaintext homophonic codebook and still enter the held-out Voynich structural regime?
 
-Phase70 asks a logical compatibility question:
+The exact scientific head was `22c8969a88dd0e18d3c889cebc148fe6aecbadc5`; the first-reveal run preserved the frozen Phase61C fold parameters and paired SC0/SC1 segmentation/respacing.
 
-> Can the already-frozen A1 entry/local surface parameters operate over a uniquely reversible meaningful-plaintext homophonic code while the ciphertext still enters the same broad held-out structural regime?
+Reversibility remained exact:
 
-This construction is allowed to borrow frozen A1 training-side parameters because any positive result will be interpreted only as **semantic compatibility of the formal layer**, not as independent evidence for the historical cipher.
+- 864,323 plaintext units over 5 folds × 4 manuscripts × 5 realisations;
+- SC0 decode accuracy = **1.000**;
+- SC1 decode accuracy = **1.000**.
 
-If it passes, structural A1 evidence and meaningful plaintext are demonstrably compatible. If it fails, the semantic constraints imposed by this fixed reversible codebook are too restrictive for the current A1 surface selector.
+Paired SC0 control:
+
+- S1 ratio `0.01186×`;
+- S2 ratio `-0.02518×`;
+- S3 ratio `0.63965×`;
+- H62 mean D `1.34284`;
+- H62 mean C-short error `0.81626`.
+
+Frozen A1-surface SC1:
+
+- S1 ratio **`0.15065×` — FAIL** against the frozen `[0.5,2.0]` broad gate;
+- S2 ratio **`1.42567×` — PASS**;
+- S3 ratio **`0.59775×` — PASS**;
+- H62 mean D **`0.75990`**;
+- H62 median D **`0.84365`**;
+- H62 mean C-short error **`0.22392`**;
+- H62 viability vs N0/C0 **passes**, with 5/5 wins against both on both diagnostics.
+
+The paired SC1-vs-SC0 causal check passed all four preregistered directions. SC1 also has a slightly lower mean H62 profile distance than the frozen A1-R1 reference (`0.75990` vs `0.76660`), although it remains worse on C-short magnitude (`0.22392` vs `0.11769`).
+
+The raw-token sensitivity yields the same qualitative result: S2/S3 and H62 viability pass, while S1 remains only `0.15651×`.
+
+Frozen classification:
+
+> **P70-SC1 PARTIAL COMPATIBILITY**
+
+Accepted interpretation:
+
+> Exactly recoverable meaningful plaintext is strongly compatible with the tested short-range recurrence and aggregate line-position formal layer. The same fixed reversible construction does not reproduce the Voynich paragraph-entry specialization strongly enough. Local near-family recurrence therefore cannot by itself support semantic-absence claims; paragraph entry remains a sharper unresolved discriminator.
+
+This is an existence/compatibility result, not a claim that Voynich plaintext is Latin, that Naibbe is historical, or that A1 is the historical production algorithm.
+
+## Current frontier — orthogonal source-grounded discriminator
+
+Phase70's blinded post-result Route P is controlling. No `SC2` repair or tuning of local probability, history length, edit relation, entry strength, codebook, plaintext panel, or respacing is allowed.
+
+The next test must change the scientific question rather than optimize Phase70. Priority order:
+
+1. an independently grounded external/content discriminator;
+2. a historically/source-grounded mechanism family with family-level multiplicity controlled in advance;
+3. if formal structure is used, treat the still-missing paragraph-entry S1 component as the highest-information unresolved axis rather than re-testing locality.
+
+The direct-music branch in Issue #26 is relevant only insofar as it supplies externally grounded historical models. Its accumulated results already reject ordinary finite-state music likeness, the tested Ptolemaic/zodiac relation, the public f67r2/f113r musical package, literal Guidonian sequence dynamics, and the Nicholas-Philip duration grouping after adversarial controls. Static six-state/Guidonian fits were real but were progressively localized to generic slot/pair geometry under stronger controls. Therefore no melody/pitch decoding is promoted from that branch without a genuinely new independent observable.
