@@ -6,7 +6,10 @@ not calculate any real IT2a pair Q, residual Z, residual energy, graph
 similarity, sign agreement, or target p-value.
 
 The Stage-A support file is verified byte-for-byte against the exact workflow
-artifact before population reproduction.
+artifact before population reproduction. The frozen #58C reference is likewise
+reconstructed and hash-verified from the repaired permanent transport copy;
+the repair itself is documented under the #58C first-reveal archive and did not
+change the original scientific bytes.
 """
 from __future__ import annotations
 
