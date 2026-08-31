@@ -8,19 +8,19 @@ This file controls the current accepted high-level interpretation. Phase-specifi
 
 The Voynich Manuscript is **not deciphered**.
 
-The project has nevertheless established several reproducible structural constraints and eliminated a large number of attractive semantic, historical-cipher and direct-music interpretations under controlled tests.
+The project has nevertheless established several reproducible manuscript-level structural constraints and eliminated many attractive semantic, historical-cipher and direct-music interpretations under controlled tests.
 
-The research objective remains constructive: use reproducible constraints to narrow viable generation/transformation mechanisms and, when sufficiently constrained, attack the inverse/decoding problem. Falsification is the discipline, not the objective.
+The research objective is constructive: use reproducible constraints to narrow viable generation/transformation mechanisms and then attack the inverse/decoding problem. Falsification is the discipline, not the objective.
 
 ## Read the current token-construction lane correctly
 
-The active structural lane is specifically about **how one space-delimited Voynich token is internally assembled** under a frozen 12-slot representation.
+The token-construction program concerns **how one space-delimited Voynich token is internally assembled** under an established 12-slot representation.
 
 It is **not** sentence-level grammar, and visible spaces are not assumed to be proven natural-language word boundaries.
 
 Normative orientation: `research/TOKEN_CONSTRUCTION_PROGRAM.md`.
 
-The strategic question is not merely whether tokens “look structured.” It is whether a non-trivial token-construction layer survives lower-order controls and independent readings strongly enough to become a prospective constraint on later inverse/decoding models.
+The lane has now moved beyond asking whether tokens merely “look structured.” It has established a cross-reading replicated token-internal surface signature strong enough to be used prospectively to reject later reversible/generative/inverse models that cannot reproduce it.
 
 ## Other strongest structural state
 
@@ -36,108 +36,161 @@ Phase69/70 demonstrated that strong A1-like local recurrence can coexist with ex
 
 The signed paragraph-entry effect S1 remains harder to reproduce. Phase71's tested Alberti initial-signal/reset mechanism failed in the opposite S1 direction.
 
-## Token-internal construction program — #55 → #58A → #58B → #58C
+## Token-internal construction program — #55 → #58A → #58B → #58C → #58D
 
 ### Issue #55
 
 #55A found cross-leaf slot3×slot5 dependence. #55B showed that essentially all of it reduces to binary occupancy exclusion.
 
-Frozen classification:
-
 > `DEPENDENCE REDUCES TO BINARY OCCUPANCY EXCLUSION`
 
 ### Issue #58A
 
-The complete 66-edge audit removed selection bias around slot3×slot5.
+The selection-aware complete 66-edge audit removed selection bias around slot3×slot5.
 
-- `22/66` edges survived the frozen family-wise primary rule;
-- selected `(3,5)` ranked only `22/66`;
+- 22/66 edges survived the frozen family-wise primary rule;
+- selected `(3,5)` ranked only 22/66;
 - strong positive co-construction and negative exclusion coexist;
-- all `66/66` canonical pair co-occupancies are parser-admissible.
-
-Frozen classification:
+- all 66/66 canonical pair co-occupancies are parser-admissible.
 
 > `BROAD OCCUPANCY GRAMMAR; SLOT3xSLOT5 NOT UNIQUE`
 
 ### Issue #58B / #62
 
-#58B asked whether the raw complete signed graph is stable across Currier/section/line-position strata.
-
-Real graph similarities were high, but the line-local marginal-preserving null itself generated whole-graph correlations near the same range (`median maxT ≈ 0.949`). No planned similarity was family-wise exceptional and no practical difference gate was met.
-
-Frozen classifications:
+Raw complete-graph similarities across Currier/section/line-position strata were high, but the line-local marginal-preserving null itself generated correlations near the same range (`median maxT ≈ 0.949`).
 
 > `CURRIER/SECTION GRAPH STABILITY INCONCLUSIVE`
 
 > `LINE-POSITION GRAPH STABILITY INCONCLUSIVE`
 
-Scientific consequence: raw whole-graph similarity is substantially contaminated by lower-order line-local slot prevalence / occupancy architecture.
+Scientific consequence: raw whole-graph resemblance is substantially contaminated by lower-order line-local slot prevalence / occupancy architecture.
 
 ### Issue #58C / #64 — residual graph beyond line-local prevalence
 
-#58C prospectively calibrated every one of the 66 conditional occupancy edges against its own line-local null distribution.
+#58C prospectively calibrated every one of the 66 conditional edges against its own line-local null distribution, using 1,000 reference nulls to define residuals and an independent 1,000 test nulls for validation.
 
-To prevent circularity it used:
-
-- 1,000 reference nulls only to define the residual transform;
-- an independent 1,000 test nulls only to validate residual existence/similarity;
-- a pooled residual-existence gate before any cross-stratum interpretation.
-
-Frozen first-reveal overall classification:
+Frozen classification:
 
 > **`RESIDUAL GRAPH EXISTS WITH STRATUM MODULATION`**
 
-Pooled residual existence:
+Pooled ZL3b result:
 
-- real `E_ALL = 3.23155`;
-- test-null median `0.99004`;
+- `E_ALL = 3.23155`;
 - test-null maximum `1.28318`;
 - `p_exist_ALL = 1/1001`;
-- physical-leaf reliability `W_ALL = 0.94471`.
+- `W_ALL = 0.94471`.
 
-Thus the real residual graph is far outside the complete independent test-null ensemble and strongly reproducible across physical leaves.
+All seven planned strata passed residual existence. Stable residual relations were the three Currier-B section comparisons and interior-vs-final; Currier A/B within Herbal and line-initial comparisons were related but modulated. No planned contrast met the multiple/different-grammar gate.
 
-All seven planned strata separately passed the family-wise residual-existence gate (`p_E,maxT = 1/1001`) with high fold reliability.
+### Issue #58D / #66 — independent Takahashi/IT2a reading replication
 
-All seven cross-stratum residual similarities also exceeded the full independent test-null maxT ensemble (`p_R,maxT = 1/1001` each).
+#58D tested whether #58C was merely a ZL3b reading artifact.
 
-Frozen family classifications:
+A source/population-only Stage A froze IT2a before target scoring:
 
-> **`REGISTER/SECTION RESIDUAL MODULATION`**
+- Takeshi Takahashi / `EvaT`;
+- exact SHA-256 `7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5`;
+- 99/99 #58C physical leaves overlap;
+- 34,411 clean tokens;
+- 28,280 directly accepted by the unchanged 12-slot parser;
+- coverage `82.18%`.
 
-> **`LINE-POSITION RESIDUAL MODULATION`**
+No pair/residual target metric was computed during source selection.
 
-Stable residual relations included all three Currier-B section comparisons and line interior-vs-final. Currier A-vs-B within Herbal and line-initial comparisons were related but modulated. No planned contrast met the frozen `DIFFERENT_RESIDUAL_OR_MIXTURE` gate.
+IT2a then received its **own** 1,000-reference + independent 1,000-test line-local null calibration.
 
-### Accepted token-construction interpretation
+Frozen overall classification:
+
+> **`INDEPENDENT TRANSCRIPTION REPLICATES RESIDUAL TOKEN-CONSTRUCTION CORE`**
+
+#### Independent residual existence
+
+- `E_IT_ALL = 3.21363`;
+- IT test-null median `0.99252`;
+- IT test-null maximum `1.25891`;
+- `p_exist_IT = 1/1001`;
+- `W_IT_ALL = 0.95377`.
+
+All seven planned IT2a strata separately passed family-wise residual existence at `1/1001`.
+
+#### Direct complete-graph reading-to-reading replication
+
+The confirmatory comparison retained **all 66 edges**.
+
+Pooled ZL3b↔IT2a:
+
+- Pearson correlation: **`0.98845`**;
+- residual sign agreement: **`65/66`**;
+- correlation maxT p: `1/1001`;
+- sign-agreement maxT p: `1/1001`.
+
+All eight planned groups (`ALL`, four Currier/section groups, three line-position groups) independently meet the frozen strong cross-reading replication class:
+
+- Pearson range `0.97031–0.99548`;
+- sign agreement `64/66–66/66`;
+- every group has both maxT p-values `1/1001`.
+
+The 1,000 independent IT2a test nulls never exceeded:
+
+- cross-reading correlation maxT `0.43199`;
+- sign-agreement maxT `47/66`.
+
+This materially reduces the explanation that the #58C topology is peculiar to the ZL3b reading.
+
+#### Broad modulation geometry
+
+Within IT2a, the same family-level classifications reappear:
+
+> `REGISTER/SECTION RESIDUAL MODULATION`
+
+> `LINE-POSITION RESIDUAL MODULATION`
+
+All seven contrasts are stable or related/modulated; none is materially different.
+
+The secondary finer ordering test did **not** pass:
+
+- `G_core = 0.83696`;
+- `G_mod = 0.68217`;
+- `Delta = 0.15479`;
+- `p_Delta = 0.08791`.
+
+Therefore the broad shared-core-plus-modulation geometry is supported, but do not claim that every fine ordering of “stable” versus “modulated” contrasts is identical across readings.
+
+### Accepted token-construction interpretation after #58D
 
 The strongest supported description is now:
 
-> **Under the frozen 12-slot representation, Voynich space-delimited tokens contain a broad, reproducible internal interaction system that cannot be explained by line-local slot prevalence alone. A large shared residual construction core is present across the tested manuscript strata, with measurable Currier/section/line-position modulation rather than evidence for wholly separate token grammars.**
+> **Within a common EVA/IVTFF representational framework, Voynich space-delimited tokens exhibit a manuscript-level internal construction signature that survives independent ZL3b and Takahashi/IT2a readings. A broad residual core is shared across manuscript strata with measurable modulation rather than an exactly uniform token grammar.**
 
-Do **not** reduce this to “one universal grammar”: exact invariance was not supported.
+This cross-reading replicated signature is now strong enough to serve as a **prospective surface-generation constraint** on later mechanism/inverse-model tests.
 
-Exact #58C report: `experiments/occupancy-graph-residual/REPORT_A.md`.
+It is still not a semantic interpretation or decipherment.
 
-First-reveal raw SHA-256:
+Exact #58D report: `experiments/occupancy-graph-independent-transcription/REPORT_A.md`.
 
-`fba60daea6e30682065900a4cf15d53d2a2f536d933b588fae447fb43bb4728d`
+#58D first-reveal raw SHA-256:
 
-## Current token-construction frontier
+`f26db8123f8f2b7a4148495fdeebe81c8c042a23606eb7c22e1c0687faaf86a6`
 
-The main remaining threat before using #58C as an inverse-model constraint is **transcription/representation dependence**.
+## Current frontier — constrained reversible/inverse mechanism discrimination
+
+The immediate high-information question is no longer another local occupancy discovery or another ZL/IT replication.
 
 Next question:
 
-> **Does the #58C residual-existence result and its shared-core-plus-modulation geometry survive a materially independent Voynich transcription/reading without retuning the 12-slot interpretation or selecting favorable edges?**
+> **Can a bounded reversible/generative/inverse mechanism jointly reproduce the already established manuscript-level constraints on unseen material without post-hoc repair?**
 
-This replication must distinguish:
+At minimum the next plan-first tournament should jointly enforce:
 
-1. residual existence in the independent reading;
-2. cross-reading agreement of the complete 66-edge residual graph;
-3. replication of broad shared-core/modulation geometry.
+1. the cross-reading replicated residual token-construction constraints from #58C/#58D;
+2. accepted A1/H62 short-range near-family recurrence geometry;
+3. the difficult signed S1 paragraph-entry specialization;
+4. prospectively selected additional manuscript-level constraints;
+5. explicit complexity / degrees-of-freedom accounting.
 
-Only after that should replicated token-construction constraints be used prospectively to restrict reversible generative/inverse models.
+Candidate mechanisms should now be rejected for failing the established constraints rather than allowed to invent new explanations after seeing each mismatch.
+
+A GC2a/v101 alphabet-level robustness lane remains scientifically useful, but after the strong IT2a reading-lineage replication it is a secondary robustness lane rather than the highest-information immediate frontier.
 
 ## Content-relation program
 
@@ -146,8 +199,6 @@ Phase65–68 externally grounded object-local image↔text tests were negative u
 ## Direct-music program — Issue #26
 
 The bounded direct-music program A–E17 is complete.
-
-Accepted conclusion:
 
 > **No tested, independently constrained direct-musical or music-cipher model provides held-out evidence that Voynich running text encodes music or readable plaintext through a musical state system.**
 
@@ -160,11 +211,12 @@ The Phase72 source-audit branch remains source-development work, not accepted cu
 Do not infer:
 
 - that spaces are true linguistic word boundaries;
-- sentence-level grammar from the token-construction graph;
-- that any slot has a semantic meaning;
+- sentence-level grammar from token-construction structure;
+- that any slot has semantic meaning;
 - that the residual graph is a plaintext alphabet or cipher table;
-- that #58C identifies a historical generator;
+- that #58C/#58D identifies a historical generator;
 - that exact token grammar is invariant across all strata;
+- that IT2a gives complete alphabet/publication-pipeline independence from ZL3b;
 - that recurrence or token construction proves semantic presence or absence;
 - that the manuscript uses or does not use a cipher in general;
 - that negative morphology tests falsify all plant-related content;
@@ -172,8 +224,12 @@ Do not infer:
 
 ## Reproducibility / repository state
 
-First-reveal provenance is preserved beyond Actions retention for #55, #58A, #58B and #58C. #58C is archived under `experiments/occupancy-graph-residual/first-reveal/` with raw-result SHA-256:
+First-reveal provenance is preserved beyond Actions retention for #55, #58A, #58B, #58C and #58D.
 
-`fba60daea6e30682065900a4cf15d53d2a2f536d933b588fae447fb43bb4728d`
+#58D is archived directly under `experiments/occupancy-graph-independent-transcription/first-reveal/` with raw-result SHA-256:
+
+`f26db8123f8f2b7a4148495fdeebe81c8c042a23606eb7c22e1c0687faaf86a6`
+
+During #58D preflight, a single corrupted text-transport chunk in the later repository copy of #58C was discovered. The original #58C Actions artifact remained intact; only the transport copy was repaired from that verified original. #58C scientific bytes and classification did not change. See `experiments/occupancy-graph-residual/first-reveal/ARCHIVE_REPAIR_20260901.md`.
 
 Historical reproducibility debts remain documented in `research/REPRODUCIBILITY_AUDIT.md` and phase-specific reports.
