@@ -1,6 +1,6 @@
 # Issue #26 direct-music research status
 
-Updated after Issue26E3 first reveal.
+Updated after Issue26E4 first reveal.
 
 | Track | Direct question | Result | Narrow interpretation |
 |---|---|---|---|
@@ -8,43 +8,57 @@ Updated after Issue26E3 first reveal.
 | B | Do surviving zodiac labels preferentially group Ptolemy *Harmonics* III.12 same-tonos zodiac pairs? | **NOT SUPPORTED** | target rank 75/105, exact p=.714 after production-order correction. |
 | C | Can Ptolemy III.8–9 interval↔zodiac geometry itself identify musical encoding? | **NON-IDENTIFYING AS STATED** | ordinary zodiac geometry already contains opposition/trine/square angular relations; requires an extra independent observable. |
 | D | Does the March-2026 public `daiin=octave` / f67r2 / f113r *Veni Creator* package survive literal and multiplicity-aware audit? | **NOT SUPPORTED** | 0/4 frozen components pass; one highlighted f67r2 opposition is factual but not statistically exceptional. |
-| E | Does Zattera slot10 as a six-state channel plus sequence-blind 20-class remaining morphology predict the Guidonian 20×6 admissibility lattice? | **NARROW POSITIVE, LATER REFINED** | ZL primary/max passed degree-matched nulls; E3 shows the full Guidonian lattice is not specifically identified. |
-| E2 | Does E survive higher null resolution, independent IT2a, and prospective fixed-map transfer? | **REPLICATED SECOND-ORDER SIGNAL, LATER REFINED** | ZL/IT replication and fixed-map transfer are real; E3 localizes the transferable signal to second-order six-state pair geometry. |
-| E3 | Does the fixed-map result prefer the actual Guidonian higher-order row neighborhoods over strongly matched non-musical lattices? | **PAIR-GEOMETRY SUFFICIENT / GUIDONIAN NOT SPECIFIC** | two of three exhaustive non-Guidonian alternatives with the exact same labeled pair-intersection matrix equal/beat Guidonian; overlap-histogram nulls remain far worse. |
+| E | Does Zattera slot10 as a six-state channel plus sequence-blind 20-class remaining morphology predict the Guidonian 20×6 admissibility lattice? | **NARROW POSITIVE, LATER REFINED** | ZL primary/max passed degree-matched nulls; later tests remove the music-specific interpretation. |
+| E2 | Does E survive higher null resolution, independent IT2a, and prospective fixed-map transfer? | **REPLICATED STRUCTURAL SIGNAL, LATER EXPLAINED NON-MUSICALLY** | ZL/IT replication and fixed-map transfer are real numerical facts; E3/E4 show they are not diagnostic of a Guidonian/music code. |
+| E3 | Does the fixed-map result prefer the actual Guidonian higher-order row neighborhoods over strongly matched non-musical lattices? | **PAIR-GEOMETRY SUFFICIENT / GUIDONIAN NOT SPECIFIC** | two of three exhaustive non-Guidonian alternatives with the exact same labeled pair-intersection matrix equal/beat Guidonian. |
+| E4 | Can a capacity-matched non-musical topology learned only from ZL slot/morphology counts transfer to independent IT2a as well as Guidonian? | **NON-MUSICAL SLOT TOPOLOGY MATCHES/BEATS GUIDONIAN** | non-musical mean A=.852906 vs Guidonian .833714; non-musical model matches/beats in 4/5 folds and is structurally different from Guidonian. |
 
 ## Current interpretation
 
-Issue26 does **not** support a broad claim that visible Voynich running text behaves like ordinary monophonic music. A–D remain negative or non-identifying.
+Issue26 currently provides **no affirmative evidence that requires a direct musical encoding interpretation**.
 
-E/E2 found a real, independently replicated structural regularity, but E3 changes its meaning. The full 20-locus×6-vox Guidonian admissibility lattice is **not identified**.
+A–D are negative or non-identifying. E/E2 uncovered a real, independently replicated token-internal structural regularity, so those positive numerical results remain scientifically important. However, the interpretation has been progressively narrowed by stronger controls:
 
-The strongest surviving statement is:
+1. **E3:** the full Guidonian 20×6 admissibility lattice is not identified. Non-Guidonian higher-order lattices with the exact same labeled pair-intersection matrix can equal or outperform it.
+2. **E4:** a topology learned with **no music semantics and no Guidonian geometry**, using only ZL slot/morphology counts under the same 20×6 capacity constraints, transfers to independent IT2a **better** than Guidonian.
 
-> a six-state factor singled out by the Zattera slot grammar, under a state correspondence frozen in ZL and transferred prospectively to IT2a, is compatible with the **labeled pairwise column-overlap geometry** carried by the Guidonian six-vox lattice. The effect is robust to degree- and overlap-histogram-matched controls, but non-Guidonian higher-order lattices with the exact same pairwise intersection matrix can equal or outperform Guidonian.
+E4 prospective result:
 
-This is a replicated **second-order formal-geometry signal**, not a replicated Guidonian/music coding result.
+- Guidonian mean held-out accuracy: `0.8337140490`
+- generic non-musical topology: `0.8529061469`
+- non-musical advantage: `+0.0191920979` (~1.92 percentage points)
+- non-musical `>=` Guidonian: `4/5` folds
+- Guidonian `>` non-musical: `1/5` folds
 
-## Why E3 is decisive for interpretation
+The exact E2-C/E3 Guidonian replay passed before the comparison, including mean parse coverage `0.8213154353` and all five frozen fold accuracies.
 
-E3-B confirms that generic sparsity or merely having the same overlap-strength histogram is insufficient: Guidonian remains +10.99 percentage points above the 100 structured-null mean median, global p=.0099, with 5/5 fold wins.
+## What survives scientifically
 
-But E3-A exhaustively enumerates every allowed 20×6 row-neighborhood multiset sharing the full labeled pairwise intersection matrix. Only four exist. Of the three non-Guidonian alternatives, two have higher across-fold mean held-out accuracy than Guidonian; the best is `0.835484` versus Guidonian `0.833714` and beats Guidonian in 4/5 folds.
+The robust finding is no longer “Guidonian-like coding.” It is:
 
-Therefore the current evidence stops at second-order pair geometry.
+> Voynich token-internal morphology contains a cross-transcription-stable dependency between the six-state Zattera slot10 factor and the remaining token morphology. A generic capacity-matched topology learned from that dependency in ZL predicts independent IT2a at least as well as, and in E4 better than, the Guidonian comparator.
 
-## Current falsification frontier
+This is evidence about **token grammar / morphological dependency structure**. It is potentially relevant to broader Voynich generative-model and encoding hypotheses, but it is not evidence that the six states literally mean `ut/re/mi/fa/sol/la`.
 
-The next question should be **non-musical**:
+## Consequence for the music hypothesis
 
-> Is this six-state pair geometry unusual relative to generic slot grammars / six-category dependency systems, or is it a natural consequence of constrained token morphology and the choice of slot10?
+The slot-lattice path should be treated as having reached a clean falsification boundary for music-specific interpretation.
 
-High-information controls include:
+Do **not** proceed from E/E2 to:
 
-1. apply the same pair-geometry fitting to other six-state factors generated independently from the Zattera grammar or matched synthetic slot grammars, with any multiplicity explicitly charged;
-2. test whether generic formal languages / finite-state slot generators with similar occupancy constraints naturally reproduce the same labeled pair-intersection target;
-3. decompose which slot10 state pairs and which morphology clusters create the transfer signal, using training-only or separately frozen diagnostics;
-4. only if the second-order geometry remains externally distinctive should a future preregistration return to music-specific sequence constraints.
+- melody extraction;
+- literal pitch naming;
+- pitch-order fitting;
+- duration/rhythm inference;
+- hexachord mutation narratives;
+- post-hoc musical decoding.
 
-Do **not** proceed to melody extraction, pitch-order fitting or literal `ut/re/mi/fa/sol/la` naming from E/E2. E3 has shown that those interpretations outrun the evidence.
+A future direct-music experiment would need a **new independent observable** whose prediction is not already generated by generic token grammar. The current evidence does not justify privileging a musical explanation over non-musical morphology.
 
-Negative results A–D and the E3 refinement must remain visible alongside E/E2. Do not summarize Issue26 as “Voynich is music” or “decoded.”
+This does not prove that no part of the Voynich Manuscript could contain music-related material. It means that the tested direct-music pathways, including the strongest former positive, do not currently provide discriminative evidence for such a claim.
+
+## Operational state
+
+Issue26E4 is recorded on branch `issue26-music-e4-nonmusic-mechanism` and draft PR #34.
+
+Because parallel experiments are active, **completion is not merge authorization**. Keep PR #34 unmerged unless explicit authorization to merge is given.
