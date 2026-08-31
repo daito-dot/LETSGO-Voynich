@@ -17,38 +17,53 @@ E11B used the official ZL3b STA1 file linked from that framework.
 - byte size: `472861`
 - SHA-256: `8438ba1c45f47fe1d06b5262cbcdf60ce69158a0edbd4dd802612896f3217e2a`
 
-Audit provenance:
+Initial audit provenance:
 
 - source-freeze protocol commit: `21c2a03b13511f39c8d10a1818c7c85936eb4a38`
-- audit workflow head: `0bb215a70ea42680e844f4184eefbf278f05b5b6`
-- Actions run: `33381660646`
-- job: `99455169946`
-- artifact: `9753971239`
-- artifact ZIP SHA-256: `d4cc2cdaeba746bc384e85152a9a930e27b56c7c0578c4c8366d8f908c675ae4`
+- initial audit workflow head: `0bb215a70ea42680e844f4184eefbf278f05b5b6`
+- initial Actions run: `33381660646`
+- initial job: `99455169946`
+- initial artifact: `9753971239`
 
-## Running-text audit
+### Pre-E11C parser correction
+
+Before any E11C scientific score or plaintext was emitted, E11C parsing exposed IVTFF alternatives with an empty side, e.g. `[C2:]` and `[:A2]`. The source-freeze rule had always been “take the first reading,” but the initial audit regex required both sides to be non-empty and therefore miscounted one `[:A2]` event as `A2`.
+
+The audit parser was corrected to accept either side as empty while still taking the first reading. Corrected provenance:
+
+- parser-only audit correction commit: `f0344ce503f004e116f7c621225d0c4f295c1d0c`
+- corrected Actions run: `33382159381`
+- corrected job: `99456743340`
+- corrected artifact: `9754158095`
+- corrected artifact ZIP SHA-256: `fb41b017158e20bec2dba22d11c336032d5d931ded4c1d708d268fe4c90620ad`
+
+No scientific result existed when this correction was made.
+
+## Corrected running-text audit
 
 Scope: loci whose IVTFF kind contains `P`, first reading of bracketed alternatives, no plaintext fitting.
 
 - running-text physical lines with STA codes: **4,130**
-- STA symbol events: **140,590**
+- STA symbol events: **140,589**
 - distinct full STA codes: **200**
 - distinct published STA families: **23**
 - malformed residue: **0**
 
-Family counts:
+The correction changes exactly one event from the initial audit: family A decreases from 51,492 to **51,491**. The family set and the structural conclusion `23 <= 24` are unchanged.
+
+Corrected family counts:
 
 | family | count | fraction |
 |---|---:|---:|
-| A | 51,492 | .366256 |
-| B | 22,520 | .160182 |
-| Q | 14,244 | .101316 |
-| K | 14,128 | .100491 |
+| A | 51,491 | .366252 |
+| B | 22,520 | .160183 |
+| Q | 14,244 | .101317 |
+| K | 14,128 | .100492 |
 | J | 9,185 | .065332 |
 | C | 8,219 | .058461 |
 | D | 5,359 | .038118 |
 | L | 4,314 | .030685 |
-| G | 4,016 | .028565 |
+| G | 4,016 | .028566 |
 | F | 2,268 | .016132 |
 | U | 1,790 | .012732 |
 | P | 1,639 | .011658 |
@@ -59,7 +74,7 @@ Family counts:
 | Z | 132 | .000939 |
 | W | 70 | .000498 |
 | S | 50 | .000356 |
-| X | 31 | .000220 |
+| X | 31 | .000221 |
 | V | 18 | .000128 |
 | N | 14 | .000100 |
 | R | 10 | .000071 |
@@ -76,4 +91,4 @@ Therefore a family-based substitution run is scientifically interpretable only a
 
 A negative result would reject that family-normalized strict substitution representation, not every León-like cipher.
 
-The next experiment, E11C, may now be preregistered because `M_family=23 <= 24` was established without looking at plaintext scores.
+E11C may proceed because `M_family=23 <= 24` remains established without inspecting plaintext scores.
