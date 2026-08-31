@@ -1,0 +1,191 @@
+name: Issue66 independent-reading residual replication
+
+on:
+  push:
+    branches: [issue66-independent-transcription-residual]
+    paths:
+      - 'experiments/occupancy-graph-independent-transcription/PLAN_A.md'
+      - 'experiments/occupancy-graph-independent-transcription/phase58d_independent_residual.py'
+      - 'experiments/occupancy-graph-independent-transcription/preflight58d.py'
+      - 'experiments/occupancy-graph-independent-transcription/source-audit/issue66_source_audit_support_complete.json'
+      - '.github/workflows/issue66-independent-transcription-residual.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/occupancy-graph-independent-transcription/**'
+      - '.github/workflows/issue66-independent-transcription-residual.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Verify target plan predates target executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/occupancy-graph-independent-transcription/PLAN_A.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/occupancy-graph-independent-transcription/phase58d_independent_residual.py | tail -1)
+          SUPPORT=$(git log --diff-filter=A --format=%H -- experiments/occupancy-graph-independent-transcription/source-audit/issue66_source_audit_support_complete.json | tail -1)
+          test -n "$PLAN"
+          test -n "$SCRIPT"
+          test -n "$SUPPORT"
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$SUPPORT" "$PLAN"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          echo "support archive first-add: $SUPPORT"
+          echo "target plan first-add: $PLAN"
+          echo "target script first-add: $SCRIPT"
+
+      - name: Checkout frozen ZL3b fold authority
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact ZL3b authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd _cipher_benchmark
+          test "$(git rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Retrieve and verify exact IT2a target source
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 \
+            https://www.voynich.nu/data/IT2a-n.txt \
+            -o IT2a-n.txt
+          test "$(wc -c < IT2a-n.txt)" = "342104"
+          test "$(wc -l < IT2a-n.txt)" = "5444"
+          test "$(sha256sum IT2a-n.txt | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+          test "$(git hash-object IT2a-n.txt)" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          head -n 3 IT2a-n.txt
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Syntax and synthetic self-tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            experiments/occupancy-graph-independent-transcription/phase58d_independent_residual.py \
+            experiments/occupancy-graph-independent-transcription/preflight58d.py
+          python experiments/occupancy-graph-independent-transcription/phase58d_independent_residual.py --self-test
+
+      - name: Reproduce frozen population without target scoring
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/occupancy-graph-independent-transcription/preflight58d.py \
+            IT2a-n.txt \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue66_preflight.json
+          cat issue66_preflight.json
+          python - <<'PY'
+          import json
+          r=json.load(open('issue66_preflight.json'))
+          assert r['scope'] == 'source_population_archive_identity_only_no_real_IT_pair_or_residual_scoring'
+          assert r['clean_tokens'] == 34411
+          assert r['parsed_tokens'] == 28280
+          assert r['fold_accepted_tokens'] == [4976,5416,6261,6197,5430]
+          assert r['accepted_group_fold']['AH'] == [1632,949,1494,1241,979]
+          assert r['accepted_group_fold']['BH'] == [218,859,458,580,624]
+          assert r['accepted_group_fold']['BB'] == [1095,1040,1293,1363,760]
+          assert r['accepted_group_fold']['BS'] == [1462,1433,2389,2166,1294]
+          assert r['accepted_position_fold']['initial'] == [579,591,709,679,598]
+          assert r['accepted_position_fold']['interior'] == [3817,4257,4894,4874,4263]
+          assert r['accepted_position_fold']['final'] == [576,567,651,643,569]
+          assert r['StageA_support_audit_sha256'] == '35ea31eb5d0a1f0484623ee8a29058f1c5bc339117e378b594f26c7c23aee0dc'
+          assert r['ZL58C_first_reveal_sha256'] == 'fba60daea6e30682065900a4cf15d53d2a2f536d933b588fae447fb43bb4728d'
+          assert r['namespaces_distinct'] is True
+          assert r['synthetic_null_line_slot_marginals_preserved'] is True
+          assert r['real_IT_pair_or_residual_metrics_computed'] is False
+          PY
+
+  target-first-reveal:
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: Checkout frozen ZL3b fold authority
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Retrieve exact IT2a target source
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 \
+            https://www.voynich.nu/data/IT2a-n.txt \
+            -o IT2a-n.txt
+          test "$(sha256sum IT2a-n.txt | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+          test "$(git hash-object IT2a-n.txt)" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Execute frozen Issue58D target
+        shell: bash
+        env:
+          TARGET_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          python experiments/occupancy-graph-independent-transcription/phase58d_independent_residual.py \
+            IT2a-n.txt \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue66_independent_residual_results.json
+
+      - name: Print preregistered first-reveal summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue66_independent_residual_results.json'))
+          print('overall:', r['overall_classification'])
+          print('gate A:', r['gate_A_independent_residual_existence'])
+          print('pooled cross-reading:', r['gate_B_cross_reading_topology']['ALL'])
+          print('group breadth:', r['cross_reading_group_breadth'])
+          print('geometry:', r['gate_C_geometry'])
+          print('within IT register/section:', r['IT2a_register_section_classification'])
+          print('within IT position:', r['IT2a_position_classification'])
+          print('null pooled energy:', r['test_null']['pooled_energy_summary'])
+          print('null cross correlation maxT:', r['test_null']['cross_reading_correlation_maxT_summary'])
+          print('null cross sign maxT:', r['test_null']['cross_reading_sign_maxT_summary'])
+          for name,c in r['gate_B_cross_reading_topology'].items():
+              print('cross', name, c)
+          PY
+
+      - name: Upload exact first-reveal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue66-independent-residual-${{ github.event.pull_request.head.sha || github.sha }}
+          path: issue66_independent_residual_results.json
+          if-no-files-found: error
+          retention-days: 90
