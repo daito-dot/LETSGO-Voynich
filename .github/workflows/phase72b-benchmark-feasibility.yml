@@ -1,0 +1,79 @@
+name: Phase 72B open historical cipher benchmark feasibility
+
+on:
+  push:
+    branches: [phase72-real-historical-cipher]
+    paths:
+      - 'experiments/phase72/FEASIBILITY_B.md'
+      - 'experiments/phase72/phase72b_benchmark_audit.py'
+      - '.github/workflows/phase72b-benchmark-feasibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  feasibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout pinned cipher benchmark
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 729aad62d12483c549e64a2541d4f9255538c8cf
+          path: external/cipher-benchmark-current
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify source authority and no-score executable
+        run: |
+          test "$(git -C external/cipher-benchmark-current rev-parse HEAD)" = "729aad62d12483c549e64a2541d4f9255538c8cf"
+          test "$(git -C external/cipher-benchmark-current hash-object benchmark/manifest/records.jsonl)" = "9dfedda0597185eda64e8166535fa1d0aa0898f5"
+          test "$(git -C external/cipher-benchmark-current hash-object benchmark/manifest/schema.json)" = "f07533cce267bb17110c8a3327385d7e586eee20"
+          grep -q 'NO VOYNICH SCIENTIFIC SCORE AUTHORIZED' experiments/phase72/FEASIBILITY_B.md
+          python -m py_compile experiments/phase72/phase72b_benchmark_audit.py
+          if grep -Eq 'phase62|phase63|phase64|S1_projection|s1_projection|H62P1|raw_profile' experiments/phase72/phase72b_benchmark_audit.py; then
+            echo 'forbidden scorer reference found in Phase72B source audit' >&2
+            exit 1
+          fi
+
+      - name: Audit open historical transcription availability only
+        run: |
+          python experiments/phase72/phase72b_benchmark_audit.py \
+            external/cipher-benchmark-current \
+            --out phase72b_audit.json \
+            | tee phase72b_summary.txt
+          grep -q 'NO PHASE72 VOYNICH SCIENTIFIC SCORE COMPUTED' phase72b_summary.txt
+          grep -q '"scientific_metrics_called": false' phase72b_summary.txt
+          python -m json.tool phase72b_audit.json > /dev/null
+
+      - name: Record source hashes
+        run: |
+          sha256sum \
+            experiments/phase72/FEASIBILITY_B.md \
+            experiments/phase72/phase72b_benchmark_audit.py \
+            external/cipher-benchmark-current/benchmark/manifest/records.jsonl \
+            phase72b_audit.json \
+            phase72b_summary.txt \
+            > phase72b_sha256s.txt
+          git rev-parse HEAD > phase72b_audit_head.txt
+          cat phase72b_sha256s.txt
+          cat phase72b_audit_head.txt
+
+      - name: Upload source-audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase72b-benchmark-source-audit
+          path: |
+            phase72b_audit.json
+            phase72b_summary.txt
+            phase72b_sha256s.txt
+            phase72b_audit_head.txt
+          if-no-files-found: error
