@@ -1,0 +1,94 @@
+name: Issue26E11B STA family source audit
+
+on:
+  push:
+    branches: [issue26-music-e11-leon-substitution]
+    paths:
+      - 'experiments/issue26-music/E11B_STA_SOURCE_FREEZE.md'
+      - '.github/workflows/issue26e11b-sta-source-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue26-music-e11-leon-substitution
+          fetch-depth: 0
+
+      - name: Acquire official ZL3b STA1 file
+        shell: bash
+        run: |
+          curl -fsSL --retry 3 https://www.voynich.nu/data/sta/ZL3b.txt -o ZL3b-STA1.txt
+          head -1 ZL3b-STA1.txt
+          test "$(head -1 ZL3b-STA1.txt)" = '#=IVTFF STA1 2.0 M 5'
+          sha256sum ZL3b-STA1.txt
+          wc -c ZL3b-STA1.txt
+
+      - name: Audit STA families in running text only
+        shell: bash
+        run: |
+          python - <<'PY'
+          import collections, hashlib, json, re
+          from pathlib import Path
+
+          p=Path('ZL3b-STA1.txt')
+          data=p.read_bytes()
+          lines=data.decode('utf-8').splitlines()
+          locus=re.compile(r'^<(?P<loc>f[^,>]+),(?P<kind>[^>]+)>\s+(?P<body>.*)$')
+          alt=re.compile(r'\[([^\]:]+):[^\]]+\]')
+          angle=re.compile(r'<[^>]*>')
+          code=re.compile(r'[A-Z][0-9a-z*]')
+          families=collections.Counter()
+          codes=collections.Counter()
+          line_count=0
+          event_count=0
+          malformed=[]
+          for no,raw in enumerate(lines,1):
+              m=locus.match(raw)
+              if not m or 'P' not in m.group('kind'):
+                  continue
+              body=alt.sub(lambda x:x.group(1),m.group('body'))
+              body=body.replace('{','').replace('}','')
+              body=angle.sub(' ',body).replace('[','').replace(']','')
+              # separators/interruptions do not become characters.
+              found=code.findall(body)
+              if found:
+                  line_count += 1
+              # verify all remaining alphanumeric STA-looking content is explained by 2-byte codes.
+              residue=code.sub('',body)
+              residue=re.sub(r'[\s.,?<>\-=$%:]','',residue)
+              if residue:
+                  malformed.append({'line':no,'residue':residue[:80],'raw':raw[:160]})
+              for c in found:
+                  codes[c]+=1; families[c[0]]+=1; event_count+=1
+          payload={
+              'sha256':hashlib.sha256(data).hexdigest(),
+              'bytes':len(data),
+              'running_text_lines_with_codes':line_count,
+              'events':event_count,
+              'full_code_count':len(codes),
+              'family_count':len(families),
+              'families':dict(sorted(families.items())),
+              'family_fractions':{k:v/event_count for k,v in sorted(families.items())},
+              'top_codes':codes.most_common(50),
+              'malformed_count':len(malformed),
+              'malformed_examples':malformed[:20],
+          }
+          print(json.dumps(payload,indent=2,sort_keys=True))
+          Path('issue26e11b_sta_audit.json').write_text(json.dumps(payload,indent=2,sort_keys=True)+'\n')
+          PY
+
+      - name: Upload source audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e11b-sta-source-audit-${{ github.sha }}
+          path: issue26e11b_sta_audit.json
+          if-no-files-found: error
+          retention-days: 90
