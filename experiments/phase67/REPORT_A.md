@@ -37,11 +37,11 @@ The family-corrected primary statistic was:
 
 This does not pass the frozen `p <= 0.05` gate.
 
-The null distribution itself was not far below the observed value:
+The primary n=1,2,3 null distribution itself was not far below the observed value:
 
-- null mean maxT = 0.6064
-- null 95th percentile = 0.6896
-- null maximum = 0.7254
+- null mean maxT = **0.6039**
+- null 95th percentile = **0.6878**
+- null maximum = **0.7074**
 
 So the observed leaf/body alignment is not an isolated near-miss; this amount of multivariate similarity is common under correct folio-preserving reassignment.
 
@@ -91,5 +91,11 @@ Successful exact run:
 - scientific head: `1c1f4bd69ac0d994130c5991dbd4a3390a86fefa`
 - artifact: `phase67a-results`, ID `9754391675`
 - artifact SHA-256: `8fa56e61402300abfdde89c019360c9717c1f5895664a775dfcfe011fae11451`
+- raw primary result SHA-256: `6a82bdc71164828559d627077072a419752e24208ace1fe40cbedaa0248efa94`
+- raw n=1,2 sensitivity result SHA-256: `fab34687c7423941d196ae96a721c7b03d6190e726d17812ef443578e544dfed`
 
 The preceding workflow attempt failed before producing a scientific result because NumPy 2.5 rejected conversion of a 1x1 array directly with `float(...)`. The one-line `.item()` compatibility fix changed no data, statistic, or scientific rule.
+
+### Post-recording correction
+
+An earlier draft of this report accidentally copied the **n=1,2 sensitivity** null-summary values into the primary null-summary paragraph. The observed statistic, exact p-value, classification, and all scientific outputs were already recorded correctly. The three primary null-summary numbers above now match the first successful `RESULT_A.json`; this is a reporting transcription correction only.
