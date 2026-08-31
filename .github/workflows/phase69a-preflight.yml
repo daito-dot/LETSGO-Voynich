@@ -1,0 +1,68 @@
+name: Phase 69A adaptive homophone preflight
+
+on:
+  push:
+    branches: [phase69-adaptive-homophone]
+    paths:
+      - 'experiments/phase69/**'
+      - '.github/workflows/phase69a-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Checkout exact published Naibbe source only
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Compile implementation
+        run: python -m py_compile experiments/phase69/phase69a_adaptive_naibbe.py
+
+      - name: Audit candidate catalog and raw reversibility without Voynich or CREMMA
+        run: |
+          python - <<'PY'
+          import importlib.util, sys
+          from pathlib import Path
+          p=Path('experiments/phase69/phase69a_adaptive_naibbe.py').resolve()
+          spec=importlib.util.spec_from_file_location('p69', p)
+          m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+          n=m.core.load_naibbe(Path('external/naibbe').resolve())
+          gm=dict(n.placeholder_to_glyph)
+          m.core.set_glyph_map(n, gm)
+          cat, inv, card=m.build_candidate_catalog(n, gm)
+          assert len(gm)==414
+          assert len(cat)==23 + 23*23
+          assert min(card.values()) > 0
+          bad={g:v for g,v in inv.items() if len(v)!=1}
+          assert not bad, list(bad.items())[:10]
+          for unit, rows in cat.items():
+              for glyph, weight in rows:
+                  assert weight > 0
+                  assert inv[glyph] == {unit}
+          print({'catalog_units':len(cat),'raw_cipher_tokens':len(inv),'min_candidates':min(card.values()),'max_candidates':max(card.values())})
+          PY
+
+      - name: Assert no scientific authorities were checked out
+        run: |
+          test ! -e external/cremma
+          test ! -e external/cipher-benchmark
+          echo 'NO SCIENCE REVEAL: preflight only'
