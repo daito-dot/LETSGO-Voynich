@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
 
+# Scientific executable identity is frozen from the primary reveal.
 jobs:
   replication-f100v:
     runs-on: ubuntu-latest
