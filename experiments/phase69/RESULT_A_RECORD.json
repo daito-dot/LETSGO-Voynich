@@ -1,0 +1,91 @@
+{
+  "schema": "phase69a-result-record-v1",
+  "status": "SEALED_RESULT",
+  "hypothesis": "P69-C2-LH1 meaningful plaintext + context-adaptive homophonic obfuscation",
+  "classification": "C2-LH1 LOCALITY-ONLY PARTIAL",
+  "workflow": {
+    "run_id": 33384458143,
+    "job_id": 99463825504,
+    "scientific_head_sha": "6fc41808ad2a01cf1dc5d363f8dd4cba76752ab7",
+    "artifact_id": 9755219409,
+    "artifact_name": "phase69a-first-reveal",
+    "artifact_digest": "sha256:58b027acf6d23dfd021a3319a5301dd60f735eb92a22686274155c4f743110a2",
+    "raw_result_sha256": "531c075af129f3566dccb40fe9351999b45f629804a976c4fded4602357dd293"
+  },
+  "reversibility_and_utilization": {
+    "plaintext_units_across_4_manuscripts_x_5_realisations": 172958,
+    "LH0_decode_accuracy": 1.0,
+    "LH1_decode_accuracy": 1.0,
+    "LH1_local_edit1_opportunities": 94100,
+    "LH1_selected_local_hits": 94100,
+    "LH1_opportunity_fraction_global": 0.5440627204292372,
+    "LH1_mean_realisation_opportunity_fraction": 0.545775236318764
+  },
+  "paired_control_LH0": {
+    "ratio_of_means_to_voynich": {
+      "S1": -0.05584593635999385,
+      "S2": -0.041963294871138195,
+      "S3": 0.5263942760837256
+    },
+    "H62": {
+      "mean_D_profile": 1.5985043847582519,
+      "median_D_profile": 1.5764641508110935,
+      "mean_abs_C_short_diff": 0.984389852137982
+    },
+    "structurally_viable": false,
+    "A1_R1_rival": false
+  },
+  "adaptive_LH1": {
+    "ratio_of_means_to_voynich": {
+      "S1": 0.11333801617245207,
+      "S2": 6.2135795349644765,
+      "S3": 0.568273170937731
+    },
+    "H62": {
+      "mean_D_profile": 0.6887293216985062,
+      "median_D_profile": 0.7833225029121134,
+      "mean_abs_C_short_diff": 0.24908566035283658,
+      "D_profile_fold_values": [
+        0.3379886932136903,
+        0.7833225029121134,
+        0.9381952939429623,
+        0.5147896699889739,
+        0.8693504484347914
+      ],
+      "abs_C_short_diff_fold_values": [
+        0.1182884179777477,
+        0.39166125145605674,
+        0.38585660241607966,
+        0.06144875027934604,
+        0.288173279634953
+      ]
+    },
+    "H62_viable_vs_N0_C0": true,
+    "H62_fold_wins": {
+      "vs_N0": {"D_profile": 5, "abs_C_short_diff": 5},
+      "vs_C0": {"D_profile": 5, "abs_C_short_diff": 5}
+    },
+    "H62_vs_A1_R1": {
+      "lower_mean_D_profile": true,
+      "lower_median_D_profile": true,
+      "D_profile_wins": 3,
+      "lower_mean_abs_C_short_diff": false,
+      "abs_C_short_diff_wins": 2
+    },
+    "exposed_gate_pass": false,
+    "structurally_viable": false,
+    "A1_R1_rival": false
+  },
+  "local_adaptation_mechanism_check": {
+    "LH1_S2_strictly_higher_than_LH0": true,
+    "LH1_mean_abs_C_short_diff_lower_than_LH0": true,
+    "LH1_mean_D_profile_lower_than_LH0": true,
+    "pass": true
+  },
+  "descriptive_comparison_to_sealed_published_C1_E0": {
+    "LH1_S2_higher": true,
+    "LH1_mean_D_lower": true,
+    "LH1_mean_abs_C_short_diff_lower": true
+  },
+  "interpretation": "A reversible meaningful-plaintext homophonic encoder can acquire a strong Voynich-like short-range recurrence profile when ciphertext homophone choice is made recent-context-sensitive. The intervention succeeds causally relative to its paired LH0 control and even beats A1-R1 on mean/median H62 profile distance, but it overproduces the exposed previous-10 effect by about 6.21x and reproduces only about 0.11x of the paragraph-entry effect. It therefore demonstrates semantic/formal compatibility for locality, not a complete Voynich mechanism or historical cipher identification. The blinded routing rule forbids tuning the local selector after this result."
+}
