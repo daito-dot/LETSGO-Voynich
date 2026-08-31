@@ -1,0 +1,17 @@
+{
+  "schema":"phase66a-color-b-result-summary-v1",
+  "status":"SEALED BEFORE TEXT ASSOCIATION",
+  "pooled_colored_pixels":823956,
+  "candidate_k_silhouette":{"2":0.6080248956197342,"3":0.6446026368765226,"4":0.41264344925452806,"5":0.4228509762243847,"6":0.390209401823962},
+  "chosen_k":3,
+  "cluster_centers_ab":{"C1":[-19.180926592294796,-0.5404159927233365],"C2":[-7.001307787876529,9.869848950500385],"C3":[-6.891594333596313,-17.501634539504185]},
+  "binary_presence_counts":{"C1":17,"C2":10,"C3":3},
+  "continuous_diagnostics":{
+    "C1":{"nonzero_objects":20,"median_area_fraction":0.2366760781407959,"p90_area_fraction":0.5429576734161988,"p90_minus_median":0.30628159527540294},
+    "C2":{"nonzero_objects":23,"median_area_fraction":0.0015882318336207669,"p90_area_fraction":0.060851319727891144,"p90_minus_median":0.05926308789427038},
+    "C3":{"nonzero_objects":8,"median_area_fraction":0.0,"p90_area_fraction":0.0029227445506515254,"p90_minus_median":0.0029227445506515254}
+  },
+  "binary_eligible":["C1","C2"],
+  "continuous_eligible":["C1","C2","C3"],
+  "note":"Cluster identifiers are scientific labels. No human color names are used for eligibility or later primary statistics. Initial HSV Color A remains archived as preflight and is superseded by Color B."
+}

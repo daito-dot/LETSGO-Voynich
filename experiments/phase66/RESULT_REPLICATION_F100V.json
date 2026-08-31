@@ -1,0 +1,16 @@
+{
+  "schema":"phase66b-replication-result-summary-v1",
+  "page":"f100v",
+  "role":"replication",
+  "pass":false,
+  "T_observed":-0.15277449822904368,
+  "p_exact_one_sided":0.7352719907407408,
+  "n_permutations":69120,
+  "row_rho":{"T":-0.7142857142857143,"M":0.41818181818181815,"B":-0.5428571428571428},
+  "classification_with_primary":"M8-B2 NO DETECTED ATTRIBUTE-LABEL RELATION",
+  "science_executable_sha256":"698252876f7a6187ac8c80f1e95372e2afa3c8e3dc30f7e62170b3ad492a3290",
+  "raw_result_sha256":"1c5a1b2935389096e813306dfa4bbf9e71acb2d74029ddebf140b38102699cc1",
+  "workflow_run":33361602833,
+  "artifact":9746865196,
+  "artifact_digest":"sha256:22ca844852f2f8dcc4f056bf82eaaea7936ed579b537ec82bf087bdd5bff9ac9"
+}

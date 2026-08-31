@@ -1,0 +1,38 @@
+{
+  "schema": "phase66b-primary-result-summary-v1",
+  "status": "SEALED_PRIMARY_BEFORE_REPLICATION",
+  "page": "f102v2",
+  "role": "primary",
+  "pass": false,
+  "T_observed": 0.00301060073648908,
+  "p_exact_one_sided": 0.4896875,
+  "n_permutations": 86400,
+  "row_rho": {
+    "L2": -0.03942677655029598,
+    "L3": 0.06666666666666667
+  },
+  "row_pair_counts": {
+    "L2": 15,
+    "L3": 10
+  },
+  "pass_rule": {
+    "T_min": 0.20,
+    "p_max": 0.05
+  },
+  "input_sha256": {
+    "morphology": "8a7c43053331523f15e9af23ee36dbc89945a281927f1037b53ff2ee98c1ce0d",
+    "color_features": "1f717d6e201344059d88e952b2bcd16872859d09190537b19c4a51bf66bc0ac5",
+    "source_manifest": "71023a2c395ad95848697e866373541deb1beb02dfbfaaabcd21140293775a56",
+    "text_freeze": "7de8433f4cfb194e166e64611c68ec9a08aa37cfd0c4f65ca72e2dfcc960cfda",
+    "science_executable": "698252876f7a6187ac8c80f1e95372e2afa3c8e3dc30f7e62170b3ad492a3290",
+    "raw_result": "5b259f53a503132ffa430ff83a606d6141168bb86966ee14618b58f718100fc2"
+  },
+  "provenance": {
+    "workflow_run": 33361478853,
+    "job": 99393538085,
+    "artifact": 9746827681,
+    "artifact_digest": "sha256:6776358299c66be196753b04eb16399c3fba401a3725560ebbfde4762fc81ed7",
+    "workflow_head": "e072a97a5c01ffc8e08130338219f30a2e81d2b1"
+  },
+  "interpretation": "The preregistered global image-attribute to attached-label structural relation was not detected on the primary page. Replication remains mandatory and no scientific parameter may be changed before it."
+}

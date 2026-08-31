@@ -1,0 +1,32 @@
+{
+  "schema": "phase66b-text-feature-freeze-v1",
+  "status": "SEALED_BEFORE_IMAGE_TEXT_ASSOCIATION",
+  "source": {
+    "manifest": "experiments/phase65/SOURCE_MANIFEST_B.json",
+    "manifest_blob_sha": "0698c0c451ad525d74b976fb241e338373166ad0",
+    "transcription": "ZL3b",
+    "zl3b_source_sha256": "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc",
+    "retained_labels": 24,
+    "excluded_object": "L2.7"
+  },
+  "selection_access": {
+    "morphology_used": false,
+    "color_used": false,
+    "image_text_association_used": false,
+    "phase65b_score_used": false
+  },
+  "groups": [
+    "glyph_length",
+    "first_glyph",
+    "last_glyph",
+    "unigram_presence",
+    "bigram_presence"
+  ],
+  "unigram_prevalence_rule": {"min_labels": 4, "max_labels": 20},
+  "retained_unigrams": ["a", "c", "d", "e", "h", "k", "l", "o", "r", "s", "y"],
+  "bigram_prevalence_rule": {"min_labels": 3, "max_labels": 12, "cross_word_boundary": false},
+  "retained_bigrams": ["ai", "al", "ar", "ch", "dy", "ee", "eo", "hd", "ho", "kc", "ko", "ls", "ok", "ol", "or", "os", "ro", "yk"],
+  "length_range": {"min": 2, "max": 11},
+  "composite_distance": "equal-weight mean of the five group distances",
+  "note": "Feature vocabulary was derived from label strings only under frozen prevalence rules; no image-side values or associations were consulted."
+}

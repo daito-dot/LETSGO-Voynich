@@ -1,0 +1,56 @@
+name: Phase66B replication science f100v
+
+on:
+  push:
+    branches: [phase66-attribute-label-preregister]
+    paths:
+      - .github/workflows/phase66b-replication-science.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  replication-science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install frozen runtime dependencies
+        run: |
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+      - name: Verify frozen executable
+        run: |
+          test "$(sha256sum experiments/phase66/phase66b_science.py | cut -d' ' -f1)" = "698252876f7a6187ac8c80f1e95372e2afa3c8e3dc30f7e62170b3ad492a3290"
+      - name: Verify primary was sealed
+        run: |
+          test -f experiments/phase66/RESULT_PRIMARY_F102V2.json
+          python - <<'PY'
+          import json
+          x=json.load(open('experiments/phase66/RESULT_PRIMARY_F102V2.json'))
+          assert x['page']=='f102v2' and x['role']=='primary'
+          assert x['n_permutations']==86400
+          PY
+      - name: Run replication
+        run: |
+          mkdir -p phase66b-replication-artifact
+          python experiments/phase66/phase66b_science.py \
+            --mode science --page f100v --role replication \
+            --morphology experiments/phase66/MORPHOLOGY_TABLE_A.json \
+            --color-features experiments/phase66/COLOR_FEATURE_TABLE_B.json \
+            --source-manifest experiments/phase65/SOURCE_MANIFEST_B.json \
+            --text-freeze experiments/phase66/TEXT_FEATURE_FREEZE_A.json \
+            --out phase66b-replication-artifact/SCIENTIFIC_RESULT_F100V.json
+          sha256sum experiments/phase66/phase66b_science.py > phase66b-replication-artifact/executable.sha256
+          sha256sum experiments/phase66/MORPHOLOGY_TABLE_A.json experiments/phase66/COLOR_FEATURE_TABLE_B.json experiments/phase65/SOURCE_MANIFEST_B.json experiments/phase66/TEXT_FEATURE_FREEZE_A.json > phase66b-replication-artifact/inputs.sha256
+          sha256sum phase66b-replication-artifact/SCIENTIFIC_RESULT_F100V.json > phase66b-replication-artifact/result.sha256
+          python -m pip freeze | sort > phase66b-replication-artifact/pip-freeze.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: phase66b-replication-f100v-${{ github.sha }}
+          path: phase66b-replication-artifact/
+          if-no-files-found: error
+          retention-days: 90

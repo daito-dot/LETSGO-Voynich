@@ -1,0 +1,22 @@
+{
+  "schema": "phase66a-color-b-summary-v1",
+  "status": "SEALED_BEFORE_TEXT_ASSOCIATION",
+  "executable_git_blob_sha1": "87d85a9060ececc8e0133bd0638d6a64f021c75a",
+  "seed": 6602,
+  "pooled_colored_pixels": 823956,
+  "silhouette_scores": {"2": 0.6080248956197342, "3": 0.6446026368765226, "4": 0.41264344925452806, "5": 0.4228509762243847, "6": 0.390209401823962},
+  "chosen_k": 3,
+  "cluster_centers_ab": {"C1": [-19.180926592294796, -0.5404159927233364], "C2": [-7.001307787876531, 9.869848950500385], "C3": [-6.891594333596313, -17.501634539504185]},
+  "eligibility": {
+    "C1": {"binary_presence": true, "continuous_area": true, "present_n": 16},
+    "C2": {"binary_presence": true, "continuous_area": true, "present_n": 11},
+    "C3": {"binary_presence": false, "continuous_area": true, "present_n": 3}
+  },
+  "row_presence": {
+    "C1": {"B":4,"M":3,"T":3,"L2":4,"L3":2},
+    "C2": {"B":1,"M":3,"T":1,"L2":2,"L3":4},
+    "C3": {"T":1,"L2":1,"L3":1}
+  },
+  "diagnostic": "Parchment-neutralized image sheet was inspected before any text association. The gross all-object brown/yellow contamination seen in Color A is removed. Cluster identities remain C1-C3 for scientific use; no semantic color name is required.",
+  "warning": "C3 binary presence fails the frozen prevalence firewall. Its continuous-area rule technically passes because small nonzero pixels occur in >=8 objects; this must not be silently upgraded into a binary primary feature or threshold-tuned after measurement."
+}
