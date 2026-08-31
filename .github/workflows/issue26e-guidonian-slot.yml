@@ -1,0 +1,94 @@
+name: Issue26E Guidonian slot-lattice test
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'experiments/issue26-music/SLOT_PROVENANCE_E.md'
+      - 'experiments/issue26-music/PLAN_E.md'
+      - 'experiments/issue26-music/issue26e_core.py'
+      - 'experiments/issue26-music/phaseE_guidonian_slot.py'
+      - '.github/workflows/issue26e-guidonian-slot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout Issue26E branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Verify freeze and correction precede executable
+        shell: bash
+        run: |
+          PROV=$(git log -1 --format=%H -- experiments/issue26-music/SLOT_PROVENANCE_E.md)
+          PLAN=$(git log --format=%H -- experiments/issue26-music/PLAN_E.md | tail -1)
+          CORE=$(git log --format=%H -- experiments/issue26-music/issue26e_core.py | tail -1)
+          SCRIPT=$(git log --format=%H -- experiments/issue26-music/phaseE_guidonian_slot.py | tail -1)
+          echo provenance_last=$PROV plan_first=$PLAN core_first=$CORE script_first=$SCRIPT
+          test "$PROV" != "$CORE"
+          test "$PLAN" != "$CORE"
+          test "$PLAN" != "$SCRIPT"
+          git merge-base --is-ancestor "$PROV" "$CORE"
+          git merge-base --is-ancestor "$PLAN" "$CORE"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+          sparse-checkout: |
+            benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact ZL3b
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install frozen numerical dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Run first scientific reveal
+        shell: bash
+        run: |
+          python experiments/issue26-music/phaseE_guidonian_slot.py \
+            external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            > issue26e_results.json
+
+      - name: Print frozen verdict
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('issue26e_results.json'))
+          print('classification=',r['frozen_classification'])
+          print('conditions=',r['decision_conditions'])
+          for k in ['primary_min','sensitivity_max']:
+              x=r[k]
+              print(k, 'coverage=',x['mean_parse_coverage'], 'A_G=',x['mean_guidonian_accuracy'],
+                    'null_med=',x['paired_null_mean_median'], 'adv=',x['global_advantage'],
+                    'p=',x['p_global'], 'wins=',x['fold_null_median_wins'])
+              print('folds=',[(z['fold'],z['heldout']['accuracy'],z['null_median_accuracy'],z['p_fold']) for z in x['folds']])
+          print('hashes=',r['inputs'])
+          PY
+          sha256sum issue26e_results.json
+
+      - name: Upload first-reveal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue26e-first-reveal
+          path: issue26e_results.json
+          if-no-files-found: error
+          retention-days: 90
