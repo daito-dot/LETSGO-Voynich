@@ -1,0 +1,78 @@
+name: Issue68 Stage0 verified gate propagation
+
+on:
+  push:
+    branches: [issue68-joint-constraint-tournament]
+    paths:
+      - '.github/workflows/issue68-stage0-propagate-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue68-joint-constraint-tournament
+          fetch-depth: 0
+
+      - name: Resolve latest Stage0 outcome
+        shell: bash
+        run: |
+          set -euo pipefail
+          FOUND=0
+          for i in $(seq 1 60); do
+            git fetch -q origin issue68-joint-constraint-tournament
+            git reset -q --hard origin/issue68-joint-constraint-tournament
+            if [ -f experiments/joint-constraint-tournament/stage0/STAGE0_OUTCOME.json ]; then
+              FOUND=1
+              break
+            fi
+            sleep 5
+          done
+          test "$FOUND" = "1"
+          python - <<'PY'
+          import json
+          r=json.load(open('experiments/joint-constraint-tournament/stage0/STAGE0_OUTCOME.json'))
+          failed=[k for k,v in r['checks'].items() if not v]
+          print('all_checks_pass=', r['all_checks_pass'])
+          print('failed=', failed)
+          if not r['all_checks_pass']:
+              open('/tmp/BLOCKED','w').write('\n'.join(failed))
+          PY
+
+      - name: Refresh verified marker only on complete pass
+        if: ${{ hashFiles('/tmp/BLOCKED') == '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/joint-constraint-tournament/stage0/STAGE0_REPLAY_VERIFIED.md
+          printf '\nGate propagation run: `%s`.\n' "$GITHUB_RUN_ID" >> experiments/joint-constraint-tournament/stage0/STAGE0_REPLAY_VERIFIED.md
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experiments/joint-constraint-tournament/stage0/STAGE0_REPLAY_VERIFIED.md
+          git commit -m 'Propagate verified Issue68 Stage0 gate'
+          git push origin HEAD:issue68-joint-constraint-tournament
+
+      - name: Record blocked gate without changing science
+        if: ${{ hashFiles('/tmp/BLOCKED') != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/joint-constraint-tournament/stage0
+          {
+            echo '# Issue #68 Stage 0 gate blocked'
+            echo
+            echo 'No new joint candidate score was computed.'
+            echo
+            echo 'Failed checks:'
+            while IFS= read -r x; do echo "- \`$x\`"; done < /tmp/BLOCKED
+          } > experiments/joint-constraint-tournament/stage0/STAGE0_GATE_BLOCKED.md
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experiments/joint-constraint-tournament/stage0/STAGE0_GATE_BLOCKED.md
+          git commit -m 'Record blocked Issue68 Stage0 gate'
+          git push origin HEAD:issue68-joint-constraint-tournament
