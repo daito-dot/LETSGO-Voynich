@@ -1,0 +1,113 @@
+name: Repair Issue64 first-reveal archive copy
+
+on:
+  push:
+    branches: [issue66-independent-transcription-residual]
+    paths:
+      - '.github/workflows/repair-issue64-first-reveal-archive.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue66-independent-transcription-residual
+          fetch-depth: 0
+
+      - name: Download and verify original Issue64 first-reveal artifact
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/issue64-original /tmp/issue64-rebuild
+          gh api /repos/${GITHUB_REPOSITORY}/actions/artifacts/9776775160/zip > /tmp/issue64-original/artifact.zip
+          test "$(sha256sum /tmp/issue64-original/artifact.zip | awk '{print $1}')" = "ed3c28b214ed78b9c19a67182eac7e867e51bc3e13ef4ee6c778ef329f9a7650"
+          unzip -q /tmp/issue64-original/artifact.zip -d /tmp/issue64-original/unpacked
+          RAW=/tmp/issue64-original/unpacked/issue64_residual_graph_results.json
+          test -f "$RAW"
+          test "$(sha256sum "$RAW" | awk '{print $1}')" = "fba60daea6e30682065900a4cf15d53d2a2f536d933b588fae447fb43bb4728d"
+          test "$(wc -c < "$RAW")" = "194396"
+
+      - name: Rebuild deterministic permanent archive and isolate corrupted chunk
+        shell: bash
+        run: |
+          set -euo pipefail
+          RAW=/tmp/issue64-original/unpacked/issue64_residual_graph_results.json
+          gzip -n -9 -c "$RAW" > /tmp/issue64-rebuild/result.json.gz
+          test "$(sha256sum /tmp/issue64-rebuild/result.json.gz | awk '{print $1}')" = "666cfa3e211b097b30025a7947cf8bbb22e1bf24cae18a55d99017328b511d4f"
+          base64 -w0 /tmp/issue64-rebuild/result.json.gz > /tmp/issue64-rebuild/result.b64
+          split -b 8192 -d -a 2 /tmp/issue64-rebuild/result.b64 /tmp/issue64-rebuild/part
+          test "$(git hash-object /tmp/issue64-rebuild/part00)" = "372e6fd89bc097f628354920a85c525e74799964"
+          test "$(git hash-object /tmp/issue64-rebuild/part01)" = "666f03c17bc06b6c84661caebe50f8a0ccfc627b"
+          test "$(git hash-object /tmp/issue64-rebuild/part02)" = "641fc6fa2cbe63fe21eeeb966ee2477af3c85f8b"
+          test "$(git hash-object /tmp/issue64-rebuild/part03)" = "e93c9e20a323728fc0feab1c2ba0da1c4d1e7371"
+          test "$(git hash-object /tmp/issue64-rebuild/part04)" = "fbe3fbfecbc5a764aca0a1f25638c6a5738ca125"
+          test "$(git hash-object /tmp/issue64-rebuild/part05)" = "af03beb233b18fb003038574e627e3fc8d42480a"
+          test "$(git hash-object /tmp/issue64-rebuild/part06)" = "bb0487406575344bb300207c40967fbd3d6453e6"
+          test "$(git hash-object /tmp/issue64-rebuild/part07)" = "d2cb5ba700c1bd4273498923a4c2a1eeb41691ac"
+          TARGET=experiments/occupancy-graph-residual/first-reveal/issue64_residual_graph_results.json.gz.b64.part06
+          test "$(git hash-object "$TARGET")" = "8fd93462e2a8a07f422e83eeec5aed850e9194a0"
+          cp /tmp/issue64-rebuild/part06 "$TARGET"
+          test "$(git hash-object "$TARGET")" = "bb0487406575344bb300207c40967fbd3d6453e6"
+
+      - name: Verify repository reconstruction after repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experiments/occupancy-graph-residual/first-reveal
+          cat "$ROOT"/issue64_residual_graph_results.json.gz.b64.part* | tr -d '\n' | base64 -d > /tmp/reconstructed.json.gz
+          test "$(sha256sum /tmp/reconstructed.json.gz | awk '{print $1}')" = "666cfa3e211b097b30025a7947cf8bbb22e1bf24cae18a55d99017328b511d4f"
+          gzip -dc /tmp/reconstructed.json.gz > /tmp/reconstructed.json
+          test "$(sha256sum /tmp/reconstructed.json | awk '{print $1}')" = "fba60daea6e30682065900a4cf15d53d2a2f536d933b588fae447fb43bb4728d"
+
+      - name: Record archive-copy repair provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > experiments/occupancy-graph-residual/first-reveal/ARCHIVE_REPAIR_20260901.md <<EOF
+          # Issue #64 first-reveal permanent-copy integrity repair
+
+          Status: **archive transport copy repaired; scientific first reveal unchanged**.
+
+          During Issue #58D preflight, reconstruction of the permanent base64/gzip copy failed CRC verification. The original GitHub Actions first-reveal artifact was still available and was used as the independent authority for repair.
+
+          Verified original authority:
+
+          - original Actions artifact ID: \`9776775160\`
+          - original artifact ZIP SHA-256: \`ed3c28b214ed78b9c19a67182eac7e867e51bc3e13ef4ee6c778ef329f9a7650\`
+          - exact raw JSON SHA-256: \`fba60daea6e30682065900a4cf15d53d2a2f536d933b588fae447fb43bb4728d\`
+          - deterministic gzip SHA-256: \`666cfa3e211b097b30025a7947cf8bbb22e1bf24cae18a55d99017328b511d4f\`
+
+          Rebuilding all eight intended 8,192-byte base64 chunks from the verified original showed that parts 00–05 and 07 already matched their expected Git blobs. Only part06 differed:
+
+          - corrupted stored part06 blob: \`8fd93462e2a8a07f422e83eeec5aed850e9194a0\`
+          - correct rebuilt part06 blob: \`bb0487406575344bb300207c40967fbd3d6453e6\`
+
+          This repair replaced only part06. Repository reconstruction was then verified end-to-end back to the frozen deterministic-gzip and raw-JSON hashes above.
+
+          Repair workflow run: \`${GITHUB_RUN_ID}\`.
+
+          The scientific result, first-reveal run, first-reveal raw bytes, frozen classification, and all numerical interpretations are unchanged. This is solely a repair of the later text-transport copy used for permanent repository storage.
+          EOF
+
+      - name: Commit only repair artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add \
+            experiments/occupancy-graph-residual/first-reveal/issue64_residual_graph_results.json.gz.b64.part06 \
+            experiments/occupancy-graph-residual/first-reveal/ARCHIVE_REPAIR_20260901.md
+          CHANGED=$(git diff --cached --name-only)
+          echo "$CHANGED"
+          test "$(echo "$CHANGED" | wc -l)" = "2"
+          git commit -m "Repair Issue64 first-reveal archive transport copy"
+          git push origin HEAD:issue66-independent-transcription-residual
