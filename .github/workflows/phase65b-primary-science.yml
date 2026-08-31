@@ -1,0 +1,62 @@
+name: Phase 65B primary science
+
+on:
+  push:
+    branches: [phase65b-image-label-science]
+    paths:
+      - '.github/workflows/phase65b-primary-science.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  primary-f102v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install frozen runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch==2.8.0 torchvision==0.23.0 numpy==2.2.6 scipy==1.16.1 Pillow==12.3.0 einops==0.8.1 omegaconf==2.3.0 torchmetrics==1.8.1 fvcore==0.1.5.post20221221 iopath==0.1.10
+          pip freeze > pip-freeze.txt
+      - name: Fetch frozen DINOv2 and external source
+        run: |
+          git clone -q https://github.com/facebookresearch/dinov2.git /tmp/dinov2
+          git -C /tmp/dinov2 checkout -q 7764ea0f912e53c92e82eb78a2a1631e92725fc8
+          test "$(git -C /tmp/dinov2 rev-parse HEAD)" = "7764ea0f912e53c92e82eb78a2a1631e92725fc8"
+          curl -fL --retry 3 -o /tmp/dinov2_vits14_pretrain.pth https://dl.fbaipublicfiles.com/dinov2/dinov2_vits14/dinov2_vits14_pretrain.pth
+          echo 'b938bf1bc15cd2ec0feacfe3a1bb553fe8ea9ca46a7e1d8d00217f29aef60cd9  /tmp/dinov2_vits14_pretrain.pth' | sha256sum -c -
+          curl -fL --retry 3 -o /tmp/IT2a-n.source.txt https://www.voynich.nu/data/IT2a-n.txt
+          echo '7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5  /tmp/IT2a-n.source.txt' | sha256sum -c -
+          git -C /tmp/dinov2 rev-parse HEAD > dinov2-commit.txt
+      - name: Freeze executable and input identities
+        run: |
+          sha256sum experiments/phase65/phase65b_science.py > science-executable.sha256
+          sha256sum experiments/phase65/SOURCE_MANIFEST_B.json > source-manifest.sha256
+          sha256sum experiments/phase65/CROP_MANIFEST_B.json > crop-manifest.sha256
+          cat science-executable.sha256 source-manifest.sha256 crop-manifest.sha256
+      - name: First scientific reveal - f102v2 only
+        run: |
+          mkdir -p phase65b-primary-artifact
+          python experiments/phase65/phase65b_science.py \
+            --page f102v2 \
+            --role primary \
+            --source-manifest experiments/phase65/SOURCE_MANIFEST_B.json \
+            --crop-manifest experiments/phase65/CROP_MANIFEST_B.json \
+            --dinov2-repo /tmp/dinov2 \
+            --weights /tmp/dinov2_vits14_pretrain.pth \
+            --it2a-file /tmp/IT2a-n.source.txt \
+            --out phase65b-primary-artifact/SCIENTIFIC_RESULT_F102V2.generated.json
+          cp science-executable.sha256 source-manifest.sha256 crop-manifest.sha256 pip-freeze.txt dinov2-commit.txt phase65b-primary-artifact/
+          sha256sum phase65b-primary-artifact/SCIENTIFIC_RESULT_F102V2.generated.json > phase65b-primary-artifact/result.sha256
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phase65b-primary-f102v2-${{ github.sha }}
+          path: phase65b-primary-artifact/
+          if-no-files-found: warn
