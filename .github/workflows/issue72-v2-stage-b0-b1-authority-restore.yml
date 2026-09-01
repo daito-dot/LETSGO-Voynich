@@ -1,0 +1,116 @@
+name: Issue72 V2 restore Stage B0 from successful B1 authority
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-b0-b1-authority-restore.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout restore head with history
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify recovery chronology and frozen generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor c45c67a665a7e4ad24c1d2706f83c65931d950a9 HEAD
+          git merge-base --is-ancestor e6ccd4eb728e85d9e48548e2431abf0ebce1d87a HEAD
+          test "$(git hash-object experiments/naibbe-r1-decomposition-v2/b0_support72_v2.py)" = 'ef3144591839395c18e1bdf308311bf99562bf9a'
+          test "$(grep -c 'EXPECTED_B0_RAW_SHA256 = \"96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58\"' experiments/naibbe-r1-decomposition-v2/d0_pt_support72_v2.py)" -eq 1
+
+      - name: Extract exact B0 consumed by successful B1 scientific head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show 398d5a9d6c32052405e26533e45c7c2ed705e627:experiments/naibbe-r1-decomposition-v2/stage_b0_support.json > /tmp/stage_b0.b1-authority.json
+          python -m json.tool /tmp/stage_b0.b1-authority.json >/dev/null
+          GOT=$(sha256sum /tmp/stage_b0.b1-authority.json | cut -d' ' -f1)
+          test "$GOT" = '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+          python - <<'PY'
+          import json
+          p='/tmp/stage_b0.b1-authority.json'
+          r=json.load(open(p,encoding='utf-8'))
+          assert r['status']=='UNCHANGED_NAIBBE_REP0_REP4_SURFACES_FROZEN'
+          assert set(r['reps'])=={f'rep{i}' for i in range(5)}
+          assert all(v is False for v in r['target_access'].values())
+          assert r['reps']['rep0']['primary_pooled_surface_sha256']=='47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          assert r['reps']['rep0']['support']['visible_tokens']==33574
+          assert r['reps']['rep0']['support']['accepted_tokens']==29759
+          print('B1_HEAD_B0_AUTHORITY_VALID')
+          PY
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install frozen preexisting dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Regenerate B0 target-blind from frozen generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/naibbe-r1-decomposition-v2/b0_support72_v2.py \
+            external/cremma external/naibbe /tmp/stage_b0.regenerated.json \
+            > /tmp/b0_regenerated_stdout.txt
+          python -m json.tool /tmp/stage_b0.regenerated.json >/dev/null
+          test "$(sha256sum /tmp/stage_b0.regenerated.json | cut -d' ' -f1)" = '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+
+      - name: Require byte-for-byte equality to B1 authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmp -s /tmp/stage_b0.regenerated.json /tmp/stage_b0.b1-authority.json
+          echo 'B0_REGENERATION_BYTE_IDENTICAL_TO_SUCCESSFUL_B1_AUTHORITY=true'
+
+      - name: Restore exact B0 and freeze provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          CURRENT_SHA=$(sha256sum experiments/naibbe-r1-decomposition-v2/stage_b0_support.json | cut -d' ' -f1)
+          cp /tmp/stage_b0.b1-authority.json experiments/naibbe-r1-decomposition-v2/stage_b0_support.json
+          cat > experiments/naibbe-r1-decomposition-v2/STAGE_B0_B1_AUTHORITY_RESTORE_20260901.txt <<EOF
+          restore_workflow_run=${GITHUB_RUN_ID}
+          restore_workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          restore_head=${GITHUB_SHA}
+          recovery_reference_scientific_head=398d5a9d6c32052405e26533e45c7c2ed705e627
+          recovery_reference_role=SUCCESSFUL_STAGE_B1_INPUT_AUTHORITY
+          restored_b0_sha256=96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58
+          frozen_generator_blob=ef3144591839395c18e1bdf308311bf99562bf9a
+          frozen_cremma_commit=292525969ad98380b398e6606a9c2a36d51913ae
+          frozen_naibbe_commit=f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          pre_restore_repository_b0_sha256=${CURRENT_SHA}
+          regenerated_byte_identical_to_b1_authority=true
+          target_loaded=false
+          R1_computed=false
+          PT_surface_generated=false
+          scientific_intervention_changed=false
+          EOF
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/naibbe-r1-decomposition-v2/stage_b0_support.json experiments/naibbe-r1-decomposition-v2/STAGE_B0_B1_AUTHORITY_RESTORE_20260901.txt
+          git diff --cached --quiet && { echo 'nothing to restore'; exit 1; }
+          git commit -m 'Issue72 V2: restore exact B0 authority used by successful B1'
+          git push origin HEAD:issue72-r1-causal-decomposition-v2
