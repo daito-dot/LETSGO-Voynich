@@ -1,0 +1,90 @@
+name: Issue72 V2 archive exact Stage B1 calibration
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-b1-archive.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout V2 branch with write credentials
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+          fetch-depth: 0
+
+      - name: Download exact accepted B1 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: issue72-v2-stageB1-recovery2-calibration-398d5a9d6c32052405e26533e45c7c2ed705e627
+          path: /tmp/b1-final
+          github-token: ${{ github.token }}
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33463625070
+
+      - name: Verify exact accepted B1 bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'b37d285b25d17623fa19910ff3f8f4586846bb8f19825c3dbdd6e8b19bb2e31d  /tmp/b1-final/stage_b1_calibration.json' | sha256sum -c -
+          echo '43531593d1cee752df26ae650000b5fdbcf1244021d8e75afb8eda06d3d7855e  /tmp/b1-final/reps/rep0.json' | sha256sum -c -
+          echo '11477eb78175a541796f64ec635e7dc4741396bb01e5f1c74224a21315599045  /tmp/b1-final/reps/rep1.json' | sha256sum -c -
+          echo '7e1951a9000dc13f52eb22f7f05e7c5872c0891f3c2fafeb21e3b04b759f5a90  /tmp/b1-final/reps/rep2.json' | sha256sum -c -
+          echo 'c514e7ba1ab28acdee2ad0819165ec30b3d36fb80d4bff4dba693e025142711d  /tmp/b1-final/reps/rep3.json' | sha256sum -c -
+          echo 'e793519fe147865af57d793169e0236932ac7fa659ee9d6e05cc8063ecba2048  /tmp/b1-final/reps/rep4.json' | sha256sum -c -
+          echo 'ae635b84a52d9ab16d50fb3175fde312558284c47f515e89e4e3a8915da67967  /tmp/b1-final/stdout.txt' | sha256sum -c -
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/b1-final/stage_b1_calibration.json'))
+          assert r['status']=='UNCHANGED-NAIBBE R1 STOCHASTIC VARIATION CHARACTERIZED'
+          assert r['classification'] is None
+          assert r['hard_intervention_threshold_derived'] is False
+          for x in r['guardrails']:
+              assert isinstance(x,str)
+          PY
+
+      - name: Copy exact evidence into permanent repository archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/naibbe-r1-decomposition-v2/calibration-archive/stage-b1-run33463625070
+          test ! -e "$DEST"
+          mkdir -p "$DEST/reps"
+          cp /tmp/b1-final/stage_b1_calibration.json "$DEST/"
+          cp /tmp/b1-final/reps/rep*.json "$DEST/reps/"
+          cp /tmp/b1-final/stdout.txt "$DEST/"
+          cp /tmp/b1-final/SHA256SUMS.txt "$DEST/"
+          cp /tmp/b1-final/PROVENANCE.txt "$DEST/"
+          cat > "$DEST/ARCHIVE_AUTHORITY.md" <<'EOF'
+          # Stage B1 exact calibration archive authority
+
+          Exact source execution:
+
+          - workflow run: `33463625070`
+          - scientific head: `398d5a9d6c32052405e26533e45c7c2ed705e627`
+          - aggregate artifact ID: `9784131519`
+          - aggregate artifact ZIP SHA-256: `143731f7e430f3cea5c878890852ae24de4917ea9fa73eb3166330c1ff541fd5`
+          - aggregate JSON SHA-256: `b37d285b25d17623fa19910ff3f8f4586846bb8f19825c3dbdd6e8b19bb2e31d`
+
+          These files were copied byte-for-byte by GitHub Actions only after the frozen hashes above passed. No manual text/base64 transport was used.
+          EOF
+          sha256sum "$DEST/stage_b1_calibration.json" "$DEST/reps/"*.json "$DEST/stdout.txt" | sort > "$DEST/ARCHIVED_SHA256SUMS.txt"
+
+      - name: Commit exact archive to V2 branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/naibbe-r1-decomposition-v2/calibration-archive/stage-b1-run33463625070
+          git diff --cached --check
+          git commit -m 'Issue72 V2: archive exact Stage B1 calibration bytes'
+          git push origin HEAD:issue72-r1-causal-decomposition-v2
