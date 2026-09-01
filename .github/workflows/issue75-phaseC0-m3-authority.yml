@@ -1,0 +1,196 @@
+name: Issue75 Phase C0 target-blind M3-KRS-CHAIN authority
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseC0-m3-authority.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact Phase C0 head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify M3 license and plan-before-code chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          M3=experiments/minimal-occupancy-generator/DECISION_B_M3_LICENSED.md
+          STOP=experiments/minimal-occupancy-generator/DECISION_B_M2_SUFFICIENT_STOP.md
+          test -f "$M3"
+          test ! -f "$STOP"
+          test -f experiments/minimal-occupancy-generator/REPORT_B.md
+          test -f experiments/minimal-occupancy-generator/PLAN_C.md
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PLAN_C.md | tail -1)
+          GEN=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75c_generator_support.py | tail -1)
+          WF=$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseC0-m3-authority.yml | tail -1)
+          test -n "$PLAN" && test -n "$GEN" && test -n "$WF"
+          test "$WF" = "$(git rev-parse HEAD)"
+          git merge-base --is-ancestor "$PLAN" "$GEN"
+          git merge-base --is-ancestor "$GEN" "$WF"
+          PLAN_BLOB=$(git rev-parse "$PLAN:experiments/minimal-occupancy-generator/PLAN_C.md")
+          test "$(git rev-parse HEAD:experiments/minimal-occupancy-generator/PLAN_C.md)" = "$PLAN_BLOB"
+          test ! -e experiments/minimal-occupancy-generator/stage-c0
+          test ! -e experiments/minimal-occupancy-generator/REPORT_C.md
+          python - <<'PY'
+          import json
+          p='experiments/minimal-occupancy-generator/stage-b-first-reveal/phase75b_aggregate.json'
+          r=json.load(open(p, encoding='utf-8'))
+          assert r['primary']['classification']=='M2_GENERIC_KRS_SHAPE_DESCRIPTORS_INSUFFICIENT_STATEFUL_CONFIGURATION_RULE_REQUIRED'
+          assert r['primary']['no_material_loss'] is False
+          assert r['guardrails']['M3_executed'] is False
+          print({'phase_b_classification':r['primary']['classification'],'M3_licensed':True})
+          PY
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cipher_benchmark rev-parse HEAD)" = '315f0cad4de3d021bd4185765c037cf2a28d341c'
+          test "$(git -C _cipher_benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = '2a4533ab9bdfa85db9bad602d590978953055df1'
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Compile target-blind M3 generator
+        run: python -m py_compile experiments/minimal-occupancy-generator/phase75c_generator_support.py
+
+      - name: Generate all 31 M3-KRS-CHAIN corpora without target access
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/issue75-c0
+          python experiments/minimal-occupancy-generator/phase75c_generator_support.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            /tmp/issue75-c0/generator_authority.json \
+            > /tmp/issue75-c0/stdout.txt
+
+      - name: Enforce M3 model, moments, complete population and target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math
+          r=json.load(open('/tmp/issue75-c0/generator_authority.json', encoding='utf-8'))
+          assert r['schema']=='issue75-phaseC0-m3-krs-chain-generator-authority-v1'
+          assert r['status']=='M3_KRS_CHAIN_31_CORPORA_FROZEN_TARGET_BLIND'
+          assert r['source']['ZL3b_blob']=='2a4533ab9bdfa85db9bad602d590978953055df1'
+          assert r['source']['visible_tokens']==32570
+          assert r['source']['parsed_tokens']==25071
+          assert r['source']['fold_parsed_tokens']==[4430,4810,5516,5447,4868]
+          m=r['model_definition']
+          assert m['family']=='M3-KRS-CHAIN'
+          assert m['free_unary_parameters']==11
+          assert m['free_adjacent_interaction_parameters']==10
+          assert m['free_continuous_parameters']==21
+          assert m['explicit_nonadjacent_pair_interaction_parameters']==0
+          assert m['empirical_signature_specific_parameters']==0
+          assert m['gauge']=={'h_0':0.0,'J_0':0.0}
+          assert len(r['cases'])==31
+          assert {x['rep'] for x in r['cases']}==set(range(31))
+          assert len({x['occupancy_sha256'] for x in r['cases']})==31
+          assert all(x['tokens']==25071 for x in r['cases'])
+          assert all(x['fold_tokens']==[4430,4810,5516,5447,4868] for x in r['cases'])
+          assert all(x['all_zero_count']==0 for x in r['cases'])
+          assert all(x['pair_Q_computed'] is False for x in r['cases'])
+          assert all(x['residual_Z_computed'] is False for x in r['cases'])
+          assert all(x['target_topology_loaded'] is False for x in r['cases'])
+          assert all(x['target_correlation_computed'] is False for x in r['cases'])
+          assert all(v is False for v in r['target_access'].values())
+          assert r['no_drops'] is True and r['no_rerolls'] is True
+          mx=max(r['fit'][str(f)]['max_abs_reported_moment_error'] for f in range(5))
+          assert mx <= 1e-10, mx
+          for f in range(5):
+              fit=r['fit'][str(f)]
+              assert fit['free_continuous_parameters']==21
+              assert fit['gauge']=={'h_0':0.0,'J_0':0.0}
+              assert fit['h'][0]==0.0 and fit['J_adjacent'][0]==0.0
+              assert len(fit['h'])==12 and len(fit['J_adjacent'])==11
+              assert len(fit['target_unary'])==12 and len(fit['target_adjacent_joint'])==11
+              assert len(fit['model_unary'])==12 and len(fit['model_adjacent_joint'])==11
+              audit=fit['descriptor_identity_audit']
+              assert audit['abs_error_K_identity'] <= 1e-12
+              assert audit['abs_error_adjacent_identity'] <= 1e-12
+              assert fit['descriptor_class_count'] > 0
+              assert fit['descriptor_class_count'] < fit['training_distinct_signatures']
+              assert abs(sum(c['probability'] for c in fit['descriptor_classes'])-1.0) < 1e-12
+          print({
+              'cases':31,
+              'fit_max_error':mx,
+              'descriptor_classes':{str(f):r['fit'][str(f)]['descriptor_class_count'] for f in range(5)},
+              'training_distinct':{str(f):r['fit'][str(f)]['training_distinct_signatures'] for f in range(5)},
+              'generated_distinct_range':[min(x['distinct_signatures'] for x in r['cases']),max(x['distinct_signatures'] for x in r['cases'])],
+              'target_access':r['target_access'],
+          })
+          PY
+
+      - name: Freeze SHA and provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum /tmp/issue75-c0/generator_authority.json /tmp/issue75-c0/stdout.txt > /tmp/issue75-c0/SHA256SUMS.txt
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PLAN_C.md | tail -1)
+          GEN=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75c_generator_support.py | tail -1)
+          cat > /tmp/issue75-c0/PROVENANCE.txt <<EOF
+          scientific_role=PRETARGET_CROSSFITTED_KRS_NEAREST_NEIGHBOR_GRAMMAR_AUTHORITY
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          generation_head=${GITHUB_SHA}
+          plan_c_commit=${PLAN}
+          generator_commit=${GEN}
+          phase_b_decision=M3_LICENSED
+          phase_a_positive_control_aggregate_sha256=fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540
+          source_commit=315f0cad4de3d021bd4185765c037cf2a28d341c
+          source_blob=2a4533ab9bdfa85db9bad602d590978953055df1
+          cases=31
+          target_loaded=false
+          pair_Q_computed=false
+          residual_Z_computed=false
+          target_correlation_computed=false
+          drops=0
+          rerolls=0
+          EOF
+
+      - name: Upload exact target-blind C0 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseC0-m3-authority-${{ github.sha }}
+          path: /tmp/issue75-c0
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
+
+      - name: Commit target-blind C0 authority into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/minimal-occupancy-generator/stage-c0
+          mkdir -p "$DEST"
+          cp /tmp/issue75-c0/generator_authority.json "$DEST/"
+          cp /tmp/issue75-c0/stdout.txt "$DEST/"
+          cp /tmp/issue75-c0/SHA256SUMS.txt "$DEST/"
+          cp /tmp/issue75-c0/PROVENANCE.txt "$DEST/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Issue75 Phase C0: freeze 31 target-blind M3-KRS-CHAIN corpora'
+          git push origin HEAD:issue75-minimal-occupancy-generator
