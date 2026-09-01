@@ -1,0 +1,165 @@
+name: Issue68 R1 first reveal
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened]
+
+permissions:
+  contents: read
+
+jobs:
+  target-first-reveal:
+    if: >-
+      github.event.pull_request.head.ref == 'issue68-joint-constraint-target' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      TARGET_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout exact candidate head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Verify exact-head chronology and pretarget firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_HEAD_SHA"
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/PLAN_A.md | tail -1)
+          PREFNOTE=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/IMPLEMENTATION_PREFLIGHT.md | tail -1)
+          TARGETNOTE=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/IMPLEMENTATION_TARGET.md | tail -1)
+          ORDERNOTE=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/IMPLEMENTATION_TARGET_ORDER.md | tail -1)
+          TARGET=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/target68.py | tail -1)
+          PROTOCOL=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/FIRST_REVEAL_PROTOCOL.md | tail -1)
+          WORKFLOW=$(git log --diff-filter=A --format=%H -- .github/workflows/issue68-r1-first-reveal.yml | tail -1)
+          for x in "$PLAN" "$PREFNOTE" "$TARGETNOTE" "$ORDERNOTE" "$TARGET" "$PROTOCOL" "$WORKFLOW"; do test -n "$x"; done
+          git merge-base --is-ancestor "$PLAN" "$PREFNOTE"
+          git merge-base --is-ancestor "$PREFNOTE" "$TARGETNOTE"
+          git merge-base --is-ancestor "$TARGETNOTE" "$ORDERNOTE"
+          git merge-base --is-ancestor "$ORDERNOTE" "$TARGET"
+          git merge-base --is-ancestor "$TARGET" "$PROTOCOL"
+          git merge-base --is-ancestor "$PROTOCOL" "$WORKFLOW"
+          test ! -e experiments/joint-constraint-tournament/first-reveal/issue68_joint_tournament_results.json
+          echo "PLAN_FIRST_ADD=$PLAN" >> "$GITHUB_ENV"
+          echo "TARGET_FIRST_ADD=$TARGET" >> "$GITHUB_ENV"
+          echo "PROTOCOL_FIRST_ADD=$PROTOCOL" >> "$GITHUB_ENV"
+          echo "WORKFLOW_FIRST_ADD=$WORKFLOW" >> "$GITHUB_ENV"
+
+      - name: Verify exact archived preflight state
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'fdd2b1138542bf1b332b20f27a9869ac7a3501038e7d4ec9ccf40910e3b98771  experiments/joint-constraint-tournament/preflight/preflight.json' | sha256sum -c -
+          python - <<'PY'
+          import json
+          r=json.load(open('experiments/joint-constraint-tournament/preflight/preflight.json'))
+          assert r['target_reveal'] is False
+          assert r['real_candidate_pair_or_residual_metrics_computed'] is False
+          assert not any(r['forbidden_R1_quantities'].values())
+          assert r['preflight_dispositions']['A1_R1_representation'] == 'FAIL_REPRESENTATION_COMPATIBILITY'
+          assert r['preflight_dispositions']['Naibbe_R1_representation'] == 'AUTHORIZED_FOR_R1_REVEAL'
+          assert r['preflight_dispositions']['Naibbe_R4_primary'] == 'FAIL'
+          print('pretarget gate state: PASS')
+          PY
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify exact external source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+          test "$(git -C external/naibbe hash-object decrypt_naibbe.py)" = "b56a1e6e615a7b2e31ad386efdf7e6f2ef2b9d7b"
+
+      - name: Install existing scientific dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile and synthetic-test frozen scorer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/joint-constraint-tournament/target68.py
+          python experiments/joint-constraint-tournament/target68.py --self-test
+
+      - name: FIRST REVEAL — compute real Naibbe complete-66 R1 target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/joint-constraint-tournament/target68.py \
+            external/cremma \
+            external/naibbe \
+            > /tmp/issue68_joint_tournament_results.json
+
+      - name: Validate and summarize frozen result
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          r=json.load(open('/tmp/issue68_joint_tournament_results.json'))
+          assert r['target_reveal'] is True
+          assert r['github_sha'] == os.environ['TARGET_HEAD_SHA']
+          assert r['candidate']['surface_sha256'] == '47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          assert r['candidate']['population']['parsed_tokens'] == 29759
+          assert r['candidate']['population']['visible_tokens'] == 33574
+          assert r['candidate_classifications']['A1_A1R1']['real_R1_pair_or_residual_metrics_computed'] is False
+          assert len(r['pairs']) == 66
+          assert len(r['real_Naibbe_R1']['q_full']) == 66
+          assert len(r['real_Naibbe_R1']['z_full']) == 66
+          assert len(r['test_null']['energy_values']) == 1000
+          assert len(r['test_null']['correlation_maxT_over_target_readings_values']) == 1000
+          assert len(r['test_null']['sign_maxT_over_target_readings_values']) == 1000
+          print('R1 PASS:', r['R1_pass'])
+          print('Residual existence:', r['R1_residual_existence'])
+          print('Topology:', r['R1_topology'])
+          print('Candidate classes:', r['candidate_classifications'])
+          PY
+
+      - name: Package exact first-reveal artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/issue68-first-reveal
+          cp /tmp/issue68_joint_tournament_results.json /tmp/issue68-first-reveal/issue68_joint_tournament_results.json
+          sha256sum /tmp/issue68-first-reveal/issue68_joint_tournament_results.json > /tmp/issue68-first-reveal/SHA256SUMS.txt
+          cat > /tmp/issue68-first-reveal/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          pull_request=${{ github.event.pull_request.number }}
+          target_head=${TARGET_HEAD_SHA}
+          design_main=b2298d7fe251070dacd21852ae3b5a1dac95fe65
+          plan_first_add=${PLAN_FIRST_ADD}
+          target_first_add=${TARGET_FIRST_ADD}
+          protocol_first_add=${PROTOCOL_FIRST_ADD}
+          workflow_first_add=${WORKFLOW_FIRST_ADD}
+          first_reveal_event=pull_request_opened
+          EOF
+          cat /tmp/issue68-first-reveal/SHA256SUMS.txt
+          cat /tmp/issue68-first-reveal/PROVENANCE.txt
+
+      - name: Upload exact first-reveal evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue68-first-reveal-${{ github.event.pull_request.head.sha }}
+          path: /tmp/issue68-first-reveal
+          if-no-files-found: error
+          retention-days: 90
