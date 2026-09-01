@@ -52,10 +52,8 @@ jobs:
           test "$(wc -c < /tmp/c0-authority/stage_c0_support.json)" -eq 206486933
           echo 'da00a66b77a90eb36a158a9942927a27743e64aba7fac69337ff3a67424d695a  /tmp/c0-authority/stage_c0_support.json' | sha256sum -c -
           echo 'aba822be57bbac0c04a9fa785a0a835eafe192b406fead5cd7166051825f45ae  /tmp/c0-authority/MANIFEST.json' | sha256sum -c -
-          (
-            cd /tmp/c0-authority
-            sha256sum -c SHA256SUMS.txt
-          )
+          sed 's#/tmp/issue72-c0/#/tmp/c0-authority/#g' /tmp/c0-authority/SHA256SUMS.txt > /tmp/c0-authority/SHA256SUMS.relocated.txt
+          sha256sum -c /tmp/c0-authority/SHA256SUMS.relocated.txt
           gzip -n -9 -c /tmp/c0-authority/stage_c0_support.json > /tmp/c0-authority/stage_c0_support.json.gz
           test "$(wc -c < /tmp/c0-authority/stage_c0_support.json.gz)" -eq 12780097
           echo '946d8f8fa61d996a548a344f7e303f804283230ce8bef0d51add473d811e4ed3  /tmp/c0-authority/stage_c0_support.json.gz' | sha256sum -c -
@@ -103,7 +101,7 @@ jobs:
 
           \`da00a66b77a90eb36a158a9942927a27743e64aba7fac69337ff3a67424d695a\`.
 
-          \`SCIENTIFIC_SHA256SUMS.txt\` and \`SCIENTIFIC_PROVENANCE.txt\` are copied byte-for-byte from the successful scientific artifact. Their original path for the raw JSON is historical; use the reconstruction procedure above for repository verification.
+          \`SCIENTIFIC_SHA256SUMS.txt\` and \`SCIENTIFIC_PROVENANCE.txt\` are copied byte-for-byte from the successful scientific artifact. The SHA list contains the original runner prefix \`/tmp/issue72-c0/\`; relocate that prefix to the reconstruction directory when verifying archived files.
 
           ## Scientific status
 
