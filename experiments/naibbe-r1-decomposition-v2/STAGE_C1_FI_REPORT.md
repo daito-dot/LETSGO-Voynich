@@ -7,9 +7,23 @@ Status: **COMPLETE; FIRST-REVEAL POPULATION PERMANENTLY FROZEN**
 
 FI asks a deliberately narrow final-surface question:
 
-> Once the exact Naibbe rep0 complete tokens already exist, does their observed allocation across the retained manuscript/item/line token-slot skeleton materially contribute to the Voynich R1 resemblance, or is the complete-token inventory itself sufficient under the preregistered controls?
+> Once the exact Naibbe rep0 complete tokens already exist, does their observed allocation across the retained manuscript/item/line token-slot skeleton materially contribute to the Voynich R1 resemblance, or is the already-produced inventory sufficient under the preregistered controls?
 
-FI does not identify upstream historical mechanism. It tests final-surface sufficiency only.
+FI does not identify upstream historical mechanism. It tests final-surface allocation sufficiency only.
+
+## Representation clarification
+
+The R1 scorer does **not** compare literal token strings or glyph identities directly.
+
+For every parser-accepted token, `SlotParser(min)` maps the token into the frozen 12-slot representation and the R1 scorer converts it to a 12-element binary occupancy vector:
+
+`X[token, slot] = occupied / empty`
+
+The 66 R1 edges are then computed from the `C(12,2)=66` unordered pairs of these binary slot occupancies, using the frozen `K_other`-conditional association and null-residual calibration.
+
+Therefore the direct object measured by R1 is the **distribution and residual dependency structure of 12-slot occupancy signatures**, not lexical identity as such.
+
+This matters for interpreting FI. Shuffling whole tokens necessarily preserves the global multiset of their parsed occupancy signatures. FI tests whether the *observed placement* of those already-existing signatures across manuscripts, lines and token slots adds R1 information beyond that inventory.
 
 ## Frozen design
 
@@ -39,7 +53,7 @@ Two prospectively fixed randomization families were tested, each with 199 assign
 - `FI-G`: globally shuffle complete token instances across the fixed token-slot skeleton while preserving the global complete-token multiset and every manuscript/item/line visible-token count.
 - `FI-M`: shuffle complete token instances only within each manuscript while preserving each manuscript's exact complete-token multiset and every manuscript/item/line visible-token count.
 
-For every assignment the complete tokens themselves are unchanged. Only their allocation to token slots changes.
+For every assignment the token strings themselves are unchanged. Only their allocation to token slots changes.
 
 The randomization test was frozen as:
 
@@ -82,32 +96,32 @@ Identity percentile among the 199 randomizations:
 - FI-G: `30.65%`
 - FI-M: `27.14%`
 
-The observed identity allocation is therefore not unusually high-R1 relative to either randomization family. The randomization medians are in fact slightly above the identity statistic.
+The observed identity allocation is therefore not unusually high-R1 relative to either randomization family. The randomization medians are slightly above the identity statistic.
 
 Frozen aggregate classification:
 
 `FINAL_COMPLETE_TOKEN_INVENTORY_SUFFICIENT_UNDER_TESTED_FI_CONTROLS`
 
+That label is retained exactly because it was preregistered. The representation audit above sharpens its scientific meaning: the R1 information preserved by the complete-token inventory is carried through the inventory of parsed 12-slot occupancy signatures.
+
 ## Licensed interpretation
 
-Under these FI controls, the observed placement of already-produced complete Naibbe tokens is not required to retain the R1 resemblance.
+Under these FI controls, the observed placement of already-produced Naibbe tokens is not required to retain the R1 resemblance.
 
-This holds at both tested allocation scales:
+At the level R1 actually measures:
 
-1. `FI-M`: within-manuscript token placement is exchangeable with respect to R1 once each manuscript's complete-token inventory is fixed.
-2. `FI-G`: even the observed allocation of token inventories among manuscripts is not required; the pooled complete-token inventory plus the retained token-slot-count skeleton is sufficient to obtain comparable R1.
+1. `FI-M`: within-manuscript placement of occupancy signatures is exchangeable with respect to R1 once each manuscript's token/occupancy inventory is fixed.
+2. `FI-G`: even manuscript-level allocation is not required; the pooled occupancy-signature inventory plus the retained line/token-count skeleton produces comparable R1.
 
-The strongest licensed FI claim is therefore:
+The strongest representation-correct claim is:
 
-> **For the tested Naibbe surface, R1 is principally a property of the corpus-level inventory/distribution of internally structured complete tokens, not of where those token instances are placed.**
+> **For the tested Naibbe surface, R1 is principally a corpus-level 12-slot occupancy-grammar/inventory statistic, not a statistic of where those occupancy patterns occur.**
 
-FI does not say that the complete-token inventory appeared without a generating mechanism. It says that once that inventory exists, its observed allocation carries no detected additional R1 requirement.
+FI does not show that literal glyph identity or full lexical token identity is irrelevant to Voynich structure generally. Those details are largely projected away by the R1 representation before scoring.
 
 ## Integration with Stage C1 and Stage D1/PT
 
-The three intervention classes now separate cleanly.
-
-### Stage C1 — direct emission structure matters
+### Stage C1 — upstream emitted-value association matters
 
 Fixed-path emission randomization strongly reduced R1 for:
 
@@ -115,11 +129,17 @@ Fixed-path emission randomization strongly reduced R1 for:
 - functional-state value association (`ES`),
 - global reachable-cell value association (`EG`).
 
-The compact direct-emission localization was:
+The compact upstream localization was:
 
 `effective-letter × functional-state -> emitted glyph value`
 
 Table-label allocation (`ET`) was much more exchangeable.
+
+Because R1 ultimately scores binary slot occupancy, C1 should be interpreted as an upstream causal pathway:
+
+`state-dependent emitted glyph assignment -> parsed token shape -> 12-slot occupancy signature -> R1`
+
+C1 does **not** mean that R1 directly recognizes particular glyph identities.
 
 ### Stage D1/PT — exact local plaintext order is not required
 
@@ -129,35 +149,47 @@ Extensive within-line plaintext character-order randomization produced essential
 - IT2a mean D `-0.000240`, median `+0.000153`
 - `p_both = 0.625`
 
-Thus the observed local plaintext sequence was not supported as a material causal necessity for R1 under the PT estimand.
+Thus the observed local plaintext sequence was not supported as a material causal necessity for the resulting occupancy topology under the PT estimand.
 
-### FI — final token placement is not required
+### FI — final occupancy-pattern placement is not required
 
-Relocating nearly every already-produced complete token instance likewise did not reduce R1. About 99.6% of token slots changed token identity in both FI families, yet R1 remained typical or slightly higher than identity.
+Relocating nearly every already-produced complete token instance likewise did not reduce R1. About 99.6% of token slots changed literal token identity in both FI families, yet the occupancy inventory remained fixed and R1 remained typical or slightly higher than identity.
 
 ## Mechanistic synthesis
 
-Taken together, the current evidence localizes the Naibbe/Voynich R1 resemblance to **how internally structured token types are generated and how often they occur**, rather than to their local or document-level sequencing.
+Taken together, the evidence localizes the Naibbe/Voynich R1 resemblance to the production of a characteristic **inventory of token-internal slot-occupancy patterns and their residual dependencies**, rather than to local source order or final token placement.
 
-A useful causal schematic is:
+A representation-correct schematic is:
 
-`plaintext composition / encoder states`
-
-`        ↓`
-
-`structured state-dependent emission`
+`source composition / encoder state opportunities`
 
 `        ↓`
 
-`complete-token internal forms + corpus frequencies   <-- R1-sensitive layer`
+`state-dependent emitted-value mapping`
 
 `        ↓`
 
-`token placement across lines/manuscripts            <-- no detected extra R1 requirement`
+`surface token strings`
 
-This changes how R1 should be used in subsequent mechanism search. R1 should be treated primarily as a **token-construction / token-inventory constraint**. It currently has little evidence as a constraint on plaintext local order, token sequence, syntax, or document layout.
+`        ↓  SlotParser(min)`
 
-In practical inverse-search terms, a candidate mechanism should be asked first whether it naturally generates the observed family of internally structured token forms and their aggregate frequencies. Matching where those finished tokens occur is a separate constraint and should not be credited to R1 itself.
+`12-slot occupied/empty signatures + corpus frequencies   <-- R1-sensitive layer`
+
+`        ↓`
+
+`placement across lines/manuscripts                       <-- no detected extra R1 requirement`
+
+This is narrower than saying R1 measures a complete lexical grammar. It measures a replicated **morphotactic occupancy grammar** under the frozen 12-slot representation.
+
+## Consequence for inverse mechanism search
+
+A candidate mechanism should not receive R1 credit merely because it reproduces plausible-looking token strings, syntax-like sequencing, or document layout.
+
+The direct R1 question is:
+
+> **Does the mechanism naturally generate the correct distribution and 66-edge residual dependency topology of 12-slot occupied/empty token shapes?**
+
+Literal glyph inventories, token spellings, recurrence, paragraph-entry behavior, sequence organization and reversibility remain separate constraints.
 
 ## What this does not establish
 
@@ -167,17 +199,17 @@ These results do not establish:
 - Latin plaintext;
 - absence of semantics;
 - absence of genuine syntax or document structure in Voynich;
-- that token placement is irrelevant to other Voynich constraints;
+- that glyph identity or token spelling is irrelevant to other constraints;
 - decipherment.
-
-The conclusion is specifically about what the replicated R1 statistic can causally/evidentially constrain in this experiment.
 
 ## Issue #72 endpoint
 
-All three V2 responsibility classes requested by Issue #72 are now resolved:
+All three V2 responsibility classes requested by Issue #72 are resolved:
 
-- fixed-path direct-emission effects: resolved by Stage C1;
-- total-pipeline plaintext-order effect: resolved by Stage D1/PT;
-- final-surface allocation sufficiency: resolved by FI.
+- fixed-path direct-emission effects: Stage C1;
+- total-pipeline plaintext-order effect: Stage D1/PT;
+- final-surface allocation sufficiency: FI.
 
-The resulting R1 role is narrower and more useful: **R1 is a replicated constraint on internally structured complete-token inventory, with strong sensitivity to state-dependent emission assignment but no detected requirement for exact local plaintext order or final token placement.**
+The resulting R1 role is now precise:
+
+> **R1 is a replicated constraint on the corpus-level residual grammar of 12-slot token occupancy. State-dependent emission assignment can strongly alter that grammar upstream, while exact local plaintext order and the observed placement of finished occupancy patterns carry no detected additional R1 requirement.**
