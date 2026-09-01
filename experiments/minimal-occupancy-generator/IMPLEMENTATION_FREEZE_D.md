@@ -1,20 +1,26 @@
 # Issue #75 Phase D — M4-KRS-CHAIN-DISTANCE implementation freeze
 
 Date: 2026-09-01  
-Status: **TARGET-BLIND CORRECTED IMPLEMENTATION FROZEN BEFORE VALID D0 EXECUTION**
+Status: **TARGET-BLIND AUTHORITATIVE IMPLEMENTATION FROZEN BEFORE VALID D0 EXECUTION**
 
 ## Chronology
 
 - valid frozen Phase-C result commit: `9664e7cd1cf1eec8c2dacf37ceeb9c15c31a1f2a`;
-- first post-Phase-C `PLAN_D.md` commit: `1a56ef550af3ab65620ad32b2b4d6ba5aa7becc4`;
-- corrected normative nested Phase-D plan commit: `dcf652ef20418f230a1da9521ec036bb0c58e24c`;
-- obsolete distance-only executable commit: `1019378243dd145baa0a0da31a766558f312b0df` — **NON-AUTHORITATIVE**;
-- obsolete distance-only D0 run `33510176784` — **FAILED BEFORE GENERATION AUTHORITY / NO TARGET RESULT**;
-- corrected nested executable commit: `ef8edcb94e287a3fd6c559308ff902dc7d1c41ee`;
+- initial post-Phase-C `PLAN_D.md` commit: `1a56ef550af3ab65620ad32b2b4d6ba5aa7becc4` — superseded;
+- obsolete distance-only draft executable: `1019378243dd145baa0a0da31a766558f312b0df` — non-authoritative;
+- intermediate nested correction: `dcf652ef20418f230a1da9521ec036bb0c58e24c`;
+- obsolete distance-only D0 run `33510176784` — failed at plan-diff gate before source checkout/generation and produced no target result;
+- **final normative Phase-D preregistration:** `f9e60ed9e9261b30c3294c576cf7ea037cf2c2c7`;
+- **first authoritative executable after final plan:** `ef8edcb94e287a3fd6c559308ff902dc7d1c41ee`;
 - executable: `experiments/minimal-occupancy-generator/phase75d_generator_support.py`;
+- corrected D0 launch run `33510519140` also failed at its chronology gate because it pinned the intermediate plan rather than the final plan; it stopped before source checkout, fitting, generation, Q/Z, or target access;
 - no valid Phase-D D0 authority and no Phase-D target score exist at this freeze.
 
-The corrected plan predates the corrected executable. The obsolete 20-parameter path is retained only as provenance of a stopped pretarget attempt and cannot be used as Phase-D evidence.
+The scientific chronology that controls Phase D is therefore:
+
+`frozen Phase-C failure -> final PLAN_D f9e60ed -> authoritative generator ef8edcb -> this implementation freeze -> valid D0`.
+
+The stopped 20-parameter draft and both failed D0 launch attempts are provenance only and cannot be used as Phase-D evidence.
 
 ## Frozen model contract
 
@@ -78,4 +84,4 @@ Target-blind numerical repair is permitted only for a demonstrable numerical imp
 - no drops / no rerolls;
 - exact occupancy SHA-256 for all 31 cases frozen before target access.
 
-No Phase-D scorer or first-reveal target scoring is authorized until a valid corrected D0 succeeds, is permanently fixed, exact replay passes, and the target-blind candidate-null smoke passes.
+No Phase-D scorer or first-reveal target scoring is authorized until a valid D0 succeeds, is permanently fixed, exact replay passes, and the target-blind candidate-null smoke passes.
