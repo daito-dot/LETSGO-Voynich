@@ -1,0 +1,160 @@
+name: Issue75 Phase D permanent M4 first-reveal freeze
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths: ['.github/workflows/issue75-phaseD-permanent-freeze.yml']
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout current research branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue75-minimal-occupancy-generator
+          fetch-depth: 0
+
+      - name: Verify exact successful first-reveal authority
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUN=33511592593
+          SCI=26e885e45783664857764bfcc8a079c16afd904f
+          ART=9801993243
+          INFO=$(gh api "repos/daito-dot/LETSGO-Voynich/actions/runs/${RUN}")
+          test "$(echo "$INFO" | jq -r .conclusion)" = success
+          test "$(echo "$INFO" | jq -r .head_sha)" = "$SCI"
+          test "$(echo "$INFO" | jq -r .path)" = '.github/workflows/issue75-phaseD-first-reveal.yml'
+          AINFO=$(gh api "repos/daito-dot/LETSGO-Voynich/actions/artifacts/${ART}")
+          test "$(echo "$AINFO" | jq -r .name)" = "issue75-phaseD-FIRST-REVEAL-${SCI}"
+          test "$(echo "$AINFO" | jq -r .digest)" = 'sha256:906676c1e4d7c44b2d4255e0b8cf53acafd6f8692e7258babc08d09e0ce1c58b'
+          test "$(echo "$AINFO" | jq -r .workflow_run.id)" = "$RUN"
+          test "$(echo "$AINFO" | jq -r .workflow_run.head_sha)" = "$SCI"
+          git merge-base --is-ancestor "$SCI" HEAD
+          test ! -e experiments/minimal-occupancy-generator/stage-d-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_D.md
+          test ! -e experiments/minimal-occupancy-generator/DECISION_D_LATENT_REQUIRED.md
+          test ! -e experiments/minimal-occupancy-generator/DECISION_D_STOP_LADDER.md
+
+      - name: Download exact successful Phase D first-reveal artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: issue75-phaseD-FIRST-REVEAL-26e885e45783664857764bfcc8a079c16afd904f
+          path: /tmp/source
+          github-token: ${{ github.token }}
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33511592593
+
+      - name: Verify complete frozen result
+        id: result
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find /tmp/source/individual -maxdepth 1 -name 'M4-KRS-CHAIN-DISTANCE_*.json' | wc -l)" -eq 31
+          (cd /tmp/source && sha256sum -c SHA256SUMS.txt)
+          AGGSHA=$(sha256sum /tmp/source/phase75d_aggregate.json | cut -d' ' -f1)
+          test "$AGGSHA" = c15ffb92030220596cacef9db9cb3bdb26c92607f675c24ff0fa607e16764489
+          python - <<'PY'
+          import glob,json,math,statistics
+          paths=glob.glob('/tmp/source/individual/M4-KRS-CHAIN-DISTANCE_*.json')
+          assert len(paths)==31
+          reps=set()
+          d0=None
+          target=None
+          for p in paths:
+              r=json.load(open(p, encoding='utf-8'))
+              assert r['schema']=='issue75-phaseD-m4-r1-score-v1'
+              assert r['status']=='PHASE_D_M4_FIRST_REVEAL_CASE_SCORED'
+              assert r['family']=='M4-KRS-CHAIN-DISTANCE'
+              reps.add(r['rep'])
+              assert r['candidate_audit']['exact_phase_d0_replay'] is True
+              assert r['candidate_audit']['rank_29_revalidated'] is True
+              assert r['candidate_audit']['fit_tolerance_revalidated'] is True
+              assert r['no_case_selection'] is True and r['no_reroll'] is True
+              assert all(v is True for v in r['target_access'].values())
+              if d0 is None: d0=r['candidate_audit']['phase_d0_authority_sha256']
+              assert r['candidate_audit']['phase_d0_authority_sha256']==d0
+              if target is None: target=r['target_authority']
+              assert r['target_authority']==target
+          assert reps==set(range(31))
+          assert d0=='5c31aaa5fdb959873d89d7762dfd78db42c1a773a091b71a9f0731e90fa269cb'
+          a=json.load(open('/tmp/source/phase75d_aggregate.json', encoding='utf-8'))
+          assert a['schema']=='issue75-phaseD-m4-aggregate-v1'
+          assert a['status']=='PHASE_D_M4_COMPLETE_31_CASE_POPULATION_AGGREGATED'
+          assert a['scientific_head']=='26e885e45783664857764bfcc8a079c16afd904f'
+          assert a['phase_d0_authority_sha256']==d0
+          assert a['phase_a_positive_control_aggregate_sha256']=='fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540'
+          assert a['phase_c_m3_aggregate_sha256']=='34affe98b68a1e410ea3d4384a917450c2b58e7a8e02a30da8befa660712421a'
+          assert a['population']['total_results']==31 and a['population']['complete_population'] is True
+          assert a['population']['no_drops'] is True and a['population']['no_rerolls'] is True
+          assert a['frozen_phase_a_positive_control']['delta_plus_q95']==0.009768313008182594
+          assert a['primary']['gap_M4']==-0.3391848198669607
+          assert a['primary']['no_material_loss'] is False
+          assert a['primary']['classification']=='M4_KRS_CHAIN_DISTANCE_NONLOCAL_GRAMMAR_INSUFFICIENT_LATENT_CONFIGURATION_RULE_REQUIRED'
+          assert a['measurement']['T']['median']==0.6225259878297555
+          assert a['measurement']['R_ZL3b']['median']==0.6284498368503162
+          assert a['measurement']['R_IT2a']['median']==0.6225259878297555
+          assert a['measurement']['residual_energy']['median']==3.074861572780833
+          assert a['measurement']['p_exist']['median']==0.000999000999000999
+          assert a['measurement']['reliability_W']['finite']['median']==0.9514708583066066
+          assert a['secondary_nonpromoting']['summary_T_M4_minus_M3']['median']==0.021217706030355665
+          assert all(v is False for v in a['guardrails'].values())
+          print({
+              'classification':a['primary']['classification'],
+              'T_median':a['measurement']['T']['median'],
+              'R_ZL3b_median':a['measurement']['R_ZL3b']['median'],
+              'R_IT2a_median':a['measurement']['R_IT2a']['median'],
+              'gap_M4':a['primary']['gap_M4'],
+              'median_T_M4_minus_M3':a['secondary_nonpromoting']['summary_T_M4_minus_M3']['median'],
+          })
+          PY
+          echo "aggregate_sha=$AGGSHA" >> "$GITHUB_OUTPUT"
+
+      - name: Copy exact evidence into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/minimal-occupancy-generator/stage-d-first-reveal
+          test ! -e "$DEST"
+          mkdir -p "$DEST"
+          cp -a /tmp/source/individual "$DEST/"
+          cp /tmp/source/phase75d_aggregate.json "$DEST/"
+          cp /tmp/source/aggregate.stdout.txt "$DEST/"
+          cp /tmp/source/SHA256SUMS.txt "$DEST/"
+          cp /tmp/source/PROVENANCE.txt "$DEST/"
+          cat > "$DEST/ARTIFACT_AUTHORITY.txt" <<EOF
+          scientific_role=POSTREVEAL_TRANSPORT_ONLY_PERMANENT_AUTHORITY
+          source_workflow_run=33511592593
+          source_workflow_conclusion=success
+          source_artifact_id=9801993243
+          source_artifact_name=issue75-phaseD-FIRST-REVEAL-26e885e45783664857764bfcc8a079c16afd904f
+          source_artifact_digest=sha256:906676c1e4d7c44b2d4255e0b8cf53acafd6f8692e7258babc08d09e0ce1c58b
+          aggregate_sha256=${{ steps.result.outputs.aggregate_sha }}
+          scientific_head=26e885e45783664857764bfcc8a079c16afd904f
+          d0_authority_sha256=5c31aaa5fdb959873d89d7762dfd78db42c1a773a091b71a9f0731e90fa269cb
+          phase_a_positive_control_aggregate_sha256=fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540
+          phase_c_aggregate_sha256=34affe98b68a1e410ea3d4384a917450c2b58e7a8e02a30da8befa660712421a
+          total_results=31
+          drops=0
+          rerolls=0
+          permanent_freeze_is_post_reveal_transport_only=true
+          EOF
+
+      - name: Commit permanent Phase D first-reveal authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/minimal-occupancy-generator/stage-d-first-reveal
+          git commit -m 'Issue75 Phase D: freeze exact 31-case M4 first-reveal authority'
+          git push origin HEAD:issue75-minimal-occupancy-generator
