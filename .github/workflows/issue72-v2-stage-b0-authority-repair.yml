@@ -1,0 +1,131 @@
+name: Issue72 V2 regenerate and repair Stage B0 target-blind authority
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-b0-authority-repair.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repair head with history
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify frozen generator and incident chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object experiments/naibbe-r1-decomposition-v2/b0_support72_v2.py)" = 'ef3144591839395c18e1bdf308311bf99562bf9a'
+          git merge-base --is-ancestor c45c67a665a7e4ad24c1d2706f83c65931d950a9 HEAD
+          git merge-base --is-ancestor 6e946b5416866ce5c2c063ff3d5b351944ceb6ac HEAD
+          git merge-base --is-ancestor 01f3e4251243bd9f18e9cb9809c6d8a92291204a HEAD
+          python - <<'PY'
+          import json
+          p='experiments/naibbe-r1-decomposition-v2/stage_b0_support.json'
+          try:
+              json.load(open(p,encoding='utf-8'))
+          except json.JSONDecodeError as e:
+              print('confirmed current B0 corruption:',e)
+          else:
+              raise SystemExit('current B0 unexpectedly parses; stop rather than overwrite')
+          PY
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install frozen preexisting dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Regenerate exact target-blind B0 from frozen generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/naibbe-r1-decomposition-v2/b0_support72_v2.py \
+            external/cremma external/naibbe /tmp/stage_b0_support.regenerated.json \
+            > /tmp/b0_stdout.txt
+          python -m json.tool /tmp/stage_b0_support.regenerated.json >/dev/null
+
+      - name: Compare regenerated identities with pre-repair historical B0
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show 083f5c161c45da09a41346dfe16094f79380a531:experiments/naibbe-r1-decomposition-v2/stage_b0_support.json > /tmp/stage_b0_support.historical.json
+          python - <<'PY'
+          import json
+          new=json.load(open('/tmp/stage_b0_support.regenerated.json',encoding='utf-8'))
+          old=json.load(open('/tmp/stage_b0_support.historical.json',encoding='utf-8'))
+          assert new['status']=='UNCHANGED_NAIBBE_REP0_REP4_SURFACES_FROZEN'
+          assert all(v is False for v in new['target_access'].values())
+          assert new['authority']==old['authority']
+          assert new['historical_population']==old['historical_population']
+          for rep in range(5):
+              nr=new['reps'][f'rep{rep}']; orr=old['reps'][f'rep{rep}']
+              assert nr['primary_pooled_surface_sha256']==orr['primary_pooled_surface_sha256']
+              assert nr['raw_pooled_surface_sha256']==orr['raw_pooled_surface_sha256']
+              assert nr['support']['visible_tokens']==orr['support']['visible_tokens']
+              assert nr['support']['accepted_tokens']==orr['support']['accepted_tokens']
+              for ms in ['BIS193','CLM13027','Mazarine915','UBL758']:
+                  nm=nr['per_manuscript'][ms]; om=orr['per_manuscript'][ms]
+                  assert nm['seed']==om['seed']
+                  assert nm['primary_surface_sha256']==om['primary_surface_sha256']
+                  assert nm['raw_surface_sha256']==om['raw_surface_sha256']
+                  assert nm['support']['visible_tokens']==om['support']['visible_tokens']
+                  assert nm['support']['accepted_tokens']==om['support']['accepted_tokens']
+                  assert nm['generation_diagnostics']['ambiguity_retries']==om['generation_diagnostics']['ambiguity_retries']
+          print('all rep0..4 historical surface identities and support counts reproduce exactly')
+          PY
+
+      - name: Freeze repair provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          NEW_SHA=$(sha256sum /tmp/stage_b0_support.regenerated.json | cut -d' ' -f1)
+          OLD_PARENT_SHA=$(sha256sum /tmp/stage_b0_support.historical.json | cut -d' ' -f1)
+          CURRENT_BAD_SHA=$(sha256sum experiments/naibbe-r1-decomposition-v2/stage_b0_support.json | cut -d' ' -f1)
+          cat > /tmp/STAGE_B0_REPAIR_PROVENANCE.txt <<EOF
+          repair_workflow_run=${GITHUB_RUN_ID}
+          repair_head=${GITHUB_SHA}
+          frozen_generator_blob=ef3144591839395c18e1bdf308311bf99562bf9a
+          historical_parent_commit=083f5c161c45da09a41346dfe16094f79380a531
+          historical_parent_sha256=${OLD_PARENT_SHA}
+          corrupted_repair_commit=350463fcf696446a0bc995b000b03c4b7db44a1d
+          corrupted_current_sha256=${CURRENT_BAD_SHA}
+          regenerated_sha256=${NEW_SHA}
+          target_loaded=false
+          R1_computed=false
+          historical_surface_identity_replay=true
+          EOF
+          cat /tmp/STAGE_B0_REPAIR_PROVENANCE.txt
+
+      - name: Replace corrupt B0 with regenerated exact authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/stage_b0_support.regenerated.json experiments/naibbe-r1-decomposition-v2/stage_b0_support.json
+          cp /tmp/STAGE_B0_REPAIR_PROVENANCE.txt experiments/naibbe-r1-decomposition-v2/STAGE_B0_REPAIR_PROVENANCE_20260901.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/naibbe-r1-decomposition-v2/stage_b0_support.json experiments/naibbe-r1-decomposition-v2/STAGE_B0_REPAIR_PROVENANCE_20260901.txt
+          git commit -m 'Issue72 V2: restore regenerated exact Stage B0 authority'
+          git push origin HEAD:issue72-r1-causal-decomposition-v2
