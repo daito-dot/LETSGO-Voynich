@@ -1,4 +1,5 @@
 name: Issue72 V2 Stage D0 PT target-blind support freeze
+# Operational retrigger after recovered-B0 PT preflight success at 837e149dd43aebe8dd96afe5018e77068942d533.
 
 on:
   push:
@@ -43,8 +44,12 @@ jobs:
           git merge-base --is-ancestor "$PLAN" "$SCRIPT"
           git merge-base --is-ancestor "$SCRIPT" "$WORKFLOW"
           git merge-base --is-ancestor 8bd04db5fb96c83ce5f7583f4b619283c6088743 HEAD
+          git merge-base --is-ancestor 837e149dd43aebe8dd96afe5018e77068942d533 HEAD
           test -e experiments/naibbe-r1-decomposition-v2/stage-c1/stage_c1_aggregate.json
           echo 'ff46576e4f8bd015e7ad90689bb04b3984d43d3da3c98547ed09d58f58405f0c  experiments/naibbe-r1-decomposition-v2/stage-c1/stage_c1_aggregate.json' | sha256sum -c -
+          test "$(sha256sum experiments/naibbe-r1-decomposition-v2/stage_b0_support.json | cut -d' ' -f1)" = '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+          test -e experiments/naibbe-r1-decomposition-v2/stage-d0-pt-preflight/PT_j0_rep0.json
+          test -e experiments/naibbe-r1-decomposition-v2/stage-d0-pt-preflight/PT_j30_rep4.json
           test ! -e experiments/naibbe-r1-decomposition-v2/STAGE_D1_PT_REPORT.md
           test ! -e experiments/naibbe-r1-decomposition-v2/stage-d1-pt
           echo "support_head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
@@ -258,6 +263,8 @@ jobs:
           scientific_support_head=${SUPPORT_HEAD}
           stage_d_plan_commit=c45c67a665a7e4ad24c1d2706f83c65931d950a9
           d0_script_first_add=d03c5104dad9081c9c8e431bf3156ab6232f2b6f
+          recovered_b0_sha256=96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58
+          successful_preflight_commit=837e149dd43aebe8dd96afe5018e77068942d533
           total_assignment_results=155
           complete_population=true
           no_drops=true
