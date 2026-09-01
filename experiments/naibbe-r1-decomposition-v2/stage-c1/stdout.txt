@@ -1,0 +1,64 @@
+{
+  "aggregate_sha256": "ff46576e4f8bd015e7ad90689bb04b3984d43d3da3c98547ed09d58f58405f0c",
+  "axis_summary": {
+    "EG": {
+      "IT2a": {
+        "mean_delta": -0.3633179160866737,
+        "median_delta": -0.36810111619020425,
+        "nonloss_count": 0,
+        "rank_nonloss": 0.03125
+      },
+      "ZL3b": {
+        "mean_delta": -0.3504287099687561,
+        "median_delta": -0.3341503068325309,
+        "nonloss_count": 0,
+        "rank_nonloss": 0.03125
+      }
+    },
+    "EL": {
+      "IT2a": {
+        "mean_delta": -0.2641468822266491,
+        "median_delta": -0.2538395359635409,
+        "nonloss_count": 0,
+        "rank_nonloss": 0.03125
+      },
+      "ZL3b": {
+        "mean_delta": -0.2538985922375636,
+        "median_delta": -0.24672466441936802,
+        "nonloss_count": 0,
+        "rank_nonloss": 0.03125
+      }
+    },
+    "ES": {
+      "IT2a": {
+        "mean_delta": -0.24172928661130252,
+        "median_delta": -0.23384032790921694,
+        "nonloss_count": 0,
+        "rank_nonloss": 0.03125
+      },
+      "ZL3b": {
+        "mean_delta": -0.22279343526111056,
+        "median_delta": -0.21352994960067273,
+        "nonloss_count": 0,
+        "rank_nonloss": 0.03125
+      }
+    },
+    "ET": {
+      "IT2a": {
+        "mean_delta": -0.03458619769194901,
+        "median_delta": -0.043740099202515315,
+        "nonloss_count": 12,
+        "rank_nonloss": 0.40625
+      },
+      "ZL3b": {
+        "mean_delta": -0.024081936106252064,
+        "median_delta": -0.018601080095724476,
+        "nonloss_count": 13,
+        "rank_nonloss": 0.4375
+      }
+    }
+  },
+  "scientific_head": "200e664eaabc9c65774b9a46417a6b004ecf8e18",
+  "status": "STAGE C1 COMPLETE FIXED-PATH ASSOCIATION RANDOMIZATION AGGREGATED",
+  "total_results": 124
+}

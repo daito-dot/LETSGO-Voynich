@@ -1,0 +1,139 @@
+name: Issue72 V2 Stage C1 FI permanent first-reveal freeze
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-c1-fi-permanent-freeze.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout current archive branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+          fetch-depth: 0
+
+      - name: Verify canonical FI scientific authorities remain unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          SCI='442fa401dcd82fda7f6bb1c4720b908c50900c0b'
+          PLAN='a053efd9803b6c0f74614986289c54a8add7d904'
+          SCORER='efad503afeb45500a8e520680ed7189bf9ee33f1'
+          AGG='285fb10db3f92df401f3f459d73827590af637a7'
+          PREFLIGHT='3ac22384ce5379d82883f9fd9ae7daa01677f27d'
+          git merge-base --is-ancestor "$PLAN" "$SCORER"
+          git merge-base --is-ancestor "$SCORER" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$PREFLIGHT"
+          git merge-base --is-ancestor "$PREFLIGHT" "$SCI"
+          git merge-base --is-ancestor "$SCI" HEAD
+          test "$(git show -s --format=%s "$SCI")" = 'Issue72 V2 FI: launch frozen 398-case first reveal'
+          git diff --exit-code "$SCI" HEAD -- \
+            experiments/naibbe-r1-decomposition-v2/STAGE_C1_FI_PLAN.md \
+            experiments/naibbe-r1-decomposition-v2/fi_r1_score72_v2.py \
+            experiments/naibbe-r1-decomposition-v2/fi_aggregate72_v2.py \
+            experiments/naibbe-r1-decomposition-v2/stage_b0_support.json
+          test ! -e experiments/naibbe-r1-decomposition-v2/stage-c1-fi
+
+      - name: Download exact successful FI first-reveal artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: issue72-v2-stageC1-FI-FIRST-REVEAL-442fa401dcd82fda7f6bb1c4720b908c50900c0b
+          path: /tmp/fi-source
+          github-token: ${{ github.token }}
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33496538872
+
+      - name: Verify exact complete population and aggregate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find /tmp/fi-source/individual -maxdepth 1 -name 'FI-*_*.json' | wc -l)" -eq 398
+          test "$(sha256sum /tmp/fi-source/stage_c1_fi_aggregate.json | cut -d' ' -f1)" = '40eb7b63370c1cd33a00586414778c93eaa68372b32c7d3b68fc97cd7b0a8dea'
+          (cd /tmp/fi-source && sha256sum -c SHA256SUMS.txt)
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/fi-source/stage_c1_fi_aggregate.json')
+          r=json.loads(p.read_text(encoding='utf-8'))
+          assert r['schema']=='issue72-v2-stage-c1-fi-aggregate-v1'
+          assert r['status']=='FI_COMPLETE_RANDOMIZATION_POPULATION_AGGREGATED'
+          assert r['scientific_head']=='442fa401dcd82fda7f6bb1c4720b908c50900c0b'
+          assert r['fi_plan_commit']=='a053efd9803b6c0f74614986289c54a8add7d904'
+          assert r['population']=={
+              'families':['FI-G','FI-M'],
+              'n_perm_per_family':199,
+              'total_results':398,
+              'complete_population':True,
+              'no_drops':True,
+              'no_rerolls':True,
+          }
+          assert r['identity']['T']==0.8830282501011794
+          assert r['multiplicity']['raw_p']=={'FI-G':0.695,'FI-M':0.73}
+          assert r['multiplicity']['adjusted_p']=={'FI-G':1.0,'FI-M':1.0}
+          assert r['classification']=='FINAL_COMPLETE_TOKEN_INVENTORY_SUFFICIENT_UNDER_TESTED_FI_CONTROLS'
+          assert r['families']['FI-G']['n_T_ge_identity']==138
+          assert r['families']['FI-M']['n_T_ge_identity']==145
+          assert r['families']['FI-G']['T_randomization']['median']==0.88509154879863
+          assert r['families']['FI-M']['T_randomization']['median']==0.8853778655206299
+          assert r['guardrails']=={
+              'coverage_gate_applied':False,
+              'arbitrary_T_gate_applied':False,
+              'global_R1_PASS_FAIL_assigned':False,
+              'target_readings_averaged':False,
+              'post_reveal_family_added':False,
+          }
+          print('FI permanent-freeze verification passed')
+          PY
+
+      - name: Copy exact first-reveal evidence into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/naibbe-r1-decomposition-v2/stage-c1-fi
+          rm -rf "$DEST"
+          mkdir -p "$DEST"
+          cp -a /tmp/fi-source/individual "$DEST/"
+          cp /tmp/fi-source/stage_c1_fi_aggregate.json "$DEST/"
+          cp /tmp/fi-source/aggregate.stdout.txt "$DEST/"
+          cp /tmp/fi-source/SHA256SUMS.txt "$DEST/"
+          cp /tmp/fi-source/PROVENANCE.txt "$DEST/"
+          cat > "$DEST/ARTIFACT_AUTHORITY.txt" <<'EOF'
+          source_workflow_run=33496538872
+          source_workflow_conclusion=success
+          source_artifact_id=9796801812
+          source_artifact_name=issue72-v2-stageC1-FI-FIRST-REVEAL-442fa401dcd82fda7f6bb1c4720b908c50900c0b
+          source_artifact_digest=sha256:5defd596ca91164e9d897c2d5cd5d34c6287465613d867b5c1f3bd528113b309
+          aggregate_sha256=40eb7b63370c1cd33a00586414778c93eaa68372b32c7d3b68fc97cd7b0a8dea
+          scientific_head=442fa401dcd82fda7f6bb1c4720b908c50900c0b
+          fi_plan_commit=a053efd9803b6c0f74614986289c54a8add7d904
+          scorer_freeze_commit=efad503afeb45500a8e520680ed7189bf9ee33f1
+          aggregate_freeze_commit=285fb10db3f92df401f3f459d73827590af637a7
+          successful_target_blind_preflight_run=33496383052
+          total_assignment_results=398
+          fi_g_results=199
+          fi_m_results=199
+          drops=0
+          rerolls=0
+          permanent_freeze_is_post_reveal_transport_only=true
+          EOF
+
+      - name: Commit permanent FI first-reveal authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/naibbe-r1-decomposition-v2/stage-c1-fi
+          git diff --cached --quiet && exit 0
+          git commit -m 'Issue72 V2 FI: freeze exact 398-case first-reveal authority'
+          git push origin HEAD:issue72-r1-causal-decomposition-v2

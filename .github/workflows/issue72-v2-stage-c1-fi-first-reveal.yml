@@ -1,0 +1,342 @@
+name: Issue72 V2 Stage C1 FI first reveal
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-c1-fi-first-reveal.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  authorize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      scientific_head: ${{ steps.auth.outputs.scientific_head }}
+      indices: ${{ steps.auth.outputs.indices }}
+    steps:
+      - name: Checkout exact first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify frozen FI chronology and implementation
+        id: auth
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN='a053efd9803b6c0f74614986289c54a8add7d904'
+          SCORER='efad503afeb45500a8e520680ed7189bf9ee33f1'
+          AGG='285fb10db3f92df401f3f459d73827590af637a7'
+          FREEZE='e773d37ee8bd94298788e7af3a67843109e3879d'
+          PREFLIGHT='3ac22384ce5379d82883f9fd9ae7daa01677f27d'
+          HEAD=$(git rev-parse HEAD)
+          test "$(git rev-parse HEAD:experiments/naibbe-r1-decomposition-v2/STAGE_C1_FI_PLAN.md)" = 'f051c1a4530c96b2945bdb5b59cb4eb166561895'
+          test "$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/fi_r1_score72_v2.py | tail -1)" = "$SCORER"
+          test "$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/fi_aggregate72_v2.py | tail -1)" = "$AGG"
+          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-v2-stage-c1-fi-preflight.yml | tail -1)" = "$PREFLIGHT"
+          git merge-base --is-ancestor "$PLAN" "$SCORER"
+          git merge-base --is-ancestor "$SCORER" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$FREEZE"
+          git merge-base --is-ancestor "$FREEZE" "$PREFLIGHT"
+          git merge-base --is-ancestor "$PREFLIGHT" "$HEAD"
+          git diff --exit-code "$AGG" "$HEAD" -- \
+            experiments/naibbe-r1-decomposition-v2/fi_r1_score72_v2.py \
+            experiments/naibbe-r1-decomposition-v2/fi_aggregate72_v2.py \
+            experiments/naibbe-r1-decomposition-v2/STAGE_C1_FI_PLAN.md \
+            experiments/naibbe-r1-decomposition-v2/stage_b0_support.json
+          test ! -e experiments/naibbe-r1-decomposition-v2/stage-c1-fi
+          test ! -e experiments/naibbe-r1-decomposition-v2/STAGE_C1_FI_REPORT.md
+          echo "scientific_head=$HEAD" >> "$GITHUB_OUTPUT"
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          print('indices='+json.dumps(list(range(199)), separators=(',',':')))
+          PY
+
+      - name: Download successful target-blind FI preflight evidence
+        uses: actions/download-artifact@v4
+        with:
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33496383052
+          github-token: ${{ github.token }}
+          pattern: issue72-v2-FI-preflight-*-3ac22384ce5379d82883f9fd9ae7daa01677f27d
+          path: /tmp/fi-preflight
+
+      - name: Verify all four preflight artifacts remain target blind
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import glob, json
+          paths=glob.glob('/tmp/fi-preflight/**/FI-*_*.json', recursive=True)
+          assert len(paths)==4, paths
+          got=set()
+          for p in paths:
+              r=json.load(open(p, encoding='utf-8'))
+              assert r['schema']=='issue72-v2-stage-c1-fi-surface-preflight-v1'
+              assert r['status']=='FI_ALLOCATION_SURFACE_VERIFIED_TARGET_BLIND'
+              assert all(v is False for v in r['target_access'].values())
+              assert r['identity_audit']['primary_pooled_surface_sha256']=='47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+              assert r['surface_audit']['accepted_tokens']==29759
+              got.add((r['family'],r['index']))
+          assert got=={('FI-G',0),('FI-G',198),('FI-M',0),('FI-M',198)}, got
+          print({'preflight_run':33496383052,'preflight_head':'3ac22384ce5379d82883f9fd9ae7daa01677f27d','assignments':sorted(got),'target_blind':True})
+          PY
+
+  score_g:
+    needs: authorize
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 32
+      matrix:
+        index: ${{ fromJSON(needs.authorize.outputs.indices) }}
+    steps:
+      - name: Checkout exact authorized first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.scientific_head }}
+          fetch-depth: 0
+      - name: Verify exact scorer authority
+        run: |
+          test "$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/fi_r1_score72_v2.py | tail -1)" = 'efad503afeb45500a8e520680ed7189bf9ee33f1'
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+      - name: Install frozen preexisting dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+      - name: Score exact FI-G allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/fi-score
+          python experiments/naibbe-r1-decomposition-v2/fi_r1_score72_v2.py \
+            external/cremma external/naibbe FI-G '${{ matrix.index }}' \
+            '/tmp/fi-score/FI-G_${{ matrix.index }}.json' \
+            > '/tmp/fi-score/FI-G_${{ matrix.index }}.stdout.txt'
+      - name: Validate scored FI-G case without selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, math
+          p='/tmp/fi-score/FI-G_${{ matrix.index }}.json'
+          r=json.load(open(p, encoding='utf-8'))
+          assert r['schema']=='issue72-v2-stage-c1-fi-r1-score-v1'
+          assert r['status']=='FI_RANDOMIZATION_R1_FIRST_REVEAL_ASSIGNMENT_SCORED'
+          assert r['family']=='FI-G' and r['index']==${{ matrix.index }}
+          assert r['allocation']['allocation_namespace']=='issue72v2:C1:FI-G:allocation:${{ matrix.index }}'
+          assert r['reference_namespace']=='issue72v2:C1:FI-G:reference:${{ matrix.index }}'
+          assert r['n_reference']==1000
+          assert r['identity_audit']['primary_pooled_surface_sha256']=='47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          assert r['surface_audit']['visible_tokens']==33574
+          assert r['surface_audit']['accepted_tokens']==29759
+          assert r['surface_audit']['coverage']==0.886370405671055
+          assert sum(r['surface_audit']['fold_parsed_tokens'])==29759
+          assert r['target_readings_averaged'] is False
+          assert r['identity_rescored_here'] is False
+          assert r['hard_topology_threshold_applied'] is False
+          assert math.isfinite(float(r['T']))
+          assert abs(r['T']-min(r['measurement']['topology']['ZL3b']['pearson'],r['measurement']['topology']['IT2a']['pearson'])) < 1e-15
+          PY
+      - name: Upload immutable FI-G scored case
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-stageC1-FI-G-${{ matrix.index }}-${{ needs.authorize.outputs.scientific_head }}
+          path: /tmp/fi-score/FI-G_${{ matrix.index }}.json
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
+
+  score_m:
+    needs: authorize
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 32
+      matrix:
+        index: ${{ fromJSON(needs.authorize.outputs.indices) }}
+    steps:
+      - name: Checkout exact authorized first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.scientific_head }}
+          fetch-depth: 0
+      - name: Verify exact scorer authority
+        run: |
+          test "$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/fi_r1_score72_v2.py | tail -1)" = 'efad503afeb45500a8e520680ed7189bf9ee33f1'
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+      - name: Install frozen preexisting dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+      - name: Score exact FI-M allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/fi-score
+          python experiments/naibbe-r1-decomposition-v2/fi_r1_score72_v2.py \
+            external/cremma external/naibbe FI-M '${{ matrix.index }}' \
+            '/tmp/fi-score/FI-M_${{ matrix.index }}.json' \
+            > '/tmp/fi-score/FI-M_${{ matrix.index }}.stdout.txt'
+      - name: Validate scored FI-M case without selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, math
+          p='/tmp/fi-score/FI-M_${{ matrix.index }}.json'
+          r=json.load(open(p, encoding='utf-8'))
+          assert r['schema']=='issue72-v2-stage-c1-fi-r1-score-v1'
+          assert r['status']=='FI_RANDOMIZATION_R1_FIRST_REVEAL_ASSIGNMENT_SCORED'
+          assert r['family']=='FI-M' and r['index']==${{ matrix.index }}
+          assert r['allocation']['allocation_namespace']=='issue72v2:C1:FI-M:allocation:${{ matrix.index }}'
+          assert r['reference_namespace']=='issue72v2:C1:FI-M:reference:${{ matrix.index }}'
+          assert r['n_reference']==1000
+          assert r['identity_audit']['primary_pooled_surface_sha256']=='47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          assert r['surface_audit']['visible_tokens']==33574
+          assert r['surface_audit']['accepted_tokens']==29759
+          assert r['surface_audit']['coverage']==0.886370405671055
+          assert r['surface_audit']['fold_parsed_tokens']==[11346,9716,6659,2038]
+          assert r['surface_audit']['FI_M_per_manuscript_accepted_count_invariance'] is True
+          assert r['target_readings_averaged'] is False
+          assert r['identity_rescored_here'] is False
+          assert r['hard_topology_threshold_applied'] is False
+          assert math.isfinite(float(r['T']))
+          assert abs(r['T']-min(r['measurement']['topology']['ZL3b']['pearson'],r['measurement']['topology']['IT2a']['pearson'])) < 1e-15
+          PY
+      - name: Upload immutable FI-M scored case
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-stageC1-FI-M-${{ matrix.index }}-${{ needs.authorize.outputs.scientific_head }}
+          path: /tmp/fi-score/FI-M_${{ matrix.index }}.json
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
+
+  aggregate:
+    needs: [authorize, score_g, score_m]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact authorized first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.scientific_head }}
+          fetch-depth: 0
+      - name: Download all 398 scored allocations from this run
+        uses: actions/download-artifact@v4
+        with:
+          pattern: issue72-v2-stageC1-FI-*-${{ needs.authorize.outputs.scientific_head }}
+          path: /tmp/fi-results
+          merge-multiple: true
+      - name: Enforce complete no-drop FI population
+        shell: bash
+        run: |
+          set -euo pipefail
+          COUNT=$(find /tmp/fi-results -maxdepth 1 -type f -name 'FI-*_*.json' | wc -l)
+          test "$COUNT" -eq 398
+          python - <<'PY'
+          import glob, json
+          got=[]
+          for p in glob.glob('/tmp/fi-results/FI-*_*.json'):
+              r=json.load(open(p, encoding='utf-8'))
+              got.append((r['family'],r['index']))
+          expected={(f,i) for f in ('FI-G','FI-M') for i in range(199)}
+          assert len(got)==398 and len(set(got))==398 and set(got)==expected
+          print({'complete_population':True,'count':398,'drops':0,'rerolls':0})
+          PY
+      - name: Aggregate preregistered FI randomization inference
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/fi-final/individual
+          python experiments/naibbe-r1-decomposition-v2/fi_aggregate72_v2.py \
+            /tmp/fi-results \
+            /tmp/fi-final/stage_c1_fi_aggregate.json \
+            '${{ needs.authorize.outputs.scientific_head }}' \
+            > /tmp/fi-final/aggregate.stdout.txt
+          cp /tmp/fi-results/FI-*_*.json /tmp/fi-final/individual/
+      - name: Validate aggregate policy and reveal result
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/fi-final/stage_c1_fi_aggregate.json', encoding='utf-8'))
+          assert r['schema']=='issue72-v2-stage-c1-fi-aggregate-v1'
+          assert r['status']=='FI_COMPLETE_RANDOMIZATION_POPULATION_AGGREGATED'
+          assert r['scientific_head']=='${{ needs.authorize.outputs.scientific_head }}'
+          assert r['population']['total_results']==398
+          assert r['population']['complete_population'] is True
+          assert r['population']['no_drops'] is True and r['population']['no_rerolls'] is True
+          assert set(r['families'])=={'FI-G','FI-M'}
+          assert r['guardrails']['coverage_gate_applied'] is False
+          assert r['guardrails']['arbitrary_T_gate_applied'] is False
+          assert r['guardrails']['global_R1_PASS_FAIL_assigned'] is False
+          assert r['guardrails']['post_reveal_family_added'] is False
+          print({
+              'status':r['status'],
+              'raw_p':r['multiplicity']['raw_p'],
+              'adjusted_p':r['multiplicity']['adjusted_p'],
+              'classification':r['classification'],
+              'T_identity':r['identity']['T'],
+              'T_median':{f:r['families'][f]['T_randomization']['median'] for f in ('FI-G','FI-M')},
+              'Delta_T':{f:r['families'][f]['Delta_T_identity_minus_randomization_median'] for f in ('FI-G','FI-M')},
+          })
+          PY
+      - name: Freeze first-reveal provenance and hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/fi-final/PROVENANCE.txt <<EOF2
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          scientific_head=${{ needs.authorize.outputs.scientific_head }}
+          fi_plan_commit=a053efd9803b6c0f74614986289c54a8add7d904
+          scorer_freeze_commit=efad503afeb45500a8e520680ed7189bf9ee33f1
+          aggregate_freeze_commit=285fb10db3f92df401f3f459d73827590af637a7
+          successful_target_blind_preflight_run=33496383052
+          successful_target_blind_preflight_head=3ac22384ce5379d82883f9fd9ae7daa01677f27d
+          identity_surface_sha256=47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd
+          population=FI-G:199,FI-M:199,total:398
+          drops=0
+          rerolls=0
+          identity_rescored=false
+          coverage_gate_applied=false
+          target_readings_averaged=false
+          EOF2
+          (cd /tmp/fi-final && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum) > /tmp/fi-final/SHA256SUMS.txt
+      - name: Upload complete FI first-reveal evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-stageC1-FI-FIRST-REVEAL-${{ needs.authorize.outputs.scientific_head }}
+          path: /tmp/fi-final
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6

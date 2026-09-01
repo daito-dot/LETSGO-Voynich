@@ -1,0 +1,32 @@
+{
+  "D_mean": {
+    "IT2a": -0.00024049048723656977,
+    "ZL3b": 0.0008790587864780243
+  },
+  "D_median": {
+    "IT2a": 0.0001526844061766619,
+    "ZL3b": 0.0008267003827920893
+  },
+  "coverage": {
+    "max": 0.8914051355206848,
+    "mean": 0.8868870182399093,
+    "median": 0.8868171799606839,
+    "min": 0.8819026627747661,
+    "n": 155,
+    "q25": 0.8857210849807791,
+    "q75": 0.8881306433829007,
+    "sd_population": 0.0017013129311451796
+  },
+  "direction_counts": {
+    "both_negative": 10,
+    "both_nonnegative": 15,
+    "mixed": 6
+  },
+  "p_both": 0.625,
+  "p_nonloss": {
+    "IT2a": 0.5625,
+    "ZL3b": 0.625
+  },
+  "scientific_head": "02d757e36d85cdfc9231be0b8753904b3ceb543c",
+  "status": "STAGE_D1_COMPLETE_PT_TOTAL_EFFECT_AGGREGATED"
+}

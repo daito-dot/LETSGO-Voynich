@@ -1,0 +1,149 @@
+name: Issue72 V2 recover Stage B0 from original target-blind artifact
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-b0-authority-repair.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repair head with history
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify frozen generator and corruption incident ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object experiments/naibbe-r1-decomposition-v2/b0_support72_v2.py)" = 'ef3144591839395c18e1bdf308311bf99562bf9a'
+          git merge-base --is-ancestor 98f8ee4499aa88ad039198bac398a5a7b9b09087 HEAD
+          git merge-base --is-ancestor c45c67a665a7e4ad24c1d2706f83c65931d950a9 HEAD
+          python - <<'PY'
+          import json
+          p='experiments/naibbe-r1-decomposition-v2/stage_b0_support.json'
+          try:
+              json.load(open(p,encoding='utf-8'))
+          except json.JSONDecodeError as e:
+              print('confirmed repository B0 corruption:',e)
+          else:
+              raise SystemExit('repository B0 unexpectedly parses; stop rather than overwrite')
+          PY
+
+      - name: Download original successful target-blind Stage B0 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: issue72-v2-stageB0-support-135e8ac956541e2c2259431efee0fdb064b9c03e
+          path: /tmp/original-b0
+          github-token: ${{ github.token }}
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33462658689
+
+      - name: Verify original artifact identity and firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum /tmp/original-b0/stage_b0_support.json | cut -d' ' -f1)" = '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+          test "$(sha256sum /tmp/original-b0/stdout.txt | cut -d' ' -f1)" = '426b07f1fbae59f9fd110716b5763ff1f1f47e3a8da6dfb2ebfaa0623677c8fa'
+          python -m json.tool /tmp/original-b0/stage_b0_support.json >/dev/null
+          grep '^workflow_run=33462658689$' /tmp/original-b0/PROVENANCE.txt
+          grep '^branch_head=135e8ac956541e2c2259431efee0fdb064b9c03e$' /tmp/original-b0/PROVENANCE.txt
+          grep '^rep1_rep4_R1_scored=false$' /tmp/original-b0/PROVENANCE.txt
+          grep '^issue72_intervention_R1_scored=false$' /tmp/original-b0/PROVENANCE.txt
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/original-b0/stage_b0_support.json',encoding='utf-8'))
+          assert r['status']=='UNCHANGED_NAIBBE_REP0_REP4_SURFACES_FROZEN'
+          assert set(r['reps'])=={'rep0','rep1','rep2','rep3','rep4'}
+          assert all(v is False for v in r['target_access'].values())
+          rep0=r['reps']['rep0']
+          assert rep0['primary_pooled_surface_sha256']=='47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          assert rep0['support']['visible_tokens']==33574
+          assert rep0['support']['accepted_tokens']==29759
+          for i in range(5):
+              row=r['reps'][f'rep{i}']
+              assert row['rep']==i
+              for mi,ms in enumerate(['BIS193','CLM13027','Mazarine915','UBL758']):
+                  assert row['per_manuscript'][ms]['seed']==6480000+100*mi+i
+          print('original B0 artifact population and firewall valid')
+          PY
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install frozen preexisting dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Independently regenerate B0 from frozen generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/naibbe-r1-decomposition-v2/b0_support72_v2.py \
+            external/cremma external/naibbe /tmp/regenerated-b0.json \
+            > /tmp/regenerated-stdout.txt
+          python -m json.tool /tmp/regenerated-b0.json >/dev/null
+
+      - name: Require byte-for-byte equality with original artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmp /tmp/regenerated-b0.json /tmp/original-b0/stage_b0_support.json
+          test "$(sha256sum /tmp/regenerated-b0.json | cut -d' ' -f1)" = '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+          echo 'regenerated B0 is byte-identical to original successful target-blind artifact'
+
+      - name: Freeze exact recovery provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          BAD_SHA=$(sha256sum experiments/naibbe-r1-decomposition-v2/stage_b0_support.json | cut -d' ' -f1)
+          cat > /tmp/STAGE_B0_REPAIR_PROVENANCE.txt <<EOF
+          recovery_workflow_run=${GITHUB_RUN_ID}
+          recovery_head=${GITHUB_SHA}
+          original_stage_b0_run=33462658689
+          original_stage_b0_head=135e8ac956541e2c2259431efee0fdb064b9c03e
+          original_stage_b0_artifact_id=9783720673
+          original_stage_b0_artifact_zip_sha256=0bdb5022c5c348b0898a8de253c2b644576c2654c19710059edabc79bb3b03b5
+          original_stage_b0_json_sha256=96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58
+          frozen_generator_blob=ef3144591839395c18e1bdf308311bf99562bf9a
+          corrupted_repository_json_sha256=${BAD_SHA}
+          regenerated_byte_identical_to_original=true
+          target_loaded=false
+          R1_computed=false
+          PT_surface_generated=false
+          EOF
+          cat /tmp/STAGE_B0_REPAIR_PROVENANCE.txt
+
+      - name: Restore exact original B0 bytes to repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/original-b0/stage_b0_support.json experiments/naibbe-r1-decomposition-v2/stage_b0_support.json
+          cp /tmp/STAGE_B0_REPAIR_PROVENANCE.txt experiments/naibbe-r1-decomposition-v2/STAGE_B0_REPAIR_PROVENANCE_20260901.txt
+          python -m json.tool experiments/naibbe-r1-decomposition-v2/stage_b0_support.json >/dev/null
+          test "$(sha256sum experiments/naibbe-r1-decomposition-v2/stage_b0_support.json | cut -d' ' -f1)" = '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/naibbe-r1-decomposition-v2/stage_b0_support.json experiments/naibbe-r1-decomposition-v2/STAGE_B0_REPAIR_PROVENANCE_20260901.txt
+          git commit -m 'Issue72 V2: restore exact original Stage B0 artifact authority'
+          git push origin HEAD:issue72-r1-causal-decomposition-v2

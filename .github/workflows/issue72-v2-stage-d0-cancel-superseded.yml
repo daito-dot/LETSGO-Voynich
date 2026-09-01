@@ -1,0 +1,24 @@
+name: Issue72 V2 Stage D0 cancel redundant grouped support run
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-d0-cancel-superseded.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: issue72-v2-stage-d0-pt-support
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  sentinel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record operational supersession only
+        run: |
+          echo 'This run exists only to cancel the redundant grouped D0 support run.'
+          echo 'It does not generate PT surfaces and does not access R1 targets.'

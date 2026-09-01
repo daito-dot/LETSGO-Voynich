@@ -1,0 +1,302 @@
+name: Issue72 V2 Stage D0 PT target-blind support freeze
+# Operational retrigger after recovered-B0 PT preflight success at 837e149dd43aebe8dd96afe5018e77068942d533.
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - 'experiments/naibbe-r1-decomposition-v2/STAGE_D_PT_TOTAL_EFFECT_PLAN.md'
+      - 'experiments/naibbe-r1-decomposition-v2/d0_pt_support72_v2.py'
+      - '.github/workflows/issue72-v2-stage-d0-pt-support.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: issue72-v2-stage-d0-pt-support
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  authorize:
+    runs-on: ubuntu-latest
+    outputs:
+      support_head: ${{ steps.auth.outputs.support_head }}
+    steps:
+      - name: Checkout exact D0 support head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify plan-before-code-before-workflow chronology
+        id: auth
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_D_PT_TOTAL_EFFECT_PLAN.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/d0_pt_support72_v2.py | tail -1)
+          WORKFLOW=$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-v2-stage-d0-pt-support.yml | tail -1)
+          test "$PLAN" = 'c45c67a665a7e4ad24c1d2706f83c65931d950a9'
+          test "$SCRIPT" = 'd03c5104dad9081c9c8e431bf3156ab6232f2b6f'
+          test -n "$WORKFLOW"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$SCRIPT" "$WORKFLOW"
+          git merge-base --is-ancestor 8bd04db5fb96c83ce5f7583f4b619283c6088743 HEAD
+          git merge-base --is-ancestor 837e149dd43aebe8dd96afe5018e77068942d533 HEAD
+          test -e experiments/naibbe-r1-decomposition-v2/stage-c1/stage_c1_aggregate.json
+          echo 'ff46576e4f8bd015e7ad90689bb04b3984d43d3da3c98547ed09d58f58405f0c  experiments/naibbe-r1-decomposition-v2/stage-c1/stage_c1_aggregate.json' | sha256sum -c -
+          test "$(sha256sum experiments/naibbe-r1-decomposition-v2/stage_b0_support.json | cut -d' ' -f1)" = '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+          test -e experiments/naibbe-r1-decomposition-v2/stage-d0-pt-preflight/PT_j0_rep0.json
+          test -e experiments/naibbe-r1-decomposition-v2/stage-d0-pt-preflight/PT_j30_rep4.json
+          test ! -e experiments/naibbe-r1-decomposition-v2/STAGE_D1_PT_REPORT.md
+          test ! -e experiments/naibbe-r1-decomposition-v2/stage-d1-pt
+          echo "support_head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  support:
+    needs: authorize
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 32
+      matrix:
+        j: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+        rep: [0, 1, 2, 3, 4]
+    steps:
+      - name: Checkout exact authorized D0 head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.support_head }}
+          fetch-depth: 1
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install frozen preexisting runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile target-blind PT support freezer
+        run: python -m py_compile experiments/naibbe-r1-decomposition-v2/d0_pt_support72_v2.py
+
+      - name: Generate exact target-blind PT surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/d0
+          python experiments/naibbe-r1-decomposition-v2/d0_pt_support72_v2.py \
+            external/cremma external/naibbe \
+            '${{ matrix.j }}' '${{ matrix.rep }}' \
+            '/tmp/d0/PT_j${{ matrix.j }}_rep${{ matrix.rep }}.json' \
+            > /tmp/d0/stdout.txt
+
+      - name: Enforce D0 target firewall and invariants
+        shell: bash
+        env:
+          SUPPORT_HEAD: ${{ needs.authorize.outputs.support_head }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          p='/tmp/d0/PT_j${{ matrix.j }}_rep${{ matrix.rep }}.json'
+          r=json.load(open(p))
+          assert r['status']=='STAGE_D0_PT_ASSIGNMENT_SUPPORT_FROZEN_TARGET_BLIND'
+          assert r['assignment']['j']==${{ matrix.j }}
+          assert r['assignment']['rep']==${{ matrix.rep }}
+          assert r['paired_baseline']['exact_stage_b0_replay'] is True
+          assert r['pt_surface']['line_invariants_all_true'] is True
+          assert r['selection_policy']=='ALL_31_X_5_ASSIGNMENTS_PROCEED_NO_DROPS_NO_REROLLS'
+          assert all(v is False for v in r['target_access'].values())
+          assert r['intervention_generation']['PT_surface_generated'] is True
+          assert r['intervention_generation']['full_published_pipeline_rerun'] is True
+          assert r['intervention_generation']['published_codebook_unchanged'] is True
+          assert r['intervention_generation']['downstream_path_allowed_to_diverge'] is True
+          for ms,row in r['pt_surface']['per_manuscript'].items():
+              d=row['generation_diagnostics']
+              assert d['line_invariants_all_true'] is True
+              assert d['downstream_path_frozen'] is False
+              assert d['downstream_path_divergence_is_part_of_total_effect'] is True
+          print({
+              'j':r['assignment']['j'],
+              'rep':r['assignment']['rep'],
+              'coverage':r['pt_surface']['support']['coverage'],
+              'changed_line_fraction':r['pt_surface']['changed_nonempty_line_fraction'],
+              'surface':r['pt_surface']['primary_pooled_surface_sha256'],
+          })
+          PY
+          sha256sum /tmp/d0/PT_j${{ matrix.j }}_rep${{ matrix.rep }}.json > /tmp/d0/SHA256SUMS.txt
+          cat > /tmp/d0/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          support_head=${SUPPORT_HEAD}
+          j=${{ matrix.j }}
+          rep=${{ matrix.rep }}
+          target_loaded=false
+          pair_Q_computed=false
+          residual_Z_computed=false
+          target_topology_computed=false
+          EOF
+
+      - name: Upload exact per-assignment D0 support evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-stageD0-PT-j${{ matrix.j }}-rep${{ matrix.rep }}-${{ needs.authorize.outputs.support_head }}
+          path: /tmp/d0
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
+
+  aggregate-and-freeze:
+    needs: [authorize, support]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact authorized D0 head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.support_head }}
+          fetch-depth: 0
+
+      - name: Download all 155 exact D0 result artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: issue72-v2-stageD0-PT-*-${{ needs.authorize.outputs.support_head }}
+          path: /tmp/d0-download
+          merge-multiple: true
+
+      - name: Enforce complete 155-case population and aggregate
+        shell: bash
+        env:
+          SUPPORT_HEAD: ${{ needs.authorize.outputs.support_head }}
+        run: |
+          set -euo pipefail
+          test "$(find /tmp/d0-download -maxdepth 1 -name 'PT_j*_rep*.json' | wc -l)" -eq 155
+          mkdir -p /tmp/d0-final/individual
+          cp /tmp/d0-download/PT_j*_rep*.json /tmp/d0-final/individual/
+          python - <<'PY'
+          import hashlib,json,glob,statistics,os
+          from pathlib import Path
+          paths=sorted(glob.glob('/tmp/d0-final/individual/PT_j*_rep*.json'))
+          assert len(paths)==155
+          rows=[]
+          seen=set()
+          for p in paths:
+              r=json.load(open(p))
+              assert r['status']=='STAGE_D0_PT_ASSIGNMENT_SUPPORT_FROZEN_TARGET_BLIND'
+              assert all(v is False for v in r['target_access'].values())
+              assert r['paired_baseline']['exact_stage_b0_replay'] is True
+              assert r['pt_surface']['line_invariants_all_true'] is True
+              key=(r['assignment']['j'],r['assignment']['rep'])
+              assert key not in seen
+              seen.add(key)
+              rows.append({
+                  'j':key[0],
+                  'rep':key[1],
+                  'primary_pooled_surface_sha256':r['pt_surface']['primary_pooled_surface_sha256'],
+                  'raw_pooled_surface_sha256':r['pt_surface']['raw_pooled_surface_sha256'],
+                  'visible_tokens':r['pt_surface']['support']['visible_tokens'],
+                  'accepted_tokens':r['pt_surface']['support']['accepted_tokens'],
+                  'coverage':r['pt_surface']['support']['coverage'],
+                  'changed_nonempty_line_fraction':r['pt_surface']['changed_nonempty_line_fraction'],
+                  'changed_from_baseline':r['pt_surface']['changed_from_paired_baseline_primary'],
+                  'json_sha256':hashlib.sha256(Path(p).read_bytes()).hexdigest(),
+              })
+          assert seen=={(j,r) for j in range(31) for r in range(5)}
+          cov=[x['coverage'] for x in rows]
+          ch=[x['changed_nonempty_line_fraction'] for x in rows]
+          agg={
+              'schema':'issue72-v2-stage-d0-pt-support-aggregate-v1',
+              'status':'STAGE_D0_COMPLETE_PT_SUPPORT_POPULATION_FROZEN_TARGET_BLIND',
+              'scientific_support_head':os.environ['SUPPORT_HEAD'],
+              'stage_d_plan_commit':'c45c67a665a7e4ad24c1d2706f83c65931d950a9',
+              'population':{
+                  'j_values':list(range(31)),
+                  'reps':list(range(5)),
+                  'total_results':155,
+                  'complete_population':True,
+                  'no_drops':True,
+                  'no_rerolls':True,
+              },
+              'target_firewall':{
+                  'all_assignment_target_access_false':True,
+                  'R1_target_scored':False,
+              },
+              'support_summary':{
+                  'coverage_min':min(cov),
+                  'coverage_median':statistics.median(cov),
+                  'coverage_max':max(cov),
+                  'changed_nonempty_line_fraction_min':min(ch),
+                  'changed_nonempty_line_fraction_median':statistics.median(ch),
+                  'changed_nonempty_line_fraction_max':max(ch),
+                  'surfaces_equal_to_paired_baseline_count':sum(not x['changed_from_baseline'] for x in rows),
+              },
+              'results':rows,
+          }
+          raw=(json.dumps(agg,ensure_ascii=False,sort_keys=True,separators=(',',':'))+'\n').encode()
+          Path('/tmp/d0-final/stage_d0_pt_support_aggregate.json').write_bytes(raw)
+          print(json.dumps(agg['support_summary'],indent=2,sort_keys=True))
+          PY
+
+      - name: Freeze exact hashes and provenance
+        shell: bash
+        env:
+          SUPPORT_HEAD: ${{ needs.authorize.outputs.support_head }}
+        run: |
+          set -euo pipefail
+          (cd /tmp/d0-final && sha256sum individual/*.json stage_d0_pt_support_aggregate.json | sort > SHA256SUMS.txt)
+          AGG_SHA=$(sha256sum /tmp/d0-final/stage_d0_pt_support_aggregate.json | cut -d' ' -f1)
+          cat > /tmp/d0-final/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          scientific_support_head=${SUPPORT_HEAD}
+          stage_d_plan_commit=c45c67a665a7e4ad24c1d2706f83c65931d950a9
+          d0_script_first_add=d03c5104dad9081c9c8e431bf3156ab6232f2b6f
+          recovered_b0_sha256=96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58
+          successful_preflight_commit=837e149dd43aebe8dd96afe5018e77068942d533
+          total_assignment_results=155
+          complete_population=true
+          no_drops=true
+          no_rerolls=true
+          target_loaded=false
+          pair_Q_computed=false
+          residual_Z_computed=false
+          target_topology_computed=false
+          aggregate_sha256=${AGG_SHA}
+          EOF
+          cat /tmp/d0-final/PROVENANCE.txt
+
+      - name: Upload complete exact D0 support authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-stageD0-PT-complete-${{ needs.authorize.outputs.support_head }}
+          path: /tmp/d0-final
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
+
+      - name: Commit permanent D0 support authority to branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/naibbe-r1-decomposition-v2/stage-d0-pt
+          rm -rf "$DEST"
+          mkdir -p "$DEST"
+          cp -a /tmp/d0-final/. "$DEST/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git diff --cached --quiet && exit 0
+          git commit -m 'Issue72 V2 Stage D0: freeze complete target-blind PT support authority'
+          git push origin HEAD:issue72-r1-causal-decomposition-v2

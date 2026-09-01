@@ -1,0 +1,181 @@
+name: Issue72 V2 Stage C1 FI target-blind preflight
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-c1-fi-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - family: FI-G
+            index: 0
+          - family: FI-G
+            index: 198
+          - family: FI-M
+            index: 0
+          - family: FI-M
+            index: 198
+    steps:
+      - name: Checkout exact preflight head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify preregistration and implementation chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN='a053efd9803b6c0f74614986289c54a8add7d904'
+          SCORER='efad503afeb45500a8e520680ed7189bf9ee33f1'
+          AGG='285fb10db3f92df401f3f459d73827590af637a7'
+          FREEZE='e773d37ee8bd94298788e7af3a67843109e3879d'
+          PREFLIGHT=$(git rev-parse HEAD)
+          test "$(git rev-parse HEAD:experiments/naibbe-r1-decomposition-v2/STAGE_C1_FI_PLAN.md)" = 'f051c1a4530c96b2945bdb5b59cb4eb166561895'
+          test "$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/fi_r1_score72_v2.py | tail -1)" = "$SCORER"
+          test "$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/fi_aggregate72_v2.py | tail -1)" = "$AGG"
+          test "$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_C1_FI_IMPLEMENTATION_FREEZE.md | tail -1)" = "$FREEZE"
+          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-v2-stage-c1-fi-preflight.yml | tail -1)" = "$PREFLIGHT"
+          git merge-base --is-ancestor "$PLAN" "$SCORER"
+          git merge-base --is-ancestor "$SCORER" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$FREEZE"
+          git merge-base --is-ancestor "$FREEZE" "$PREFLIGHT"
+          test ! -e experiments/naibbe-r1-decomposition-v2/stage-c1-fi
+          test ! -e experiments/naibbe-r1-decomposition-v2/STAGE_C1_FI_REPORT.md
+
+      - name: Verify frozen local authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58  experiments/naibbe-r1-decomposition-v2/stage_b0_support.json' | sha256sum -c -
+          python - <<'PY'
+          import hashlib
+          p='experiments/naibbe-r1-decomposition-v2/STAGE_C1_FI_PLAN.md'
+          raw=open(p,'rb').read()
+          blob=hashlib.sha1(f'blob {len(raw)}\0'.encode()+raw).hexdigest()
+          assert blob=='f051c1a4530c96b2945bdb5b59cb4eb166561895', blob
+          print({'fi_plan_blob':blob,'target_access':False})
+          PY
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install frozen preexisting dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile frozen FI implementation
+        run: |
+          python -m py_compile experiments/naibbe-r1-decomposition-v2/fi_r1_score72_v2.py
+          python -m py_compile experiments/naibbe-r1-decomposition-v2/fi_aggregate72_v2.py
+
+      - name: Replay identity and allocation without target access
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/fi-preflight
+          python experiments/naibbe-r1-decomposition-v2/fi_r1_score72_v2.py \
+            external/cremma external/naibbe '${{ matrix.family }}' '${{ matrix.index }}' \
+            '/tmp/fi-preflight/${{ matrix.family }}_${{ matrix.index }}.json' --verify-only \
+            > '/tmp/fi-preflight/${{ matrix.family }}_${{ matrix.index }}.stdout.txt'
+
+      - name: Enforce FI target firewall and allocation invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          family='${{ matrix.family }}'
+          index=${{ matrix.index }}
+          p=f'/tmp/fi-preflight/{family}_{index}.json'
+          r=json.load(open(p, encoding='utf-8'))
+          assert r['schema']=='issue72-v2-stage-c1-fi-surface-preflight-v1'
+          assert r['status']=='FI_ALLOCATION_SURFACE_VERIFIED_TARGET_BLIND'
+          assert r['fi_plan_commit']=='a053efd9803b6c0f74614986289c54a8add7d904'
+          assert r['family']==family and r['index']==index
+          assert all(v is False for v in r['target_access'].values())
+          ia=r['identity_audit']
+          assert ia['primary_pooled_surface_sha256']=='47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          assert ia['visible_tokens']==33574
+          assert ia['distinct_complete_tokens']==7146
+          assert ia['accepted_tokens']==29759
+          assert ia['coverage']==0.886370405671055
+          assert ia['identity_measurement_frozen_from_stage_b1']['rescored_here'] is False
+          a=r['allocation']
+          assert a['allocation_namespace']==f'issue72v2:C1:{family}:allocation:{index}'
+          assert a['global_whole_token_instance_multiset_preserved'] is True
+          assert a['manuscript_item_line_visible_token_counts_preserved'] is True
+          assert a['visible_tokens']==33574 and a['distinct_complete_tokens']==7146
+          assert 0 < a['changed_token_slot_fraction'] <= 1
+          s=r['surface_audit']
+          assert s['visible_tokens']==33574 and s['accepted_tokens']==29759
+          assert s['coverage']==0.886370405671055
+          assert sum(s['fold_parsed_tokens'])==29759
+          if family=='FI-M':
+              assert a['per_manuscript_whole_token_instance_multisets_preserved'] is True
+              assert s['FI_M_per_manuscript_accepted_count_invariance'] is True
+              assert s['fold_parsed_tokens']==[11346,9716,6659,2038]
+          else:
+              assert a['per_manuscript_whole_token_instance_multisets_preserved'] is False
+          print({
+              'family':family,
+              'index':index,
+              'identity_surface':ia['primary_pooled_surface_sha256'],
+              'allocated_surface':s['primary_pooled_surface_sha256'],
+              'fold_parsed_tokens':s['fold_parsed_tokens'],
+              'changed_fraction':a['changed_token_slot_fraction'],
+              'target_access':r['target_access'],
+          })
+          PY
+
+      - name: Freeze target-blind preflight provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > '/tmp/fi-preflight/PROVENANCE_${{ matrix.family }}_${{ matrix.index }}.txt' <<EOF2
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          preflight_head=${GITHUB_SHA}
+          fi_plan_commit=a053efd9803b6c0f74614986289c54a8add7d904
+          scorer_freeze_commit=efad503afeb45500a8e520680ed7189bf9ee33f1
+          aggregate_freeze_commit=285fb10db3f92df401f3f459d73827590af637a7
+          family=${{ matrix.family }}
+          index=${{ matrix.index }}
+          target_loaded=false
+          slot_pair_Q_computed=false
+          residual_Z_computed=false
+          target_topology_computed=false
+          FI_T_computed=false
+          FI_randomization_pvalue_computed=false
+          EOF2
+          sha256sum /tmp/fi-preflight/* | sort > /tmp/fi-preflight/SHA256SUMS.txt
+
+      - name: Upload target-blind FI preflight evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-FI-preflight-${{ matrix.family }}-${{ matrix.index }}-${{ github.sha }}
+          path: /tmp/fi-preflight
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6

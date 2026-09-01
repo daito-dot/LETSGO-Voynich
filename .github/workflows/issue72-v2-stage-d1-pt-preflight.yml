@@ -1,0 +1,102 @@
+name: Issue72 V2 Stage D1 PT target-blind scorer preflight
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-d1-pt-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - j: 0
+            rep: 0
+          - j: 30
+            rep: 4
+    steps:
+      - name: Checkout exact preflight head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify frozen D1 chronology and no target result
+        shell: bash
+        run: |
+          set -euo pipefail
+          CONTRACT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_D1_PT_TARGET_IMPLEMENTATION.md | tail -1)
+          SCORER=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/d1_pt_r1_target72_v2.py | tail -1)
+          AGG=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/d1_pt_aggregate72_v2.py | tail -1)
+          test "$CONTRACT" = '4f69147e831277982e6006207fab27675b76370c'
+          test "$SCORER" = 'abe745244a43ef6053f69f301663df1288857b6c'
+          test "$AGG" = 'c76908bed8b15cb497679f0e3f83dc4891426bc9'
+          git merge-base --is-ancestor c45c67a665a7e4ad24c1d2706f83c65931d950a9 "$CONTRACT"
+          git merge-base --is-ancestor 7056e7ed037af7ff53927d04355821606b59ba6e "$CONTRACT"
+          git merge-base --is-ancestor "$CONTRACT" "$SCORER"
+          git merge-base --is-ancestor "$SCORER" "$AGG"
+          test ! -e experiments/naibbe-r1-decomposition-v2/stage-d1-pt
+          test ! -e experiments/naibbe-r1-decomposition-v2/STAGE_D1_PT_REPORT.md
+          echo '17caf1a6c710b367649499a1fbe71be9e969bc295bc868330372620609e7e50e  experiments/naibbe-r1-decomposition-v2/stage-d0-pt/stage_d0_pt_support_aggregate.json' | sha256sum -c -
+          echo '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58  experiments/naibbe-r1-decomposition-v2/stage_b0_support.json' | sha256sum -c -
+          echo '2da5f0a4f8191820875ed264284f2d3b651489a7e8aeed3805cc2ed4d08c5147  experiments/naibbe-r1-decomposition-v2/archive/stage_b2_calibration.json' | sha256sum -c -
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install frozen preexisting dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile scorer and aggregator
+        run: |
+          python -m py_compile experiments/naibbe-r1-decomposition-v2/d1_pt_r1_target72_v2.py
+          python -m py_compile experiments/naibbe-r1-decomposition-v2/d1_pt_aggregate72_v2.py
+
+      - name: Verify exact PT reconstruction and B2 baseline target blind
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/naibbe-r1-decomposition-v2/d1_pt_r1_target72_v2.py \
+            external/cremma external/naibbe '${{ matrix.j }}' '${{ matrix.rep }}' \
+            /tmp/verify.json --verify-only > /tmp/stdout.txt
+
+      - name: Enforce target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/verify.json'))
+          assert r['status']=='STAGE_D1_PT_RECONSTRUCTION_VERIFIED_TARGET_BLIND'
+          assert r['j']==${{ matrix.j }} and r['rep']==${{ matrix.rep }}
+          assert all(v is False for v in r['target_access'].values())
+          assert r['surface']['coverage'] > 0
+          assert r['baseline_B2_loaded_without_rescoring']['rep']==${{ matrix.rep }}
+          print({
+              'j':r['j'],'rep':r['rep'],
+              'surface':r['surface']['primary_sha256'],
+              'coverage':r['surface']['coverage'],
+              'baseline_R_ZL3b':r['baseline_B2_loaded_without_rescoring']['R_ZL3b'],
+              'baseline_R_IT2a':r['baseline_B2_loaded_without_rescoring']['R_IT2a'],
+              'target_access':r['target_access'],
+          })
+          PY
