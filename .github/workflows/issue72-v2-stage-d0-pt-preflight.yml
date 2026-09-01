@@ -1,0 +1,91 @@
+name: Issue72 V2 Stage D0 PT corrected target-blind preflight
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-d0-pt-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - j: 0
+            rep: 0
+          - j: 30
+            rep: 4
+    steps:
+      - name: Checkout exact preflight head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify preregistered PT ancestry and corrected implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor c45c67a665a7e4ad24c1d2706f83c65931d950a9 HEAD
+          git merge-base --is-ancestor d03c5104dad9081c9c8e431bf3156ab6232f2b6f HEAD
+          git merge-base --is-ancestor 6e946b5416866ce5c2c063ff3d5b351944ceb6ac HEAD
+          git merge-base --is-ancestor 01f3e4251243bd9f18e9cb9809c6d8a92291204a HEAD
+          grep -q 'EXPECTED_B0_RAW_SHA256 = "99dbf2143b2ad276e054b794980014d89ec79c83041d61d011319b1e87f0225d"' experiments/naibbe-r1-decomposition-v2/d0_pt_support72_v2.py
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install frozen preexisting dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Execute corrected target-blind PT support case
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/naibbe-r1-decomposition-v2/d0_pt_support72_v2.py \
+            external/cremma external/naibbe \
+            '${{ matrix.j }}' '${{ matrix.rep }}' \
+            /tmp/PT.json > /tmp/stdout.txt
+
+      - name: Enforce exact baseline replay, PT invariants, and target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/PT.json'))
+          assert r['status']=='STAGE_D0_PT_ASSIGNMENT_SUPPORT_FROZEN_TARGET_BLIND'
+          assert r['assignment']['j']==${{ matrix.j }}
+          assert r['assignment']['rep']==${{ matrix.rep }}
+          assert r['paired_baseline']['exact_stage_b0_replay'] is True
+          assert r['pt_surface']['line_invariants_all_true'] is True
+          assert all(v is False for v in r['target_access'].values())
+          assert r['intervention_generation']['PT_surface_generated'] is True
+          assert r['intervention_generation']['full_published_pipeline_rerun'] is True
+          assert r['intervention_generation']['downstream_path_allowed_to_diverge'] is True
+          print('PREFLIGHT_OK', {
+            'j':r['assignment']['j'],
+            'rep':r['assignment']['rep'],
+            'coverage':r['pt_surface']['support']['coverage'],
+            'changed_line_fraction':r['pt_surface']['changed_nonempty_line_fraction'],
+            'surface_sha':r['pt_surface']['primary_pooled_surface_sha256'],
+          })
+          PY
