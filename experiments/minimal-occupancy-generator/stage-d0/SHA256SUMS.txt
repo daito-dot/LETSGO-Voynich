@@ -1,0 +1,2 @@
+5c31aaa5fdb959873d89d7762dfd78db42c1a773a091b71a9f0731e90fa269cb  /tmp/d0/generator_authority.json
+990f910e764e30d5790126eddbda4e3f7fcf631825f8c4652852ff2456fa7940  /tmp/d0/stdout.txt
