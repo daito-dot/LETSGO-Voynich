@@ -1,0 +1,138 @@
+name: Issue75 Phase A permanent first-reveal freeze
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseA-permanent-freeze.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout archive branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue75-minimal-occupancy-generator
+          fetch-depth: 0
+
+      - name: Verify scientific head and frozen authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          SCI='785bd9f04afceadf4072ea576812649554ad6c6e'
+          PLAN='8d984cfa61a5616bef61b45248c0a7a5d213fbf8'
+          A0='c703b2d01c941b6bfd17758f09868c71a200f212'
+          SCORER='11cbcab12e9c02e5002bc286a132b9a8a9f267aa'
+          AGG='d058a5dbe9571a7afa528e001d64d4a576f7c0ff'
+          git merge-base --is-ancestor "$PLAN" "$A0"
+          git merge-base --is-ancestor "$A0" "$SCORER"
+          git merge-base --is-ancestor "$SCORER" "$SCI"
+          git merge-base --is-ancestor "$AGG" "$SCI"
+          git merge-base --is-ancestor "$SCI" HEAD
+          test "$(git show -s --format=%s "$SCI")" = 'Issue75 Phase A: launch frozen 124-case first reveal'
+          git diff --exit-code "$SCI" HEAD -- \
+            experiments/minimal-occupancy-generator/PLAN_A.md \
+            experiments/minimal-occupancy-generator/phase75a_generator_support.py \
+            experiments/minimal-occupancy-generator/stage-a0/generator_authority.json \
+            experiments/minimal-occupancy-generator/phase75a_score.py \
+            experiments/minimal-occupancy-generator/phase75a_aggregate.py \
+            experiments/joint-constraint-tournament/target68.py
+          test ! -e experiments/minimal-occupancy-generator/stage-a-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_A.md
+
+      - name: Download exact successful first-reveal artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: issue75-phaseA-FIRST-REVEAL-785bd9f04afceadf4072ea576812649554ad6c6e
+          path: /tmp/source
+          github-token: ${{ github.token }}
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33502168755
+
+      - name: Verify complete first-reveal authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find /tmp/source/individual -maxdepth 1 -name '*.json' | wc -l)" -eq 124
+          test "$(sha256sum /tmp/source/phase75a_aggregate.json | cut -d' ' -f1)" = 'fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540'
+          (cd /tmp/source && sha256sum -c SHA256SUMS.txt)
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/source/phase75a_aggregate.json', encoding='utf-8'))
+          assert r['schema']=='issue75-phaseA-aggregate-v1'
+          assert r['status']=='PHASE_A_COMPLETE_124_CASE_POPULATION_AGGREGATED'
+          assert r['scientific_head']=='785bd9f04afceadf4072ea576812649554ad6c6e'
+          assert r['plan_commit']=='8d984cfa61a5616bef61b45248c0a7a5d213fbf8'
+          assert r['stage_a0_authority_sha256']=='83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2'
+          assert r['population']['total_results']==124
+          assert r['population']['complete_population'] is True
+          assert r['population']['no_drops'] is True and r['population']['no_rerolls'] is True
+          assert r['positive_control']['valid'] is True
+          assert r['positive_control']['MPLUS_A_median_T']==0.9643123238628766
+          assert r['positive_control']['MPLUS_B_median_T']==0.9655940679816023
+          assert r['primary_q95_equivalence']['delta_plus']==0.009768313008182594
+          assert r['primary_q95_equivalence']['gap']['M0']==-1.0779969902058455
+          assert r['primary_q95_equivalence']['gap']['M1']==-1.1307973705976428
+          assert r['primary_q95_equivalence']['no_material_loss']=={'M0':False,'M1':False}
+          assert r['ordered_classification']=='LOW_ORDER_MODELS_INSUFFICIENT_EMPIRICAL_PATTERN_STRUCTURE_REQUIRED'
+          assert r['families']['M0']['T']['median']==-0.11009120277091208
+          assert r['families']['M1']['T']['median']==-0.1674116606958207
+          assert r['families']['MPLUS-A']['T']['median']==0.9643123238628766
+          assert r['families']['MPLUS-B']['T']['median']==0.9655940679816023
+          assert all(v is False for v in r['guardrails'].values())
+          print('Issue75 Phase A permanent authority verified')
+          PY
+
+      - name: Copy exact evidence into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/minimal-occupancy-generator/stage-a-first-reveal
+          rm -rf "$DEST"
+          mkdir -p "$DEST"
+          cp -a /tmp/source/individual "$DEST/"
+          cp /tmp/source/phase75a_aggregate.json "$DEST/"
+          cp /tmp/source/aggregate.stdout.txt "$DEST/"
+          cp /tmp/source/SHA256SUMS.txt "$DEST/"
+          cp /tmp/source/PROVENANCE.txt "$DEST/"
+          cat > "$DEST/ARTIFACT_AUTHORITY.txt" <<'EOF'
+          scientific_role=POSTREVEAL_TRANSPORT_ONLY_PERMANENT_AUTHORITY
+          source_workflow_run=33502168755
+          source_workflow_conclusion=success
+          source_artifact_id=9798525603
+          source_artifact_name=issue75-phaseA-FIRST-REVEAL-785bd9f04afceadf4072ea576812649554ad6c6e
+          source_artifact_digest=sha256:548da64c4b3c759e5137387b3bd1dc1335d098b7c0799b06283a75535eda4612
+          aggregate_sha256=fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540
+          scientific_head=785bd9f04afceadf4072ea576812649554ad6c6e
+          plan_commit=8d984cfa61a5616bef61b45248c0a7a5d213fbf8
+          stage_a0_sha256=83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2
+          scorer_replay_repair_commit=11cbcab12e9c02e5002bc286a132b9a8a9f267aa
+          aggregate_freeze_commit=d058a5dbe9571a7afa528e001d64d4a576f7c0ff
+          total_results=124
+          M0=31
+          M1=31
+          MPLUS-A=31
+          MPLUS-B=31
+          drops=0
+          rerolls=0
+          ordered_classification=LOW_ORDER_MODELS_INSUFFICIENT_EMPIRICAL_PATTERN_STRUCTURE_REQUIRED
+          permanent_freeze_is_post_reveal_transport_only=true
+          EOF
+
+      - name: Commit permanent first-reveal authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/minimal-occupancy-generator/stage-a-first-reveal
+          git diff --cached --quiet && exit 0
+          git commit -m 'Issue75 Phase A: freeze exact 124-case first-reveal authority'
+          git push origin HEAD:issue75-minimal-occupancy-generator
