@@ -1,4 +1,4 @@
-# Issue #75 Phase D — compact distance-banded nonlocal occupancy grammar
+# Issue #75 Phase D — nested distance-banded nonlocal occupancy grammar
 
 Date: 2026-09-01  
 Status: **PREREGISTERED AFTER FROZEN PHASE-C RESULT / BEFORE PHASE-D EXECUTABLE / NO PHASE-D TARGET RESULT**
@@ -19,19 +19,22 @@ The controlling decision file is:
 
 `experiments/minimal-occupancy-generator/DECISION_C_NONLOCAL_OR_LATENT_REQUIRED.md`
 
-The earlier `.github/workflows/issue75-phaseD-preregister-if-licensed.yml` was authored during the broken Phase-C automation chain. It is **non-authoritative**. Its generic distance-banded idea is retained because it is target-edge blind, but this `PLAN_D.md`, committed after the valid frozen Phase-C result and before any Phase-D executable, is the sole normative Phase-D plan.
+The earlier `.github/workflows/issue75-phaseD-preregister-if-licensed.yml` was authored during the broken Phase-C automation chain and is non-authoritative. Commit `1a56ef550af3ab65620ad32b2b4d6ba5aa7becc4` then materialized a post-Phase-C distance-only plan. Before any Phase-D executable was committed, that plan was audited and corrected here for two reasons:
 
-No Phase-D target result exists at this point.
+1. it discarded the position-specific adjacent interactions that Phase C had already shown to carry substantial topology signal, so it was not a nested extension of M3;
+2. its stated 20-dimensional distance-only feature family missed an additional identifiability constraint induced by conditioning on span `S`.
+
+This corrected file is the sole normative Phase-D plan. No Phase-D executable or target result predates it.
 
 ## 1. Scientific question
 
-Phase A ruled out slot marginals and occupied-slot count alone. Phase B showed that coarse `(K,R,S)` token geometry recovers only a modest part of R1. Phase C added a first-order nearest-neighbor occupancy grammar and raised median `T` from about `0.287` to about `0.593`, but remained far below the empirical-signature positive-control ceiling near `0.965`.
+Phase A ruled out slot marginals and occupied-slot count alone. Phase B showed that coarse `(K,R,S)` token geometry recovers only a modest part of R1. Phase C retained exact training-only `(K,R,S)` geometry and added position-specific nearest-neighbor occupancy interactions, raising median `T` from about `0.287` to about `0.593`, while remaining far below the empirical-signature positive-control ceiling near `0.965`.
 
 The next deliberately narrow question is:
 
-> **After exact K/R/S geometry is fixed, can generic nonlocal interaction determined only by separation distance — without selecting any particular revealed target edge — recover the replicated complete 66-edge topology?**
+> **If the successful M3 local transition grammar is retained, are generic nonadjacent interactions determined only by slot separation sufficient to recover the replicated complete 66-edge topology?**
 
-This phase tests the simplest nonlocal extension before considering a latent-state model.
+This is a strict nested extension of M3. It adds no target-selected pair and no latent state.
 
 ## 2. Frozen representation and evaluation
 
@@ -41,167 +44,224 @@ Use the unchanged Issue #75 representation and complete-graph evaluation:
 - `SlotParser(min)` authority unchanged;
 - 25,071 accepted ZL3b tokens on the frozen physical-leaf skeleton;
 - five physical-leaf cross-fit folds unchanged;
+- exact training-only empirical `(K,R,S)` descriptor distribution per cross-fit split;
 - all `C(12,2)=66` unordered slot pairs retained;
 - candidate-owned K_other-conditioned Jeffreys-smoothed MH/Yule-Q reference null;
 - residual Z, residual energy E, existence p-value, physical-fold reliability W;
 - ZL3b and IT2a target vectors evaluated separately;
 - `T=min(R_ZL3b,R_IT2a)`;
-- exact Phase-A paired M+ positive-control centers reused;
+- exact Phase-A paired M+ positive-control centers reused from aggregate SHA `fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540`;
 - q95 no-material-loss tolerance remains exactly `0.009768313008182594`.
 
-No selected-edge score, subset correlation, or post-reveal topology repair is permitted.
+The frozen Phase-C result may be used only as prior-stage authority and as a descriptive paired comparator. No Phase-D feature, distance band, parameter, seed, or variant may be selected from the revealed 66 target edges, their signs, or their residual magnitudes.
 
-## 3. M4-KRS-DISTANCE model
+## 3. M4-KRS-CHAIN-DISTANCE model
 
-Retain the exact training-only empirical descriptor distribution
+For non-empty occupancy vector `x in {0,1}^12`, retain
 
-`q_d = P_train(K,R,S)`.
+`D(x)=(K(x),R(x),S(x))`
 
-For a non-empty 12-bit occupancy vector `x`, define for separation distance `d=2..11`:
+and the exact training-only descriptor distribution
 
-`C_d(x) = sum_{s=0}^{11-d} x_s x_{s+d}`.
+`q_d=P_train(D=d)`.
 
-Conditional on descriptor class `(K,R,S)`, define
+Within each descriptor class define:
 
-`P(x | K,R,S) proportional to exp(sum_s h_s x_s + sum_{d=2}^{11} J_d C_d(x))`.
+- unary feature `U_s(x)=x_s`, for `s=0..11`;
+- position-specific adjacent feature `A_s(x)=x_s*x_{s+1}`, for `s=0..10`;
+- aggregate nonadjacent separation feature
 
-The model therefore contains:
+`C_d(x)=sum_{s=0}^{11-d} x_s*x_{s+d}`, for `d=2..11`.
 
-- position-specific unary occupancy propensities `h_s`;
-- one shared interaction coefficient for each nonadjacent separation distance;
-- no coefficient for a particular named nonadjacent slot pair;
+Conditional model:
+
+`P(x | K,R,S) proportional to exp(sum_s h_s U_s(x) + sum_s J_s A_s(x) + sum_{d=2}^{11} B_d C_d(x))`.
+
+This model contains M3 exactly when all identifiable `B_d` are zero. The only new information channel is generic nonadjacent separation distance.
+
+It has:
+
+- no named-pair-specific nonadjacent coefficient;
 - no complete-signature-specific parameter;
-- no latent state or mixture class.
+- no latent state or mixture class;
+- no target-derived feature selection.
 
-Distance 1 is deliberately absent. Within fixed `(K,R,S)`, the number of occupied adjacent pairs is exactly `K-R`, so a shared distance-1 coefficient is constant within the descriptor class and cannot alter the conditional distribution.
+## 4. Exact identification and complexity
 
-## 4. Identification and complexity
+Conditioning on `(K,R,S)` creates four parameter directions that cannot change `P(x|K,R,S)`.
 
-Within fixed K, total unary occupancy is fixed. Set gauge:
+### 4.1 Unary gauge
 
-`h_0 = 0`.
+Within fixed `K`:
 
-Within fixed K and R, total nonadjacent occupied-pair count is also fixed:
+`sum_s U_s = K`.
 
-`sum_{d=2}^{11} C_d = choose(K,2) - (K-R)`.
+A common unary offset cancels. Fix:
 
-Therefore a common offset across all nonadjacent distance coefficients cancels. Set gauge:
+`h_0=0`.
 
-`J_2 = 0`.
+This leaves 11 free unary parameters `h_1..h_11`.
+
+### 4.2 Adjacent gauge
+
+Within fixed `(K,R)`:
+
+`sum_s A_s = K-R`.
+
+A common adjacent offset cancels. Fix:
+
+`J_0=0`.
+
+This leaves 10 free position-specific adjacent parameters `J_1..J_10`, exactly as in M3.
+
+### 4.3 Nonadjacent common-offset gauge
+
+Within fixed `(K,R)`:
+
+`sum_{d=2}^{11} C_d = choose(K,2)-(K-R)`.
+
+A common offset across all nonadjacent-distance coefficients cancels. Fix:
+
+`B_2=0`.
+
+### 4.4 Span-induced distance-11 invariance
+
+Because there are only 12 slots, `C_11=x_0*x_11`. Within a fixed span class:
+
+- if `S=12`, both endpoints 0 and 11 are occupied and `C_11=1`;
+- if `S<12`, the two endpoints cannot both be occupied and `C_11=0`.
+
+Therefore `C_11` is a deterministic function of `S` and has zero within-descriptor variance. `B_11` is not identifiable and is omitted/fixed to zero.
+
+The exact-state feature-rank audit must confirm:
+
+- unary within-descriptor rank = `11`;
+- unary + adjacent rank = `21`;
+- unary + adjacent + all distance features rank = `29`.
 
 Free continuous parameters per cross-fit training split:
 
-- 11 unary parameters `h_1..h_11`;
-- 9 distance parameters `J_3..J_11`;
-- total: `20`.
+- 11 unary parameters;
+- 10 position-specific adjacent parameters;
+- 8 nonadjacent distance parameters `B_3..B_10`;
+- total: **29**.
 
 Complexity assertions:
 
-- explicit pair-specific nonadjacent parameters: `0`;
+- explicit named-pair nonadjacent parameters: `0`;
 - empirical complete-signature-specific parameters: `0`;
 - latent-state parameters: `0`.
 
 ## 5. Training-only sufficient statistics
 
-Fit only from the four training folds to reproduce:
+Fit only from the four training folds to reproduce the empirical moments of:
 
-- all 12 slot occupancy means;
-- all 10 aggregate nonadjacent distance occupancies `E[C_d]`, `d=2..11`.
+- all 12 unary occupancies `E[U_s]`;
+- all 11 position-specific adjacent occupancies `E[A_s]`;
+- all 10 aggregate nonadjacent-distance occupancies `E[C_d]`, `d=2..11`.
 
-The frozen `(K,R,S)` distribution imposes:
+There are 33 reported moments but only 29 independent within-descriptor degrees of freedom because of the four exact identities in Section 4.
 
-- one linear identity among the 12 unary moments;
-- one linear identity among the 10 distance moments.
+Before fitting, the executable must verify all four identities and the exact rank `29` over the complete 4095 non-empty state space partitioned by `(K,R,S)`.
 
-After gauges, this gives 20 independent moment degrees of freedom, matching the 20 free continuous parameters.
-
-Both identities must be numerically verified before fitting. The target graph, target edge signs, target correlations, and IT2a outcomes must not be loaded or used during fitting.
+No held-out-fold moment or target R1 quantity is part of training.
 
 ## 6. Exact deterministic fitting
 
 Use the exact 4095 non-empty 12-bit signature state space.
 
-Required fitting procedure:
+Required procedure:
 
-- zero initialization;
-- exact expectations within every nonzero `(K,R,S)` class;
-- exact covariance/Jacobian over the 20 free sufficient statistics;
-- deterministic Newton or damped Newton moment matching;
-- no Monte Carlo fitting;
+- zero initialization of all 29 free parameters;
+- exact expectation and covariance within every nonzero `(K,R,S)` class;
+- deterministic Newton / damped moment matching;
+- no Monte-Carlo fitting;
 - no random initialization;
-- no target-based hyperparameter selection;
-- maximum absolute error `<=1e-10` across all reported unary and distance moments;
+- no target-derived regularization or feature pruning;
+- maximum absolute error `<=1e-10` across all 33 reported moments after accounting for the exact identities;
 - a failed fold fit is an experimental failure, not a reroll.
 
-The solver may use deterministic numerical stabilization only if it does not change the model family, objective, target moments, or stopping tolerance.
+Deterministic numerical stabilization is allowed only if it does not alter the model family, sufficient statistics, target moments, or stopping tolerance.
 
 ## 7. Target-blind D0 population
 
-Generate exactly 31 cross-fitted M4-KRS-DISTANCE corpora, reps `0..30`, on the frozen accepted-token/line skeleton.
+Generate exactly 31 complete cross-fitted `M4-KRS-CHAIN-DISTANCE` corpora, reps `0..30`, on the frozen accepted-token/line skeleton.
+
+For held-out fold `f`, fit only on the other four folds.
 
 Generation namespace:
 
-`issue75:phaseD:M4-KRS-DISTANCE:rep{r}:fold{f}:generate`
+`issue75:phaseD:M4-KRS-CHAIN-DISTANCE:rep{r}:fold{f}:generate`
 
-Before any target access, freeze for all 31 cases:
+Each generated corpus must contain exactly 25,071 non-empty signatures on the unchanged skeleton.
+
+Before any Phase-D target access, freeze for all 31 cases:
 
 - exact occupancy SHA-256;
 - token count and fold counts;
-- descriptor and moment-fit audit;
-- distinct-signature diagnostics;
-- all target-access flags false;
+- exact training descriptor distribution;
+- all 33 training and fitted moments;
+- fitted parameter vector and max fit error;
+- rank/identity audit;
+- generated descriptor distribution and distinct-signature diagnostics;
+- target-access flags all false;
 - no drops / no rerolls.
 
-The D0 population must be permanently committed or otherwise immutable by exact SHA before target scoring is authorized.
+The D0 population must be immutable by exact SHA before target scoring is authorized.
 
-## 8. Candidate-owned residual calibration
+## 8. Required pretarget validation
 
-Reuse the exact unchanged R1 candidate-owned calibration contract:
+Before first reveal:
+
+1. exact-replay preflight for reps `0` and `30` must regenerate the frozen D0 occupancy SHA exactly;
+2. one rep-0 candidate-null smoke must complete the full candidate-owned 1000-reference / 1000-test residual calculation while the ZL3b/IT2a target loader remains unused;
+3. scorer and aggregator code must be frozen before the first target-scoring run;
+4. all target-access guards must be explicit and machine-checked.
+
+## 9. Candidate-owned R1 measurement
+
+Reuse the exact unchanged Phase-A/B/C scoring contract:
 
 - all 66 unordered pairs;
 - K_other-conditioned Jeffreys-smoothed MH/Yule-Q;
-- `N_ref=1000` candidate-owned line-local reference nulls;
-- residual Z;
-- five-fold reliability W;
-- `N_test=1000` independent candidate-owned test nulls;
-- E and `p_exist`.
+- `N_ref=1000` line-local reference nulls;
+- mid-rank normal residual Z;
+- five-fold train/held reliability W;
+- independent `N_test=1000` test nulls;
+- residual energy E and `p_exist`.
 
-Namespaces:
+Namespaces for rep `r`:
 
-- `issue75:phaseD:M4-KRS-DISTANCE:rep{r}:reference`
-- `issue75:phaseD:M4-KRS-DISTANCE:rep{r}:test`
+- reference: `issue75:phaseD:M4-KRS-CHAIN-DISTANCE:rep{r}:reference`;
+- test: `issue75:phaseD:M4-KRS-CHAIN-DISTANCE:rep{r}:test`.
 
-First run exact target-blind replay preflight on reps `0` and `30`. Then run one target-blind rep0 candidate-null smoke. Neither may load Issue58C/Issue58D target vectors or compute target correlation/sign agreement/T.
+## 10. Frozen first-reveal target comparison
 
-## 9. Frozen first-reveal target comparison
+Only after exact D0 replay may the scorer load the unchanged frozen ZL3b and IT2a target vectors.
 
-Only after D0, boundary replay, candidate-null smoke, and a PRETARGET execution freeze succeed may target vectors be loaded.
-
-For each rep `r=0..30`, report:
+For each rep report:
 
 - E;
 - `p_exist`;
 - W;
-- `R_ZL3b`;
-- `R_IT2a`;
-- sign agreement against each reading;
-- `T[r]=min(R_ZL3b,R_IT2a)`.
+- complete-66 `R_ZL3b`;
+- complete-66 `R_IT2a`;
+- sign agreement for each reading;
+- `T=min(R_ZL3b,R_IT2a)`.
 
-Reuse the exact Phase-A paired positive-control center for the same rep:
+Never average the two readings.
 
-`D_M4[r] = T_M4[r] - T_plus_center_PhaseA[r]`
+## 11. Primary sufficiency decision
 
-and
+Reuse the exact Phase-A paired positive-control centers `T_plus_center[r]` and frozen q95 tolerance.
 
-`gap_M4 = median_r D_M4[r]`.
+For each rep:
 
-No case may be dropped, replaced, selected, or rerolled. ZL3b and IT2a may not be averaged.
+`D_M4[r]=T_M4[r]-T_plus_center_PhaseA[r]`.
 
-## 10. Frozen decision rule
+Define:
 
-Primary threshold remains:
-
-`delta_plus_q95 = 0.009768313008182594`.
+`gap_M4=median_r D_M4[r]`.
 
 If
 
@@ -209,31 +269,46 @@ If
 
 classify:
 
-`M4_KRS_DISTANCE_BANDED_NONLOCAL_GRAMMAR_SUFFICIENT`
+`M4_KRS_CHAIN_DISTANCE_NONLOCAL_GRAMMAR_SUFFICIENT`
 
-and **stop the R1 model-complexity ladder**.
+and stop the R1 model-complexity ladder.
 
 Otherwise classify:
 
-`M4_KRS_DISTANCE_BANDED_NONLOCAL_GRAMMAR_INSUFFICIENT_LATENT_CONFIGURATION_RULE_REQUIRED`.
+`M4_KRS_CHAIN_DISTANCE_NONLOCAL_GRAMMAR_INSUFFICIENT_LATENT_CONFIGURATION_RULE_REQUIRED`.
 
-Only the latter outcome licenses a separately preregistered latent-state frontier. No latent architecture is selected or fitted in Phase D.
+Only this latter outcome licenses a separately preregistered latent-state frontier.
 
-q90/q99 positive-control tolerances may be reported only as non-promoting sensitivity checks, exactly as in Phases A-C.
+## 12. Secondary diagnostics
 
-## 11. Falsifiable interpretation
+Without changing the primary decision, report:
+
+- paired `T_M4-T_M3` using the permanently frozen Phase-C 31-case values;
+- q90/q99 sensitivity using already-frozen Phase-A M+ tolerances;
+- fit-error, rank, and four identity audits by fold;
+- descriptor class count and entropy;
+- generated vs training unary/adjacent/distance moments;
+- distinct signature count;
+- E/p/W distributions;
+- per-reading R and sign-agreement distributions.
+
+No diagnostic may be used to alter Phase D after target reveal.
+
+## 13. Falsifiable interpretation
 
 ### M4 succeeds
 
-Generic dependence on structural separation distance is sufficient, once K/R/S geometry is fixed. This would identify a compact nonlocal occupancy law without naming specific slot pairs.
+The replicated R1 topology can be generated by a compact occupancy grammar consisting of:
+
+`K/R/S geometry + position-specific local transitions + generic separation-dependent nonlocal coupling`.
+
+This would localize the remaining structure to a low-dimensional nonlocal distance law.
 
 ### M4 fails
 
-Even generic distance-banded nonlocal coupling is insufficient. Combined with M3 failure, this would strongly motivate a latent configuration/state explanation rather than simply adding pair-specific interactions.
+Even after retaining the successful M3 local grammar, generic distance-banded nonlocal coupling is insufficient. That outcome would license a separately preregistered latent-state/configuration model rather than target-selected distant edges or an unrestricted pairwise model.
 
-Failure does **not** license target-selected distant edges or an unrestricted pairwise model.
-
-## 12. Interpretation boundary
+## 14. Interpretation boundary
 
 Phase D concerns only the 12-slot occupancy representation. It cannot by itself establish:
 
@@ -246,13 +321,11 @@ Phase D concerns only the 12-slot occupancy representation. It cannot by itself 
 - historical Naibbe use;
 - decipherment.
 
-Success would identify an occupancy-level distance law. Failure would establish only that such a law is insufficient under the tested hierarchy.
-
-## 13. Completion criterion
+## 15. Completion criterion
 
 Phase D is complete only after all of the following are frozen and successful:
 
-1. this plan-before-code authority;
+1. this corrected plan-before-code authority;
 2. target-blind 31-case D0 generated-population authority;
 3. exact replay preflight on reps 0 and 30;
 4. target-blind rep0 candidate-owned-null smoke;
