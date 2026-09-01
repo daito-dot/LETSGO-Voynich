@@ -1,0 +1,191 @@
+name: Issue72 archive original first-reveal artifacts
+
+on:
+  push:
+    branches: [issue72-naibbe-r1-decomposition]
+    paths:
+      - '.github/workflows/issue72-archive-first-reveal.yml'
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  archive-original-first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue72-naibbe-r1-decomposition
+          fetch-depth: 0
+
+      - name: Freeze original PR-open scientific head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git diff --name-only HEAD^ HEAD)" = ".github/workflows/issue72-archive-first-reveal.yml"
+          ORIGINAL_HEAD=$(git rev-parse HEAD^)
+          test -n "$ORIGINAL_HEAD"
+          test -e experiments/naibbe-r1-decomposition/FIRST_REVEAL_PROTOCOL.md
+          test -e .github/workflows/issue72-r1-first-reveal.yml
+          test ! -e experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+          echo "ORIGINAL_HEAD=$ORIGINAL_HEAD" >> "$GITHUB_ENV"
+          echo "Archiver commit=$(git rev-parse HEAD)"
+          echo "Original PR-open scientific head=$ORIGINAL_HEAD"
+
+      - name: Locate and await the original first-reveal run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUN_ID=""
+          for i in $(seq 1 360); do
+            JSON=$(gh api --method GET "/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${ORIGINAL_HEAD}&event=pull_request&per_page=100")
+            RUN_ID=$(printf '%s' "$JSON" | python -c "import json,sys; d=json.load(sys.stdin); xs=[x for x in d['workflow_runs'] if x['name']=='Issue72 complete-family R1 first reveal']; print(xs[0]['id'] if xs else '')")
+            if test -n "$RUN_ID"; then
+              STATUS=$(printf '%s' "$JSON" | python -c "import json,sys,os; d=json.load(sys.stdin); rid=int(os.environ['RID']); x=next(x for x in d['workflow_runs'] if x['id']==rid); print(x['status'])" RID="$RUN_ID" 2>/dev/null || true)
+              # Avoid shell-env portability ambiguity by query run directly.
+              STATUS=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" --jq '.status')
+              if test "$STATUS" = "completed"; then break; fi
+            fi
+            sleep 20
+          done
+          test -n "$RUN_ID"
+          STATUS=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" --jq '.status')
+          CONCLUSION=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" --jq '.conclusion')
+          test "$STATUS" = "completed"
+          if test "$CONCLUSION" != "success"; then
+            echo "Original scientific run did not complete successfully: run=$RUN_ID conclusion=$CONCLUSION" >&2
+            exit 42
+          fi
+          HEAD_SHA=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" --jq '.head_sha')
+          test "$HEAD_SHA" = "$ORIGINAL_HEAD"
+          echo "FIRST_REVEAL_RUN_ID=$RUN_ID" >> "$GITHUB_ENV"
+          echo "Original first-reveal run=$RUN_ID conclusion=$CONCLUSION"
+
+      - name: Capture complete scientific job IDs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --paginate "/repos/${GITHUB_REPOSITORY}/actions/runs/${FIRST_REVEAL_RUN_ID}/jobs?per_page=100" > /tmp/jobs_raw.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/jobs_raw.json'))
+          jobs=d['jobs'] if isinstance(d,dict) and 'jobs' in d else d
+          slim=[]
+          for j in jobs:
+              slim.append({'id':j['id'],'name':j['name'],'status':j['status'],'conclusion':j['conclusion'],'head_sha':j.get('head_sha')})
+              if j['conclusion']!='success': raise SystemExit(f"non-success scientific job: {j['name']} {j['conclusion']}")
+          json.dump(slim,open('/tmp/JOB_IDS.json','w'),indent=2,sort_keys=True)
+          print('scientific_jobs=',len(slim))
+          PY
+
+      - name: Download exact complete-family aggregate artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARTJSON=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${FIRST_REVEAL_RUN_ID}/artifacts?per_page=100")
+          NAME="issue72-first-reveal-${ORIGINAL_HEAD}"
+          ARTID=$(printf '%s' "$ARTJSON" | python -c "import json,sys,os; d=json.load(sys.stdin); xs=[x for x in d['artifacts'] if x['name']==os.environ['NAME']]; print(xs[0]['id'] if len(xs)==1 else '')" NAME="$NAME" 2>/dev/null || true)
+          # Portable extraction without relying on env-to-python placement.
+          ARTID=$(printf '%s' "$ARTJSON" | python -c "import json,sys; d=json.load(sys.stdin); name='${NAME}'; xs=[x for x in d['artifacts'] if x['name']==name]; print(xs[0]['id'] if len(xs)==1 else '')")
+          test -n "$ARTID"
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTID}/zip" > /tmp/issue72-first-reveal.zip
+          test -s /tmp/issue72-first-reveal.zip
+          ZIP_SHA=$(sha256sum /tmp/issue72-first-reveal.zip | awk '{print $1}')
+          mkdir -p /tmp/first-reveal
+          unzip -q /tmp/issue72-first-reveal.zip -d /tmp/first-reveal
+          test -f /tmp/first-reveal/issue72_results.json
+          test -d /tmp/first-reveal/scores
+          echo "FIRST_REVEAL_ARTIFACT_ID=$ARTID" >> "$GITHUB_ENV"
+          echo "FIRST_REVEAL_ARTIFACT_ZIP_SHA256=$ZIP_SHA" >> "$GITHUB_ENV"
+          echo "artifact_id=$ARTID zip_sha256=$ZIP_SHA"
+
+      - name: Verify exact complete-family artifact integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path('/tmp/first-reveal')
+          agg_path=root/'issue72_results.json'
+          agg=json.loads(agg_path.read_text())
+          assert agg['first_reveal_head']==os.environ['ORIGINAL_HEAD']
+          expected=[x.strip() for x in Path('experiments/naibbe-r1-decomposition/family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt').read_text().splitlines() if x.strip()]
+          assert agg['target_authorized_realizations']==expected
+          scores={}
+          for p in sorted((root/'scores').glob('score-*.json')):
+              r=json.loads(p.read_text()); rid=r['realization']
+              assert rid in expected and r['first_reveal_head']==os.environ['ORIGINAL_HEAD']
+              scores[rid]=hashlib.sha256(p.read_bytes()).hexdigest()
+          assert set(scores)==set(expected)
+          assert scores==agg['input_realization_json_sha256']
+          assert len(agg['maxT_family']['energy_max_values'])==1000
+          assert len(agg['maxT_family']['correlation_max_values_over_realizations_x_readings'])==1000
+          assert len(agg['maxT_family']['sign_max_values_over_realizations_x_readings'])==1000
+          allowed={
+            'R1 IS PREDOMINANTLY CODEBOOK/INVENTORY-EMBEDDED',
+            'R1 DEPENDS MATERIALLY ON CODEBOOK ASSOCIATION/STATE STRUCTURE',
+            'R1 DEPENDS MATERIALLY ON ENCRYPTION/PLAINTEXT PROCESS',
+            'R1 ORIGIN IS MIXED',
+            'R1 DECOMPOSITION INCONCLUSIVE',
+          }
+          assert agg['frozen_global_classification'] in allowed
+          print('aggregate_sha256=',hashlib.sha256(agg_path.read_bytes()).hexdigest())
+          print('score_count=',len(scores))
+          # Do not interpret values here; this is transport/integrity only.
+          PY
+
+      - name: Install permanent exact first-reveal archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=experiments/naibbe-r1-decomposition/first-reveal
+          rm -rf "$DIR"
+          mkdir -p "$DIR"
+          cp -R /tmp/first-reveal/. "$DIR/"
+          cp /tmp/JOB_IDS.json "$DIR/JOB_IDS.json"
+          AGG_SHA=$(sha256sum "$DIR/issue72_results.json" | awk '{print $1}')
+          cat > "$DIR/PROVENANCE.md" <<EOF
+          # Issue #72 complete-family R1 first-reveal provenance
+
+          Status: **PERMANENT EXACT FIRST-REVEAL ARCHIVE**
+
+          - scientific first-reveal event: PR-open from \`issue72-naibbe-r1-decomposition\` to \`main\`
+          - exact scientific head: \`${ORIGINAL_HEAD}\`
+          - workflow run: \`${FIRST_REVEAL_RUN_ID}\`
+          - aggregate artifact ID: \`${FIRST_REVEAL_ARTIFACT_ID}\`
+          - aggregate artifact ZIP SHA-256: \`${FIRST_REVEAL_ARTIFACT_ZIP_SHA256}\`
+          - aggregate scientific JSON SHA-256: \`${AGG_SHA}\`
+          - runtime: Python 3.13 / numpy 2.5.2 / scipy 1.18.1 / pandas 3.0.5
+          - CREMMA: \`292525969ad98380b398e6606a9c2a36d51913ae\`
+          - Naibbe: \`f2675ec5dd275268bc64dd48ea64fc0e0e9827a2\`
+
+          All per-realization scientific JSONs, their 1,000-test-null arrays, aggregate maxT arrays, and input SHA manifest are stored under this directory.
+
+          \`JOB_IDS.json\` records every scientific job ID from the original run.
+
+          This archiver did **not** rerun, repair or reinterpret any scientific target. It only discovered the already-completed original PR-open run, downloaded its final aggregate artifact, verified exact family completeness/hashes, and committed those bytes permanently.
+          EOF
+          {
+            find "$DIR" -type f ! -name SHA256SUMS_PERMANENT.txt -print0 | sort -z | xargs -0 sha256sum
+          } > "$DIR/SHA256SUMS_PERMANENT.txt"
+          echo "aggregate_sha256=$AGG_SHA"
+
+      - name: Commit permanent archive and remove transport-only archiver
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/issue72-archive-first-reveal.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experiments/naibbe-r1-decomposition/first-reveal .github/workflows/issue72-archive-first-reveal.yml
+          git commit -m 'Archive exact Issue72 complete-family first reveal'
+          git push origin HEAD:issue72-naibbe-r1-decomposition
