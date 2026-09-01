@@ -9,6 +9,10 @@ on:
       - '.github/workflows/issue72-v2-stage-d0-pt-support.yml'
   workflow_dispatch:
 
+concurrency:
+  group: issue72-v2-stage-d0-pt-support
+  cancel-in-progress: true
+
 permissions:
   actions: read
   contents: write
