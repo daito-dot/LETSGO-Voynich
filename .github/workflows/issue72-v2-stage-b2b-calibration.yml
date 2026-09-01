@@ -1,0 +1,258 @@
+name: Issue72 V2 Stage B2b extended unchanged-Naibbe R1 calibration
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - 'experiments/naibbe-r1-decomposition-v2/b2b_r1_calibration72_v2.py'
+      - 'experiments/naibbe-r1-decomposition-v2/aggregate_b2b72_v2.py'
+      - 'experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64'
+      - 'experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64'
+      - '.github/workflows/issue72-v2-stage-b2b-calibration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      exact_head: ${{ steps.chronology.outputs.exact_head }}
+    steps:
+      - name: Checkout exact V2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+          fetch-depth: 0
+
+      - name: Verify B2 chronology and permanent authorities
+        id: chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git merge-base 98a04953aabe9e228a17fa5808adf506a0833362 HEAD)" = "98a04953aabe9e228a17fa5808adf506a0833362"
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_B2_POSITIVE_CONTROL_EXTENSION_PLAN.md | tail -1)
+          B2A=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64 | tail -1)
+          B1ARCH=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64 | tail -1)
+          SCORER=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/b2b_r1_calibration72_v2.py | tail -1)
+          AGG=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/aggregate_b2b72_v2.py | tail -1)
+          WORKFLOW=$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-v2-stage-b2b-calibration.yml | tail -1)
+          for x in "$PLAN" "$B2A" "$B1ARCH" "$SCORER" "$AGG" "$WORKFLOW"; do test -n "$x"; done
+          git merge-base --is-ancestor "$PLAN" "$B2A"
+          git merge-base --is-ancestor "$B2A" "$B1ARCH"
+          git merge-base --is-ancestor "$B1ARCH" "$SCORER"
+          git merge-base --is-ancestor "$SCORER" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$WORKFLOW"
+          echo "exact_head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "B2_PLAN_FIRST_ADD=$PLAN" >> "$GITHUB_ENV"
+          echo "B2A_ARCHIVE_FIRST_ADD=$B2A" >> "$GITHUB_ENV"
+          echo "B1_ARCHIVE_FIRST_ADD=$B1ARCH" >> "$GITHUB_ENV"
+          echo "B2B_SCORER_FIRST_ADD=$SCORER" >> "$GITHUB_ENV"
+          echo "B2B_AGG_FIRST_ADD=$AGG" >> "$GITHUB_ENV"
+          echo "B2B_WORKFLOW_FIRST_ADD=$WORKFLOW" >> "$GITHUB_ENV"
+
+      - name: Reconstruct exact B1 and B2a raw authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/issue72-b2-authority
+          base64 -d experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64 | gzip -dc > /tmp/issue72-b2-authority/stage_b1_calibration.json
+          base64 -d experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64 | gzip -dc > /tmp/issue72-b2-authority/stage_b2a_support.json
+          echo 'b37d285b25d17623fa19910ff3f8f4586846bb8f19825c3dbdd6e8b19bb2e31d  /tmp/issue72-b2-authority/stage_b1_calibration.json' | sha256sum -c -
+          echo '1076940701ea7621bbaccaafa08e4f3d0b34a06af5cfb364e56fcdbdf620d83c  /tmp/issue72-b2-authority/stage_b2a_support.json' | sha256sum -c -
+
+      - name: Compile B2b scorer and aggregator
+        run: |
+          python -m py_compile experiments/naibbe-r1-decomposition-v2/b2b_r1_calibration72_v2.py
+          python -m py_compile experiments/naibbe-r1-decomposition-v2/aggregate_b2b72_v2.py
+
+      - name: Enforce intervention firewall by source scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e experiments/naibbe-r1-decomposition-v2/TARGET_PLAN.md
+          test ! -e experiments/naibbe-r1-decomposition-v2/target72_v2.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('experiments/naibbe-r1-decomposition-v2/b2b_r1_calibration72_v2.py').read_text()
+          assert 'VALID_REPS = tuple(range(5, 25))' in p
+          assert 'positive-control-extension:rep{rep}:reference' in p
+          print('B2b positive-control-only source firewall present')
+          PY
+
+  score:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        rep: [5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact scientific head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.exact_head }}
+          fetch-depth: 0
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install frozen measurement dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Reconstruct exact B2a support authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64 | gzip -dc > /tmp/stage_b2a_support.json
+          echo '1076940701ea7621bbaccaafa08e4f3d0b34a06af5cfb364e56fcdbdf620d83c  /tmp/stage_b2a_support.json' | sha256sum -c -
+
+      - name: Score unchanged positive-control rep ${{ matrix.rep }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b2b
+          python experiments/naibbe-r1-decomposition-v2/b2b_r1_calibration72_v2.py \
+            external/cremma external/naibbe /tmp/stage_b2a_support.json \
+            ${{ matrix.rep }} /tmp/b2b/rep${{ matrix.rep }}.json \
+            > /tmp/b2b/rep${{ matrix.rep }}.stdout.txt
+          test -s /tmp/b2b/rep${{ matrix.rep }}.json
+          sha256sum /tmp/b2b/rep${{ matrix.rep }}.json > /tmp/b2b/rep${{ matrix.rep }}.sha256
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/b2b/rep${{ matrix.rep }}.json').read_text())
+          assert r['rep']==${{ matrix.rep }}
+          assert r['hard_threshold_applied'] is False
+          assert r['p_values_computed'] is False
+          assert r['test_nulls_computed'] is False
+          assert r['issue72_intervention_surface_loaded_or_generated'] is False
+          assert r['issue72_intervention_R1_computed'] is False
+          print({
+              'rep':r['rep'],
+              'coverage':r['surface']['coverage'],
+              'E':r['primary']['residual_energy'],
+              'W':r['primary']['reliability']['median'],
+              'M_R':r['primary']['M_R'],
+              'M_sign':r['primary']['M_sign'],
+          })
+          PY
+
+      - name: Upload exact per-rep calibration
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-stageB2b-rep-${{ matrix.rep }}
+          path: |
+            /tmp/b2b/rep${{ matrix.rep }}.json
+            /tmp/b2b/rep${{ matrix.rep }}.sha256
+            /tmp/b2b/rep${{ matrix.rep }}.stdout.txt
+          if-no-files-found: error
+          retention-days: 90
+
+  aggregate:
+    needs: [prepare, score]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact scientific head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.exact_head }}
+          fetch-depth: 0
+
+      - name: Install aggregation dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Download all exact per-rep calibrations
+        uses: actions/download-artifact@v4
+        with:
+          pattern: issue72-v2-stageB2b-rep-*
+          path: /tmp/b2b-reps
+          merge-multiple: true
+
+      - name: Reconstruct exact Stage B1 aggregate authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64 | gzip -dc > /tmp/stage_b1_calibration.json
+          echo 'b37d285b25d17623fa19910ff3f8f4586846bb8f19825c3dbdd6e8b19bb2e31d  /tmp/stage_b1_calibration.json' | sha256sum -c -
+
+      - name: Aggregate 25-rep unchanged-mechanism distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b2b-aggregate
+          python experiments/naibbe-r1-decomposition-v2/aggregate_b2b72_v2.py \
+            /tmp/stage_b1_calibration.json /tmp/b2b-reps /tmp/b2b-aggregate/stage_b2_calibration.json \
+            > /tmp/b2b-aggregate/stdout.txt
+          test -s /tmp/b2b-aggregate/stage_b2_calibration.json
+
+      - name: Enforce calibration-only result
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/b2b-aggregate/stage_b2_calibration.json').read_text())
+          assert r['status']=='EXTENDED UNCHANGED-NAIBBE R1 DISTRIBUTION CALIBRATED'
+          assert r['population']['n']==25
+          assert r['population']['reps']==list(range(25))
+          assert len(r['pairwise_residual_topology'])==300
+          assert r['decision_policy']['hard_intervention_threshold_derived'] is False
+          assert r['decision_policy']['worst_positive_is_fail_cutoff'] is False
+          assert r['decision_policy']['gaussian_tail_used_as_truth_region'] is False
+          assert r['issue72_intervention_surface_loaded_or_generated'] is False
+          assert r['issue72_intervention_R1_computed'] is False
+          print('Stage B2:',r['status'])
+          for k in ['coverage','E','W','R_ZL3b','R_IT2a','M_R','sign_ZL3b','sign_IT2a','M_sign']:
+              s=r['coordinate_summary'][k]
+              print(k,{x:s[x] for x in ['mean','median','MAD','population_sd','min','max']})
+          print('pairwise pearson', {x:r['pairwise_residual_topology_summary']['pearson'][x] for x in ['min','median','max']})
+          print('pairwise sign', {x:r['pairwise_residual_topology_summary']['sign_agreement'][x] for x in ['min','median','max']})
+          print('rep0 location',r['rep0_location'])
+          print('old-five range transport',r['historical_five_range_transport'])
+          PY
+
+      - name: Package exact Stage B2 evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/stage_b1_calibration.json /tmp/b2b-aggregate/stage_b1_calibration_authority.json
+          cp /tmp/b2b-reps/rep*.json /tmp/b2b-aggregate/
+          sha256sum /tmp/b2b-aggregate/*.json /tmp/b2b-aggregate/stdout.txt | sort > /tmp/b2b-aggregate/SHA256SUMS.txt
+          cat > /tmp/b2b-aggregate/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          exact_scientific_head=${{ needs.prepare.outputs.exact_head }}
+          parent_main=98a04953aabe9e228a17fa5808adf506a0833362
+          stage_b1_raw_sha256=b37d285b25d17623fa19910ff3f8f4586846bb8f19825c3dbdd6e8b19bb2e31d
+          stage_b2a_raw_sha256=1076940701ea7621bbaccaafa08e4f3d0b34a06af5cfb364e56fcdbdf620d83c
+          issue72_intervention_surface_generated=false
+          issue72_intervention_R1_scored=false
+          hard_intervention_threshold_derived=false
+          EOF
+          cat /tmp/b2b-aggregate/SHA256SUMS.txt
+          cat /tmp/b2b-aggregate/PROVENANCE.txt
+
+      - name: Upload exact Stage B2 aggregate evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-stageB2-calibration-${{ needs.prepare.outputs.exact_head }}
+          path: /tmp/b2b-aggregate
+          if-no-files-found: error
+          retention-days: 90
