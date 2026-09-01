@@ -1,0 +1,68 @@
+{
+  "issue": 68,
+  "stage": "Stage0-authority-and-replayability",
+  "classification": "JOINT TOURNAMENT AUTHORITY READY",
+  "all_scientific_authority_checks_pass": true,
+  "new_joint_candidate_scores_computed": false,
+  "target_plan_present_when_stage0_evidence_was_generated": false,
+  "common_fold_authority": {
+    "physical_leaf_folds": 5,
+    "unique_physical_leaves": 99,
+    "R1_R2_R3_common_fold_authority_verified": true
+  },
+  "external_authority": {
+    "ZL3b_blob": "2a4533ab9bdfa85db9bad602d590978953055df1",
+    "CREMMA_commit": "292525969ad98380b398e6606a9c2a36d51913ae",
+    "Naibbe_commit": "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2",
+    "Naibbe_encoder_blob": "b566ad82e4b6ff0782ecdddebf77718dac44f292",
+    "Naibbe_table_path": "references/naibbe_tables.csv",
+    "Naibbe_table_blob": "5cd34fb81d80faf3b4d57dbf1719c05ffde25302",
+    "Naibbe_decoder_path": "decrypt_naibbe.py",
+    "Naibbe_decoder_blob": "b56a1e6e615a7b2e31ad386efdf7e6f2ef2b9d7b",
+    "exact_hash_audit_pass": true
+  },
+  "reversibility_authority": {
+    "C0_all_frozen_transforms_structured_roundtrip_exact": true,
+    "C0_4_preserves_token_structure_without_boundary_side_information": true,
+    "Naibbe_published_decoder_exists": true,
+    "Naibbe_exact_original_text_roundtrip_claim_allowed": false,
+    "Naibbe_fair_closure_target": "normalized plaintext letter stream with ambiguity and unresolved output reported"
+  },
+  "historical_replay": {
+    "Phase62P_H62_current_semantic_replay_exact": true,
+    "Phase62C_later_committed_JSON_current_semantic_replay_exact": false,
+    "Phase62C_exact_first_reveal_artifact_recovered": true,
+    "Phase62C_exact_first_reveal_raw_sha256": "1bd44579b7a57d43ea52ddf9d5bf59acb936b3f6fe7b7346010685c50f10bfb2",
+    "Phase62C_later_committed_raw_sha256": "0518ffcebf4666c5b6a142054696c0bf092ee86428ef8282aba6537691eccbb4",
+    "Phase62C_first_reveal_vs_later_record_numeric_diff_count": 3,
+    "Phase62C_first_reveal_vs_later_record_nonnumeric_diff_count": 0,
+    "Phase62C_primary_scientific_field_mismatch_count": 0,
+    "Phase62C_drift_scope": "fold 2 / leave-one-manuscript-out Mazarine915 sensitivity only",
+    "Phase62C_scientific_decision_changed": false
+  },
+  "Phase62C_first_reveal_provenance": {
+    "workflow_run": 33313019008,
+    "job": 99261341362,
+    "run_head": "899cfa1833d1d6d2faf53c8e3f9bdc92474dc148",
+    "pr_merge_checkout_tree": "0f5f54d7d5f9f93e0413845fc9086067d3aa275d",
+    "artifact_id": 9732584331,
+    "artifact_zip_sha256": "fe555431c6472b26663a23c842a0c37f70963ca524d7c1759cec6e2799fc4594",
+    "permanent_archive_path": "experiments/phase62/first-reveal/phase62c_c0_a1_results_run33313019008.json",
+    "provenance_audit_run": 33454247454,
+    "provenance_audit_job": 99690680088,
+    "provenance_audit_artifact": 9780853020
+  },
+  "stage0_evidence": {
+    "corrected_authority_audit_run": 33453563078,
+    "corrected_authority_audit_job": 99688595255,
+    "replay_diff_run": 33453683575,
+    "phase62c_provenance_audit_run": 33454247454
+  },
+  "firewall": {
+    "new_R1_candidate_graph_computed": false,
+    "new_R1_candidate_residual_energy_computed": false,
+    "new_R1_candidate_topology_computed": false,
+    "new_joint_R1_R2_R3_classification_computed": false,
+    "candidate_parameters_changed_from_target_results": false
+  }
+}
