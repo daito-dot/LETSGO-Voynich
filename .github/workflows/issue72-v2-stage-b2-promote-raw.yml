@@ -1,0 +1,83 @@
+name: Issue72 V2 Stage B2 promote exact raw aggregate
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-b2-promote-raw.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current V2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+          fetch-depth: 0
+
+      - name: Download exact accepted Stage B2 artifact from GitHub Actions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/issue72-b2-promote
+          mkdir -p /tmp/issue72-b2-promote
+          gh api repos/${GITHUB_REPOSITORY}/actions/artifacts/9784965611/zip > /tmp/issue72-b2-promote/artifact.zip
+          unzip -q /tmp/issue72-b2-promote/artifact.zip -d /tmp/issue72-b2-promote/unpacked
+          test -f /tmp/issue72-b2-promote/unpacked/stage_b2_calibration.json
+          test "$(wc -c < /tmp/issue72-b2-promote/unpacked/stage_b2_calibration.json)" -eq 157852
+          echo '2da5f0a4f8191820875ed264284f2d3b651489a7e8aeed3805cc2ed4d08c5147  /tmp/issue72-b2-promote/unpacked/stage_b2_calibration.json' | sha256sum -c -
+
+      - name: Verify raw aggregate scientific firewall before promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          p='/tmp/issue72-b2-promote/unpacked/stage_b2_calibration.json'
+          r=json.load(open(p))
+          assert r['status']=='EXTENDED UNCHANGED-NAIBBE R1 DISTRIBUTION CALIBRATED'
+          assert r['population']['n']==25
+          assert r['population']['reps']==list(range(25))
+          assert len(r['pairwise_residual_topology'])==300
+          assert r['decision_policy']['hard_intervention_threshold_derived'] is False
+          assert r['decision_policy']['worst_positive_is_fail_cutoff'] is False
+          assert r['decision_policy']['gaussian_tail_used_as_truth_region'] is False
+          assert r['issue72_intervention_surface_loaded_or_generated'] is False
+          assert r['issue72_intervention_R1_computed'] is False
+          print('accepted Stage B2 raw aggregate verified')
+          PY
+
+      - name: Promote exact raw bytes and remove failed manual transport
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p experiments/naibbe-r1-decomposition-v2/archive
+          cp /tmp/issue72-b2-promote/unpacked/stage_b2_calibration.json \
+             experiments/naibbe-r1-decomposition-v2/archive/stage_b2_calibration.json
+          rm -f experiments/naibbe-r1-decomposition-v2/archive/stage_b2_calibration.json.gz.b64.part*
+          rm -f .github/workflows/issue72-v2-stage-b2-archive-verify.yml
+          # The old incomplete B2a one-file transport is also non-authoritative;
+          # the verified five-part B2a archive remains.
+          rm -f experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64
+          echo '2da5f0a4f8191820875ed264284f2d3b651489a7e8aeed3805cc2ed4d08c5147  experiments/naibbe-r1-decomposition-v2/archive/stage_b2_calibration.json' | sha256sum -c -
+
+      - name: Commit exact raw authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A experiments/naibbe-r1-decomposition-v2/archive .github/workflows/issue72-v2-stage-b2-archive-verify.yml
+          if git diff --cached --quiet; then
+            echo 'No promotion changes required'
+            exit 0
+          fi
+          git commit -m 'Issue72 V2 B2: promote exact raw calibration authority'
+          git push origin HEAD:issue72-r1-causal-decomposition-v2
