@@ -1,0 +1,21 @@
+{
+  "Delta_T": {
+    "FI-G": -0.0020632986974505885,
+    "FI-M": -0.002349615419450557
+  },
+  "T_median": {
+    "FI-G": 0.88509154879863,
+    "FI-M": 0.8853778655206299
+  },
+  "adjusted_p": {
+    "FI-G": 1.0,
+    "FI-M": 1.0
+  },
+  "classification": "FINAL_COMPLETE_TOKEN_INVENTORY_SUFFICIENT_UNDER_TESTED_FI_CONTROLS",
+  "raw_p": {
+    "FI-G": 0.695,
+    "FI-M": 0.73
+  },
+  "scientific_head": "442fa401dcd82fda7f6bb1c4720b908c50900c0b",
+  "status": "FI_COMPLETE_RANDOMIZATION_POPULATION_AGGREGATED"
+}
