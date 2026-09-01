@@ -1,0 +1,53 @@
+name: Issue68 Stage0 Phase62C original artifact authority
+
+on:
+  push:
+    branches: [issue68-joint-constraint-tournament]
+    paths:
+      - '.github/workflows/issue68-stage0-phase62c-artifact-authority.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  compare-original-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue68-joint-constraint-tournament
+      - name: Download exact original Phase62C Actions artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api -H 'Accept: application/vnd.github+json' \
+            /repos/${GITHUB_REPOSITORY}/actions/artifacts/9732584331/zip \
+            > /tmp/phase62c-original.zip
+          echo 'fe555431c6472b26663a23c842a0c37f70963ca524d7c1759cec6e2799fc4594  /tmp/phase62c-original.zip' | sha256sum -c -
+          mkdir -p /tmp/original
+          unzip -q /tmp/phase62c-original.zip -d /tmp/original
+          find /tmp/original -type f -maxdepth 2 -print
+      - name: Compare original artifact raw JSON with committed authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          ORIGINAL=$(find /tmp/original -type f -name 'phase62c_c0_a1_results.json' -print -quit)
+          test -n "$ORIGINAL"
+          sha256sum "$ORIGINAL" experiments/phase62/phase62c_c0_a1_results.json
+          python - "$ORIGINAL" <<'PY'
+          import json,sys,hashlib
+          op=sys.argv[1]
+          cp='experiments/phase62/phase62c_c0_a1_results.json'
+          ob=open(op,'rb').read(); cb=open(cp,'rb').read()
+          oj=json.loads(ob); cj=json.loads(cb)
+          print('original_raw_sha256=',hashlib.sha256(ob).hexdigest())
+          print('committed_raw_sha256=',hashlib.sha256(cb).hexdigest())
+          print('raw_equal=',ob==cb)
+          print('semantic_equal=',oj==cj)
+          if oj != cj:
+              raise SystemExit(31)
+          PY
