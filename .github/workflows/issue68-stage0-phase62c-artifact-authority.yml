@@ -28,26 +28,93 @@ jobs:
             /repos/${GITHUB_REPOSITORY}/actions/artifacts/9732584331/zip \
             > /tmp/phase62c-original.zip
           echo 'fe555431c6472b26663a23c842a0c37f70963ca524d7c1759cec6e2799fc4594  /tmp/phase62c-original.zip' | sha256sum -c -
-          mkdir -p /tmp/original
+          mkdir -p /tmp/original /tmp/authority
           unzip -q /tmp/phase62c-original.zip -d /tmp/original
-          find /tmp/original -type f -maxdepth 2 -print
-      - name: Compare original artifact raw JSON with committed authority
+          ORIGINAL=$(find /tmp/original -type f -name 'phase62c_c0_a1_results.json' -print -quit)
+          test -n "$ORIGINAL"
+          cp "$ORIGINAL" /tmp/authority/phase62c_first_reveal_run33313019008.json
+
+      - name: Quantify original artifact versus committed result
         shell: bash
         run: |
           set -euo pipefail
-          ORIGINAL=$(find /tmp/original -type f -name 'phase62c_c0_a1_results.json' -print -quit)
-          test -n "$ORIGINAL"
-          sha256sum "$ORIGINAL" experiments/phase62/phase62c_c0_a1_results.json
-          python - "$ORIGINAL" <<'PY'
-          import json,sys,hashlib
-          op=sys.argv[1]
-          cp='experiments/phase62/phase62c_c0_a1_results.json'
-          ob=open(op,'rb').read(); cb=open(cp,'rb').read()
-          oj=json.loads(ob); cj=json.loads(cb)
-          print('original_raw_sha256=',hashlib.sha256(ob).hexdigest())
+          python - <<'PY' | tee /tmp/authority/FIRST_REVEAL_DIFF.txt
+          import json, math, hashlib
+          from pathlib import Path
+
+          op=Path('/tmp/authority/phase62c_first_reveal_run33313019008.json')
+          cp=Path('experiments/phase62/phase62c_c0_a1_results.json')
+          ob=op.read_bytes(); cb=cp.read_bytes()
+          old=json.loads(ob); new=json.loads(cb)
+
+          numeric=[]; other=[]
+          def walk(a,b,path='$'):
+              if type(a) is not type(b):
+                  other.append((path,'TYPE',type(a).__name__,type(b).__name__)); return
+              if isinstance(a,dict):
+                  ka,kb=set(a),set(b)
+                  for k in sorted(ka-kb): other.append((f'{path}.{k}','MISSING_COMMITTED',a[k],None))
+                  for k in sorted(kb-ka): other.append((f'{path}.{k}','MISSING_FIRST_REVEAL',None,b[k]))
+                  for k in sorted(ka&kb): walk(a[k],b[k],f'{path}.{k}')
+              elif isinstance(a,list):
+                  if len(a)!=len(b): other.append((path,'LEN',len(a),len(b)))
+                  for i,(x,y) in enumerate(zip(a,b)): walk(x,y,f'{path}[{i}]')
+              elif isinstance(a,bool) or a is None or isinstance(a,str):
+                  if a!=b: other.append((path,'VALUE',a,b))
+              elif isinstance(a,(int,float)):
+                  if isinstance(a,float) and isinstance(b,float) and math.isnan(a) and math.isnan(b): return
+                  if a!=b:
+                      af,bf=float(a),float(b)
+                      numeric.append((path,af,bf,abs(af-bf),abs(af-bf)/max(abs(af),abs(bf),1e-15)))
+              elif a!=b:
+                  other.append((path,'VALUE',repr(a),repr(b)))
+
+          walk(old,new)
+          print('first_reveal_raw_sha256=',hashlib.sha256(ob).hexdigest())
           print('committed_raw_sha256=',hashlib.sha256(cb).hexdigest())
           print('raw_equal=',ob==cb)
-          print('semantic_equal=',oj==cj)
-          if oj != cj:
-              raise SystemExit(31)
+          print('semantic_equal=',old==new)
+          print('numeric_diff_count=',len(numeric))
+          print('nonnumeric_diff_count=',len(other))
+          print('max_abs_numeric=',max((x[3] for x in numeric), default=0.0))
+          print('DIFFS')
+          for x in numeric: print(x)
+          for x in other: print(x)
+
+          # Scientific guardrails: all primary exposed-score and decision fields
+          # must agree. A mismatch here is not a mere provenance correction.
+          primary_paths=[
+              ('compatibility',),
+              ('inputs',),
+              ('across_fold','voynich_mean'),
+              ('across_fold','N0_mean'),
+              ('across_fold','C0_selected_mean'),
+              ('across_fold','A1_frozen_mean'),
+              ('across_fold','C0_ratio_of_means_to_voynich'),
+              ('across_fold','A1_ratio_of_means_to_voynich'),
+              ('across_fold','C0_improved_heldout_folds'),
+              ('across_fold','C0_LOMO_fold_improvement_counts'),
+              ('across_fold','C0_LOMO_conditions_with_majority_improvement'),
+              ('across_fold','C0_materially_improves_N0_under_frozen_rule'),
+              ('across_fold','A1_materially_competitive_under_frozen_common_score_rule'),
+              ('across_fold','selected_C0_by_fold'),
+              ('phase62c_decisions',),
+          ]
+          def get(d,p):
+              for k in p: d=d[k]
+              return d
+          bad=[]
+          for p in primary_paths:
+              if get(old,p)!=get(new,p): bad.append('.'.join(p))
+          print('primary_scientific_field_mismatches=',bad)
+          if bad or other:
+              raise SystemExit(32)
           PY
+          sha256sum /tmp/phase62c-original.zip /tmp/authority/phase62c_first_reveal_run33313019008.json experiments/phase62/phase62c_c0_a1_results.json | tee /tmp/authority/SHA256SUMS.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue68-phase62c-first-reveal-audit-${{ github.sha }}
+          path: /tmp/authority
+          if-no-files-found: error
+          retention-days: 90
