@@ -1,0 +1,25 @@
+{
+  "cases": 31,
+  "descriptor_class_count_by_fold": {
+    "0": 110,
+    "1": 112,
+    "2": 111,
+    "3": 111,
+    "4": 112
+  },
+  "fit_max_error": 1.3403167464787202e-12,
+  "generated_distinct_signature_range": [
+    1198,
+    1273
+  ],
+  "output_sha256": "1ff4469f57a84093b8c5d6463bb276a8de6fc108eed666bf63c9c7dacbf622a6",
+  "status": "M3_KRS_CHAIN_31_CORPORA_FROZEN_TARGET_BLIND",
+  "target_loaded": false,
+  "training_distinct_signatures_by_fold": {
+    "0": 611,
+    "1": 601,
+    "2": 595,
+    "3": 602,
+    "4": 610
+  }
+}
