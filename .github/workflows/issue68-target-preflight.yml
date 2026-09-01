@@ -89,7 +89,29 @@ jobs:
             external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
             external/cremma \
             external/naibbe \
-            > /tmp/issue68_preflight.json
+            > /tmp/issue68_preflight_stdout.txt
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          text=Path('/tmp/issue68_preflight_stdout.txt').read_text(encoding='utf-8')
+          starts=[0]+[i+1 for i,c in enumerate(text) if c=='\n']
+          found=None
+          for i in starts:
+              if i < len(text) and text[i]=='{':
+                  try:
+                      obj=json.loads(text[i:])
+                  except json.JSONDecodeError:
+                      continue
+                  found=obj
+                  break
+          if found is None:
+              raise SystemExit('could not isolate final preflight JSON from legacy stdout')
+          Path('/tmp/issue68_preflight.json').write_text(json.dumps(found,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          legacy=text[:i].strip()
+          if legacy:
+              Path('/tmp/issue68_preflight_legacy_stdout.txt').write_text(legacy+'\n',encoding='utf-8')
+              print('isolated non-JSON legacy stdout lines before final result')
+          PY
 
       - name: Enforce forbidden-target firewall and summarize allowed outcomes
         shell: bash
@@ -115,6 +137,7 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/issue68-preflight
           cp /tmp/issue68_preflight.json /tmp/issue68-preflight/preflight.json
+          if test -f /tmp/issue68_preflight_legacy_stdout.txt; then cp /tmp/issue68_preflight_legacy_stdout.txt /tmp/issue68-preflight/legacy_stdout.txt; fi
           sha256sum /tmp/issue68-preflight/preflight.json > /tmp/issue68-preflight/SHA256SUMS.txt
           cat > /tmp/issue68-preflight/PROVENANCE.txt <<EOF
           workflow_run=${GITHUB_RUN_ID}
