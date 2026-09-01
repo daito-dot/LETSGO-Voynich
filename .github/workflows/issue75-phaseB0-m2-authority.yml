@@ -1,0 +1,167 @@
+name: Issue75 Phase B0 target-blind M2-KRS authority
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseB0-m2-authority.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact Phase B0 head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify plan-before-code chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN='f09ba414de015eabd1eef03f275be68b82752d7f'
+          GEN='1c88e05f17cebad5c8fbbe8102d22439ab3724e3'
+          HEAD=$(git rev-parse HEAD)
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PLAN_B.md | tail -1)" = "$PLAN"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75b_generator_support.py | tail -1)" = "$GEN"
+          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseB0-m2-authority.yml | tail -1)" = "$HEAD"
+          git merge-base --is-ancestor "$PLAN" "$GEN"
+          git merge-base --is-ancestor "$GEN" "$HEAD"
+          test ! -e experiments/minimal-occupancy-generator/stage-b0
+          test ! -e experiments/minimal-occupancy-generator/REPORT_B.md
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cipher_benchmark rev-parse HEAD)" = '315f0cad4de3d021bd4185765c037cf2a28d341c'
+          test "$(git -C _cipher_benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = '2a4533ab9bdfa85db9bad602d590978953055df1'
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Compile target-blind generator
+        run: python -m py_compile experiments/minimal-occupancy-generator/phase75b_generator_support.py
+
+      - name: Generate all 31 M2-KRS corpora without target access
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/issue75-b0
+          python experiments/minimal-occupancy-generator/phase75b_generator_support.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            /tmp/issue75-b0/generator_authority.json \
+            > /tmp/issue75-b0/stdout.txt
+
+      - name: Enforce scientific model, fit tolerance and target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/issue75-b0/generator_authority.json', encoding='utf-8'))
+          assert r['schema']=='issue75-phaseB0-m2-krs-generator-authority-v1'
+          assert r['status']=='M2_KRS_31_CORPORA_FROZEN_TARGET_BLIND'
+          assert r['plan_b_commit']=='f09ba414de015eabd1eef03f275be68b82752d7f'
+          assert r['source']['ZL3b_blob']=='2a4533ab9bdfa85db9bad602d590978953055df1'
+          assert r['source']['visible_tokens']==32570
+          assert r['source']['parsed_tokens']==25071
+          assert r['source']['fold_parsed_tokens']==[4430,4810,5516,5447,4868]
+          m=r['model_definition']
+          assert m['family']=='M2-KRS'
+          assert m['free_slot_main_effects']==11
+          assert m['explicit_pair_interaction_parameters']==0
+          assert m['empirical_signature_specific_parameters']==0
+          assert len(r['cases'])==31
+          assert {x['rep'] for x in r['cases']}==set(range(31))
+          assert len({x['occupancy_sha256'] for x in r['cases']})==31
+          assert all(x['tokens']==25071 for x in r['cases'])
+          assert all(x['fold_tokens']==[4430,4810,5516,5447,4868] for x in r['cases'])
+          assert all(x['all_zero_count']==0 for x in r['cases'])
+          assert all(x['pair_Q_computed'] is False for x in r['cases'])
+          assert all(x['residual_Z_computed'] is False for x in r['cases'])
+          assert all(x['target_topology_loaded'] is False for x in r['cases'])
+          assert all(x['target_correlation_computed'] is False for x in r['cases'])
+          assert all(v is False for v in r['target_access'].values())
+          assert r['no_drops'] is True and r['no_rerolls'] is True
+          mx=max(r['fit'][str(f)]['max_abs_marginal_error'] for f in range(5))
+          assert mx <= 1e-10, mx
+          for f in range(5):
+              fit=r['fit'][str(f)]
+              assert fit['descriptor_class_count'] > 0
+              assert fit['descriptor_class_count'] < fit['training_distinct_signatures']
+              assert fit['training_distinct_signatures'] > 0
+              assert all(c['possible_state_count'] >= 1 for c in fit['descriptor_classes'])
+              assert abs(sum(c['probability'] for c in fit['descriptor_classes'])-1.0) < 1e-12
+          print({
+              'cases':31,
+              'fit_max_error':mx,
+              'descriptor_classes':{str(f):r['fit'][str(f)]['descriptor_class_count'] for f in range(5)},
+              'training_distinct':{str(f):r['fit'][str(f)]['training_distinct_signatures'] for f in range(5)},
+              'target_access':r['target_access'],
+          })
+          PY
+
+      - name: Freeze exact SHA and provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum /tmp/issue75-b0/generator_authority.json /tmp/issue75-b0/stdout.txt > /tmp/issue75-b0/SHA256SUMS.txt
+          cat > /tmp/issue75-b0/PROVENANCE.txt <<EOF
+          scientific_role=PRETARGET_CROSSFITTED_GENERIC_SHAPE_GENERATION_AUTHORITY
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          generation_head=${GITHUB_SHA}
+          plan_b_commit=f09ba414de015eabd1eef03f275be68b82752d7f
+          generator_commit=1c88e05f17cebad5c8fbbe8102d22439ab3724e3
+          phase_a_aggregate_sha256=fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540
+          source_commit=315f0cad4de3d021bd4185765c037cf2a28d341c
+          source_blob=2a4533ab9bdfa85db9bad602d590978953055df1
+          cases=31
+          target_loaded=false
+          pair_Q_computed=false
+          residual_Z_computed=false
+          target_correlation_computed=false
+          drops=0
+          rerolls=0
+          EOF
+
+      - name: Upload exact target-blind authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseB0-m2-authority-${{ github.sha }}
+          path: /tmp/issue75-b0
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
+
+      - name: Commit target-blind B0 authority into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/minimal-occupancy-generator/stage-b0
+          mkdir -p "$DEST"
+          cp /tmp/issue75-b0/generator_authority.json "$DEST/"
+          cp /tmp/issue75-b0/stdout.txt "$DEST/"
+          cp /tmp/issue75-b0/SHA256SUMS.txt "$DEST/"
+          cp /tmp/issue75-b0/PROVENANCE.txt "$DEST/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Issue75 Phase B0: freeze 31 target-blind M2-KRS corpora'
+          git push origin HEAD:issue75-minimal-occupancy-generator
