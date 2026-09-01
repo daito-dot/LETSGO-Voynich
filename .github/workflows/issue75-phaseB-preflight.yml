@@ -1,0 +1,145 @@
+name: Issue75 Phase B target-blind M2 replay preflight
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseB-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        rep: [0, 30]
+    steps:
+      - name: Checkout exact preflight head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify Phase B chronology and authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN='f09ba414de015eabd1eef03f275be68b82752d7f'
+          B0='591accc7105e96ddd2b172c8d8c0f54fc0b7f4c1'
+          SCORE='6b09b2870b7693a9f098f51803363d75ae9674ef'
+          AGG='3bb949c926b9cef90fd56c9c7027ddb28c44db18'
+          FREEZE='61dd252fa7e07c0de34b7f319dfe38e9ec6efb0d'
+          HEAD=$(git rev-parse HEAD)
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PLAN_B.md | tail -1)" = "$PLAN"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/stage-b0/generator_authority.json | tail -1)" = "$B0"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75b_score.py | tail -1)" = "$SCORE"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75b_aggregate.py | tail -1)" = "$AGG"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/IMPLEMENTATION_FREEZE_B.md | tail -1)" = "$FREEZE"
+          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseB-preflight.yml | tail -1)" = "$HEAD"
+          git merge-base --is-ancestor "$PLAN" "$B0"
+          git merge-base --is-ancestor "$B0" "$SCORE"
+          git merge-base --is-ancestor "$SCORE" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$FREEZE"
+          git merge-base --is-ancestor "$FREEZE" "$HEAD"
+          test ! -e experiments/minimal-occupancy-generator/stage-b-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_B.md
+          echo '9c180c7026e4f9464954dd029b71973cc1890f25223af6152959649dde57e834  experiments/minimal-occupancy-generator/stage-b0/generator_authority.json' | sha256sum -c -
+          echo 'fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540  experiments/minimal-occupancy-generator/stage-a-first-reveal/phase75a_aggregate.json' | sha256sum -c -
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cipher_benchmark rev-parse HEAD)" = '315f0cad4de3d021bd4185765c037cf2a28d341c'
+          test "$(git -C _cipher_benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = '2a4533ab9bdfa85db9bad602d590978953055df1'
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Compile frozen Phase B code
+        run: |
+          python -m py_compile experiments/minimal-occupancy-generator/phase75b_score.py
+          python -m py_compile experiments/minimal-occupancy-generator/phase75b_aggregate.py
+
+      - name: Regenerate exact B0 case without target access
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/preflight
+          python experiments/minimal-occupancy-generator/phase75b_score.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            '${{ matrix.rep }}' \
+            '/tmp/preflight/M2-KRS_${{ matrix.rep }}.json' \
+            --verify-only \
+            > '/tmp/preflight/M2-KRS_${{ matrix.rep }}.stdout.txt'
+
+      - name: Enforce exact replay and target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          rep=${{ matrix.rep }}
+          r=json.load(open(f'/tmp/preflight/M2-KRS_{rep}.json', encoding='utf-8'))
+          assert r['schema']=='issue75-phaseB-m2-r1-preflight-v1'
+          assert r['status']=='EXACT_B0_M2_CORPUS_REGENERATED_TARGET_BLIND'
+          assert r['plan_b_commit']=='f09ba414de015eabd1eef03f275be68b82752d7f'
+          assert r['family']=='M2-KRS' and r['rep']==rep
+          a=r['candidate_audit']
+          assert a['phase_b0_authority_sha256']=='9c180c7026e4f9464954dd029b71973cc1890f25223af6152959649dde57e834'
+          assert a['exact_phase_b0_replay'] is True
+          assert a['training_slot_marginals_exact_b0'] is True
+          assert a['descriptor_distribution_exact_b0'] is True
+          assert a['fit_tolerance_revalidated'] is True
+          assert a['regenerated_fit_max_abs_marginal_error'] <= 1e-10
+          assert a['tokens']==25071 and a['fold_tokens']==[4430,4810,5516,5447,4868]
+          b0=json.load(open('experiments/minimal-occupancy-generator/stage-b0/generator_authority.json', encoding='utf-8'))
+          frozen=next(x for x in b0['cases'] if x['rep']==rep)
+          assert a['occupancy_sha256']==frozen['occupancy_sha256']
+          assert all(v is False for v in r['target_access'].values())
+          assert r['no_case_selection'] is True and r['no_reroll'] is True
+          print({'rep':rep,'sha':a['occupancy_sha256'],'fit_max_error':a['regenerated_fit_max_abs_marginal_error'],'target_access':r['target_access']})
+          PY
+
+      - name: Freeze preflight provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > '/tmp/preflight/PROVENANCE_${{ matrix.rep }}.txt' <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          preflight_head=${GITHUB_SHA}
+          rep=${{ matrix.rep }}
+          plan_b_commit=f09ba414de015eabd1eef03f275be68b82752d7f
+          phase_b0_commit=591accc7105e96ddd2b172c8d8c0f54fc0b7f4c1
+          phase_b0_sha256=9c180c7026e4f9464954dd029b71973cc1890f25223af6152959649dde57e834
+          scorer_commit=6b09b2870b7693a9f098f51803363d75ae9674ef
+          aggregator_commit=3bb949c926b9cef90fd56c9c7027ddb28c44db18
+          target_loaded=false
+          pair_Q_computed=false
+          residual_Z_computed=false
+          target_correlation_computed=false
+          EOF
+
+      - name: Upload target-blind preflight evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseB-preflight-rep${{ matrix.rep }}-${{ github.sha }}
+          path: /tmp/preflight
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
