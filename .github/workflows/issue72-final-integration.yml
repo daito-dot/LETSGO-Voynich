@@ -1,0 +1,189 @@
+name: Issue72 exact-head final integration
+
+on:
+  push:
+    branches: [issue72-naibbe-r1-decomposition]
+    paths:
+      - '.github/workflows/issue72-final-integration.yml'
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  audit-clean-merge-close:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PR_NUMBER: '73'
+      ISSUE_NUMBER: '72'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue72-naibbe-r1-decomposition
+          fetch-depth: 0
+
+      - name: Verify current PR head and final scientific archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          CURRENT_HEAD=$(git rev-parse HEAD)
+          PR_HEAD=$(gh api "/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')
+          PR_STATE=$(gh api "/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.state')
+          test "$PR_HEAD" = "$CURRENT_HEAD"
+          test "$PR_STATE" = "open"
+          test -f experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+          test -f experiments/naibbe-r1-decomposition/first-reveal/PROVENANCE.md
+          test -f experiments/naibbe-r1-decomposition/REPORT_A.md
+          test -f research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE72_RESULT.md
+          test -f experiments/naibbe-r1-decomposition/first-reveal/RESULT_CLASS.txt
+          test -f experiments/naibbe-r1-decomposition/first-reveal/AXIS_CLASSES.json
+          test -z "$(find .github/workflows -maxdepth 1 -type f -name 'issue72-*' ! -name 'issue72-final-integration.yml' -print -quit)"
+          echo "CURRENT_HEAD=$CURRENT_HEAD" >> "$GITHUB_ENV"
+
+      - name: Verify aggregate, score hashes, and generated interpretation consistency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('experiments/naibbe-r1-decomposition')
+          p=root/'first-reveal/issue72_results.json'; r=json.load(open(p))
+          allowed={
+            'R1 IS PREDOMINANTLY CODEBOOK/INVENTORY-EMBEDDED',
+            'R1 DEPENDS MATERIALLY ON CODEBOOK ASSOCIATION/STATE STRUCTURE',
+            'R1 DEPENDS MATERIALLY ON ENCRYPTION/PLAINTEXT PROCESS',
+            'R1 ORIGIN IS MIXED',
+            'R1 DECOMPOSITION INCONCLUSIVE',
+          }
+          assert r['frozen_global_classification'] in allowed
+          assert (root/'first-reveal/RESULT_CLASS.txt').read_text().strip()==r['frozen_global_classification']
+          axes=json.load(open(root/'first-reveal/AXIS_CLASSES.json'))
+          assert axes=={a:r['axis_results'][a]['classification'] for a in r['target_authorized_axes']}
+          expected=[x.strip() for x in (root/'family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt').read_text().splitlines() if x.strip()]
+          assert r['target_authorized_realizations']==expected
+          scores={}
+          for sp in sorted((root/'first-reveal/scores').glob('score-*.json')):
+              sr=json.load(open(sp)); scores[sr['realization']]=hashlib.sha256(sp.read_bytes()).hexdigest()
+          assert scores==r['input_realization_json_sha256']
+          report=(root/'REPORT_A.md').read_text()
+          assert r['frozen_global_classification'] in report
+          ledger=Path('research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE72_RESULT.md').read_text()
+          assert r['frozen_global_classification'] in ledger
+          status=Path('research/STATUS.md').read_text()
+          assert r['frozen_global_classification'] in status
+          print('aggregate_sha256=',hashlib.sha256(p.read_bytes()).hexdigest())
+          print('global=',r['frozen_global_classification'])
+          print('axis_classes=',axes)
+          PY
+
+      - name: Verify final PR changed-file scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --paginate "/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename' > /tmp/pr_files.txt
+          python - <<'PY'
+          from pathlib import Path
+          allowed_exact={
+            '.github/workflows/issue72-final-integration.yml',
+            'research/STATUS.md','research/NEXT_RESEARCH_FRONTIER.md','research/TOKEN_CONSTRUCTION_PROGRAM.md',
+            'research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE72_RESULT.md','RESUME.md','ROADMAP.md'
+          }
+          bad=[]
+          for x in Path('/tmp/pr_files.txt').read_text().splitlines():
+              if x.startswith('experiments/naibbe-r1-decomposition/') or x in allowed_exact:
+                  continue
+              bad.append(x)
+          if bad: raise SystemExit(f'unexpected Issue72 PR paths: {bad}')
+          print(Path('/tmp/pr_files.txt').read_text())
+          PY
+
+      - name: Record frozen result on Issue 72 before close
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('experiments/naibbe-r1-decomposition')
+          p=root/'first-reveal/issue72_results.json'; r=json.load(open(p))
+          lines=['## Issue #72 frozen first-reveal result','']
+          lines.append(f"Global classification: **`{r['frozen_global_classification']}`**")
+          lines.append('')
+          lines.append(f"Aggregate JSON SHA-256: `{hashlib.sha256(p.read_bytes()).hexdigest()}`")
+          lines.append('')
+          lines.append('| axis | N | full R1 pass | strong | median REL | class |')
+          lines.append('|---|---:|---:|---:|---:|---|')
+          for a in r['target_authorized_axes']:
+              x=r['axis_results'][a]
+              lines.append(f"| {a} | {x['N']} | {x['full_R1_pass_count']} | {x['strong_count']} | {x['median_relative_topology']:.6f} | **{x['classification']}** |")
+          lines += ['','Published Naibbe remains frozen R1 PASS / R2 FAIL / R3 FAIL / R4 FAIL / `NOT COMPETITIVE`. This issue locates the R1 effect; it does not repair the model or establish plaintext.','', 'Exact per-realization JSONs, all 1,000-test-null arrays, aggregate maxT arrays, job IDs, artifact provenance and SHA manifests are permanently archived under `experiments/naibbe-r1-decomposition/first-reveal/`.']
+          Path('/tmp/issue72_comment.md').write_text('\n'.join(lines)+'\n')
+          PY
+          gh issue comment "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file /tmp/issue72_comment.md
+
+      - name: Remove integration workflow and push exact clean head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/issue72-final-integration.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git commit -m 'Prepare Issue72 exact-head integration'
+          CLEAN_HEAD=$(git rev-parse HEAD)
+          test -z "$(find .github/workflows -maxdepth 1 -type f -name 'issue72-*' -print -quit)"
+          git push origin HEAD:issue72-naibbe-r1-decomposition
+          echo "CLEAN_HEAD=$CLEAN_HEAD" >> "$GITHUB_ENV"
+
+      - name: Wait until PR reports exact clean head
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            HEAD=$(gh api "/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')
+            if test "$HEAD" = "$CLEAN_HEAD"; then exit 0; fi
+            sleep 2
+          done
+          echo 'PR head did not converge to clean head' >&2
+          exit 1
+
+      - name: Squash merge exact clean head
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          RESULT=$(gh api --method PUT "/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/merge" \
+            -f merge_method=squash \
+            -f sha="$CLEAN_HEAD" \
+            -f commit_title='Issue #72: locate Naibbe R1 across inventory, codebook, and process' \
+            -f commit_message='Integrate the preregistered target-blind source audit, complete counterfactual family freeze, exact first-reveal per-realization artifacts, complete-family maxT aggregate, result report, hypothesis ledger, and post-result research-state updates. Published Naibbe remains a failed joint model; this phase locates the evidential layer of its R1 success.' )
+          printf '%s' "$RESULT" > /tmp/merge_result.json
+          test "$(printf '%s' "$RESULT" | python -c 'import json,sys; print(str(json.load(sys.stdin)["merged"]).lower())')" = "true"
+          MERGE_SHA=$(printf '%s' "$RESULT" | python -c 'import json,sys; print(json.load(sys.stdin)["sha"])')
+          echo "MERGE_SHA=$MERGE_SHA" >> "$GITHUB_ENV"
+          echo "Merged exact head $CLEAN_HEAD -> $MERGE_SHA"
+
+      - name: Close Issue 72 and verify post-merge main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --method PATCH "/repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}" -f state=closed -f state_reason=completed > /tmp/issue_close.json
+          test "$(python -c 'import json; print(json.load(open("/tmp/issue_close.json"))["state"])')" = "closed"
+          test "$(gh api "/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.merged')" = "true"
+          MAIN_SHA=$(gh api "/repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')
+          test "$MAIN_SHA" = "$MERGE_SHA"
+          echo "post_merge_main=$MAIN_SHA"
