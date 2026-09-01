@@ -1,0 +1,113 @@
+name: Issue72 summarize frozen Stage A support audit
+
+on:
+  push:
+    branches: [issue72-naibbe-r1-decomposition]
+    paths:
+      - '.github/workflows/issue72-summarize-stageA.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue72-naibbe-r1-decomposition
+          fetch-depth: 0
+
+      - name: Require permanent target-blind Stage A archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/naibbe-r1-decomposition/source-audit/source_audit.json
+          test -f experiments/naibbe-r1-decomposition/source-audit/PROVENANCE.md
+          python - <<'PY'
+          import json
+          p='experiments/naibbe-r1-decomposition/source-audit/source_audit.json'
+          r=json.load(open(p))
+          assert r['counterfactual_R1_scored'] is False
+          assert not any(r['forbidden_quantities_computed'].values())
+          assert r['published_primary_reproduction']['pooled_surface_sha256'] == '47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          PY
+
+      - name: Generate Stage A summary directly from machine audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          p=Path('experiments/naibbe-r1-decomposition/source-audit/source_audit.json')
+          r=json.loads(p.read_text(encoding='utf-8'))
+          cb=r['codebook']; pub=r['published_primary_reproduction']['support']
+          eligible=list(r['support_eligible_axes'])
+          lines=[]
+          lines.append('# Issue #72 Stage A source / architecture audit summary')
+          lines.append('')
+          lines.append('Status: **COMPLETE — target-blind; no counterfactual R1 score computed**')
+          lines.append('')
+          lines.append(f"Frozen Stage-A classification: **`{r['stageA_classification']}`**")
+          lines.append('')
+          lines.append(f"Exact machine audit SHA-256: `{hashlib.sha256(p.read_bytes()).hexdigest()}`")
+          lines.append('')
+          lines.append('## Published authority reproduction')
+          lines.append('')
+          lines.append(f"- published pooled surface SHA: `{r['published_primary_reproduction']['pooled_surface_sha256']}`")
+          lines.append(f"- visible / accepted: `{pub['visible_tokens']} / {pub['accepted_tokens']}`")
+          lines.append(f"- direct parser coverage: `{pub['coverage']}`")
+          lines.append('')
+          lines.append('## Codebook architecture')
+          lines.append('')
+          lines.append(f"- full table×state×letter cells: `{cb['full_cells']}`")
+          lines.append(f"- reachable effective cells: `{cb['effective_cells']}`")
+          lines.append(f"- unreachable j/k/w cells: `{cb['excluded_cells']}`")
+          lines.append(f"- distinct reachable glyph values: `{cb['distinct_effective_glyph_values']}`")
+          lines.append(f"- duplicated reachable glyph values: `{cb['duplicate_effective_glyph_value_count']}` value strings / cell excess `{cb['duplicate_effective_glyph_cell_excess']}`")
+          lines.append(f"- individual reachable-cell parser coverage: `{cb['effective_cell_support']['coverage']}`")
+          lines.append(f"- effective prefix×suffix pairs equal to a unigram glyph: `{cb['effective_pairs_equal_to_unigram_glyph']}`")
+          lines.append(f"- effective prefix×suffix pairs with cross-bigram collision: `{cb['effective_pairs_with_cross_bigram_collision']}`")
+          lines.append('')
+          lines.append('Important source fact: published ambiguity/collision catalog uses all 26 codebook letters even though Phase64B source projection reaches only 23 letters; unreachable j/k/w cells can therefore affect collision rejection.')
+          lines.append('')
+          lines.append('## Frozen support pilots — no R1 scoring')
+          lines.append('')
+          lines.append('| axis | coverage | accepted / visible | support | surface SHA-256 | retries |')
+          lines.append('|---|---:|---:|---|---|---|')
+          for k in ['P0','L0','S0','T0','G0','I0']:
+              v=r['support_pilots'][k]; s=v['support']; retry=v['ambiguity_retries_by_manuscript']
+              lines.append(f"| {k} | {s['coverage']:.12f} | {s['accepted_tokens']} / {s['visible_tokens']} | {'ELIGIBLE' if s['eligible'] else 'INELIGIBLE'} | `{v['surface_sha256']}` | `{retry}` |")
+          lines.append('')
+          lines.append('Support-eligible axes under the preregistered 0.60 gate: **' + (', '.join(eligible) if eligible else 'none') + '**.')
+          lines.append('')
+          lines.append('## Causal interpretation allowed at Stage A')
+          lines.append('')
+          for k in ['P','L','S','T','G','I']:
+              v=r['feasibility'][k]
+              lines.append(f"- **{k}** — mechanically identifiable: `{v['mechanically_identifiable']}`; {v['scope']}.")
+              if 'important_mediator' in v: lines.append(f"  - retained mediator note: {v['important_mediator']}.")
+              if 'collision_catalog_note' in v: lines.append(f"  - collision note: {v['collision_catalog_note']}.")
+              if v.get('not_a_neutral_historical_null'): lines.append('  - explicit upper-bound inventory control; not a neutral historical null.')
+          lines.append('')
+          lines.append('## Next authorization boundary')
+          lines.append('')
+          lines.append('A separate `PLAN_A.md` may now choose only from the support-eligible axes above and freeze deterministic counterfactual families, complete-66 R1 statistics, candidate/control-family correction, both frozen ZL3b/IT2a references, and outcome classes **before any counterfactual R1 computation**.')
+          lines.append('')
+          lines.append('No selected edge, residual-Z, energy, topology correlation/sign agreement, p-value, or per-edge mismatch was available when this summary was generated.')
+          out=Path('experiments/naibbe-r1-decomposition/source-audit/SUMMARY.md')
+          out.write_text('\n'.join(lines)+'\n',encoding='utf-8')
+          Path('experiments/naibbe-r1-decomposition/source-audit/TARGET_ELIGIBLE_AXES.txt').write_text('\n'.join(eligible)+'\n',encoding='utf-8')
+          PY
+
+      - name: Commit summary and remove one-off summarizer
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/issue72-summarize-stageA.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experiments/naibbe-r1-decomposition/source-audit .github/workflows/issue72-summarize-stageA.yml
+          git commit -m 'Summarize Issue72 Stage A support audit'
+          git push origin HEAD:issue72-naibbe-r1-decomposition
