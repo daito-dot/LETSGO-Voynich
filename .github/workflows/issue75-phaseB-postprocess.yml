@@ -22,21 +22,25 @@ jobs:
           ref: issue75-minimal-occupancy-generator
           fetch-depth: 0
 
-      - name: Verify permanent first-reveal evidence exists
+      - name: Verify recovered permanent first-reveal authority
         shell: bash
         run: |
           set -euo pipefail
-          test -f experiments/minimal-occupancy-generator/stage-b-first-reveal/phase75b_aggregate.json
-          test -f experiments/minimal-occupancy-generator/stage-b-first-reveal/SHA256SUMS.txt
-          test -f experiments/minimal-occupancy-generator/stage-b-first-reveal/ARTIFACT_AUTHORITY.txt
-          test -f experiments/minimal-occupancy-generator/stage-b0/generator_authority.json
+          BASE=experiments/minimal-occupancy-generator
+          test -f "$BASE/stage-b-first-reveal/phase75b_aggregate.json"
+          test -f "$BASE/stage-b-first-reveal/SHA256SUMS.txt"
+          test -f "$BASE/stage-b-first-reveal/ARTIFACT_AUTHORITY.txt"
+          echo 'f0c5e9e210f3cf9bd0fa9c9b818c0ee61649a906b051998346db1583c60fb566  experiments/minimal-occupancy-generator/stage-b-first-reveal/phase75b_aggregate.json' | sha256sum -c -
           echo '9c180c7026e4f9464954dd029b71973cc1890f25223af6152959649dde57e834  experiments/minimal-occupancy-generator/stage-b0/generator_authority.json' | sha256sum -c -
           echo 'fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540  experiments/minimal-occupancy-generator/stage-a-first-reveal/phase75a_aggregate.json' | sha256sum -c -
-          test ! -e experiments/minimal-occupancy-generator/REPORT_B.md
-          test ! -e experiments/minimal-occupancy-generator/DECISION_B_M2_SUFFICIENT_STOP.md
-          test ! -e experiments/minimal-occupancy-generator/DECISION_B_M3_LICENSED.md
+          grep -Fx 'source_workflow_run=33504481315' "$BASE/stage-b-first-reveal/ARTIFACT_AUTHORITY.txt"
+          grep -Fx 'source_artifact_id=9799146088' "$BASE/stage-b-first-reveal/ARTIFACT_AUTHORITY.txt"
+          grep -Fx 'scientific_head=693f627910f5775406da410ec4d7157a161021e4' "$BASE/stage-b-first-reveal/ARTIFACT_AUTHORITY.txt"
+          test ! -e "$BASE/REPORT_B.md"
+          test ! -e "$BASE/DECISION_B_M2_SUFFICIENT_STOP.md"
+          test ! -e "$BASE/DECISION_B_M3_LICENSED.md"
 
-      - name: Generate deterministic report and decision marker
+      - name: Generate deterministic report and M3 license
         shell: bash
         run: |
           set -euo pipefail
@@ -44,13 +48,12 @@ jobs:
           python - <<'PY'
           import json,pathlib
           r=json.load(open('/tmp/phase75b-postprocess.json', encoding='utf-8'))
-          marker=pathlib.Path('experiments/minimal-occupancy-generator')/r['marker']
-          assert marker.exists(), marker
+          assert r['classification']=='M2_GENERIC_KRS_SHAPE_DESCRIPTORS_INSUFFICIENT_STATEFUL_CONFIGURATION_RULE_REQUIRED'
+          assert r['aggregate_sha256']=='f0c5e9e210f3cf9bd0fa9c9b818c0ee61649a906b051998346db1583c60fb566'
+          assert r['marker']=='DECISION_B_M3_LICENSED.md'
           assert pathlib.Path('experiments/minimal-occupancy-generator/REPORT_B.md').exists()
+          assert pathlib.Path('experiments/minimal-occupancy-generator/DECISION_B_M3_LICENSED.md').exists()
           assert pathlib.Path('research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE75_PHASE_B.md').exists()
-          allowed={'DECISION_B_M2_SUFFICIENT_STOP.md','DECISION_B_M3_LICENSED.md'}
-          assert r['marker'] in allowed
-          print(r)
           PY
 
       - name: Commit post-reveal report and license
@@ -60,9 +63,9 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add experiments/minimal-occupancy-generator/REPORT_B.md \
-                  experiments/minimal-occupancy-generator/DECISION_B_*.md \
+                  experiments/minimal-occupancy-generator/DECISION_B_M3_LICENSED.md \
                   research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE75_PHASE_B.md
-          git commit -m 'Issue75 Phase B: freeze M2 result report and next-step license'
+          git commit -m 'Issue75 Phase B: freeze recovered M2 report and M3 license'
           git push origin HEAD:issue75-minimal-occupancy-generator
 
       - name: Post concise Phase B result to Issue 75
@@ -72,37 +75,29 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY' > /tmp/comment.md
-          import json
+          import json,hashlib
           from pathlib import Path
-          a=json.loads(Path('experiments/minimal-occupancy-generator/stage-b-first-reveal/phase75b_aggregate.json').read_text())
-          b=json.loads(Path('experiments/minimal-occupancy-generator/stage-b0/generator_authority.json').read_text())
-          m=a['measurement']; p=a['primary']
-          print('## Phase B complete — M2-KRS frozen result')
+          p=Path('experiments/minimal-occupancy-generator/stage-b-first-reveal/phase75b_aggregate.json')
+          a=json.loads(p.read_text())
+          m=a['measurement']; q=a['primary']
+          print('## Phase B complete — recovered M2-KRS authority')
           print()
-          print(f"- classification: `{p['classification']}`")
+          print(f"- classification: `{q['classification']}`")
           print(f"- median T: `{m['T']['median']}`")
           print(f"- median R ZL3b: `{m['R_ZL3b']['median']}`")
           print(f"- median R IT2a: `{m['R_IT2a']['median']}`")
           print(f"- median E: `{m['residual_energy']['median']}`")
-          w=m['reliability_W']['finite']
-          print(f"- median W: `{None if w is None else w['median']}`")
-          print(f"- paired median gap vs frozen Phase-A M+ center: `{p['gap_M2']}`")
+          print(f"- median W: `{m['reliability_W']['finite']['median']}`")
+          print(f"- paired median gap vs Phase-A M+ center: `{q['gap_M2']}`")
           print(f"- frozen allowed loss q95: `{a['frozen_phase_a_positive_control']['delta_plus_q95']}`")
-          print(f"- no material loss: `{p['no_material_loss']}`")
           print('- population: `31/31`, drops `0`, rerolls `0`')
-          print('- first-reveal run: `33504819493` — success')
+          print('- first-reveal run: `33504481315` — success')
+          print('- artifact ID: `9799146088`')
           print(f"- scientific head: `{a['scientific_head']}`")
-          import hashlib
-          ap=Path('experiments/minimal-occupancy-generator/stage-b-first-reveal/phase75b_aggregate.json')
-          print(f"- aggregate SHA-256: `{hashlib.sha256(ap.read_bytes()).hexdigest()}`")
+          print(f"- aggregate SHA-256: `{hashlib.sha256(p.read_bytes()).hexdigest()}`")
           print()
-          print('M2 uses only generic `(K, occupied-run count, occupied span)` geometry plus slot main effects; it has no target-selected pair terms and is materially coarser than empirical signature resampling.')
+          print('M2 adds generic occupied-count/run/span geometry to slot main effects. It recovers a real fraction of R1 (median T about 0.287) but remains far outside the preregistered M+ tolerance, so the frozen decision rule licenses a compact state/transition M3 generator.')
           print()
-          if p['classification']=='M2_GENERIC_KRS_SHAPE_DESCRIPTORS_SUFFICIENT':
-              print('The preregistered rule stops the R1 model ladder here; M3 is not licensed.')
-          else:
-              print('The preregistered rule licenses a separately preregistered compact state/transition M3 model. No M3 target fitting has yet occurred.')
-          print()
-          print('Permanent report: `experiments/minimal-occupancy-generator/REPORT_B.md`.')
+          print('Earlier failed Phase-C workflows are not scientific evidence and are not promoted by this result. Permanent report: `experiments/minimal-occupancy-generator/REPORT_B.md`.')
           PY
           gh issue comment 75 --repo daito-dot/LETSGO-Voynich --body-file /tmp/comment.md
