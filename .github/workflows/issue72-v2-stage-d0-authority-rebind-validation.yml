@@ -1,0 +1,119 @@
+name: Issue72 V2 Stage D0 validate authority rebind
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-d0-authority-rebind-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact validation head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Validate D0 population and authority-equivalent preflight outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor c45c67a665a7e4ad24c1d2706f83c65931d950a9 HEAD
+          git merge-base --is-ancestor 30ef44607d6c04b55f760582152b2da8d389136c HEAD
+          git merge-base --is-ancestor b7fb32d94f90f7edd572a8405c70f46d11536852 HEAD
+          test "$(sha256sum experiments/naibbe-r1-decomposition-v2/stage-d0-pt/stage_d0_pt_support_aggregate.json | cut -d' ' -f1)" = 'e3039ed40f72e44cc4964efab50d70bc1b113859c77e23ccc97934bb29edb9b8'
+          test "$(sha256sum experiments/naibbe-r1-decomposition-v2/stage_b0_pt_authority.json | cut -d' ' -f1)" = '703991a4b176e78ea18c30210ec730187b446c0c8b14052fc2d25e4a8d8f86e4'
+          python - <<'PY'
+          import copy, glob, hashlib, json
+          from pathlib import Path
+
+          agg=json.load(open('experiments/naibbe-r1-decomposition-v2/stage-d0-pt/stage_d0_pt_support_aggregate.json',encoding='utf-8'))
+          assert agg['status']=='STAGE_D0_COMPLETE_PT_SUPPORT_POPULATION_FROZEN_TARGET_BLIND'
+          assert agg['population']['total_results']==155
+          assert agg['population']['complete_population'] is True
+          assert agg['population']['no_drops'] is True
+          assert agg['population']['no_rerolls'] is True
+          assert agg['target_firewall']['all_assignment_target_access_false'] is True
+          assert agg['target_firewall']['R1_target_scored'] is False
+
+          paths=glob.glob('experiments/naibbe-r1-decomposition-v2/stage-d0-pt/individual/PT_j*_rep*.json')
+          assert len(paths)==155
+          seen=set()
+          for p in paths:
+              r=json.load(open(p,encoding='utf-8'))
+              key=(r['assignment']['j'],r['assignment']['rep'])
+              assert key not in seen
+              seen.add(key)
+              assert r['paired_baseline']['exact_stage_b0_replay'] is True
+              assert r['implementation_authority']['stage_b0_support_json_sha256']=='96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+              assert all(v is False for v in r['target_access'].values())
+          assert seen=={(j,r) for j in range(31) for r in range(5)}
+
+          # The new PT authority was deterministically derived from that exact full B0.
+          auth=json.load(open('experiments/naibbe-r1-decomposition-v2/stage_b0_pt_authority.json',encoding='utf-8'))
+          assert auth['source_artifact']['full_stage_b0_json_sha256']=='96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+          assert auth['source_artifact']['artifact_id']==9783720673
+          assert all(v is False for v in auth['target_access'].values())
+
+          # Fresh edge-case reruns under the compact authority must match every
+          # scientific/output field from the original D0 execution. The sole
+          # permitted difference is implementation_authority metadata.
+          checks=[(0,0),(30,4)]
+          comparison={}
+          for j,rep in checks:
+              oldp=f'experiments/naibbe-r1-decomposition-v2/stage-d0-pt/individual/PT_j{j}_rep{rep}.json'
+              newp=f'experiments/naibbe-r1-decomposition-v2/stage-d0-pt-preflight-authority-v2/PT_j{j}_rep{rep}.json'
+              old=json.load(open(oldp,encoding='utf-8'))
+              new=json.load(open(newp,encoding='utf-8'))
+              old_meta=old.pop('implementation_authority')
+              new_meta=new.pop('implementation_authority')
+              assert old==new
+              assert old_meta['stage_b0_support_json_sha256']=='96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+              assert new_meta['stage_b0_pt_authority_json_sha256']=='703991a4b176e78ea18c30210ec730187b446c0c8b14052fc2d25e4a8d8f86e4'
+              comparison[f'j{j}_rep{rep}']={
+                  'scientific_payload_exact_equal': True,
+                  'primary_pooled_surface_sha256': old['pt_surface']['primary_pooled_surface_sha256'],
+                  'raw_pooled_surface_sha256': old['pt_surface']['raw_pooled_surface_sha256'],
+                  'coverage': old['pt_surface']['support']['coverage'],
+              }
+
+          report={
+              'schema':'issue72-v2-stage-d0-authority-rebind-validation-v1',
+              'status':'D0_COMPLETE_POPULATION_VALIDATED_UNDER_COMPACT_PT_AUTHORITY',
+              'stage_d_plan_commit':'c45c67a665a7e4ad24c1d2706f83c65931d950a9',
+              'original_d0_workflow_run':33487902664,
+              'original_d0_support_head':'ec2604d6b273ed3e94130f941cc1ecd52524a22f',
+              'original_d0_aggregate_sha256':'e3039ed40f72e44cc4964efab50d70bc1b113859c77e23ccc97934bb29edb9b8',
+              'population_results':155,
+              'source_full_b0_sha256':'96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58',
+              'source_b0_artifact_id':9783720673,
+              'compact_pt_authority_sha256':'703991a4b176e78ea18c30210ec730187b446c0c8b14052fc2d25e4a8d8f86e4',
+              'fresh_edge_case_comparison':comparison,
+              'licensed_action':'REUSE_EXISTING_155_D0_SURFACES_AS_FROZEN_SUPPORT_AUTHORITY_NO_RECOMPUTATION',
+              'target_loaded':False,
+              'R1_computed':False,
+              'scientific_intervention_changed':False,
+          }
+          raw=(json.dumps(report,ensure_ascii=False,sort_keys=True,separators=(',',':'))+'\n').encode()
+          Path('/tmp/STAGE_D0_PT_AUTHORITY_REBIND_VALIDATION.json').write_bytes(raw)
+          print(json.dumps(report,indent=2,sort_keys=True))
+          PY
+
+      - name: Commit permanent rebind validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp /tmp/STAGE_D0_PT_AUTHORITY_REBIND_VALIDATION.json experiments/naibbe-r1-decomposition-v2/STAGE_D0_PT_AUTHORITY_REBIND_VALIDATION.json
+          sha256sum experiments/naibbe-r1-decomposition-v2/STAGE_D0_PT_AUTHORITY_REBIND_VALIDATION.json > experiments/naibbe-r1-decomposition-v2/STAGE_D0_PT_AUTHORITY_REBIND_VALIDATION.sha256
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/naibbe-r1-decomposition-v2/STAGE_D0_PT_AUTHORITY_REBIND_VALIDATION.json experiments/naibbe-r1-decomposition-v2/STAGE_D0_PT_AUTHORITY_REBIND_VALIDATION.sha256
+          git diff --cached --quiet && exit 1
+          git commit -m 'Issue72 V2 Stage D0: validate frozen population under PT authority'
+          git push origin HEAD:issue72-r1-causal-decomposition-v2
