@@ -1,0 +1,120 @@
+name: Issue72 record synthetic target preflight
+
+on:
+  push:
+    branches: [issue72-naibbe-r1-decomposition]
+    paths:
+      - '.github/workflows/issue72-record-synthetic-preflight.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue72-naibbe-r1-decomposition
+          fetch-depth: 0
+
+      - name: Verify frozen family and chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERIFIED_HEAD=$(git rev-parse HEAD)
+          TARGET_PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/PLAN_A.md | tail -1)
+          FAMILY_FREEZE=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/family-preflight/preflight.json | tail -1)
+          TARGET_IMPL=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/TARGET_IMPLEMENTATION.md | tail -1)
+          RUNTIME=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/TARGET_RUNTIME_FREEZE.md | tail -1)
+          SCORER=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/target72.py | tail -1)
+          AGG=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/aggregate72.py | tail -1)
+          for x in "$TARGET_PLAN" "$FAMILY_FREEZE" "$TARGET_IMPL" "$RUNTIME" "$SCORER" "$AGG"; do test -n "$x"; done
+          git merge-base --is-ancestor "$TARGET_PLAN" "$FAMILY_FREEZE"
+          git merge-base --is-ancestor "$FAMILY_FREEZE" "$TARGET_IMPL"
+          git merge-base --is-ancestor "$TARGET_IMPL" "$RUNTIME"
+          git merge-base --is-ancestor "$RUNTIME" "$SCORER"
+          git merge-base --is-ancestor "$SCORER" "$AGG"
+          test ! -e experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+          echo "VERIFIED_HEAD=$VERIFIED_HEAD" >> "$GITHUB_ENV"
+          echo "TARGET_PLAN=$TARGET_PLAN" >> "$GITHUB_ENV"
+          echo "FAMILY_FREEZE=$FAMILY_FREEZE" >> "$GITHUB_ENV"
+          echo "SCORER=$SCORER" >> "$GITHUB_ENV"
+          echo "AGG=$AGG" >> "$GITHUB_ENV"
+
+      - name: Verify target-blind family freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('experiments/naibbe-r1-decomposition')
+          r=json.load(open(root/'family-preflight/preflight.json'))
+          assert r['counterfactual_R1_scored'] is False
+          assert not any(r['forbidden_quantities_computed'].values())
+          axes=[x.strip() for x in (root/'family-preflight/TARGET_AUTHORIZED_AXES.txt').read_text().splitlines() if x.strip()]
+          ids=[x.strip() for x in (root/'family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt').read_text().splitlines() if x.strip()]
+          assert axes==r['target_authorized_axes']
+          assert ids==r['target_authorized_realizations']
+          assert len(ids)>0 and len(ids)==len(set(ids))
+          print('axes=',axes)
+          print('ids=',ids)
+          PY
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install exact frozen runtime
+        run: python -m pip install --disable-pip-version-check numpy==2.5.2 scipy==1.18.1 pandas==3.0.5
+
+      - name: Compile and run synthetic tests only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/naibbe-r1-decomposition/target72.py
+          python -m py_compile experiments/naibbe-r1-decomposition/aggregate72.py
+          python experiments/naibbe-r1-decomposition/target72.py --self-test
+          python experiments/naibbe-r1-decomposition/aggregate72.py --self-test
+          test ! -e experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+
+      - name: Record successful synthetic verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=experiments/naibbe-r1-decomposition/target-preflight
+          mkdir -p "$DIR"
+          AXES=$(paste -sd, experiments/naibbe-r1-decomposition/family-preflight/TARGET_AUTHORIZED_AXES.txt)
+          IDS=$(paste -sd, experiments/naibbe-r1-decomposition/family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt)
+          cat > "$DIR/SYNTHETIC_VERIFIED.md" <<EOF
+          # Issue #72 target-code synthetic preflight
+
+          Status: **VERIFIED — no real counterfactual R1 target scored**
+
+          - verification run: \`${GITHUB_RUN_ID}\`
+          - verified pre-marker branch head: \`${VERIFIED_HEAD}\`
+          - target plan first-add: \`${TARGET_PLAN}\`
+          - family freeze first-add: \`${FAMILY_FREEZE}\`
+          - target scorer first-add: \`${SCORER}\`
+          - aggregate scorer first-add: \`${AGG}\`
+          - runtime: Python 3.13 / numpy 2.5.2 / scipy 1.18.1 / pandas 3.0.5
+          - target-authorized axes: \`${AXES}\`
+          - target-authorized realizations: \`${IDS}\`
+          - real counterfactual R1 target scored: **false**
+
+          Verified:
+
+          1. plan/family-freeze/implementation chronology;
+          2. target-blind family-preflight firewall;
+          3. exact target scorer compilation and synthetic self-test;
+          4. exact aggregate scorer compilation and synthetic self-test;
+          5. no Issue #72 first-reveal result exists.
+          EOF
+          rm .github/workflows/issue72-record-synthetic-preflight.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$DIR/SYNTHETIC_VERIFIED.md" .github/workflows/issue72-record-synthetic-preflight.yml
+          git commit -m 'Record Issue72 synthetic target preflight'
+          git push origin HEAD:issue72-naibbe-r1-decomposition
