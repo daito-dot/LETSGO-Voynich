@@ -1,0 +1,248 @@
+name: Issue75 conditional Phase D preregistration
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseD-preregister-if-licensed.yml'
+      - 'experiments/minimal-occupancy-generator/DECISION_C_R1_LADDER_STOP.md'
+      - 'experiments/minimal-occupancy-generator/DECISION_C_NONLOCAL_LATENT_LICENSED.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  preregister:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout current research branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue75-minimal-occupancy-generator
+          fetch-depth: 0
+
+      - name: Resolve frozen Phase C decision when available
+        id: decision
+        shell: bash
+        run: |
+          set -euo pipefail
+          STOP=experiments/minimal-occupancy-generator/DECISION_C_R1_LADDER_STOP.md
+          NEXT=experiments/minimal-occupancy-generator/DECISION_C_NONLOCAL_LATENT_LICENSED.md
+          n=0
+          test -f "$STOP" && n=$((n+1)) || true
+          test -f "$NEXT" && n=$((n+1)) || true
+          if test "$n" -eq 0; then
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            echo 'licensed=false' >> "$GITHUB_OUTPUT"
+            echo 'Phase C result not permanently reported yet; no Phase D plan is created.'
+            exit 0
+          fi
+          test "$n" -eq 1
+          test -f experiments/minimal-occupancy-generator/REPORT_C.md
+          test -f experiments/minimal-occupancy-generator/stage-c-first-reveal/phase75c_aggregate.json
+          echo 'available=true' >> "$GITHUB_OUTPUT"
+          if test -f "$NEXT"; then
+            echo 'licensed=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'licensed=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Stop cleanly when Phase C has no decision yet
+        if: steps.decision.outputs.available == 'false'
+        run: echo 'No Phase D action.'
+
+      - name: Stop R1 ladder when nearest-neighbor grammar is sufficient
+        if: steps.decision.outputs.available == 'true' && steps.decision.outputs.licensed == 'false'
+        run: echo 'Frozen Phase C decision stops R1 model complexity; PLAN_D will not be created.'
+
+      - name: Preregister generic distance-banded nonlocal model
+        if: steps.decision.outputs.available == 'true' && steps.decision.outputs.licensed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e experiments/minimal-occupancy-generator/PLAN_D.md
+          cat > experiments/minimal-occupancy-generator/PLAN_D.md <<'EOF'
+          # Issue #75 Phase D — compact distance-banded nonlocal occupancy grammar
+
+          Status: **PREREGISTERED ONLY AFTER FROZEN PHASE-C NONLOCAL LICENSE / BEFORE PHASE-D EXECUTABLE / NO PHASE-D TARGET RESULT**
+
+          Phase D is licensed only by `DECISION_C_NONLOCAL_LATENT_LICENSED.md`.
+
+          ## 1. Scientific question
+
+          Phase A ruled out slot marginals and occupied-slot count alone. Phase B tested coarse K/R/S geometry. Phase C then added position-specific nearest-neighbor occupancy compatibility.
+
+          If Phase C remains materially below the frozen empirical-signature positive control, the next deliberately narrow question is:
+
+          > **After K/R/S geometry is fixed, can generic interaction as a function of separation distance — without selecting particular nonlocal slot pairs — recover the replicated complete 66-edge topology?**
+
+          This phase tests one nonlocal family only. A latent-state model remains unimplemented and unlicensed until this distance-banded model is resolved.
+
+          ## 2. Frozen representation and authorities
+
+          Use the unchanged Issue #75 representation and score:
+
+          - parser-accepted token -> 12-bit occupancy vector;
+          - frozen physical-leaf five-fold cross-fitting;
+          - 25,071 accepted tokens;
+          - complete 66-edge candidate-owned residual topology;
+          - ZL3b and IT2a kept separate;
+          - `T=min(R_ZL3b,R_IT2a)`;
+          - permanent Phase-A empirical-signature M+ positive control reused by exact SHA;
+          - q95 `delta_plus=0.009768313008182594` unchanged.
+
+          No target edge may be used to choose a distance term or fit a parameter.
+
+          ## 3. M4-KRS-DISTANCE model
+
+          Retain the training-only empirical descriptor distribution
+
+          `q_d = P_train(K,R,S)`.
+
+          For a non-empty 12-bit occupancy vector x define, for each separation distance `d=2..11`,
+
+          `C_d(x) = Σ_{s=0}^{11-d} x_s x_{s+d}`.
+
+          Conditional on descriptor class `(K,R,S)`, use
+
+          `P(x | K,R,S) ∝ exp(Σ_s h_s x_s + Σ_{d=2}^{11} J_d C_d(x))`.
+
+          This model has:
+
+          - position-specific unary occupancy propensities `h_s`;
+          - one shared interaction coefficient per nonadjacent separation distance;
+          - no coefficient for a particular named nonadjacent slot pair;
+          - no complete-signature-specific parameter;
+          - no latent state.
+
+          Distance 1 is deliberately absent because within fixed `(K,R,S)` the number of occupied adjacent pairs is exactly `K-R`, so a shared distance-1 coefficient would be constant within the descriptor class.
+
+          ## 4. Identification and complexity
+
+          Within fixed K, the sum of unary occupancies is fixed. Set:
+
+          `h_0=0`.
+
+          Within fixed K and R, total nonadjacent occupied pairs is also fixed:
+
+          `Σ_{d=2}^{11} C_d = choose(K,2) - (K-R)`.
+
+          Therefore a common offset across all nonadjacent distance coefficients cancels. Set:
+
+          `J_2=0`.
+
+          Free continuous parameters per cross-fit training split:
+
+          - 11 unary parameters `h_1..h_11`;
+          - 9 distance parameters `J_3..J_11`;
+          - total `20`.
+
+          Explicit pair-specific nonadjacent parameters: `0`.
+
+          Empirical signature-specific parameters: `0`.
+
+          ## 5. Training moments
+
+          Fit target-blind from the four training folds only to:
+
+          - all 12 slot occupancy means;
+          - all 10 aggregate nonadjacent distance occupancies `E[C_d]`, d=2..11.
+
+          The K/R/S distribution fixes one linear identity among unary moments and one among the ten distance moments, leaving 20 independent moment degrees of freedom, matching the two frozen gauges.
+
+          Verify both identities explicitly before fitting.
+
+          ## 6. Exact deterministic fitting
+
+          Use the exact 4095 non-empty signature state space.
+
+          Required procedure:
+
+          - zero initialization;
+          - exact expectations and covariance within every nonzero K/R/S descriptor class;
+          - deterministic Newton/damped moment matching;
+          - no Monte-Carlo fitting;
+          - no random initialization;
+          - maximum absolute error `<=1e-10` across all reported unary and distance moments;
+          - failed fit is failure, not reroll.
+
+          ## 7. Target-blind population
+
+          Generate exactly 31 cross-fitted M4-KRS-DISTANCE corpora, reps `0..30`, on the frozen accepted-token/line skeleton.
+
+          Namespace:
+
+          `issue75:phaseD:M4-KRS-DISTANCE:rep{r}:fold{f}:generate`.
+
+          Freeze all 31 exact occupancy SHA-256 values before any target access.
+
+          No drops / no rerolls.
+
+          ## 8. Candidate-owned residual calibration
+
+          Reuse the exact unchanged R1 measurement:
+
+          - all 66 unordered pairs;
+          - K_other-conditioned Jeffreys-smoothed MH/Yule-Q;
+          - `N_ref=1000` candidate-owned line-local reference nulls;
+          - residual Z;
+          - five-fold reliability W;
+          - `N_test=1000` independent candidate-owned test nulls;
+          - E and `p_exist`.
+
+          Namespaces:
+
+          - `issue75:phaseD:M4-KRS-DISTANCE:rep{r}:reference`
+          - `issue75:phaseD:M4-KRS-DISTANCE:rep{r}:test`
+
+          ## 9. Frozen target comparison / decision
+
+          Only after exact target-blind corpus replay may frozen ZL3b and IT2a target vectors be loaded.
+
+          For each rep report E, p_exist, W, R for each reading, sign agreement, and `T=min(R_ZL3b,R_IT2a)`.
+
+          Reuse the exact Phase-A paired positive-control centers.
+
+          `D_M4[r] = T_M4[r] - T_plus_center_PhaseA[r]`
+
+          `gap_M4 = median_r D_M4[r]`.
+
+          If
+
+          `gap_M4 >= -0.009768313008182594`
+
+          classify:
+
+          `M4_KRS_DISTANCE_BANDED_NONLOCAL_GRAMMAR_SUFFICIENT`
+
+          and STOP the R1 model-complexity ladder.
+
+          Otherwise classify:
+
+          `M4_KRS_DISTANCE_BANDED_NONLOCAL_GRAMMAR_INSUFFICIENT_LATENT_CONFIGURATION_RULE_REQUIRED`.
+
+          Only this latter outcome licenses a separately preregistered latent-state frontier.
+
+          ## 10. Interpretation boundary
+
+          Success would identify a compact occupancy-level dependence on slot separation, not meanings, plaintext, literal token spelling, cipher table, historical mechanism, or decipherment.
+
+          Failure would show that generic separation distance is insufficient; it would not by itself identify a particular latent architecture.
+
+          ## 11. Completion criterion
+
+          Phase D requires plan-before-code chronology, 31 target-blind frozen corpora, exact replay preflight, target-blind candidate-null smoke, complete 31-case first reveal, unchanged Phase-A positive-control comparison, permanent evidence freeze, and post-reveal classification before any latent model is chosen.
+          EOF
+
+      - name: Commit Phase D preregistration when licensed
+        if: steps.decision.outputs.available == 'true' && steps.decision.outputs.licensed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/minimal-occupancy-generator/PLAN_D.md
+          git commit -m 'Issue75 Phase D: preregister KRS distance-banded nonlocal grammar'
+          git push origin HEAD:issue75-minimal-occupancy-generator
