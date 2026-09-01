@@ -1,5 +1,46 @@
 # Next research frontier — prospectively constrained reversible / inverse mechanism tournament
 
+## CURRENT FRONTIER — after Issue #68: where does Naibbe's R1 match come from?
+
+Issue #68 resolves the previous frontier. The manuscript's residual token-construction graph is real and transcription-robust, but it is **not unique to the manuscript or to A1-like generation**: published Naibbe C1-E0 reproduces it strongly while remaining a failed joint model.
+
+The next highest-value question is therefore not another Voynich edge and not an immediate Naibbe repair.
+
+> **Does Naibbe pass R1 because its homophonic/stateful encryption process generates the manuscript's construction grammar, or because its target-aware Voynich-like codebook/inventory already contains that grammar?**
+
+Why this is now the frontier:
+
+- R1 Naibbe vs ZL3b: `r=0.8830282501`, `60/66` signs.
+- R1 Naibbe vs IT2a: `r=0.9000974100`, `61/66` signs.
+- Naibbe residual existence/reliability are strong (`E=3.1784`, `W=.9547`, `p=1/1001`).
+- Yet Naibbe R2, R3 and R4 all fail.
+- Naibbe's concrete glyph codebook is explicitly target-aware, so R1 cannot yet be attributed to reversible encryption dynamics.
+
+### Required next program shape
+
+Start with a source/architecture audit and preregistration **before** counterfactual R1 scoring. Freeze a small family of controls that separates three causal components:
+
+1. **published process + published target-aware codebook** — already observed Issue #68 reference;
+2. **published process + codebook-association neutralization** — preserve prospective table/state/codebook capacity and glyph inventory while breaking the semantic/state-to-glyph association in a frozen outcome-independent way;
+3. **inventory-only emission control** — preserve prospectively defined emitted-token/codebook marginals while removing plaintext/cipher dynamics, to ask whether the R1 graph is already an inventory property;
+4. optionally, only if definable without using Issue #68 edge outcomes, a **non-target-aware codebook control** built from an external historical/synthetic authority.
+
+The exact control construction must be frozen before executable scoring. Do not invent a neutralization after seeing which of the 66 edges Naibbe matches.
+
+### Primary outcome
+
+Use complete-graph residual existence and topology against both frozen ZL3b and IT2a references, with candidate/control-family maxT protection. Individual edges are diagnostic only after the family-level reveal and cannot promote a hypothesis.
+
+### Interpretive gates
+
+- **CODEBOOK/INVENTORY DOMINANT:** association-neutralized and/or inventory-only controls retain a comparably strong familywise R1 match. Then R1 is mainly an output-construction constraint and weak evidence about encryption process.
+- **PROCESS/ASSOCIATION MATTERS:** published Naibbe remains strong while prospectively neutralized controls fail materially. Then the architecture/codebook interaction contains mechanism-specific structure worth deeper reversible-family testing.
+- **INCONCLUSIVE:** support/representation/null reliability prevents a fair family comparison; do not repair controls after reveal.
+
+### Hard boundary
+
+This next phase does **not** try to make Naibbe pass R2, R3 or R4. Those failures remain frozen. The objective is to correctly interpret the surprising R1 success before using R1 to rank future inverse models.
+
 Status: next plan-first frontier after successful Issue #58D independent-reading replication.
 
 ## Program-level purpose

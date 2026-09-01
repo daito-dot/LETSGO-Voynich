@@ -1,5 +1,27 @@
 # RESUME — deterministic restart point
 
+## Resume here — after Issue #68 first joint-constraint tournament
+
+The latest completed scientific reveal is Issue #68. Read, in order:
+
+1. `experiments/joint-constraint-tournament/REPORT_A.md`
+2. `experiments/joint-constraint-tournament/first-reveal/PROVENANCE.md`
+3. `experiments/joint-constraint-tournament/first-reveal/issue68_joint_tournament_results.json`
+4. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE68_RESULT.md`
+5. `research/NEXT_RESEARCH_FRONTIER.md`
+
+Frozen Issue #68 state:
+
+- global: `NO TESTED FAMILY JOINT-CONSTRAINT COMPETITIVE`;
+- Naibbe: R1 PASS / R2 FAIL / R3 FAIL / R4 FAIL / R5 PASS → `NOT COMPETITIVE`;
+- A1: R1 common-representation gate FAIL, R2 PASS, R3 PASS, R5 PASS → `PARTIAL STRUCTURAL MODEL`; no real A1 R1 graph was computed;
+- Naibbe R1 vs ZL3b `r=.8830`, vs IT2a `r=.9001`, sign agreement `60/66` and `61/66`, all topology maxT p-values `1/1001`;
+- scientific first execution was run `33456282445` / job `99696811349`; result bytes were deterministically recovered after a stdout-framing transport failure. Do not relabel the recovery run as the first reveal.
+
+**Next scientific move:** first integrate/verify Issue #68 on main. Then open a fresh preregistered codebook/process-decomposition issue from post-merge main. Ask whether Naibbe's R1 success survives codebook-association and inventory controls while the encryption architecture is held fixed.
+
+**Do not:** lower the 60% parser gate, remap A1 after its failure, select favorable Naibbe realizations/views, add locality/paragraph-entry repairs to Naibbe, or use individual R1 edges to design the next control.
+
 Last consolidated: 2026-09-01
 
 Do not reconstruct the project from old chat when GitHub contains a newer state.

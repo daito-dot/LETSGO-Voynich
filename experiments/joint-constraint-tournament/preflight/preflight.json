@@ -1,0 +1,3728 @@
+{
+  "A1_primary": {
+    "per_fold": [
+      {
+        "coverage": {
+          "accepted_tokens": 2240,
+          "coverage": 0.3857413466505941,
+          "gate": 0.6,
+          "item_count": 144,
+          "passes_representation_compatibility": false,
+          "visible_tokens": 5807
+        },
+        "fold": 0,
+        "historical_H62_rep0_exact": true,
+        "historical_S1_rep0": 0.747233643945351,
+        "seed": 6195200,
+        "surface_sha256": "be20405db3d8ee240b70f5b00bbbcba785f2af1b84bdcec849330162870bd142"
+      },
+      {
+        "coverage": {
+          "accepted_tokens": 2325,
+          "coverage": 0.36787974683544306,
+          "gate": 0.6,
+          "item_count": 141,
+          "passes_representation_compatibility": false,
+          "visible_tokens": 6320
+        },
+        "fold": 1,
+        "historical_H62_rep0_exact": true,
+        "historical_S1_rep0": 0.5435485612850619,
+        "seed": 6295200,
+        "surface_sha256": "a62c1ed31ef1d2fde42c858e137ffd49e998743b3ddc54ede132ea8c0606890b"
+      },
+      {
+        "coverage": {
+          "accepted_tokens": 2804,
+          "coverage": 0.39465165376495426,
+          "gate": 0.6,
+          "item_count": 168,
+          "passes_representation_compatibility": false,
+          "visible_tokens": 7105
+        },
+        "fold": 2,
+        "historical_H62_rep0_exact": true,
+        "historical_S1_rep0": 0.25966135502124393,
+        "seed": 6395300,
+        "surface_sha256": "173b991e9a2374f1c0b545e91b478e6312d0b93cd3340c43c10ad5e807786cf0"
+      },
+      {
+        "coverage": {
+          "accepted_tokens": 2860,
+          "coverage": 0.40561622464898595,
+          "gate": 0.6,
+          "item_count": 143,
+          "passes_representation_compatibility": false,
+          "visible_tokens": 7051
+        },
+        "fold": 3,
+        "historical_H62_rep0_exact": true,
+        "historical_S1_rep0": 0.6730709904521684,
+        "seed": 6495300,
+        "surface_sha256": "ec2c06bb6ac3aca33eb09aa7386d8f84ea1b55710c689e0b89d246c8899e0c15"
+      },
+      {
+        "coverage": {
+          "accepted_tokens": 2421,
+          "coverage": 0.3850803244790838,
+          "gate": 0.6,
+          "item_count": 140,
+          "passes_representation_compatibility": false,
+          "visible_tokens": 6287
+        },
+        "fold": 4,
+        "historical_H62_rep0_exact": true,
+        "historical_S1_rep0": 0.5155287703662716,
+        "seed": 6595200,
+        "surface_sha256": "c17bbcd9d68718c8823798b27d97db46fb060c635a46f340b748d5d28b1e6927"
+      }
+    ],
+    "pooled_coverage": {
+      "accepted_tokens": 12650,
+      "coverage": 0.3883942278170095,
+      "gate": 0.6,
+      "item_count": 736,
+      "passes_representation_compatibility": false,
+      "visible_tokens": 32570
+    },
+    "pooled_surface_sha256": "4ce8eaad33414feb4351825a228a1a865480c31bb41bf9e467c3b76fc6dc6fd3",
+    "primary_seeds": [
+      6195200,
+      6295200,
+      6395300,
+      6495300,
+      6595200
+    ]
+  },
+  "Naibbe_primary": {
+    "R4_primary_rep0_aggregate": {
+      "R4_primary_pass_100pct_unique_exact": false,
+      "ambiguous_resolved_lines": 0,
+      "lines": 1778,
+      "truth_contained_fraction": 0.656355455568054,
+      "truth_contained_lines": 1167,
+      "unique_exact_fraction": 0.656355455568054,
+      "unique_exact_lines": 1167,
+      "unique_wrong_lines": 8,
+      "unresolved_lines": 603
+    },
+    "per_manuscript": [
+      {
+        "coverage": {
+          "accepted_tokens": 11346,
+          "coverage": 0.8861293345829429,
+          "gate": 0.6,
+          "item_count": 98,
+          "passes_representation_compatibility": true,
+          "visible_tokens": 12804
+        },
+        "decoder_closure": {
+          "R4_primary_pass_100pct_unique_exact": false,
+          "ambiguous_resolved_lines": 0,
+          "examples": {
+            "ambiguous": [],
+            "truth_not_contained": [
+              {
+                "cipher_tokens": 7,
+                "decoder_tokens": [
+                  {
+                    "cipher": "cheol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chdy",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "resokain",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "lsol",
+                    "decoder": "ae",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "or",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/BIS-193/BIS_00_00615_0445.txt:120:pilcrow1",
+                "line": 2,
+                "truth_len": 10
+              },
+              {
+                "cipher_tokens": 14,
+                "decoder_tokens": [
+                  {
+                    "cipher": "lseoy",
+                    "decoder": "ab",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chaim",
+                    "decoder": "eo",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kchedam",
+                    "decoder": "no",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokyokaiinor",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qas",
+                    "decoder": "mp",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lteees",
+                    "decoder": "on",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "aiin",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "tsheey",
+                    "decoder": "cu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ofdam",
+                    "decoder": "qr",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dam",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chckhy",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "areeo",
+                    "decoder": "ts",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lchey",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/BIS-193/BIS_00_00615_0445.txt:122:pilcrow2",
+                "line": 1,
+                "truth_len": 24
+              },
+              {
+                "cipher_tokens": 19,
+                "decoder_tokens": [
+                  {
+                    "cipher": "qoky",
+                    "decoder": "p",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odyedal",
+                    "decoder": "os",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okcheeedy",
+                    "decoder": "no",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otar",
+                    "decoder": "m",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olky",
+                    "decoder": "p",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "opcho",
+                    "decoder": "ni",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odeedaiin",
+                    "decoder": "tl",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dchesy",
+                    "decoder": "pc",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chey",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokar",
+                    "decoder": "m",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "aiiineos",
+                    "decoder": "mo",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oteedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ockhedyolchesy",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "teedar",
+                    "decoder": "rm",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ky",
+                    "decoder": "it",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/BIS-193/BIS_00_00615_0445.txt:122:pilcrow2",
+                "line": 4,
+                "truth_len": 30
+              }
+            ],
+            "unique_wrong": [
+              {
+                "cipher_tokens": 8,
+                "decoder_tokens": [
+                  {
+                    "cipher": "dar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odeaiin",
+                    "decoder": "th",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kail",
+                    "decoder": "ic",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokshes",
+                    "decoder": "pl",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "yta",
+                    "decoder": "ad",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qotchedy",
+                    "decoder": "h",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "daraiin",
+                    "decoder": "da",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/BIS-193/BIS_00_00615_0447.txt:130:pilcrow21",
+                "line": 7,
+                "truth_len": 13,
+                "unique_stream_len": 13
+              },
+              {
+                "cipher_tokens": 19,
+                "decoder_tokens": [
+                  {
+                    "cipher": "aredy",
+                    "decoder": "te",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dair",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheedy",
+                    "decoder": "d",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "solkeol",
+                    "decoder": "oa",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qofchedain",
+                    "decoder": "cm",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "aiin",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qolo",
+                    "decoder": "di",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheey",
+                    "decoder": "d",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "leey",
+                    "decoder": "mu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okchdair",
+                    "decoder": "no",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokchey",
+                    "decoder": "f",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "tey",
+                    "decoder": "re",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otshdy",
+                    "decoder": "di",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shckhy",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olchdaiiin",
+                    "decoder": "af",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olchey",
+                    "decoder": "ae",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/BIS-193/BIS_00_00615_0448.txt:50:pilcrow8",
+                "line": 19,
+                "truth_len": 29,
+                "unique_stream_len": 29
+              },
+              {
+                "cipher_tokens": 20,
+                "decoder_tokens": [
+                  {
+                    "cipher": "osdair",
+                    "decoder": "no",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chedy",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lky",
+                    "decoder": "st",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okcholkar",
+                    "decoder": "ex m*",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lchedy",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ychas",
+                    "decoder": "ip",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shary",
+                    "decoder": "at",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lshal",
+                    "decoder": "en",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ypcheor",
+                    "decoder": "li",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokol",
+                    "decoder": "q",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dain",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qotchedy",
+                    "decoder": "h",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qoaiin",
+                    "decoder": "ea",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ytody",
+                    "decoder": "am",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shed",
+                    "decoder": "aa",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chey",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qotar",
+                    "decoder": "m",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/BIS-193/BIS_00_00615_0449.txt:50:pilcrow9",
+                "line": 2,
+                "truth_len": 32,
+                "unique_stream_len": 31
+              }
+            ],
+            "unresolved": [
+              {
+                "cipher_tokens": 7,
+                "decoder_tokens": [
+                  {
+                    "cipher": "cheol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chdy",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "resokain",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "lsol",
+                    "decoder": "ae",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "or",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/BIS-193/BIS_00_00615_0445.txt:120:pilcrow1",
+                "line": 2,
+                "truth_len": 10
+              },
+              {
+                "cipher_tokens": 14,
+                "decoder_tokens": [
+                  {
+                    "cipher": "lseoy",
+                    "decoder": "ab",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chaim",
+                    "decoder": "eo",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kchedam",
+                    "decoder": "no",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokyokaiinor",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qas",
+                    "decoder": "mp",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lteees",
+                    "decoder": "on",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "aiin",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "tsheey",
+                    "decoder": "cu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ofdam",
+                    "decoder": "qr",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dam",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chckhy",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "areeo",
+                    "decoder": "ts",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lchey",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/BIS-193/BIS_00_00615_0445.txt:122:pilcrow2",
+                "line": 1,
+                "truth_len": 24
+              },
+              {
+                "cipher_tokens": 19,
+                "decoder_tokens": [
+                  {
+                    "cipher": "qoky",
+                    "decoder": "p",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odyedal",
+                    "decoder": "os",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okcheeedy",
+                    "decoder": "no",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otar",
+                    "decoder": "m",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olky",
+                    "decoder": "p",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "opcho",
+                    "decoder": "ni",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odeedaiin",
+                    "decoder": "tl",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dchesy",
+                    "decoder": "pc",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chey",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokar",
+                    "decoder": "m",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "aiiineos",
+                    "decoder": "mo",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oteedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ockhedyolchesy",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "teedar",
+                    "decoder": "rm",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ky",
+                    "decoder": "it",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/BIS-193/BIS_00_00615_0445.txt:122:pilcrow2",
+                "line": 4,
+                "truth_len": 30
+              }
+            ]
+          },
+          "lines": 734,
+          "nonempty_truth_lines": 729,
+          "truth_contained_fraction": 0.6771117166212534,
+          "truth_contained_lines": 497,
+          "unique_exact_fraction": 0.6771117166212534,
+          "unique_exact_lines": 497,
+          "unique_wrong_lines": 3,
+          "unresolved_lines": 234
+        },
+        "generation_diagnostics_exact": true,
+        "manuscript": "BIS193",
+        "seed": 6480000,
+        "surface_sha256": "fbf275e179297b947ccd2de5686e02340ea15d6ab9ca4b73a26dd9448b286805"
+      },
+      {
+        "coverage": {
+          "accepted_tokens": 9716,
+          "coverage": 0.8899065762960249,
+          "gate": 0.6,
+          "item_count": 53,
+          "passes_representation_compatibility": true,
+          "visible_tokens": 10918
+        },
+        "decoder_closure": {
+          "R4_primary_pass_100pct_unique_exact": false,
+          "ambiguous_resolved_lines": 0,
+          "examples": {
+            "ambiguous": [],
+            "truth_not_contained": [
+              {
+                "cipher_tokens": 23,
+                "decoder_tokens": [
+                  {
+                    "cipher": "osheo",
+                    "decoder": "fu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "yky",
+                    "decoder": "it",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lo",
+                    "decoder": "mi",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otaiinycheain",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qokedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chcpheos",
+                    "decoder": "po",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "soiineey",
+                    "decoder": "vu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oteedaiin",
+                    "decoder": "ul",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "sarm",
+                    "decoder": "vi",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "opeed",
+                    "decoder": "us",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "saledy",
+                    "decoder": "ie",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chor",
+                    "decoder": "d",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qotaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "osheey",
+                    "decoder": "fu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olsheedy",
+                    "decoder": "ir",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "solaiin",
+                    "decoder": "sa",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "saiin",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "opl",
+                    "decoder": "ub",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okeedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/CLM13027/38r.txt:14:pilcrow2",
+                "line": 2,
+                "truth_len": 38
+              },
+              {
+                "cipher_tokens": 24,
+                "decoder_tokens": [
+                  {
+                    "cipher": "kshdy",
+                    "decoder": "si",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shckhy",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lcheo",
+                    "decoder": "cu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chctheey",
+                    "decoder": "su",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "deeod",
+                    "decoder": "mp",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ainchedyleorkcheeey",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qoteedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedyaredal",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chdy",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkom",
+                    "decoder": "ut",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ofeal",
+                    "decoder": "qu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "rchaiin",
+                    "decoder": "ta",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oleam",
+                    "decoder": "ef",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qopeeol",
+                    "decoder": "ru",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shey",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeees",
+                    "decoder": "tn",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkeesy",
+                    "decoder": "ul",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "or",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/CLM13027/38r.txt:14:pilcrow2",
+                "line": 5,
+                "truth_len": 42
+              },
+              {
+                "cipher_tokens": 24,
+                "decoder_tokens": [
+                  {
+                    "cipher": "chctheeod",
+                    "decoder": "sp",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheeeyqopeal",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "olkeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeeol",
+                    "decoder": "tu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lshedal",
+                    "decoder": "es",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ytal",
+                    "decoder": "an",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dareody",
+                    "decoder": "di",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "pchol",
+                    "decoder": "te",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otor",
+                    "decoder": "x",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "taiin",
+                    "decoder": "ra",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "daleor",
+                    "decoder": "di",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "sar",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheeody",
+                    "decoder": "ed",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otr",
+                    "decoder": "uc",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "pcheol",
+                    "decoder": "ta",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lkeal",
+                    "decoder": "su",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oddy",
+                    "decoder": "ti",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qoam",
+                    "decoder": "et",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dair",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/CLM13027/38r.txt:14:pilcrow2",
+                "line": 7,
+                "truth_len": 41
+              }
+            ],
+            "unique_wrong": [
+              {
+                "cipher_tokens": 7,
+                "decoder_tokens": [
+                  {
+                    "cipher": "daldar",
+                    "decoder": "de",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dley",
+                    "decoder": "qe",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lpchody",
+                    "decoder": "xm",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odyain",
+                    "decoder": "oe",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "por",
+                    "decoder": "uo",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/CLM13027/41r.txt:107:pilcrow21",
+                "line": 0,
+                "truth_len": 12,
+                "unique_stream_len": 12
+              },
+              {
+                "cipher_tokens": 23,
+                "decoder_tokens": [
+                  {
+                    "cipher": "lyaiin",
+                    "decoder": "fa",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lchdy",
+                    "decoder": "ci",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ykcheear",
+                    "decoder": "lr",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cthedam",
+                    "decoder": "lo",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "feol",
+                    "decoder": "xa",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "sheedy",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qoldy",
+                    "decoder": "di",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shckhod",
+                    "decoder": "fi",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ydy",
+                    "decoder": "ci",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "schedaiin",
+                    "decoder": "lt",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oeol",
+                    "decoder": "da",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lseod",
+                    "decoder": "an",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qolcheal",
+                    "decoder": "bu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olam",
+                    "decoder": "et",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chedy",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "solchom",
+                    "decoder": "gt",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otshor",
+                    "decoder": "do",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shes",
+                    "decoder": "al",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "solkiir",
+                    "decoder": "og",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chedaiin",
+                    "decoder": "et",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/CLM13027/41r.txt:74:pilcrow8",
+                "line": 4,
+                "truth_len": 42,
+                "unique_stream_len": 41
+              },
+              {
+                "cipher_tokens": 31,
+                "decoder_tokens": [
+                  {
+                    "cipher": "qotain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kar",
+                    "decoder": "is",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shol",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "pchair",
+                    "decoder": "ta",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dalol",
+                    "decoder": "de",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeol",
+                    "decoder": "ta",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oky",
+                    "decoder": "p",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qolkair",
+                    "decoder": "pa",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ysho",
+                    "decoder": "ri",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "soror",
+                    "decoder": "to",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chm",
+                    "decoder": "ei",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chedy",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shar",
+                    "decoder": "g",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qotaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "daleeedy",
+                    "decoder": "do",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ain",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okchy",
+                    "decoder": "g",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "yteed",
+                    "decoder": "as",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ctheeor",
+                    "decoder": "lr",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "peedy",
+                    "decoder": "ur",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qolar",
+                    "decoder": "ds",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokchy",
+                    "decoder": "g",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "air",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ota",
+                    "decoder": "ud",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "am",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/CLM13027/41v.txt:91:pilcrow14",
+                "line": 2,
+                "truth_len": 45,
+                "unique_stream_len": 45
+              }
+            ],
+            "unresolved": [
+              {
+                "cipher_tokens": 23,
+                "decoder_tokens": [
+                  {
+                    "cipher": "osheo",
+                    "decoder": "fu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "yky",
+                    "decoder": "it",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lo",
+                    "decoder": "mi",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otaiinycheain",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qokedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chcpheos",
+                    "decoder": "po",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "soiineey",
+                    "decoder": "vu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oteedaiin",
+                    "decoder": "ul",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "sarm",
+                    "decoder": "vi",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "opeed",
+                    "decoder": "us",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "saledy",
+                    "decoder": "ie",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chor",
+                    "decoder": "d",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qotaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "osheey",
+                    "decoder": "fu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olsheedy",
+                    "decoder": "ir",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "solaiin",
+                    "decoder": "sa",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "saiin",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "opl",
+                    "decoder": "ub",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okeedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/CLM13027/38r.txt:14:pilcrow2",
+                "line": 2,
+                "truth_len": 38
+              },
+              {
+                "cipher_tokens": 24,
+                "decoder_tokens": [
+                  {
+                    "cipher": "kshdy",
+                    "decoder": "si",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shckhy",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lcheo",
+                    "decoder": "cu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chctheey",
+                    "decoder": "su",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "deeod",
+                    "decoder": "mp",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ainchedyleorkcheeey",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qoteedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedyaredal",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chdy",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkom",
+                    "decoder": "ut",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ofeal",
+                    "decoder": "qu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "rchaiin",
+                    "decoder": "ta",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oleam",
+                    "decoder": "ef",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qopeeol",
+                    "decoder": "ru",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shey",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeees",
+                    "decoder": "tn",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkeesy",
+                    "decoder": "ul",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "or",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/CLM13027/38r.txt:14:pilcrow2",
+                "line": 5,
+                "truth_len": 42
+              },
+              {
+                "cipher_tokens": 24,
+                "decoder_tokens": [
+                  {
+                    "cipher": "chctheeod",
+                    "decoder": "sp",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheeeyqopeal",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "olkeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeeol",
+                    "decoder": "tu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lshedal",
+                    "decoder": "es",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ytal",
+                    "decoder": "an",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dareody",
+                    "decoder": "di",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "pchol",
+                    "decoder": "te",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otor",
+                    "decoder": "x",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "taiin",
+                    "decoder": "ra",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "daleor",
+                    "decoder": "di",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "sar",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheeody",
+                    "decoder": "ed",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otr",
+                    "decoder": "uc",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "pcheol",
+                    "decoder": "ta",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lkeal",
+                    "decoder": "su",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oddy",
+                    "decoder": "ti",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qoam",
+                    "decoder": "et",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dair",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/CLM13027/38r.txt:14:pilcrow2",
+                "line": 7,
+                "truth_len": 41
+              }
+            ]
+          },
+          "lines": 458,
+          "nonempty_truth_lines": 457,
+          "truth_contained_fraction": 0.5764192139737991,
+          "truth_contained_lines": 264,
+          "unique_exact_fraction": 0.5764192139737991,
+          "unique_exact_lines": 264,
+          "unique_wrong_lines": 3,
+          "unresolved_lines": 191
+        },
+        "generation_diagnostics_exact": true,
+        "manuscript": "CLM13027",
+        "seed": 6480100,
+        "surface_sha256": "da43249442db277a367bb8171b7228a9bf4b63b055924e9efd06240452d4ad77"
+      },
+      {
+        "coverage": {
+          "accepted_tokens": 6659,
+          "coverage": 0.8836252653927813,
+          "gate": 0.6,
+          "item_count": 80,
+          "passes_representation_compatibility": true,
+          "visible_tokens": 7536
+        },
+        "decoder_closure": {
+          "R4_primary_pass_100pct_unique_exact": false,
+          "ambiguous_resolved_lines": 0,
+          "examples": {
+            "ambiguous": [],
+            "truth_not_contained": [
+              {
+                "cipher_tokens": 10,
+                "decoder_tokens": [
+                  {
+                    "cipher": "qolkeos",
+                    "decoder": "po",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "daiin",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chdy",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qdalotchy",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "okeedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "raiinsheody",
+                    "decoder": "i p*",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oteos",
+                    "decoder": "uo",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "tshaiin",
+                    "decoder": "ca",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/Mazarine915/751063002_MSS000915_0000000_0428.txt:104:pilcrow5",
+                "line": 0,
+                "truth_len": 16
+              },
+              {
+                "cipher_tokens": 12,
+                "decoder_tokens": [
+                  {
+                    "cipher": "okeedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dshr",
+                    "decoder": "ec",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "salees",
+                    "decoder": "it",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "doleos",
+                    "decoder": "bo",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oteedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odyd",
+                    "decoder": "on",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lchedysolaiin",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qokal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "al",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/Mazarine915/751063002_MSS000915_0000000_0428.txt:106:pilcrow6",
+                "line": 0,
+                "truth_len": 18
+              },
+              {
+                "cipher_tokens": 16,
+                "decoder_tokens": [
+                  {
+                    "cipher": "ain",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ofcheeod",
+                    "decoder": "pp",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "air",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dam",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "darolyyqokedy",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "okain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okeedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dy",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheedy",
+                    "decoder": "d",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chedy",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otchdy",
+                    "decoder": "b",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olcheeody",
+                    "decoder": "ad",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shey",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "schaiin",
+                    "decoder": "la",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/Mazarine915/751063002_MSS000915_0000000_0428.txt:106:pilcrow6",
+                "line": 1,
+                "truth_len": 22
+              }
+            ],
+            "unique_wrong": [
+              {
+                "cipher_tokens": 20,
+                "decoder_tokens": [
+                  {
+                    "cipher": "ckheesy",
+                    "decoder": "ul",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olar",
+                    "decoder": "es",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokolkchy",
+                    "decoder": "mg g*",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "soraiin",
+                    "decoder": "ta",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ariin",
+                    "decoder": "tq",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okeedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qoky",
+                    "decoder": "p",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okchr",
+                    "decoder": "nc",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "aiin",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "sheey",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shey",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chedy",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dair",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oky",
+                    "decoder": "p",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "rar",
+                    "decoder": "os",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chcthdar",
+                    "decoder": "se",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kchy",
+                    "decoder": "nt",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "daiin",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/Mazarine915/751063002_MSS000915_0000000_0431.txt:103:pilcrow8",
+                "line": 4,
+                "truth_len": 30,
+                "unique_stream_len": 30
+              }
+            ],
+            "unresolved": [
+              {
+                "cipher_tokens": 10,
+                "decoder_tokens": [
+                  {
+                    "cipher": "qolkeos",
+                    "decoder": "po",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "daiin",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chdy",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qdalotchy",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "okeedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "raiinsheody",
+                    "decoder": "i p*",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oteos",
+                    "decoder": "uo",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "tshaiin",
+                    "decoder": "ca",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/Mazarine915/751063002_MSS000915_0000000_0428.txt:104:pilcrow5",
+                "line": 0,
+                "truth_len": 16
+              },
+              {
+                "cipher_tokens": 12,
+                "decoder_tokens": [
+                  {
+                    "cipher": "okeedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dshr",
+                    "decoder": "ec",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "salees",
+                    "decoder": "it",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "doleos",
+                    "decoder": "bo",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oteedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odyd",
+                    "decoder": "on",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lchedysolaiin",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qokal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "al",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/Mazarine915/751063002_MSS000915_0000000_0428.txt:106:pilcrow6",
+                "line": 0,
+                "truth_len": 18
+              },
+              {
+                "cipher_tokens": 16,
+                "decoder_tokens": [
+                  {
+                    "cipher": "ain",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ofcheeod",
+                    "decoder": "pp",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "air",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dam",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "darolyyqokedy",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "okain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okeedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dy",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheedy",
+                    "decoder": "d",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chedy",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otchdy",
+                    "decoder": "b",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olcheeody",
+                    "decoder": "ad",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shey",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "schaiin",
+                    "decoder": "la",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/Mazarine915/751063002_MSS000915_0000000_0428.txt:106:pilcrow6",
+                "line": 1,
+                "truth_len": 22
+              }
+            ]
+          },
+          "lines": 484,
+          "nonempty_truth_lines": 482,
+          "truth_contained_fraction": 0.7128099173553719,
+          "truth_contained_lines": 345,
+          "unique_exact_fraction": 0.7128099173553719,
+          "unique_exact_lines": 345,
+          "unique_wrong_lines": 1,
+          "unresolved_lines": 138
+        },
+        "generation_diagnostics_exact": true,
+        "manuscript": "Mazarine915",
+        "seed": 6480200,
+        "surface_sha256": "2ebecc4d281df810f57ec370cd1ba0d4708be0391d8185d3ed2ccb588df1f33d"
+      },
+      {
+        "coverage": {
+          "accepted_tokens": 2038,
+          "coverage": 0.8799654576856649,
+          "gate": 0.6,
+          "item_count": 10,
+          "passes_representation_compatibility": true,
+          "visible_tokens": 2316
+        },
+        "decoder_closure": {
+          "R4_primary_pass_100pct_unique_exact": false,
+          "ambiguous_resolved_lines": 0,
+          "examples": {
+            "ambiguous": [],
+            "truth_not_contained": [
+              {
+                "cipher_tokens": 25,
+                "decoder_tokens": [
+                  {
+                    "cipher": "chckhey",
+                    "decoder": "d",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "opcheeo",
+                    "decoder": "ns",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "octhal",
+                    "decoder": "bn",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chckhey",
+                    "decoder": "d",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokor",
+                    "decoder": "x",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ky",
+                    "decoder": "it",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lkm",
+                    "decoder": "si",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ocheey",
+                    "decoder": "cu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otaiinkd",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "otal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kl",
+                    "decoder": "ib",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "tedam",
+                    "decoder": "ro",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cphedy",
+                    "decoder": "ge",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olyain",
+                    "decoder": "ne",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oreodykshedair",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "dar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okchy",
+                    "decoder": "g",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odeedain",
+                    "decoder": "tu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otchl",
+                    "decoder": "rb",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "osoly",
+                    "decoder": "nd",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokor",
+                    "decoder": "x",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "saledaiin",
+                    "decoder": "it",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/UBL758/UBL_Ms758_221v.txt:23:pilcrow2",
+                "line": 1,
+                "truth_len": 43
+              },
+              {
+                "cipher_tokens": 27,
+                "decoder_tokens": [
+                  {
+                    "cipher": "sairain",
+                    "decoder": "de",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkeeydaro",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qoeorkshain",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qoksham",
+                    "decoder": "pt",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shey",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokar",
+                    "decoder": "m",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odyar",
+                    "decoder": "os",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "daiin",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shckhy",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oddy",
+                    "decoder": "ti",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokchey",
+                    "decoder": "f",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qoteeey",
+                    "decoder": "ic",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "sheedain",
+                    "decoder": "au",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheo",
+                    "decoder": "eu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "daryeo",
+                    "decoder": "qu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kaiin",
+                    "decoder": "ia",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qotedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "aiirod",
+                    "decoder": "ni",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qordair",
+                    "decoder": "po",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lchey",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheeo",
+                    "decoder": "es",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/UBL758/UBL_Ms758_221v.txt:23:pilcrow2",
+                "line": 2,
+                "truth_len": 44
+              },
+              {
+                "cipher_tokens": 30,
+                "decoder_tokens": [
+                  {
+                    "cipher": "qokeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chas",
+                    "decoder": "ep",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ykchaiiin",
+                    "decoder": "lc",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qopcheeol",
+                    "decoder": "ru",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ykedol",
+                    "decoder": "il",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ypchdy",
+                    "decoder": "li",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokedyckholy",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "okod",
+                    "decoder": "ei",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shol",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lky",
+                    "decoder": "st",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olshal",
+                    "decoder": "in",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "yaim",
+                    "decoder": "co",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokchy",
+                    "decoder": "g",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "aiirdy",
+                    "decoder": "ni",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oteed",
+                    "decoder": "us",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kaiiin",
+                    "decoder": "ic",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okchdy",
+                    "decoder": "b",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otey",
+                    "decoder": "v",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "solchdy",
+                    "decoder": "gi",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dair",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qotos",
+                    "decoder": "is",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/UBL758/UBL_Ms758_221v.txt:27:pilcrow3",
+                "line": 2,
+                "truth_len": 46
+              }
+            ],
+            "unique_wrong": [
+              {
+                "cipher_tokens": 24,
+                "decoder_tokens": [
+                  {
+                    "cipher": "shcthed",
+                    "decoder": "ma",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ole",
+                    "decoder": "ep",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "aiin",
+                    "decoder": "o",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dal",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chckhees",
+                    "decoder": "at",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkdaiin",
+                    "decoder": "ur",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheedy",
+                    "decoder": "d",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qotaiir",
+                    "decoder": "ic",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kedaiin",
+                    "decoder": "it",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chedy",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkar",
+                    "decoder": "m",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qolcheey",
+                    "decoder": "bu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lyo",
+                    "decoder": "fi",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "scheody",
+                    "decoder": "li",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ckheo",
+                    "decoder": "uu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "keedy",
+                    "decoder": "ir",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cpheos",
+                    "decoder": "go",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dolain",
+                    "decoder": "be",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "araiin",
+                    "decoder": "ta",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oer",
+                    "decoder": "dh",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chedy",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/UBL758/UBL_Ms758_222r.txt:12:pilcrow1",
+                "line": 2,
+                "truth_len": 39,
+                "unique_stream_len": 39
+              }
+            ],
+            "unresolved": [
+              {
+                "cipher_tokens": 25,
+                "decoder_tokens": [
+                  {
+                    "cipher": "chckhey",
+                    "decoder": "d",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "opcheeo",
+                    "decoder": "ns",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "octhal",
+                    "decoder": "bn",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chckhey",
+                    "decoder": "d",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokor",
+                    "decoder": "x",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ky",
+                    "decoder": "it",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lkm",
+                    "decoder": "si",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ocheey",
+                    "decoder": "cu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otaiinkd",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "otal",
+                    "decoder": "l",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kl",
+                    "decoder": "ib",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "tedam",
+                    "decoder": "ro",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cphedy",
+                    "decoder": "ge",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olyain",
+                    "decoder": "ne",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oreodykshedair",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "dar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okchy",
+                    "decoder": "g",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odeedain",
+                    "decoder": "tu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otchl",
+                    "decoder": "rb",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "osoly",
+                    "decoder": "nd",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokor",
+                    "decoder": "x",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "saledaiin",
+                    "decoder": "it",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/UBL758/UBL_Ms758_221v.txt:23:pilcrow2",
+                "line": 1,
+                "truth_len": 43
+              },
+              {
+                "cipher_tokens": 27,
+                "decoder_tokens": [
+                  {
+                    "cipher": "sairain",
+                    "decoder": "de",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olkeeydaro",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qoeorkshain",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "qoksham",
+                    "decoder": "pt",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shey",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokar",
+                    "decoder": "m",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "odyar",
+                    "decoder": "os",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "daiin",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shckhy",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oddy",
+                    "decoder": "ti",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokchey",
+                    "decoder": "f",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qoteeey",
+                    "decoder": "ic",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "sheedain",
+                    "decoder": "au",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheo",
+                    "decoder": "eu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "daryeo",
+                    "decoder": "qu",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kaiin",
+                    "decoder": "ia",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qotedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "aiirod",
+                    "decoder": "ni",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qordair",
+                    "decoder": "po",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lchey",
+                    "decoder": "c",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "cheeo",
+                    "decoder": "es",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/UBL758/UBL_Ms758_221v.txt:23:pilcrow2",
+                "line": 2,
+                "truth_len": 44
+              },
+              {
+                "cipher_tokens": 30,
+                "decoder_tokens": [
+                  {
+                    "cipher": "qokeey",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "chas",
+                    "decoder": "ep",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokain",
+                    "decoder": "u",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ykchaiiin",
+                    "decoder": "lc",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qopcheeol",
+                    "decoder": "ru",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ykedol",
+                    "decoder": "il",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ypchdy",
+                    "decoder": "li",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokedyckholy",
+                    "decoder": "[?]",
+                    "n_candidates": 0
+                  },
+                  {
+                    "cipher": "okod",
+                    "decoder": "ei",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "shol",
+                    "decoder": "s",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "lky",
+                    "decoder": "st",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "olshal",
+                    "decoder": "in",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "yaim",
+                    "decoder": "co",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokchy",
+                    "decoder": "g",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "aiirdy",
+                    "decoder": "ni",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "oteed",
+                    "decoder": "us",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "kaiiin",
+                    "decoder": "ic",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "okchdy",
+                    "decoder": "b",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "ol",
+                    "decoder": "a",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokaiin",
+                    "decoder": "t",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dar",
+                    "decoder": "e",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otey",
+                    "decoder": "v",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "otedy",
+                    "decoder": "i",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qokeedy",
+                    "decoder": "r",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "solchdy",
+                    "decoder": "gi",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "dair",
+                    "decoder": "n",
+                    "n_candidates": 1
+                  },
+                  {
+                    "cipher": "qotos",
+                    "decoder": "is",
+                    "n_candidates": 1
+                  }
+                ],
+                "item_id": "data/UBL758/UBL_Ms758_221v.txt:27:pilcrow3",
+                "line": 2,
+                "truth_len": 46
+              }
+            ]
+          },
+          "lines": 102,
+          "nonempty_truth_lines": 100,
+          "truth_contained_fraction": 0.5980392156862745,
+          "truth_contained_lines": 61,
+          "unique_exact_fraction": 0.5980392156862745,
+          "unique_exact_lines": 61,
+          "unique_wrong_lines": 1,
+          "unresolved_lines": 40
+        },
+        "generation_diagnostics_exact": true,
+        "manuscript": "UBL758",
+        "seed": 6480300,
+        "surface_sha256": "5c6649425d9be84f8b9ce04c257cc6fb308e9b8a59191320fcf1a63c86affa89"
+      }
+    ],
+    "pooled_coverage": {
+      "accepted_tokens": 29759,
+      "coverage": 0.886370405671055,
+      "gate": 0.6,
+      "item_count": 241,
+      "passes_representation_compatibility": true,
+      "visible_tokens": 33574
+    },
+    "pooled_surface_sha256": "47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd",
+    "primary_seeds": [
+      6480000,
+      6480100,
+      6480200,
+      6480300
+    ]
+  },
+  "base_main": "b2298d7fe251070dacd21852ae3b5a1dac95fe65",
+  "forbidden_R1_quantities": {
+    "R1_p_values": false,
+    "joint_classification": false,
+    "pair_Q": false,
+    "reliability_W": false,
+    "residual_Z": false,
+    "residual_energy": false,
+    "target_topology": false
+  },
+  "historical_frozen_responsibilities": {
+    "A1": {
+      "R2": {
+        "fold_wins": {
+          "C_vs_C0": 5,
+          "C_vs_N0": 5,
+          "D_vs_C0": 5,
+          "D_vs_N0": 5
+        },
+        "pass": true
+      },
+      "R3": {
+        "candidate_fold_values": [
+          0.3837194438364637,
+          0.508848995739591,
+          0.5658901037372057,
+          0.6526018223145498,
+          0.618780585410403
+        ],
+        "pass": true,
+        "positive_folds": 5,
+        "ratio_of_means": 0.6232555348531377,
+        "target_fold_values": [
+          0.8061532394902311,
+          1.4591847522080983,
+          0.20470443416832568,
+          0.6808459396801555,
+          1.2290822859476285
+        ]
+      }
+    },
+    "Naibbe_C1_E0": {
+      "R2": {
+        "fold_wins": {
+          "C_vs_C0": 5,
+          "C_vs_N0": 0,
+          "D_vs_C0": 5,
+          "D_vs_N0": 4
+        },
+        "pass": false
+      },
+      "R3": {
+        "candidate_fold_values": [
+          -0.06797457900654269,
+          -0.0325288303712631,
+          -0.11443222746277143,
+          -0.11846129058512411,
+          -0.08048158493351032
+        ],
+        "pass": false,
+        "positive_folds": 0,
+        "ratio_of_means": -0.09449344420104662,
+        "target_fold_values": [
+          0.8061532394902311,
+          1.4591847522080983,
+          0.20470443416832568,
+          0.6808459396801555,
+          1.2290822859476285
+        ]
+      }
+    }
+  },
+  "parser": {
+    "authority": "experiments/issue26-music/issue26e_core.py::SlotParser",
+    "gate": 0.6,
+    "policy": "min",
+    "validation": {
+      "chedy": {
+        "max": "4-6-10-11",
+        "min": "4-6-7-11"
+      },
+      "d": {
+        "max": "10",
+        "min": "0"
+      },
+      "daiin": {
+        "max": "7-8-9-10",
+        "min": "0-8-9-10"
+      },
+      "dain": {
+        "max": "7-8-9-10",
+        "min": "0-8-9-10"
+      },
+      "okal": {
+        "max": "1-3-8-10",
+        "min": "1-3-8-10"
+      },
+      "okol": {
+        "max": "1-3-8-10",
+        "min": "1-3-8-10"
+      },
+      "otchdy": {
+        "max": "1-3-4-10-11",
+        "min": "1-3-4-7-11"
+      },
+      "otedy": {
+        "max": "1-3-6-10-11",
+        "min": "1-3-6-7-11"
+      },
+      "qokedy": {
+        "max": "0-1-3-6-10-11",
+        "min": "0-1-3-6-7-11"
+      },
+      "y": {
+        "max": "11",
+        "min": "1"
+      }
+    }
+  },
+  "phase": "Issue68-preflight",
+  "preflight_dispositions": {
+    "A1_R1_representation": "FAIL_REPRESENTATION_COMPATIBILITY",
+    "Naibbe_R1_representation": "AUTHORIZED_FOR_R1_REVEAL",
+    "Naibbe_R4_primary": "FAIL"
+  },
+  "real_candidate_pair_or_residual_metrics_computed": false,
+  "target_reveal": false
+}

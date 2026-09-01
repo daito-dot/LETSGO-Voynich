@@ -1,5 +1,24 @@
 # Current research status
 
+## Current research state — Issue #68 first joint-constraint tournament (2026-09-01)
+
+**Current frozen global classification:** `NO TESTED FAMILY JOINT-CONSTRAINT COMPETITIVE`.
+
+Issue #68 changes how the token-construction result should be used:
+
+- #58C/#58D remain accepted: the manuscript has a strong residual 12-slot token-construction graph, replicated across ZL3b and independent Takahashi/IT2a reading.
+- published Naibbe C1-E0 **passes R1** against both readings under its own 1,000-reference + independent-1,000-test null calibration:
+  - residual energy `E=3.1784043855`, reliability `W=0.9547265391`, `p_exist=1/1001`;
+  - ZL3b topology `r=0.8830282501`, signs `60/66`, both maxT `p=1/1001`;
+  - IT2a topology `r=0.9000974100`, signs `61/66`, both maxT `p=1/1001`.
+- Naibbe still fails the joint model because R2 H62, R3 signed S1 and R4 exact normalized-stream decoder closure fail.
+- A1 was **not** given a real R1 graph because direct common-parser coverage was only `0.388394 < 0.60`; its historical R2/R3 passes remain valid. This is a common-representation gate failure, not a retrospective claim that A1 has no native internal grammar.
+- permanent Issue #68 scientific JSON SHA-256: `5cef35e9df56149fb1db5edff8d52fad9291208476b0d4ac64bd9c8782faa471`.
+
+**Interpretation revision:** R1 is now treated as a strong constraint on admissible output construction, **not** as a standalone discriminator against reversible cipher families. A target-aware Voynich-like codebook can reproduce R1 extremely well.
+
+**Active frontier:** decompose Naibbe's R1 success into **codebook/inventory effect versus encryption-process effect** under a new preregistered complete-graph counterfactual program. Do not return to selected-edge discovery and do not repair Naibbe R2/R3/R4 after seeing #68.
+
 Last consolidated: 2026-09-01
 
 This file controls the current accepted high-level interpretation. Phase-specific frozen plans, first-reveal results and reports remain authoritative for exact methods and numbers.
