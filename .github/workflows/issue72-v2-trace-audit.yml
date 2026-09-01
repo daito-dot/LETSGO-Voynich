@@ -1,0 +1,162 @@
+name: Issue72 V2 target-blind trace causal audit
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - 'experiments/naibbe-r1-decomposition-v2/STAGE_A_TRACE_AUDIT_PLAN.md'
+      - 'experiments/naibbe-r1-decomposition-v2/trace_audit72_v2.py'
+      - '.github/workflows/issue72-v2-trace-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trace-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact V2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+          fetch-depth: 0
+
+      - name: Verify plan-before-code-before-workflow chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git merge-base 98a04953aabe9e228a17fa5808adf506a0833362 HEAD)" = "98a04953aabe9e228a17fa5808adf506a0833362"
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_A_TRACE_AUDIT_PLAN.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/trace_audit72_v2.py | tail -1)
+          WORKFLOW=$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-v2-trace-audit.yml | tail -1)
+          test -n "$PLAN" && test -n "$SCRIPT" && test -n "$WORKFLOW"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$SCRIPT" "$WORKFLOW"
+          test ! -e experiments/naibbe-r1-decomposition-v2/TARGET_PLAN.md
+          test ! -e experiments/naibbe-r1-decomposition-v2/target72_v2.py
+          echo "PLAN_FIRST_ADD=$PLAN" >> "$GITHUB_ENV"
+          echo "SCRIPT_FIRST_ADD=$SCRIPT" >> "$GITHUB_ENV"
+          echo "WORKFLOW_FIRST_ADD=$WORKFLOW" >> "$GITHUB_ENV"
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify external source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+          test "$(git -C external/naibbe hash-object decrypt_naibbe.py)" = "b56a1e6e615a7b2e31ad386efdf7e6f2ef2b9d7b"
+
+      - name: Install preexisting runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile trace audit
+        run: python -m py_compile experiments/naibbe-r1-decomposition-v2/trace_audit72_v2.py
+
+      - name: Run target-blind trace audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/issue72v2
+          mkdir -p /tmp/issue72v2
+          python experiments/naibbe-r1-decomposition-v2/trace_audit72_v2.py \
+            external/cremma \
+            external/naibbe \
+            /tmp/issue72v2 \
+            > /tmp/issue72v2/stdout.txt
+          test -s /tmp/issue72v2/stage_a_trace_audit.json
+          test -s /tmp/issue72v2/MANIFEST.json
+
+      - name: Enforce exact replay and Stage A scientific firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/issue72v2/stage_a_trace_audit.json').read_text())
+          assert r['status'] in {
+              'TRACE-IDENTIFIED INTERVENTION SET READY FOR TARGET DESIGN',
+              'PARTIAL TRACE IDENTIFICATION',
+              'TRACE AUTHORITY NOT ESTABLISHED',
+          }
+          assert r['status'] == 'TRACE-IDENTIFIED INTERVENTION SET READY FOR TARGET DESIGN'
+          assert r['pooled_baseline_primary_surface_sha256'] == '47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          assert r['coverage_policy'] == 'DESCRIPTIVE_ONLY_IN_STAGE_A_NO_0_60_GATE'
+          assert all(v is False for v in r['target_access'].values())
+          expected={
+              'BIS193':'fbf275e179297b947ccd2de5686e02340ea15d6ab9ca4b73a26dd9448b286805',
+              'CLM13027':'da43249442db277a367bb8171b7228a9bf4b63b055924e9efd06240452d4ad77',
+              'Mazarine915':'2ebecc4d281df810f57ec370cd1ba0d4708be0391d8185d3ed2ccb588df1f33d',
+              'UBL758':'5c6649425d9be84f8b9ce04c257cc6fb308e9b8a59191320fcf1a63c86affa89',
+          }
+          for ms,sha in expected.items():
+              x=r['baseline_replay'][ms]
+              assert x['primary_surface_sha256'] == sha
+              assert x['instrumented_equals_historical_primary'] is True
+              assert x['instrumented_equals_historical_raw'] is True
+              assert x['trace_only_equals_instrumented_primary'] is True
+              assert x['trace_only_equals_instrumented_raw'] is True
+              assert x['trace_render']['fixed_path_fields_changed'] == 0
+          assert set(r['fixed_path_emission_pilots']) == {'EL','ES','ET','EG'}
+          for name,x in r['fixed_path_emission_pilots'].items():
+              assert x['invariants']['unauthorized_trace_field_changes'] == 0
+              assert x['invariants']['retry_history_not_rerun'] is True
+              assert x['interpretation_role'] == 'FIXED_REALIZATION_CONDITIONAL_DIRECT_EMISSION_ABLATION'
+              assert x['ambiguity_legality']['role'] == 'DIAGNOSTIC_ONLY_NOT_A_REPAIR_OR_ELIGIBILITY_GATE'
+          assert r['plaintext_total_pipeline_pilot']['interpretation_role'] == 'TOTAL_EFFECT_THROUGH_FULL_PUBLISHED_PIPELINE'
+          assert r['final_surface_sufficiency_pilot']['interpretation_role'] == 'FINAL_SURFACE_INVENTORY_LAYOUT_SUFFICIENCY_ONLY'
+          print('Stage A:',r['status'])
+          print('Baseline coverage:',{ms:r['baseline_replay'][ms]['parser_support_primary']['coverage'] for ms in expected})
+          for name,x in r['fixed_path_emission_pilots'].items():
+              print(name,{
+                  'coverage':x['pooled_parser_support']['coverage'],
+                  'changed_event_fraction':x['changed_event_fraction'],
+                  'ambiguity_admissible_fraction':x['ambiguity_legality']['admissible_fraction'],
+              })
+          print('PT coverage:',r['plaintext_total_pipeline_pilot']['pooled_parser_support']['coverage'])
+          print('FI coverage:',r['final_surface_sufficiency_pilot']['pooled_parser_support']['coverage'])
+          PY
+
+      - name: Package exact target-blind Stage A evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum /tmp/issue72v2/stage_a_trace_audit.json /tmp/issue72v2/MANIFEST.json /tmp/issue72v2/trace_*.json.gz /tmp/issue72v2/stdout.txt | sort > /tmp/issue72v2/SHA256SUMS.txt
+          cat > /tmp/issue72v2/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          branch_head=${GITHUB_SHA}
+          parent_main=98a04953aabe9e228a17fa5808adf506a0833362
+          stage_a_plan_first_add=${PLAN_FIRST_ADD}
+          stage_a_script_first_add=${SCRIPT_FIRST_ADD}
+          stage_a_workflow_first_add=${WORKFLOW_FIRST_ADD}
+          counterfactual_R1_target_scored=false
+          EOF
+          cat /tmp/issue72v2/SHA256SUMS.txt
+          cat /tmp/issue72v2/PROVENANCE.txt
+
+      - name: Upload exact target-blind Stage A evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-stageA-trace-audit-${{ github.sha }}
+          path: /tmp/issue72v2
+          if-no-files-found: error
+          retention-days: 90
