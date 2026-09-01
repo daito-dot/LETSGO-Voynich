@@ -1,0 +1,181 @@
+name: Issue72 converge first-reveal result
+
+on:
+  push:
+    branches: [issue72-naibbe-r1-decomposition]
+    paths:
+      - '.github/workflows/issue72-converge-result.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  converge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue72-naibbe-r1-decomposition
+          fetch-depth: 0
+
+      - name: Require permanent exact first-reveal archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+          test -f experiments/naibbe-r1-decomposition/first-reveal/PROVENANCE.md
+          test -f experiments/naibbe-r1-decomposition/first-reveal/JOB_IDS.json
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('experiments/naibbe-r1-decomposition')
+          r=json.load(open(root/'first-reveal/issue72_results.json'))
+          fp=json.load(open(root/'family-preflight/preflight.json'))
+          expected=[x.strip() for x in (root/'family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt').read_text().splitlines() if x.strip()]
+          assert r['target_authorized_realizations']==expected
+          assert set(r['input_realization_json_sha256'])==set(expected)
+          assert len(r['maxT_family']['energy_max_values'])==1000
+          assert len(r['maxT_family']['correlation_max_values_over_realizations_x_readings'])==1000
+          assert len(r['maxT_family']['sign_max_values_over_realizations_x_readings'])==1000
+          assert r['family_preflight_sha256']==hashlib.sha256((root/'family-preflight/preflight.json').read_bytes()).hexdigest()
+          allowed={
+            'R1 IS PREDOMINANTLY CODEBOOK/INVENTORY-EMBEDDED',
+            'R1 DEPENDS MATERIALLY ON CODEBOOK ASSOCIATION/STATE STRUCTURE',
+            'R1 DEPENDS MATERIALLY ON ENCRYPTION/PLAINTEXT PROCESS',
+            'R1 ORIGIN IS MIXED',
+            'R1 DECOMPOSITION INCONCLUSIVE',
+          }
+          assert r['frozen_global_classification'] in allowed
+          print('aggregate_sha256=',hashlib.sha256((root/'first-reveal/issue72_results.json').read_bytes()).hexdigest())
+          print('frozen_global=',r['frozen_global_classification'])
+          PY
+
+      - name: Generate exact report and hypothesis ledger from frozen JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,statistics
+          from pathlib import Path
+          root=Path('experiments/naibbe-r1-decomposition')
+          p=root/'first-reveal/issue72_results.json'
+          r=json.load(open(p)); agg_sha=hashlib.sha256(p.read_bytes()).hexdigest()
+          g=r['frozen_global_classification']; axes=r['axis_results']; per=r['per_realization']
+
+          meaning={
+            'P': 'within-line plaintext sequence/bigram order',
+            'L': 'global effective-letter ↔ glyph association',
+            'S': 'unigram/prefix/suffix state allocation',
+            'T': 'table allocation under the published unequal table weights',
+            'G': 'structured table×state×letter cell association beyond the reachable glyph inventory',
+            'I': 'exact published whole-token inventory plus preserved line token-count layout',
+          }
+          causal={
+            'R1_RETAINED': 'neutralizing this component usually preserves a strong familywise R1 match; the component is not necessary under the frozen intervention.',
+            'R1_COLLAPSED': 'neutralizing this component destroys the familywise R1 match strongly enough to meet the preregistered collapse rule; the component materially matters.',
+            'R1_MODULATED': 'the intervention changes R1 strength, but neither clear retention nor clear collapse is established under the frozen family rule.',
+          }
+          global_text={
+            'R1 IS PREDOMINANTLY CODEBOOK/INVENTORY-EMBEDDED': 'The exact emitted Naibbe token inventory, even after breaking token-to-source/item/line association while preserving line token counts, retains R1 strongly enough to dominate the causal interpretation. R1 should therefore be treated primarily as an output-token grammar constraint, not as evidence for plaintext/encryption dynamics.',
+            'R1 DEPENDS MATERIALLY ON CODEBOOK ASSOCIATION/STATE STRUCTURE': 'The exact token inventory alone does not retain R1, plaintext order is not required, and at least one structured codebook-association/state intervention collapses R1. The replicated R1 graph is therefore tied materially to how the codebook assigns glyphs across letters/states/tables, rather than ordinary plaintext order.',
+            'R1 DEPENDS MATERIALLY ON ENCRYPTION/PLAINTEXT PROCESS': 'Static inventory/codebook neutralizations do not explain the loss, while the dynamic encryption/source process is required under the frozen decomposition. R1 remains compatible with reversible cipher generation but contains process-level structure under these controls.',
+            'R1 ORIGIN IS MIXED': 'No single layer dominates under the preregistered effect bands. R1 depends on an interaction or partial contributions across inventory/codebook/process layers.',
+            'R1 DECOMPOSITION INCONCLUSIVE': 'The frozen support/completeness or familywise evidence is insufficient to assign R1 cleanly to inventory, codebook association, or process. No adaptive control repair is justified from this reveal.',
+          }
+
+          report=[]
+          report += ['# Issue #72 report A — Naibbe R1 codebook/process decomposition','', 'Status: **FIRST REVEAL COMPLETE / PERMANENTLY ARCHIVED**','',f'Frozen global classification: **`{g}`**','',f'Permanent aggregate scientific JSON SHA-256: `{agg_sha}`','']
+          report += ['## 1. Scientific question','', '> Where in the Naibbe generative stack does the already-observed R1 complete residual token-construction match live: emitted inventory, codebook association/state structure, or plaintext/encryption dynamics?','']
+          report += ['Issue #72 does not repair Naibbe. Published Naibbe remains R1 PASS / R2 FAIL / R3 FAIL / R4 FAIL / overall `NOT COMPETITIVE`.','']
+          report += ['## 2. Frozen family and correction','',f"- target-authorized axes: `{', '.join(r['target_authorized_axes'])}`",f"- target-authorized realizations: `{len(r['target_authorized_realizations'])}`",'- every realization used its own 1,000 reference + independent 1,000 test line-local nulls','- final residual-existence maxT spans every scored counterfactual realization','- final topology maxT spans every scored realization × both frozen ZL3b/IT2a readings','- no individual edge can promote an outcome','']
+          report += ['## 3. Axis-level first-reveal result','', '| axis | causal component neutralized | N | full R1 pass | strong | median REL | frozen class |','|---|---|---:|---:|---:|---:|---|']
+          for a in r['target_authorized_axes']:
+              x=axes[a]
+              report.append(f"| {a} | {meaning[a]} | {x['N']} | {x['full_R1_pass_count']} | {x['strong_count']} | {x['median_relative_topology']:.6f} | **{x['classification']}** |")
+          report += ['','`REL` is the weaker of the ZL3b/IT2a Pearson correlations divided by the already-observed published-Naibbe weaker correlation `0.8830282501011794`.','']
+          report += ['## 4. Realization-level audit table','', '| RID | axis | E | W | min target r | REL | full R1 | strong |','|---|---|---:|---:|---:|---:|---|---|']
+          for rid in r['target_authorized_realizations']:
+              x=per[rid]; w=x['W']['median']
+              report.append(f"| {rid} | {x['axis']} | {x['E']:.6f} | {float(w) if w is not None else float('nan'):.6f} | {x['min_target_pearson']:.6f} | {x['relative_to_published_min_topology']:.6f} | {'PASS' if x['full_R1_pass'] else 'FAIL'} | {'YES' if x['strong_retained_realization'] else 'NO'} |")
+          report += ['','## 5. Causal interpretation by axis','']
+          for a in r['target_authorized_axes']:
+              cls=axes[a]['classification']
+              report += [f"### {a} — {meaning[a]}",'',f"**{cls}.** {causal[cls]}",'']
+          report += ['## 6. Frozen global interpretation','',f'**{g}.** {global_text[g]}','']
+          report += ['## 7. What this changes about R1','', 'The manuscript R1 result from #58C/#58D remains an independently replicated empirical property. Issue #72 changes only **where that property can be attributed in a generative stack**.','', 'R1 must not be promoted from “output construction constraint” to “historical process identifier” beyond what the frozen decomposition supports. R2 recurrence dynamics, R3 paragraph-entry specialization, R4 inverse closure and R5 access control remain independent responsibilities.','']
+          report += ['## 8. Next scientific frontier','']
+          if g=='R1 IS PREDOMINANTLY CODEBOOK/INVENTORY-EMBEDDED':
+              report += ['Stop spending primary discovery budget on R1 process attribution. The next frontier is a **dynamic/boundary residual tournament**: hold or match token inventory/R1 structure and ask which mechanisms can reproduce R2 short-range recurrence geometry and especially R3 paragraph-entry specialization. This moves from static token inventory to where/when tokens occur.','']
+          elif g=='R1 DEPENDS MATERIALLY ON CODEBOOK ASSOCIATION/STATE STRUCTURE':
+              report += ['The next frontier is a **non-target-aware codebook challenge** frozen from external historical/synthetic authority. Hold the reversible process fixed while replacing Voynich-designed codebook associations, then require R1 together with the already-hard R2/R3 responsibilities. This tests whether the observed association structure is target-design-specific.','']
+          elif g=='R1 DEPENDS MATERIALLY ON ENCRYPTION/PLAINTEXT PROCESS':
+              report += ['The next frontier is a **process-specific reversible-family challenge with a non-target-aware output codebook**, followed immediately by R2/R3. The goal is to test whether the process-level R1 effect survives removal of Voynich-designed glyph inventory and whether the same process can explain boundary/recurrence dynamics.','']
+          elif g=='R1 ORIGIN IS MIXED':
+              report += ['The next frontier is a small **factorial interaction test** frozen before scoring, using only the axes implicated by this reveal, to distinguish inventory×association×process interaction. Do not inspect/select individual R1 edges; use complete-graph family statistics and then return to R2/R3.','']
+          else:
+              report += ['The next frontier is to resolve the specific support/provenance identifiability failure without changing the scientific intervention family based on target values. No new model family should be promoted until a fair decomposition is possible.','']
+          report += ['## 9. Interpretation boundary','', 'This phase does not establish Latin plaintext, historical Naibbe use, homophonic encryption, semantic presence/absence, linguistic word boundaries, or decipherment. It locates the evidential level of one replicated structural constraint.','']
+          (root/'REPORT_A.md').write_text('\n'.join(report)+'\n',encoding='utf-8')
+
+          led=[]
+          led += ['# Hypothesis ledger addendum — Issue #72 result','', 'Status: **FIRST REVEAL COMPLETE / FROZEN**','',f'Aggregate JSON SHA-256: `{agg_sha}`','',f'Frozen global classification: **`{g}`**','']
+          led += ['## H72-global — origin of Naibbe R1','',f'**Result: {g}.**',global_text[g],'']
+          for a in r['target_authorized_axes']:
+              x=axes[a]
+              led += [f"## H72-{a} — {meaning[a]}",'',f"Frozen class: **`{x['classification']}`**",f"- realizations: {x['N']}",f"- full R1 passes: {x['full_R1_pass_count']}",f"- strong realizations: {x['strong_count']}",f"- median REL: `{x['median_relative_topology']}`",'',causal[x['classification']],'']
+          led += ['## Retained hard boundary','', 'Published Naibbe remains R2 FAIL / R3 FAIL / R4 FAIL. Issue #72 cannot rescue those responsibilities and no counterfactual becomes a decipherment candidate.','']
+          Path('research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE72_RESULT.md').write_text('\n'.join(led)+'\n',encoding='utf-8')
+
+          Path(root/'first-reveal/RESULT_CLASS.txt').write_text(g+'\n',encoding='utf-8')
+          Path(root/'first-reveal/AXIS_CLASSES.json').write_text(json.dumps({a:axes[a]['classification'] for a in r['target_authorized_axes']},indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          PY
+
+      - name: Prepend post-Issue72 Source-of-Truth blocks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('experiments/naibbe-r1-decomposition')
+          r=json.load(open(root/'first-reveal/issue72_results.json'))
+          g=r['frozen_global_classification']; axes={a:r['axis_results'][a]['classification'] for a in r['target_authorized_axes']}
+          agg_sha=hashlib.sha256((root/'first-reveal/issue72_results.json').read_bytes()).hexdigest()
+          axis_text=', '.join(f'{a}={axes[a]}' for a in r['target_authorized_axes'])
+          next_by={
+            'R1 IS PREDOMINANTLY CODEBOOK/INVENTORY-EMBEDDED': 'Move the primary frontier from static R1 process attribution to dynamic/boundary constraints: hold/match token inventory and R1, then test R2 recurrence geometry and especially R3 paragraph-entry specialization.',
+            'R1 DEPENDS MATERIALLY ON CODEBOOK ASSOCIATION/STATE STRUCTURE': 'Freeze a non-target-aware external codebook challenge, hold the reversible process fixed, and require R1 together with R2/R3; do not tune codebook associations from Voynich edges.',
+            'R1 DEPENDS MATERIALLY ON ENCRYPTION/PLAINTEXT PROCESS': 'Test the implicated reversible process with a non-target-aware output codebook, then require R2/R3 before any inverse-model promotion.',
+            'R1 ORIGIN IS MIXED': 'Run only a small preregistered factorial interaction test over the implicated axes, then return to R2/R3; no selected-edge rescue.',
+            'R1 DECOMPOSITION INCONCLUSIVE': 'Resolve the frozen support/provenance identifiability blocker without target-guided intervention redesign.',
+          }
+          blocks={
+            'research/STATUS.md': f'''## Current research state — Issue #72 R1 causal decomposition complete\n\nFrozen global classification: **`{g}`**.\n\nAxis classes: `{axis_text}`.\n\nIssue #68 remains accepted: published Naibbe R1 PASS but R2/R3/R4 FAIL and overall NOT COMPETITIVE. Issue #72 locates **where the R1 match lives** under preregistered counterfactual controls; it does not repair Naibbe or establish plaintext.\n\nPermanent aggregate JSON SHA-256: `{agg_sha}`.\n\n**Active frontier:** {next_by[g]}''',
+            'RESUME.md': f'''## Resume here — after Issue #72 Naibbe R1 decomposition\n\nRead `experiments/naibbe-r1-decomposition/REPORT_A.md`, `first-reveal/PROVENANCE.md`, `first-reveal/issue72_results.json`, and `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE72_RESULT.md`.\n\nFrozen Issue #72 global class: **`{g}`**. Axis classes: `{axis_text}`.\n\nDo not rerun/select counterfactual realizations or inspect favorable edges for promotion. Published Naibbe remains R2/R3/R4 FAIL.\n\nNext: {next_by[g]}''',
+            'ROADMAP.md': f'''## Active roadmap — post Issue #72\n\nIssue #72 complete: **`{g}`**. Axis classes: `{axis_text}`.\n\nR1 is now located more precisely in the Naibbe generative stack under frozen complete-family counterfactuals. The next macro step is not another 66-edge discovery loop.\n\n**Next capability frontier:** {next_by[g]}''',
+            'research/NEXT_RESEARCH_FRONTIER.md': f'''## CURRENT FRONTIER — after Issue #72\n\nIssue #72 frozen result: **`{g}`**.\n\nAxis classes: `{axis_text}`.\n\nThe result closes the immediate “why does target-aware Naibbe pass R1?” decomposition at the preregistered level.\n\n> **Next question:** {next_by[g]}\n\nR1 remains one responsibility in a joint falsification system. R2, R3, R4 and R5 are not interchangeable with R1, and published Naibbe remains a failed joint model. No selected-edge or post-hoc codebook repair may define the next test.''',
+            'research/TOKEN_CONSTRUCTION_PROGRAM.md': f'''## Program update — Issue #72 locates the evidential layer of R1\n\nFrozen decomposition: **`{g}`**. Axis classes: `{axis_text}`.\n\nThe #58C/#58D R1 residual token-construction graph remains a real, transcription-robust manuscript property. Issue #68 showed a target-aware reversible cipher can reproduce it; Issue #72 now constrains whether that reproduction is carried by inventory/codebook/process layers.\n\nUse R1 at the evidential level supported by this result, not as a standalone historical-process identifier. Published Naibbe still fails R2 recurrence responsibility, R3 signed paragraph-entry specialization, and R4 exact decoder closure.''',
+          }
+          for name,block in blocks.items():
+              p=Path(name); text=p.read_text(encoding='utf-8'); marker=block.splitlines()[0]
+              if marker in text: raise SystemExit(f'block already present: {name}')
+              lines=text.splitlines(keepends=True)
+              p.write_text(lines[0].rstrip('\n')+'\n\n'+block.strip()+'\n\n'+''.join(lines[1:]).lstrip('\n'),encoding='utf-8')
+          PY
+
+      - name: Remove temporary Issue72 workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          find .github/workflows -maxdepth 1 -type f -name 'issue72-*' -print -delete
+          test -z "$(find .github/workflows -maxdepth 1 -type f -name 'issue72-*' -print -quit)"
+
+      - name: Commit post-result convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experiments/naibbe-r1-decomposition research RESUME.md ROADMAP.md .github/workflows
+          git commit -m 'Converge research state after Issue72 R1 decomposition'
+          git push origin HEAD:issue72-naibbe-r1-decomposition
