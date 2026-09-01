@@ -1,0 +1,409 @@
+name: Issue75 Phase A complete first reveal
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseA-first-reveal.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  authorize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      scientific_head: ${{ steps.auth.outputs.scientific_head }}
+      reps: ${{ steps.auth.outputs.reps }}
+    steps:
+      - name: Checkout exact first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify complete pretarget chronology and freeze
+        id: auth
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN='8d984cfa61a5616bef61b45248c0a7a5d213fbf8'
+          A0='c703b2d01c941b6bfd17758f09868c71a200f212'
+          SCORER_ADD='21e7bbc176e593ef9fa025113fb17799ca500d8e'
+          AGG='d058a5dbe9571a7afa528e001d64d4a576f7c0ff'
+          IMPL_FREEZE='6dead1b0878ef9efde92d704c6e4e33ad1f43bb4'
+          PREFLIGHT_ADD='7cf4c779acfcc90f180cf1e4fce02352737e3091'
+          REPLAY_INCIDENT='cae1873d824e0e4c5e99cd3068c5cfed5a787438'
+          SCORER_REPAIR='11cbcab12e9c02e5002bc286a132b9a8a9f267aa'
+          REPAIR_ADDENDUM='1235dc77cb27f888faced53a582e74e21a2f59e9'
+          PREFLIGHT_HEAD='698e7ee5503bc7e47d183deb7d8cc09d89502216'
+          SMOKE_SCRIPT='ab01373f631f7ddfb476fdd0a617d6a0120010ce'
+          SMOKE_HEAD='b4a723c204996764a64ac53121156cc194461c98'
+          EXEC_FREEZE='5bfdb782a1a00c2401604f48b0014914b1954ed6'
+          HEAD=$(git rev-parse HEAD)
+
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PLAN_A.md | tail -1)" = "$PLAN"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/stage-a0/generator_authority.json | tail -1)" = "$A0"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75a_score.py | tail -1)" = "$SCORER_ADD"
+          test "$(git log -1 --format=%H -- experiments/minimal-occupancy-generator/phase75a_score.py)" = "$SCORER_REPAIR"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75a_aggregate.py | tail -1)" = "$AGG"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/IMPLEMENTATION_FREEZE_A.md | tail -1)" = "$IMPL_FREEZE"
+          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseA-preflight.yml | tail -1)" = "$PREFLIGHT_ADD"
+          test "$(git log -1 --format=%H -- .github/workflows/issue75-phaseA-preflight.yml)" = "$PREFLIGHT_HEAD"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PREFLIGHT_REPLAY_INCIDENT_20260901.md | tail -1)" = "$REPLAY_INCIDENT"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PREFLIGHT_REPLAY_REPAIR_ADDENDUM_20260901.md | tail -1)" = "$REPAIR_ADDENDUM"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75a_candidate_smoke.py | tail -1)" = "$SMOKE_SCRIPT"
+          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseA-candidate-smoke.yml | tail -1)" = "$SMOKE_HEAD"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PRETARGET_EXECUTION_FREEZE_A.md | tail -1)" = "$EXEC_FREEZE"
+          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseA-first-reveal.yml | tail -1)" = "$HEAD"
+
+          git merge-base --is-ancestor "$PLAN" "$A0"
+          git merge-base --is-ancestor "$A0" "$SCORER_ADD"
+          git merge-base --is-ancestor "$SCORER_ADD" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$IMPL_FREEZE"
+          git merge-base --is-ancestor "$IMPL_FREEZE" "$PREFLIGHT_ADD"
+          git merge-base --is-ancestor "$PREFLIGHT_ADD" "$REPLAY_INCIDENT"
+          git merge-base --is-ancestor "$REPLAY_INCIDENT" "$SCORER_REPAIR"
+          git merge-base --is-ancestor "$SCORER_REPAIR" "$REPAIR_ADDENDUM"
+          git merge-base --is-ancestor "$REPAIR_ADDENDUM" "$PREFLIGHT_HEAD"
+          git merge-base --is-ancestor "$PREFLIGHT_HEAD" "$SMOKE_SCRIPT"
+          git merge-base --is-ancestor "$SMOKE_SCRIPT" "$SMOKE_HEAD"
+          git merge-base --is-ancestor "$SMOKE_HEAD" "$EXEC_FREEZE"
+          git merge-base --is-ancestor "$EXEC_FREEZE" "$HEAD"
+
+          git diff --exit-code "$SCORER_REPAIR" "$HEAD" -- \
+            experiments/minimal-occupancy-generator/PLAN_A.md \
+            experiments/minimal-occupancy-generator/phase75a_generator_support.py \
+            experiments/minimal-occupancy-generator/stage-a0/generator_authority.json \
+            experiments/minimal-occupancy-generator/phase75a_score.py \
+            experiments/minimal-occupancy-generator/phase75a_aggregate.py \
+            experiments/joint-constraint-tournament/target68.py
+
+          test "$(git rev-parse HEAD:experiments/joint-constraint-tournament/target68.py)" = 'e94a24fbdfbb922099407313f23a1b87859130b6'
+          echo '83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2  experiments/minimal-occupancy-generator/stage-a0/generator_authority.json' | sha256sum -c -
+          test ! -e experiments/minimal-occupancy-generator/stage-a-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_A.md
+
+          echo "scientific_head=$HEAD" >> "$GITHUB_OUTPUT"
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          print('reps='+json.dumps(list(range(31)), separators=(',',':')))
+          PY
+
+      - name: Download all successful target-blind replay preflights
+        uses: actions/download-artifact@v4
+        with:
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33501747280
+          github-token: ${{ github.token }}
+          pattern: issue75-phaseA-preflight-*-698e7ee5503bc7e47d183deb7d8cc09d89502216
+          path: /tmp/preflight
+
+      - name: Verify all eight preflight artifacts remain target blind
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import glob,json
+          paths=glob.glob('/tmp/preflight/**/*.json', recursive=True)
+          assert len(paths)==8, paths
+          got=set()
+          for p in paths:
+              r=json.load(open(p, encoding='utf-8'))
+              assert r['schema']=='issue75-phaseA-r1-preflight-v1'
+              assert r['status']=='EXACT_A0_CORPUS_REGENERATED_TARGET_BLIND'
+              assert r['candidate_audit']['exact_stage_a0_replay'] is True
+              assert r['candidate_audit']['fit_tolerance_revalidated'] is True
+              assert r['candidate_audit']['regenerated_fit_max_abs_marginal_error'] <= 1e-10
+              assert all(v is False for v in r['target_access'].values())
+              got.add((r['family'],r['rep']))
+          expected={(f,r) for f in ('M0','M1','MPLUS-A','MPLUS-B') for r in (0,30)}
+          assert got==expected, got
+          print({'preflight_run':33501747280,'cases':sorted(got),'target_blind':True})
+          PY
+
+      - name: Download all successful target-blind candidate-null smoke artifacts
+        uses: actions/download-artifact@v4
+        with:
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33501857058
+          github-token: ${{ github.token }}
+          pattern: issue75-phaseA-candidate-smoke-*-b4a723c204996764a64ac53121156cc194461c98
+          path: /tmp/smoke
+
+      - name: Verify candidate null machinery passed without target access
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import glob,json,math
+          paths=glob.glob('/tmp/smoke/**/*.json', recursive=True)
+          assert len(paths)==4, paths
+          got=set()
+          for p in paths:
+              r=json.load(open(p, encoding='utf-8'))
+              assert r['schema']=='issue75-phaseA-candidate-null-smoke-v1'
+              assert r['status']=='CANDIDATE_OWNED_NULL_EXECUTION_VERIFIED_TARGET_BLIND'
+              assert r['candidate_audit']['exact_stage_a0_replay'] is True
+              m=r['measurement']
+              assert m['n_reference']==1000 and m['n_test']==1000 and len(m['z_full'])==66
+              assert math.isfinite(float(m['residual_energy'])) and 0 < float(m['p_exist']) <= 1
+              a=r['target_access']
+              assert a['pair_Q_computed'] is True and a['residual_Z_computed'] is True
+              assert a['Issue58C_target_vector_loaded'] is False
+              assert a['Issue58D_target_vector_loaded'] is False
+              assert a['target_correlation_computed'] is False
+              assert a['T_computed'] is False
+              got.add((r['family'],r['rep']))
+          assert got=={(f,0) for f in ('M0','M1','MPLUS-A','MPLUS-B')}, got
+          print({'smoke_run':33501857058,'families':sorted(got),'target_blind':True})
+          PY
+
+  score:
+    needs: authorize
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 32
+      matrix:
+        family: [M0, M1, MPLUS-A, MPLUS-B]
+        rep: ${{ fromJSON(needs.authorize.outputs.reps) }}
+    steps:
+      - name: Checkout exact authorized first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.scientific_head }}
+          fetch-depth: 0
+
+      - name: Verify exact frozen scientific files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git log -1 --format=%H -- experiments/minimal-occupancy-generator/phase75a_score.py)" = '11cbcab12e9c02e5002bc286a132b9a8a9f267aa'
+          test "$(git log -1 --format=%H -- experiments/minimal-occupancy-generator/phase75a_aggregate.py)" = 'd058a5dbe9571a7afa528e001d64d4a576f7c0ff'
+          echo '83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2  experiments/minimal-occupancy-generator/stage-a0/generator_authority.json' | sha256sum -c -
+          test "$(git rev-parse HEAD:experiments/joint-constraint-tournament/target68.py)" = 'e94a24fbdfbb922099407313f23a1b87859130b6'
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cipher_benchmark rev-parse HEAD)" = '315f0cad4de3d021bd4185765c037cf2a28d341c'
+          test "$(git -C _cipher_benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = '2a4533ab9bdfa85db9bad602d590978953055df1'
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Compile frozen scorer
+        run: python -m py_compile experiments/minimal-occupancy-generator/phase75a_score.py
+
+      - name: FIRST REVEAL score exact frozen corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/score
+          python experiments/minimal-occupancy-generator/phase75a_score.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            '${{ matrix.family }}' '${{ matrix.rep }}' \
+            '/tmp/score/${{ matrix.family }}_${{ matrix.rep }}.json' \
+            > '/tmp/score/${{ matrix.family }}_${{ matrix.rep }}.stdout.txt'
+
+      - name: Validate exact scored case without selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math
+          family='${{ matrix.family }}'
+          rep=${{ matrix.rep }}
+          p=f'/tmp/score/{family}_{rep}.json'
+          r=json.load(open(p, encoding='utf-8'))
+          assert r['schema']=='issue75-phaseA-r1-score-v1'
+          assert r['status']=='PHASE_A_GENERATOR_R1_FIRST_REVEAL_CASE_SCORED'
+          assert r['plan_commit']=='8d984cfa61a5616bef61b45248c0a7a5d213fbf8'
+          assert r['family']==family and r['rep']==rep
+          assert r['pair_count']==66
+          assert r['target_readings_averaged'] is False
+          assert r['no_case_selection'] is True and r['no_reroll'] is True
+          a=r['candidate_audit']
+          assert a['stage_a0_authority_sha256']=='83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2'
+          assert a['exact_stage_a0_replay'] is True
+          assert a['fit_empirical_statistics_exact_stage_a0'] is True
+          assert a['fit_tolerance_revalidated'] is True
+          assert a['regenerated_fit_max_abs_marginal_error'] <= 1e-10
+          assert a['tokens']==25071 and a['fold_tokens']==[4430,4810,5516,5447,4868]
+          a0=json.load(open('experiments/minimal-occupancy-generator/stage-a0/generator_authority.json', encoding='utf-8'))
+          frozen=next(x for x in a0['cases'] if x['family']==family and x['rep']==rep)
+          assert a['occupancy_sha256']==frozen['occupancy_sha256']
+          m=r['measurement']
+          assert m['reference_namespace']==f'issue75:phaseA:{family}:rep{rep}:reference'
+          assert m['test_namespace']==f'issue75:phaseA:{family}:rep{rep}:test'
+          assert m['n_reference']==1000 and m['n_test']==1000
+          assert len(m['z_full'])==66
+          assert math.isfinite(float(m['residual_energy']))
+          assert 0 < float(m['p_exist']) <= 1
+          for target in ('ZL3b','IT2a'):
+              t=r['topology'][target]
+              assert math.isfinite(float(t['pearson']))
+              assert 0 <= int(t['sign_agreement']) <= 66 and t['sign_denominator']==66
+          assert math.isfinite(float(r['T']))
+          assert abs(float(r['T'])-min(float(r['topology']['ZL3b']['pearson']),float(r['topology']['IT2a']['pearson']))) <= 1e-15
+          assert all(v is True for v in r['target_access'].values())
+          print({'family':family,'rep':rep,'T':r['T'],'R_ZL3b':r['topology']['ZL3b']['pearson'],'R_IT2a':r['topology']['IT2a']['pearson'],'E':m['residual_energy'],'p_exist':m['p_exist']})
+          PY
+          sha256sum '/tmp/score/${{ matrix.family }}_${{ matrix.rep }}.json' '/tmp/score/${{ matrix.family }}_${{ matrix.rep }}.stdout.txt' > '/tmp/score/SHA256_${{ matrix.family }}_${{ matrix.rep }}.txt'
+
+      - name: Upload immutable scored case
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseA-score-${{ matrix.family }}-${{ matrix.rep }}-${{ needs.authorize.outputs.scientific_head }}
+          path: /tmp/score
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
+
+  aggregate:
+    needs: [authorize, score]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact authorized first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.scientific_head }}
+          fetch-depth: 0
+
+      - name: Download all 124 scored cases from this run
+        uses: actions/download-artifact@v4
+        with:
+          pattern: issue75-phaseA-score-*-${{ needs.authorize.outputs.scientific_head }}
+          path: /tmp/results
+          merge-multiple: true
+
+      - name: Enforce complete no-drop first-reveal population
+        shell: bash
+        run: |
+          set -euo pipefail
+          COUNT=$(find /tmp/results -maxdepth 1 -type f -name '*.json' | wc -l)
+          test "$COUNT" -eq 124
+          python - <<'PY'
+          import glob,json
+          paths=glob.glob('/tmp/results/*.json')
+          got=[]
+          for p in paths:
+              r=json.load(open(p, encoding='utf-8'))
+              got.append((r['family'],r['rep']))
+          expected={(f,r) for f in ('M0','M1','MPLUS-A','MPLUS-B') for r in range(31)}
+          assert len(got)==124 and len(set(got))==124 and set(got)==expected
+          print({'complete_population':True,'count':124,'drops':0,'rerolls':0})
+          PY
+
+      - name: Aggregate frozen ordered Phase A decision
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/final/individual
+          python experiments/minimal-occupancy-generator/phase75a_aggregate.py \
+            /tmp/results \
+            /tmp/final/phase75a_aggregate.json \
+            '${{ needs.authorize.outputs.scientific_head }}' \
+            > /tmp/final/aggregate.stdout.txt
+          cp /tmp/results/*.json /tmp/final/individual/
+
+      - name: Validate aggregate contract and reveal classification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/final/phase75a_aggregate.json', encoding='utf-8'))
+          assert r['schema']=='issue75-phaseA-aggregate-v1'
+          assert r['status']=='PHASE_A_COMPLETE_124_CASE_POPULATION_AGGREGATED'
+          assert r['scientific_head']=='${{ needs.authorize.outputs.scientific_head }}'
+          assert r['plan_commit']=='8d984cfa61a5616bef61b45248c0a7a5d213fbf8'
+          assert r['stage_a0_authority_sha256']=='83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2'
+          assert r['population']['total_results']==124
+          assert r['population']['complete_population'] is True
+          assert r['population']['no_drops'] is True and r['population']['no_rerolls'] is True
+          assert set(r['families'])=={'M0','M1','MPLUS-A','MPLUS-B'}
+          assert r['positive_control']['T_control_floor']==0.9447148364
+          allowed={
+              'POSITIVE_CONTROL_CALIBRATION_FAILED_STOP',
+              'M0_INDEPENDENT_SLOT_MARGINALS_SUFFICIENT',
+              'M1_MARGINALS_PLUS_OCCUPANCY_COUNT_SUFFICIENT',
+              'LOW_ORDER_MODELS_INSUFFICIENT_EMPIRICAL_PATTERN_STRUCTURE_REQUIRED',
+          }
+          assert r['ordered_classification'] in allowed
+          if r['positive_control']['valid']:
+              assert r['ordered_classification']==r['primary_q95_equivalence']['classification_if_positive_control_valid']
+          else:
+              assert r['ordered_classification']=='POSITIVE_CONTROL_CALIBRATION_FAILED_STOP'
+          g=r['guardrails']
+          assert g['target_edge_loss_optimized'] is False
+          assert g['selected_edges_used'] is False
+          assert g['reading_targets_averaged'] is False
+          assert g['arbitrary_round_R_threshold_used'] is False
+          assert g['post_reveal_family_added'] is False
+          assert g['M2_or_M3_executed'] is False
+          print({
+              'positive_control':r['positive_control'],
+              'delta_plus_q95':r['primary_q95_equivalence']['delta_plus'],
+              'gaps':r['primary_q95_equivalence']['gap'],
+              'no_material_loss':r['primary_q95_equivalence']['no_material_loss'],
+              'classification':r['ordered_classification'],
+              'T_medians':{f:r['families'][f]['T']['median'] for f in ('M0','M1','MPLUS-A','MPLUS-B')},
+              'R_ZL3b_medians':{f:r['families'][f]['R_ZL3b']['median'] for f in ('M0','M1','MPLUS-A','MPLUS-B')},
+              'R_IT2a_medians':{f:r['families'][f]['R_IT2a']['median'] for f in ('M0','M1','MPLUS-A','MPLUS-B')},
+          })
+          PY
+
+      - name: Freeze exact first-reveal provenance and hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/final/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          scientific_head=${{ needs.authorize.outputs.scientific_head }}
+          plan_commit=8d984cfa61a5616bef61b45248c0a7a5d213fbf8
+          stage_a0_commit=c703b2d01c941b6bfd17758f09868c71a200f212
+          stage_a0_sha256=83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2
+          scorer_original_freeze_commit=21e7bbc176e593ef9fa025113fb17799ca500d8e
+          scorer_replay_repair_commit=11cbcab12e9c02e5002bc286a132b9a8a9f267aa
+          aggregate_freeze_commit=d058a5dbe9571a7afa528e001d64d4a576f7c0ff
+          successful_preflight_run=33501747280
+          successful_preflight_head=698e7ee5503bc7e47d183deb7d8cc09d89502216
+          successful_candidate_smoke_run=33501857058
+          successful_candidate_smoke_head=b4a723c204996764a64ac53121156cc194461c98
+          target68_blob=e94a24fbdfbb922099407313f23a1b87859130b6
+          population=M0:31,M1:31,MPLUS-A:31,MPLUS-B:31,total:124
+          drops=0
+          rerolls=0
+          target_edge_loss_optimized=false
+          selected_edges_used=false
+          readings_averaged=false
+          post_reveal_family_added=false
+          EOF
+          (cd /tmp/final && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum) > /tmp/final/SHA256SUMS.txt
+
+      - name: Upload complete Phase A first-reveal evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseA-FIRST-REVEAL-${{ needs.authorize.outputs.scientific_head }}
+          path: /tmp/final
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
