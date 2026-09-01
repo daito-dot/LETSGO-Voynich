@@ -1,0 +1,138 @@
+name: Issue72 final synthetic-only pre-reveal verification
+
+on:
+  push:
+    branches: [issue72-naibbe-r1-decomposition]
+    paths:
+      - '.github/workflows/issue72-exact-head-pre-reveal.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue72-naibbe-r1-decomposition
+          fetch-depth: 0
+
+      - name: Verify complete pre-reveal chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERIFIED_HEAD=$(git rev-parse HEAD)
+          SOURCE_PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/SOURCE_AUDIT_PLAN.md | tail -1)
+          SOURCE_AUDIT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/source-audit/source_audit.json | tail -1)
+          TARGET_PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/PLAN_A.md | tail -1)
+          FAMILY_FREEZE=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/family-preflight/preflight.json | tail -1)
+          TARGET_IMPL=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/TARGET_IMPLEMENTATION.md | tail -1)
+          RUNTIME=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/TARGET_RUNTIME_FREEZE.md | tail -1)
+          SCORER=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/target72.py | tail -1)
+          AGG=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/aggregate72.py | tail -1)
+          PROTOCOL=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/FIRST_REVEAL_PROTOCOL.md | tail -1)
+          REVEALWF=$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-r1-first-reveal.yml | tail -1)
+          for x in "$SOURCE_PLAN" "$SOURCE_AUDIT" "$TARGET_PLAN" "$FAMILY_FREEZE" "$TARGET_IMPL" "$RUNTIME" "$SCORER" "$AGG" "$PROTOCOL" "$REVEALWF"; do test -n "$x"; done
+          git merge-base --is-ancestor "$SOURCE_PLAN" "$SOURCE_AUDIT"
+          git merge-base --is-ancestor "$SOURCE_AUDIT" "$TARGET_PLAN"
+          git merge-base --is-ancestor "$TARGET_PLAN" "$FAMILY_FREEZE"
+          git merge-base --is-ancestor "$FAMILY_FREEZE" "$TARGET_IMPL"
+          git merge-base --is-ancestor "$TARGET_IMPL" "$RUNTIME"
+          git merge-base --is-ancestor "$RUNTIME" "$SCORER"
+          git merge-base --is-ancestor "$SCORER" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$PROTOCOL"
+          git merge-base --is-ancestor "$PROTOCOL" "$REVEALWF"
+          test ! -e experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+          echo "VERIFIED_HEAD=$VERIFIED_HEAD" >> "$GITHUB_ENV"
+          echo "SOURCE_PLAN=$SOURCE_PLAN" >> "$GITHUB_ENV"
+          echo "SOURCE_AUDIT=$SOURCE_AUDIT" >> "$GITHUB_ENV"
+          echo "TARGET_PLAN=$TARGET_PLAN" >> "$GITHUB_ENV"
+          echo "FAMILY_FREEZE=$FAMILY_FREEZE" >> "$GITHUB_ENV"
+          echo "SCORER=$SCORER" >> "$GITHUB_ENV"
+          echo "AGG=$AGG" >> "$GITHUB_ENV"
+          echo "PROTOCOL=$PROTOCOL" >> "$GITHUB_ENV"
+          echo "REVEALWF=$REVEALWF" >> "$GITHUB_ENV"
+
+      - name: Verify complete frozen target family
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('experiments/naibbe-r1-decomposition')
+          sa=json.load(open(root/'source-audit/source_audit.json'))
+          fp=json.load(open(root/'family-preflight/preflight.json'))
+          assert sa['counterfactual_R1_scored'] is False
+          assert not any(sa['forbidden_quantities_computed'].values())
+          assert fp['counterfactual_R1_scored'] is False
+          assert not any(fp['forbidden_quantities_computed'].values())
+          axes=[x.strip() for x in (root/'family-preflight/TARGET_AUTHORIZED_AXES.txt').read_text().splitlines() if x.strip()]
+          ids=[x.strip() for x in (root/'family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt').read_text().splitlines() if x.strip()]
+          assert axes==fp['target_authorized_axes']
+          assert ids==fp['target_authorized_realizations']
+          assert len(ids)>0 and len(ids)==len(set(ids))
+          recs={x['realization']:x for x in fp['realizations']}
+          assert set(ids)<=set(recs)
+          assert all(recs[r]['axis'] in axes for r in ids)
+          assert all(recs[r]['support']['coverage']>=0.60 for r in ids)
+          assert all(fp['axis_support_status'][a]['all_realizations_support_eligible'] for a in axes)
+          print('axes=',axes)
+          print('realizations=',ids)
+          PY
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install exact frozen runtime
+        run: python -m pip install --disable-pip-version-check numpy==2.5.2 scipy==1.18.1 pandas==3.0.5
+
+      - name: Compile and run synthetic tests only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/naibbe-r1-decomposition/target72.py
+          python -m py_compile experiments/naibbe-r1-decomposition/aggregate72.py
+          python experiments/naibbe-r1-decomposition/target72.py --self-test
+          python experiments/naibbe-r1-decomposition/aggregate72.py --self-test
+          test ! -e experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+
+      - name: Record final pre-reveal verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=experiments/naibbe-r1-decomposition/target-preflight
+          mkdir -p "$DIR"
+          AXES=$(paste -sd, experiments/naibbe-r1-decomposition/family-preflight/TARGET_AUTHORIZED_AXES.txt)
+          IDS=$(paste -sd, experiments/naibbe-r1-decomposition/family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt)
+          cat > "$DIR/PRE_REVEAL_VERIFIED.md" <<EOF
+          # Issue #72 final pre-reveal verification
+
+          Status: **VERIFIED — complete protocol/workflow present; no real counterfactual R1 scored**
+
+          - verification workflow run: \`${GITHUB_RUN_ID}\`
+          - verified pre-marker branch head: \`${VERIFIED_HEAD}\`
+          - source plan: \`${SOURCE_PLAN}\`
+          - permanent Stage-A audit first-add: \`${SOURCE_AUDIT}\`
+          - target PLAN_A: \`${TARGET_PLAN}\`
+          - family support freeze: \`${FAMILY_FREEZE}\`
+          - target scorer: \`${SCORER}\`
+          - aggregate scorer: \`${AGG}\`
+          - first-reveal protocol: \`${PROTOCOL}\`
+          - first-reveal workflow: \`${REVEALWF}\`
+          - runtime: Python 3.13 / numpy 2.5.2 / scipy 1.18.1 / pandas 3.0.5
+          - target-authorized axes: \`${AXES}\`
+          - target-authorized realizations: \`${IDS}\`
+          - real counterfactual R1 scored: **false**
+
+          The next scientific operation is the single PR-open first-reveal event. No branch update after the PR-open event may alter the frozen scientific family or gates.
+          EOF
+          rm .github/workflows/issue72-exact-head-pre-reveal.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$DIR/PRE_REVEAL_VERIFIED.md" .github/workflows/issue72-exact-head-pre-reveal.yml
+          git commit -m 'Record Issue72 final pre-reveal verification'
+          git push origin HEAD:issue72-naibbe-r1-decomposition
