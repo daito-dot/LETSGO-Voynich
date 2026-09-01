@@ -93,6 +93,28 @@ def load_a0_authority() -> tuple[dict, dict[tuple[str, int], dict]]:
     return r, cases
 
 
+def validate_refit_authority(fit_public: Mapping, frozen_fit: Mapping) -> float:
+    """Validate scientific fit authority without hardware-level float bit identity."""
+    max_error = 0.0
+    for fam in ("M0", "M1"):
+        for f in range(N_FOLDS):
+            key = str(f)
+            cur = fit_public[fam][key]
+            frozen = frozen_fit[fam][key]
+            if cur["target_marginals"] != frozen["target_marginals"]:
+                raise RuntimeError(f"training target marginals changed for {fam} fold {f}")
+            if fam == "M1" and cur.get("qk") != frozen.get("qk"):
+                raise RuntimeError(f"training K distribution changed for M1 fold {f}")
+            cur_err = float(cur["max_abs_marginal_error"])
+            frozen_err = float(frozen["max_abs_marginal_error"])
+            if not math.isfinite(cur_err) or cur_err > gen.FIT_TOL:
+                raise RuntimeError(f"regenerated {fam} fold {f} fit exceeds frozen tolerance: {cur_err}")
+            if not math.isfinite(frozen_err) or frozen_err > gen.FIT_TOL:
+                raise RuntimeError(f"Stage A0 {fam} fold {f} fit authority exceeds frozen tolerance: {frozen_err}")
+            max_error = max(max_error, cur_err)
+    return max_error
+
+
 def build_exact_case(src: Path, family: str, rep: int, authority: Mapping, cases: Mapping) -> tuple[dict, np.ndarray, dict]:
     if e.git_blob_sha1(src.read_bytes()) != EXPECTED_SOURCE_BLOB:
         raise RuntimeError("frozen ZL3b source blob mismatch")
@@ -110,8 +132,7 @@ def build_exact_case(src: Path, family: str, rep: int, authority: Mapping, cases
         fam: {str(f): gen.serialize_fit(fits[fam][f]) for f in range(N_FOLDS)}
         for fam in ("M0", "M1")
     }
-    if fit_public != authority["fit"]:
-        raise RuntimeError("deterministic M0/M1 fit no longer matches Stage A0 authority")
+    refit_max_error = validate_refit_authority(fit_public, authority["fit"])
 
     X = gen.generate_case(d, fits, family, rep)
     got_sha = gen.occupancy_sha(X)
@@ -142,6 +163,9 @@ def build_exact_case(src: Path, family: str, rep: int, authority: Mapping, cases
         "line_count": int(candidate["line_mask"].shape[0]),
         "line_token_count_digest": sha256_bytes(candidate["line_mask"].sum(axis=1).astype(np.int32).tobytes()),
         "all_zero_count": int(np.sum(X.sum(axis=1) == 0)),
+        "fit_empirical_statistics_exact_stage_a0": True,
+        "fit_tolerance_revalidated": True,
+        "regenerated_fit_max_abs_marginal_error": refit_max_error,
         "frozen_case": frozen,
         "exact_stage_a0_replay": True,
     }
