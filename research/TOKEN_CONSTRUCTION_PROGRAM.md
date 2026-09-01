@@ -1,5 +1,29 @@
 # Token-construction program — purpose, object, and decision path
 
+## Program update — Issue #68 changes the evidential role of the token-construction graph
+
+The core empirical finding remains accepted:
+
+> Voynich space-delimited tokens, under the frozen 12-slot representation, exhibit a strong non-null residual construction graph that replicates across independent ZL3b and IT2a readings.
+
+Issue #68 adds a crucial mechanism-control result:
+
+> Published target-aware Naibbe C1-E0 also passes the complete-66 R1 residual constraint very strongly (`r=.883` vs ZL3b, `.900` vs IT2a; `60/66` and `61/66` signs; familywise `p=1/1001`).
+
+Therefore the program must distinguish **existence of the token-construction rule** from **identification of the historical process that produced it**.
+
+Current responsibility hierarchy:
+
+- **R1 token construction:** strong, replicated output-grammar constraint; no longer sufficient alone to rule out reversible cipher families.
+- **R2 short-range recurrence geometry (H62):** dynamic/local-family responsibility not automatically implied by R1; Naibbe fails the frozen joint gate.
+- **R3 signed paragraph-entry S1:** currently the hardest tested structural discriminator; Naibbe is wrong-sign in all five frozen comparisons.
+- **R4 inverse closure:** source-side requirement for a claimed decoder; published Naibbe closes uniquely/exactly on only `1167/1778` primary lines under the frozen rule.
+- **R5 access/complexity:** protects against target-guided repair.
+
+The token-construction program should now ask **what layer R1 lives in**: codebook inventory, codebook association, encryption/generation process, or an interaction among them. The next phase must decompose that question prospectively at complete-graph level.
+
+Do not reinterpret R1 PASS as evidence for Naibbe historical identity, Latin plaintext, or encryption. Conversely, do not discard R1 because a target-aware cipher can reproduce it. Its role is now precisely defined as one constraint in a joint falsification system.
+
 Status: normative orientation for the token-construction research lane.
 
 This document exists so that a future researcher or agent can recover **why this lane is being run** before reading individual statistics. Phase-specific frozen plans, first-reveal artifacts, and reports remain authoritative for exact methods and numbers.
