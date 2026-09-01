@@ -82,7 +82,7 @@ def _find_rep(per, rep: int) -> Mapping:
             return per[str(rep)]
         matches = [x for x in per.values() if isinstance(x, dict) and int(x.get("rep", -1)) == rep]
     else:
-        raise RuntimeError("unexpected B2 positive_control_summary.per_rep schema")
+        raise RuntimeError("unexpected B2 per_rep schema")
     if len(matches) != 1:
         raise RuntimeError(f"B2 baseline does not uniquely contain rep{rep}: {len(matches)}")
     return matches[0]
@@ -95,7 +95,13 @@ def load_b2_baselines(path: Path) -> dict[int, dict]:
     obj = json.loads(path.read_text(encoding="utf-8"))
     if obj.get("status") != "EXTENDED UNCHANGED-NAIBBE R1 DISTRIBUTION CALIBRATED":
         raise RuntimeError("B2 calibration status changed")
-    per = obj["positive_control_summary"]["per_rep"]
+    if obj.get("schema") != "issue72-v2-stage-b2-25rep-positive-control-v1":
+        raise RuntimeError(f"B2 calibration schema changed: {obj.get('schema')}")
+    if obj.get("issue72_intervention_R1_computed") is not False:
+        raise RuntimeError("B2 archive says Issue72 intervention R1 was already computed")
+    if obj.get("issue72_intervention_surface_loaded_or_generated") is not False:
+        raise RuntimeError("B2 archive says Issue72 intervention surface was already loaded/generated")
+    per = obj["per_rep"]
     out = {}
     required = ("coverage", "E", "W", "R_ZL3b", "R_IT2a", "sign_ZL3b", "sign_IT2a")
     for rep in range(5):
