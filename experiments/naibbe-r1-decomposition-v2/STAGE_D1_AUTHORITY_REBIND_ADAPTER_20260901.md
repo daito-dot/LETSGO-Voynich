@@ -32,11 +32,27 @@ The repair is restricted to execution/transport glue:
 
 - keep `d1_pt_r1_score72_v2.py` unchanged as the scoring authority frozen in `127c86f...`;
 - add a post-score aggregation adapter for that scorer's nested output schema;
-- load the already-frozen B2 `positive_control_summary.per_rep` baseline without rescoring unchanged Naibbe;
+- load the already-frozen B2 top-level `per_rep` baseline from schema `issue72-v2-stage-b2-25rep-positive-control-v1` without rescoring unchanged Naibbe;
 - compute the preregistered per-case `delta_R = R_PT - R_baseline`;
 - aggregate exactly 31 assignments × 5 historical RNG blocks with the already-frozen Stage D1 law;
 - add a new target-blind preflight for the rebind-aware scorer before any first reveal;
 - retain the older scorer/workflow/aggregator unchanged for audit history, but do not use them as the authoritative rebind-aware first-reveal path.
+
+## Target-blind preflight incident
+
+The first rebind-aware preflight was GitHub Actions run `33493894496` at head `f93cbed3ca3b15322987cbbb21ac686c43809f8b`.
+
+Both endpoint cases (`j0/rep0` and `j30/rep4`) passed:
+
+- frozen repository authority SHA checks;
+- exact D0 PT surface replay;
+- paired baseline surface replay;
+- raw/support/line-invariant replay gates;
+- the target firewall, with every target-access flag false.
+
+The run then failed in the downstream B2 baseline adapter before any target access. The adapter incorrectly looked for `positive_control_summary.per_rep`; the frozen B2 archive stores `per_rep` at the top level. This was a transport/schema mismatch only. Commit `5b5926fa1166d9361a2daf5fb80c81233f8c8f25` binds the adapter to the frozen B2 schema and adds explicit gates that the archived Issue #72 intervention surface and R1 were still uncomputed.
+
+No Stage D1 R1 target score existed when this repair was made.
 
 ## Scientific commitments unchanged
 
