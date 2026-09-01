@@ -1,4 +1,4 @@
-name: Issue75 Phase D0 target-blind M4-KRS-DISTANCE authority
+name: Issue75 Phase D0 target-blind M4-KRS-CHAIN-DISTANCE authority
 
 on:
   push:
@@ -20,14 +20,13 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
 
-      - name: Verify plan-before-code and target-blind implementation
+      - name: Verify corrected plan-before-code and target-blind implementation
         shell: bash
         run: |
           set -euo pipefail
-          PLAN=1a56ef550af3ab65620ad32b2b4d6ba5aa7becc4
-          GEN=1019378243dd145baa0a0da31a766558f312b0df
-          FREEZE=b2bc261513a910053c8bbc01c57f99742a5d785b
-          test "$(git rev-parse ${GEN}^)" = "$PLAN"
+          PLAN=dcf652ef20418f230a1da9521ec036bb0c58e24c
+          GEN=ef8edcb94e287a3fd6c559308ff902dc7d1c41ee
+          FREEZE=48e4d8c8777e9d5e47b896e2a5bdd3419007fb73
           git merge-base --is-ancestor "$PLAN" "$GEN"
           git merge-base --is-ancestor "$GEN" "$FREEZE"
           git merge-base --is-ancestor "$FREEZE" HEAD
@@ -62,7 +61,7 @@ jobs:
           python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
           python -m py_compile experiments/minimal-occupancy-generator/phase75d_generator_support.py
 
-      - name: Generate complete 31-case M4 target-blind authority
+      - name: Generate complete 31-case corrected M4 target-blind authority
         shell: bash
         run: |
           set -euo pipefail
@@ -72,36 +71,45 @@ jobs:
             /tmp/d0/generator_authority.json \
             > /tmp/d0/stdout.txt
 
-      - name: Validate frozen D0 contract
+      - name: Validate corrected frozen D0 contract
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           import json,math
           r=json.load(open('/tmp/d0/generator_authority.json'))
-          assert r['schema']=='issue75-phaseD0-m4-krs-distance-generator-authority-v1'
-          assert r['status']=='M4_KRS_DISTANCE_31_CORPORA_FROZEN_TARGET_BLIND'
-          assert r['family']=='M4-KRS-DISTANCE'
+          assert r['schema']=='issue75-phaseD0-m4-krs-chain-distance-generator-authority-v1'
+          assert r['status']=='M4_KRS_CHAIN_DISTANCE_31_CORPORA_FROZEN_TARGET_BLIND'
+          assert r['family']=='M4-KRS-CHAIN-DISTANCE'
           assert r['source']['ZL3b_blob']=='2a4533ab9bdfa85db9bad602d590978953055df1'
           assert r['source']['parsed_tokens']==25071
           assert r['source']['fold_parsed_tokens']==[4430,4810,5516,5447,4868]
           m=r['model_definition']
           assert m['free_unary_parameters']==11
-          assert m['free_distance_parameters']==9
-          assert m['free_continuous_parameters']==20
+          assert m['free_adjacent_parameters']==10
+          assert m['free_distance_parameters']==8
+          assert m['free_continuous_parameters']==29
           assert m['explicit_pair_specific_nonadjacent_parameters']==0
           assert m['empirical_signature_specific_parameters']==0
           assert m['latent_state_parameters']==0
-          assert m['free_distance_terms']==list(range(3,12))
-          assert m['gauges']=={'h_0':0.0,'J_2':0.0}
+          assert m['free_distance_terms']==list(range(3,11))
+          assert m['gauges_and_fixed']=={'h_0':0.0,'J_adjacent_0':0.0,'B_distance_2':0.0,'B_distance_11':0.0}
+          rank=m['exact_state_rank_audit']['ranks']
+          assert rank=={'unary':11,'unary_plus_adjacent':21,'full_33':29,'selected_free_29':29}
           assert len(r['fit'])==5
           for f in range(5):
               x=r['fit'][str(f)]
-              assert x['free_continuous_parameters']==20
+              assert x['free_continuous_parameters']==29
+              assert x['free_unary_parameters']==11
+              assert x['free_adjacent_parameters']==10
+              assert x['free_distance_parameters']==8
               assert x['distance_labels']==list(range(2,12))
+              assert x['exact_state_rank_audit']['ranks']==rank
               a=x['descriptor_identity_audit']
               assert float(a['abs_error_K_identity']) <= 1e-12
+              assert float(a['abs_error_adjacent_identity']) <= 1e-12
               assert float(a['abs_error_nonadjacent_identity']) <= 1e-12
+              assert float(a['abs_error_C11_span_identity']) <= 1e-12
               assert math.isfinite(float(x['max_abs_reported_moment_error']))
               assert float(x['max_abs_reported_moment_error']) <= 1e-10
           assert float(r['fit_max_abs_reported_moment_error']) <= 1e-10
@@ -117,6 +125,7 @@ jobs:
           print({
             'cases':31,
             'fit_max_error':r['fit_max_abs_reported_moment_error'],
+            'rank':rank,
             'distinct_signature_range':[min(x['distinct_signatures'] for x in r['cases']),max(x['distinct_signatures'] for x in r['cases'])],
             'target_access':r['target_access']})
           PY
@@ -124,14 +133,16 @@ jobs:
           PLAN_SHA=$(sha256sum experiments/minimal-occupancy-generator/PLAN_D.md | cut -d' ' -f1)
           AUTH_SHA=$(sha256sum /tmp/d0/generator_authority.json | cut -d' ' -f1)
           cat > /tmp/d0/PROVENANCE.txt <<EOF
-          scientific_role=PRETARGET_CROSSFITTED_KRS_DISTANCE_BANDED_GENERATOR_AUTHORITY
+          scientific_role=PRETARGET_CROSSFITTED_KRS_CHAIN_DISTANCE_GENERATOR_AUTHORITY
           workflow_run=${GITHUB_RUN_ID}
           workflow_attempt=${GITHUB_RUN_ATTEMPT}
           generation_head=${GITHUB_SHA}
-          plan_d_commit=1a56ef550af3ab65620ad32b2b4d6ba5aa7becc4
+          normative_plan_d_commit=dcf652ef20418f230a1da9521ec036bb0c58e24c
           plan_d_sha256=${PLAN_SHA}
-          generator_commit=1019378243dd145baa0a0da31a766558f312b0df
-          implementation_freeze_commit=b2bc261513a910053c8bbc01c57f99742a5d785b
+          corrected_generator_commit=ef8edcb94e287a3fd6c559308ff902dc7d1c41ee
+          corrected_implementation_freeze_commit=48e4d8c8777e9d5e47b896e2a5bdd3419007fb73
+          obsolete_distance_only_run=33510176784
+          obsolete_distance_only_run_authoritative=false
           generator_authority_sha256=${AUTH_SHA}
           phase_c_aggregate_sha256=34affe98b68a1e410ea3d4384a917450c2b58e7a8e02a30da8befa660712421a
           cases=31
@@ -143,19 +154,20 @@ jobs:
           rerolls=0
           EOF
 
-      - name: Upload immutable target-blind D0 authority
+      - name: Upload immutable corrected target-blind D0 authority
         uses: actions/upload-artifact@v4
         with:
-          name: issue75-phaseD0-M4-KRS-DISTANCE-${{ github.sha }}
+          name: issue75-phaseD0-M4-KRS-CHAIN-DISTANCE-${{ github.sha }}
           path: /tmp/d0
           if-no-files-found: error
           retention-days: 90
 
-      - name: Commit exact D0 authority into repository
+      - name: Commit exact corrected D0 authority into repository
         shell: bash
         run: |
           set -euo pipefail
           DEST=experiments/minimal-occupancy-generator/stage-d0
+          test ! -e "$DEST"
           mkdir -p "$DEST"
           cp /tmp/d0/generator_authority.json "$DEST/"
           cp /tmp/d0/stdout.txt "$DEST/"
@@ -164,5 +176,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "$DEST"
-          git commit -m 'Issue75 Phase D0: freeze 31-case target-blind M4 authority'
+          git commit -m 'Issue75 Phase D0: freeze corrected 31-case target-blind M4 authority'
           git push origin HEAD:issue75-minimal-occupancy-generator
