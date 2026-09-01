@@ -1,0 +1,93 @@
+name: Issue75 Phase C recovered permanent first-reveal freeze
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths: ['.github/workflows/issue75-phaseC-recovered-permanent-freeze.yml']
+permissions: {actions: read, contents: write}
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: issue75-minimal-occupancy-generator, fetch-depth: 0}
+      - name: Verify exact result authority
+        env: {GH_TOKEN: '${{ github.token }}'}
+        shell: bash
+        run: |
+          set -euo pipefail
+          SCI=8d02507355f428ffc80d590bbcfe256ce9fd0d95
+          git merge-base --is-ancestor "$SCI" HEAD
+          test ! -e experiments/minimal-occupancy-generator/stage-c-first-reveal
+          git diff --exit-code 8f592a979a44bb5c981e52afa4cbfd53f7f36d58 HEAD -- experiments/minimal-occupancy-generator/PRETARGET_EXECUTION_FREEZE_C.md
+          git diff --exit-code 32d2f8c99a9c9cf608af8b393f597412556c6f5d HEAD -- experiments/minimal-occupancy-generator/phase75c_generator_support.py
+          git diff --exit-code 77bcf3b8c4a56ac55eba8bffa775998f39a412d8 HEAD -- experiments/minimal-occupancy-generator/phase75c_score.py
+          git diff --exit-code ad92c4f08d27da38157dc1bc581328416115a48f HEAD -- experiments/minimal-occupancy-generator/phase75c_aggregate.py
+          gh api repos/daito-dot/LETSGO-Voynich/actions/artifacts/9800955706 > /tmp/a.json
+          python - <<'PY'
+          import json
+          a=json.load(open('/tmp/a.json'))
+          assert a['id']==9800955706
+          assert a['name']=='issue75-phaseC-RECOVERED-FIRST-REVEAL-8d02507355f428ffc80d590bbcfe256ce9fd0d95'
+          assert a['digest']=='sha256:1a860009ab8a2ddfa8731d167137f59073365633be54b7f9185c333939b13ac5'
+          assert a['workflow_run']['id']==33508975967
+          assert a['workflow_run']['head_sha']=='8d02507355f428ffc80d590bbcfe256ce9fd0d95'
+          assert a['expired'] is False
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          name: issue75-phaseC-RECOVERED-FIRST-REVEAL-8d02507355f428ffc80d590bbcfe256ce9fd0d95
+          path: /tmp/source
+          github-token: ${{ github.token }}
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33508975967
+      - name: Validate and commit exact evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find /tmp/source/individual -maxdepth 1 -name 'M3-KRS-CHAIN_*.json' | wc -l)" -eq 31
+          echo '34affe98b68a1e410ea3d4384a917450c2b58e7a8e02a30da8befa660712421a  /tmp/source/phase75c_aggregate.json' | sha256sum -c -
+          (cd /tmp/source && sha256sum -c SHA256SUMS.txt)
+          python - <<'PY'
+          import json,glob
+          a=json.load(open('/tmp/source/phase75c_aggregate.json'))
+          assert a['status']=='PHASE_C_M3_COMPLETE_31_CASE_POPULATION_AGGREGATED'
+          assert a['scientific_head']=='8d02507355f428ffc80d590bbcfe256ce9fd0d95'
+          assert a['phase_c0_authority_sha256']=='1ff4469f57a84093b8c5d6463bb276a8de6fc108eed666bf63c9c7dacbf622a6'
+          assert a['population']['total_results']==31 and a['population']['complete_population']
+          assert a['population']['no_drops'] and a['population']['no_rerolls']
+          assert a['primary']['classification']=='M3_KRS_NEAREST_NEIGHBOR_TRANSITION_GRAMMAR_INSUFFICIENT_NONLOCAL_OR_LATENT_RULE_REQUIRED'
+          assert a['primary']['gap_M3']==-0.37325753997796984 and a['primary']['no_material_loss'] is False
+          assert all(v is False for v in a['guardrails'].values())
+          ps=glob.glob('/tmp/source/individual/M3-KRS-CHAIN_*.json'); assert len(ps)==31
+          reps=set()
+          for p in ps:
+              r=json.load(open(p)); reps.add(r['rep'])
+              assert r['candidate_audit']['exact_phase_c0_replay'] is True
+              assert r['no_case_selection'] and r['no_reroll'] and all(r['target_access'].values())
+          assert reps==set(range(31))
+          PY
+          DEST=experiments/minimal-occupancy-generator/stage-c-first-reveal
+          mkdir -p "$DEST"
+          cp -a /tmp/source/. "$DEST/"
+          (cd "$DEST" && find individual -name '*.json' -print0 | sort -z | xargs -0 sha256sum > INDIVIDUAL_SHA256SUMS.txt)
+          cat > "$DEST/ARTIFACT_AUTHORITY.txt" <<'EOF'
+          scientific_role=POSTREVEAL_TRANSPORT_ONLY_PERMANENT_AUTHORITY
+          source_workflow_run=33508975967
+          source_workflow_conclusion=success
+          source_artifact_id=9800955706
+          source_artifact_name=issue75-phaseC-RECOVERED-FIRST-REVEAL-8d02507355f428ffc80d590bbcfe256ce9fd0d95
+          source_artifact_digest=sha256:1a860009ab8a2ddfa8731d167137f59073365633be54b7f9185c333939b13ac5
+          aggregate_sha256=34affe98b68a1e410ea3d4384a917450c2b58e7a8e02a30da8befa660712421a
+          scientific_head=8d02507355f428ffc80d590bbcfe256ce9fd0d95
+          pretarget_freeze_commit=8f592a979a44bb5c981e52afa4cbfd53f7f36d58
+          phase_c0_sha256=1ff4469f57a84093b8c5d6463bb276a8de6fc108eed666bf63c9c7dacbf622a6
+          total_results=31
+          drops=0
+          rerolls=0
+          permanent_freeze_is_post_reveal_transport_only=true
+          EOF
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Issue75 Phase C: freeze recovered 31-case M3 first-reveal authority'
+          git push origin HEAD:issue75-minimal-occupancy-generator
