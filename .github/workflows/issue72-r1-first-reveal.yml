@@ -1,0 +1,404 @@
+name: Issue72 complete-family R1 first reveal
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened]
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: '3.13'
+  NUMPY_VERSION: '2.5.2'
+  SCIPY_VERSION: '1.18.1'
+  PANDAS_VERSION: '3.0.5'
+
+jobs:
+  prepare:
+    if: >-
+      github.event.pull_request.head.ref == 'issue72-naibbe-r1-decomposition' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.family.outputs.matrix }}
+      head_sha: ${{ steps.family.outputs.head_sha }}
+      realization_count: ${{ steps.family.outputs.realization_count }}
+      family_preflight_sha: ${{ steps.family.outputs.family_preflight_sha }}
+    steps:
+      - name: Checkout exact candidate head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Verify exact-head chronology and pretarget firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          SOURCE_PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/SOURCE_AUDIT_PLAN.md | tail -1)
+          SOURCE_AUDIT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/source-audit/source_audit.json | tail -1)
+          TARGET_PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/PLAN_A.md | tail -1)
+          FAMILY_FREEZE=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/family-preflight/preflight.json | tail -1)
+          TARGET_IMPL=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/TARGET_IMPLEMENTATION.md | tail -1)
+          RUNTIME=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/TARGET_RUNTIME_FREEZE.md | tail -1)
+          SCORER=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/target72.py | tail -1)
+          AGG=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/aggregate72.py | tail -1)
+          PROTOCOL=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/FIRST_REVEAL_PROTOCOL.md | tail -1)
+          WORKFLOW=$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-r1-first-reveal.yml | tail -1)
+          for x in "$SOURCE_PLAN" "$SOURCE_AUDIT" "$TARGET_PLAN" "$FAMILY_FREEZE" "$TARGET_IMPL" "$RUNTIME" "$SCORER" "$AGG" "$PROTOCOL" "$WORKFLOW"; do test -n "$x"; done
+          git merge-base --is-ancestor "$SOURCE_PLAN" "$SOURCE_AUDIT"
+          git merge-base --is-ancestor "$SOURCE_AUDIT" "$TARGET_PLAN"
+          git merge-base --is-ancestor "$TARGET_PLAN" "$FAMILY_FREEZE"
+          git merge-base --is-ancestor "$FAMILY_FREEZE" "$TARGET_IMPL"
+          git merge-base --is-ancestor "$TARGET_IMPL" "$RUNTIME"
+          git merge-base --is-ancestor "$RUNTIME" "$SCORER"
+          git merge-base --is-ancestor "$SCORER" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$PROTOCOL"
+          git merge-base --is-ancestor "$PROTOCOL" "$WORKFLOW"
+          test -f experiments/naibbe-r1-decomposition/target-preflight/SYNTHETIC_VERIFIED.md
+          test ! -e experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+          echo "SOURCE_PLAN_FIRST_ADD=$SOURCE_PLAN" >> "$GITHUB_ENV"
+          echo "SOURCE_AUDIT_FIRST_ADD=$SOURCE_AUDIT" >> "$GITHUB_ENV"
+          echo "TARGET_PLAN_FIRST_ADD=$TARGET_PLAN" >> "$GITHUB_ENV"
+          echo "FAMILY_FREEZE_FIRST_ADD=$FAMILY_FREEZE" >> "$GITHUB_ENV"
+          echo "SCORER_FIRST_ADD=$SCORER" >> "$GITHUB_ENV"
+          echo "AGG_FIRST_ADD=$AGG" >> "$GITHUB_ENV"
+          echo "PROTOCOL_FIRST_ADD=$PROTOCOL" >> "$GITHUB_ENV"
+          echo "WORKFLOW_FIRST_ADD=$WORKFLOW" >> "$GITHUB_ENV"
+
+      - name: Verify frozen target family and expose exact matrix
+        id: family
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path('experiments/naibbe-r1-decomposition')
+          sa=json.load(open(root/'source-audit/source_audit.json'))
+          fp_path=root/'family-preflight/preflight.json'
+          fp=json.load(open(fp_path))
+          assert sa['counterfactual_R1_scored'] is False
+          assert not any(sa['forbidden_quantities_computed'].values())
+          assert fp['counterfactual_R1_scored'] is False
+          assert not any(fp['forbidden_quantities_computed'].values())
+          axes=[x.strip() for x in (root/'family-preflight/TARGET_AUTHORIZED_AXES.txt').read_text().splitlines() if x.strip()]
+          ids=[x.strip() for x in (root/'family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt').read_text().splitlines() if x.strip()]
+          assert axes == fp['target_authorized_axes']
+          assert ids == fp['target_authorized_realizations']
+          assert len(ids)>0 and len(ids)==len(set(ids))
+          records={x['realization']:x for x in fp['realizations']}
+          assert set(ids) <= set(records)
+          assert all(records[x]['axis'] in axes for x in ids)
+          assert all(records[x]['support']['coverage'] >= 0.60 for x in ids)
+          assert all(fp['axis_support_status'][a]['all_realizations_support_eligible'] for a in axes)
+          out=Path(os.environ['GITHUB_OUTPUT'])
+          with out.open('a',encoding='utf-8') as f:
+              f.write('matrix='+json.dumps(ids,separators=(',',':'))+'\n')
+              f.write('head_sha='+os.environ['GITHUB_SHA']+'\n')
+              f.write('realization_count='+str(len(ids))+'\n')
+              f.write('family_preflight_sha='+hashlib.sha256(fp_path.read_bytes()).hexdigest()+'\n')
+          print('target_authorized_axes=',axes)
+          print('target_authorized_realizations=',ids)
+          print('realization_count=',len(ids))
+          PY
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install and assert exact frozen runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check \
+            numpy==${NUMPY_VERSION} scipy==${SCIPY_VERSION} pandas==${PANDAS_VERSION}
+          python - <<'PY'
+          import sys,numpy,scipy,pandas
+          assert sys.version_info[:2] == (3,13)
+          assert numpy.__version__ == '2.5.2'
+          assert scipy.__version__ == '1.18.1'
+          assert pandas.__version__ == '3.0.5'
+          PY
+
+      - name: Compile and synthetic-test frozen scorer/aggregate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/naibbe-r1-decomposition/target72.py
+          python -m py_compile experiments/naibbe-r1-decomposition/aggregate72.py
+          python experiments/naibbe-r1-decomposition/target72.py --self-test
+          python experiments/naibbe-r1-decomposition/aggregate72.py --self-test
+          test ! -e experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+
+  score:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 12
+      matrix:
+        rid: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    env:
+      TARGET_HEAD_SHA: ${{ needs.prepare.outputs.head_sha }}
+      RID: ${{ matrix.rid }}
+    steps:
+      - name: Checkout exact scientific head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.head_sha }}
+          fetch-depth: 0
+
+      - name: Verify exact matrix identity before source checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_HEAD_SHA"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path('experiments/naibbe-r1-decomposition/family-preflight')
+          fp=json.load(open(root/'preflight.json'))
+          ids=[x.strip() for x in (root/'TARGET_AUTHORIZED_REALIZATIONS.txt').read_text().splitlines() if x.strip()]
+          assert os.environ['RID'] in ids
+          rec=next(x for x in fp['realizations'] if x['realization']==os.environ['RID'])
+          assert rec['axis'] in fp['target_authorized_axes']
+          assert rec['support']['coverage'] >= 0.60
+          print('RID=',os.environ['RID'],'axis=',rec['axis'],'surface=',rec['surface_sha256'])
+          PY
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install exact frozen runtime
+        run: python -m pip install --disable-pip-version-check numpy==${NUMPY_VERSION} scipy==${SCIPY_VERSION} pandas==${PANDAS_VERSION}
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify exact external authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+
+      - name: Compile frozen scorer
+        run: python -m py_compile experiments/naibbe-r1-decomposition/target72.py
+
+      - name: FIRST REVEAL MATRIX — score one exact frozen counterfactual
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/naibbe-r1-decomposition/target72.py \
+            score "$RID" external/cremma external/naibbe "/tmp/score-${RID}.json" \
+            > "/tmp/scorer-stdout-${RID}.txt"
+          test -s "/tmp/score-${RID}.json"
+
+      - name: Validate scientific realization JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          rid=os.environ['RID']; head=os.environ['TARGET_HEAD_SHA']
+          p=Path(f'/tmp/score-{rid}.json'); r=json.loads(p.read_text())
+          fp=json.load(open('experiments/naibbe-r1-decomposition/family-preflight/preflight.json'))
+          rec=next(x for x in fp['realizations'] if x['realization']==rid)
+          assert r['phase']=='Issue72-counterfactual-R1-realization'
+          assert r['realization']==rid and r['axis']==rec['axis']
+          assert r['first_reveal_head']==head
+          assert r['surface_identity']['surface_sha256']==rec['surface_sha256']
+          assert r['population']['visible_tokens']==rec['support']['visible_tokens']
+          assert r['population']['parsed_tokens']==rec['support']['accepted_tokens']
+          assert abs(r['population']['coverage']-rec['support']['coverage'])<1e-15
+          assert r['final_familywise_p_values_assigned'] is False
+          assert len(r['pairs'])==66
+          assert len(r['real']['q_full'])==66 and len(r['real']['z_full'])==66
+          assert len(r['test_null']['energy'])==1000
+          for t in ('ZL3b','IT2a'):
+              assert len(r['test_null']['correlation_by_target'][t])==1000
+              assert len(r['test_null']['sign_by_target'][t])==1000
+          print('scientific_json_sha256=',hashlib.sha256(p.read_bytes()).hexdigest())
+          print('E=',r['real']['residual_energy'],'W=',r['real']['within_reliability']['median'])
+          PY
+
+      - name: Package exact per-realization first-reveal evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR="/tmp/issue72-${RID}"
+          mkdir -p "$DIR"
+          cp "/tmp/score-${RID}.json" "$DIR/score-${RID}.json"
+          cp "/tmp/scorer-stdout-${RID}.txt" "$DIR/scorer-stdout-${RID}.txt"
+          sha256sum "$DIR/score-${RID}.json" > "$DIR/SHA256-${RID}.txt"
+          cat > "$DIR/PROVENANCE-${RID}.txt" <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          pull_request=${{ github.event.pull_request.number }}
+          exact_first_reveal_head=${TARGET_HEAD_SHA}
+          realization=${RID}
+          family_preflight_sha=${{ needs.prepare.outputs.family_preflight_sha }}
+          python=3.13
+          numpy=2.5.2
+          scipy=1.18.1
+          pandas=3.0.5
+          final_familywise_classification_assigned=false
+          EOF
+          cat "$DIR/SHA256-${RID}.txt"
+
+      - name: Upload exact realization artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-score-${{ matrix.rid }}-${{ needs.prepare.outputs.head_sha }}
+          path: /tmp/issue72-${{ matrix.rid }}
+          if-no-files-found: error
+          retention-days: 90
+
+  aggregate:
+    needs: [prepare, score]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TARGET_HEAD_SHA: ${{ needs.prepare.outputs.head_sha }}
+      EXPECTED_COUNT: ${{ needs.prepare.outputs.realization_count }}
+    steps:
+      - name: Checkout exact scientific head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.head_sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install exact frozen runtime
+        run: python -m pip install --disable-pip-version-check numpy==${NUMPY_VERSION} scipy==${SCIPY_VERSION} pandas==${PANDAS_VERSION}
+
+      - name: Download every per-realization first-reveal artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: issue72-score-*-${{ needs.prepare.outputs.head_sha }}
+          path: /tmp/issue72-scores
+          merge-multiple: true
+
+      - name: Require exact complete scientific family
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import glob,json,os
+          from pathlib import Path
+          expected=[x.strip() for x in Path('experiments/naibbe-r1-decomposition/family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt').read_text().splitlines() if x.strip()]
+          files=sorted(glob.glob('/tmp/issue72-scores/score-*.json'))
+          got=[]
+          for p in files:
+              r=json.load(open(p)); got.append(r['realization'])
+              assert r['first_reveal_head']==os.environ['TARGET_HEAD_SHA']
+          assert len(files)==int(os.environ['EXPECTED_COUNT'])==len(expected)
+          assert set(got)==set(expected) and len(got)==len(set(got))
+          print('complete family IDs=',sorted(got))
+          PY
+
+      - name: Aggregate once with complete-family maxT
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/naibbe-r1-decomposition/aggregate72.py
+          python experiments/naibbe-r1-decomposition/aggregate72.py \
+            /tmp/issue72-scores "$GITHUB_WORKSPACE" /tmp/issue72_results.json \
+            > /tmp/aggregate_stdout.txt
+          test -s /tmp/issue72_results.json
+
+      - name: Validate frozen aggregate outcome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          p=Path('/tmp/issue72_results.json'); r=json.loads(p.read_text())
+          allowed={
+            'R1 IS PREDOMINANTLY CODEBOOK/INVENTORY-EMBEDDED',
+            'R1 DEPENDS MATERIALLY ON CODEBOOK ASSOCIATION/STATE STRUCTURE',
+            'R1 DEPENDS MATERIALLY ON ENCRYPTION/PLAINTEXT PROCESS',
+            'R1 ORIGIN IS MIXED',
+            'R1 DECOMPOSITION INCONCLUSIVE',
+          }
+          assert r['first_reveal_head']==os.environ['TARGET_HEAD_SHA']
+          assert r['frozen_global_classification'] in allowed
+          assert len(r['maxT_family']['energy_max_values'])==1000
+          assert len(r['maxT_family']['correlation_max_values_over_realizations_x_readings'])==1000
+          assert len(r['maxT_family']['sign_max_values_over_realizations_x_readings'])==1000
+          expected=[x.strip() for x in Path('experiments/naibbe-r1-decomposition/family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt').read_text().splitlines() if x.strip()]
+          assert r['target_authorized_realizations']==expected
+          assert set(r['input_realization_json_sha256'])==set(expected)
+          print('FROZEN_GLOBAL=',r['frozen_global_classification'])
+          print('AXES=',{k:v['classification'] for k,v in r['axis_results'].items()})
+          print('aggregate_sha256=',hashlib.sha256(p.read_bytes()).hexdigest())
+          PY
+
+      - name: Build complete first-reveal package
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=/tmp/issue72-first-reveal
+          mkdir -p "$DIR/scores"
+          cp /tmp/issue72_results.json "$DIR/issue72_results.json"
+          cp /tmp/aggregate_stdout.txt "$DIR/aggregate_stdout.txt"
+          cp /tmp/issue72-scores/score-*.json "$DIR/scores/"
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('/tmp/issue72-first-reveal')
+          scores={}
+          for p in sorted((root/'scores').glob('score-*.json')):
+              r=json.loads(p.read_text()); scores[r['realization']]=hashlib.sha256(p.read_bytes()).hexdigest()
+          agg=json.loads((root/'issue72_results.json').read_text())
+          assert scores==agg['input_realization_json_sha256']
+          (root/'INPUT_SCORE_SHA256.json').write_text(json.dumps(scores,indent=2,sort_keys=True)+'\n')
+          PY
+          find "$DIR" -type f -print0 | sort -z | xargs -0 sha256sum > "$DIR/SHA256SUMS.txt"
+          cat > "$DIR/PROVENANCE.txt" <<EOF
+          scientific_first_reveal_run=${GITHUB_RUN_ID}
+          pull_request=${{ github.event.pull_request.number }}
+          exact_first_reveal_head=${TARGET_HEAD_SHA}
+          realization_count=${EXPECTED_COUNT}
+          family_preflight_sha=${{ needs.prepare.outputs.family_preflight_sha }}
+          source_plan_first_add=${SOURCE_PLAN_FIRST_ADD:-recorded_in_prepare_job}
+          target_plan_first_add=${TARGET_PLAN_FIRST_ADD:-recorded_in_prepare_job}
+          first_reveal_event=pull_request_opened
+          runtime_python=3.13
+          runtime_numpy=2.5.2
+          runtime_scipy=1.18.1
+          runtime_pandas=3.0.5
+          EOF
+          cat "$DIR/SHA256SUMS.txt"
+          cat "$DIR/PROVENANCE.txt"
+
+      - name: Upload complete exact first-reveal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-first-reveal-${{ needs.prepare.outputs.head_sha }}
+          path: /tmp/issue72-first-reveal
+          if-no-files-found: error
+          retention-days: 90
