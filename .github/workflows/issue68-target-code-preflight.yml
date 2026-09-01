@@ -1,0 +1,59 @@
+name: Issue68 target scorer synthetic preflight
+
+on:
+  push:
+    branches: [issue68-joint-constraint-target]
+    paths:
+      - 'experiments/joint-constraint-tournament/IMPLEMENTATION_TARGET.md'
+      - 'experiments/joint-constraint-tournament/IMPLEMENTATION_TARGET_ORDER.md'
+      - 'experiments/joint-constraint-tournament/target68.py'
+      - '.github/workflows/issue68-target-code-preflight.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue68-joint-constraint-target
+          fetch-depth: 0
+
+      - name: Verify design/preflight/target chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/PLAN_A.md | tail -1)
+          PREFNOTE=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/IMPLEMENTATION_PREFLIGHT.md | tail -1)
+          TARGETNOTE=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/IMPLEMENTATION_TARGET.md | tail -1)
+          ORDERNOTE=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/IMPLEMENTATION_TARGET_ORDER.md | tail -1)
+          TARGET=$(git log --diff-filter=A --format=%H -- experiments/joint-constraint-tournament/target68.py | tail -1)
+          test -n "$PLAN" && test -n "$PREFNOTE" && test -n "$TARGETNOTE" && test -n "$ORDERNOTE" && test -n "$TARGET"
+          git merge-base --is-ancestor "$PLAN" "$PREFNOTE"
+          git merge-base --is-ancestor "$PREFNOTE" "$TARGETNOTE"
+          git merge-base --is-ancestor "$TARGETNOTE" "$ORDERNOTE"
+          git merge-base --is-ancestor "$ORDERNOTE" "$TARGET"
+          test ! -e experiments/joint-constraint-tournament/first-reveal/issue68_joint_tournament_results.json
+          echo "PLAN=$PLAN"
+          echo "PREFNOTE=$PREFNOTE"
+          echo "TARGETNOTE=$TARGETNOTE"
+          echo "ORDERNOTE=$ORDERNOTE"
+          echo "TARGET=$TARGET"
+
+      - name: Install existing scientific dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile target scorer
+        run: python -m py_compile experiments/joint-constraint-tournament/target68.py
+
+      - name: Run synthetic self-test only
+        run: python experiments/joint-constraint-tournament/target68.py --self-test
+
+      - name: Assert real target was not scored
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e experiments/joint-constraint-tournament/first-reveal/issue68_joint_tournament_results.json
+          echo 'real candidate R1 target: NOT RUN'
