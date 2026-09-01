@@ -1,0 +1,125 @@
+name: Issue72 V2 Stage B2a extended unchanged-Naibbe support freeze
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - 'experiments/naibbe-r1-decomposition-v2/STAGE_B2_POSITIVE_CONTROL_EXTENSION_PLAN.md'
+      - 'experiments/naibbe-r1-decomposition-v2/b2a_support72_v2.py'
+      - '.github/workflows/issue72-v2-stage-b2a-support.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  b2a-support:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact V2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+          fetch-depth: 0
+
+      - name: Verify B2 plan-before-code-before-workflow chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git merge-base 98a04953aabe9e228a17fa5808adf506a0833362 HEAD)" = "98a04953aabe9e228a17fa5808adf506a0833362"
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_B2_POSITIVE_CONTROL_EXTENSION_PLAN.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/b2a_support72_v2.py | tail -1)
+          WORKFLOW=$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-v2-stage-b2a-support.yml | tail -1)
+          test -n "$PLAN" && test -n "$SCRIPT" && test -n "$WORKFLOW"
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$SCRIPT" "$WORKFLOW"
+          test ! -e experiments/naibbe-r1-decomposition-v2/b2b_r1_calibration72_v2.py
+          echo "B2_PLAN_FIRST_ADD=$PLAN" >> "$GITHUB_ENV"
+          echo "B2A_SCRIPT_FIRST_ADD=$SCRIPT" >> "$GITHUB_ENV"
+          echo "B2A_WORKFLOW_FIRST_ADD=$WORKFLOW" >> "$GITHUB_ENV"
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install preexisting runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile B2a support freezer
+        run: python -m py_compile experiments/naibbe-r1-decomposition-v2/b2a_support72_v2.py
+
+      - name: Generate all target-blind rep5-rep24 surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/issue72-b2a
+          mkdir -p /tmp/issue72-b2a
+          python experiments/naibbe-r1-decomposition-v2/b2a_support72_v2.py \
+            external/cremma external/naibbe /tmp/issue72-b2a/stage_b2a_support.json \
+            > /tmp/issue72-b2a/stdout.txt
+          test -s /tmp/issue72-b2a/stage_b2a_support.json
+
+      - name: Enforce complete population and target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/issue72-b2a/stage_b2a_support.json').read_text())
+          assert r['status']=='UNCHANGED_NAIBBE_REP5_REP24_SURFACES_FROZEN'
+          assert r['coverage_policy']=='CONTINUOUS_DESCRIPTIVE_NO_HARD_CUTOFF'
+          assert r['population']['selection_rule']=='ALL_REP5_THROUGH_REP24_NO_DROPS_NO_REROLLS'
+          assert set(r['reps'])=={f'rep{i}' for i in range(5,25)}
+          assert all(v is False for v in r['target_access'].values())
+          rows=[]
+          for i in range(5,25):
+              row=r['reps'][f'rep{i}']
+              assert row['rep']==i
+              for mi,ms in enumerate(['BIS193','CLM13027','Mazarine915','UBL758']):
+                  assert row['per_manuscript'][ms]['seed']==6480000+100*mi+i
+              rows.append((i,row['support']['coverage'],row['support']['visible_tokens'],row['support']['accepted_tokens'],row['primary_pooled_surface_sha256']))
+          print('rep coverage visible accepted sha')
+          for x in rows:
+              print(*x)
+          print('coverage_range',min(x[1] for x in rows),max(x[1] for x in rows))
+          PY
+
+      - name: Package exact B2a evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum /tmp/issue72-b2a/stage_b2a_support.json /tmp/issue72-b2a/stdout.txt | sort > /tmp/issue72-b2a/SHA256SUMS.txt
+          cat > /tmp/issue72-b2a/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          branch_head=${GITHUB_SHA}
+          parent_main=98a04953aabe9e228a17fa5808adf506a0833362
+          stage_b2_plan_first_add=${B2_PLAN_FIRST_ADD}
+          stage_b2a_script_first_add=${B2A_SCRIPT_FIRST_ADD}
+          stage_b2a_workflow_first_add=${B2A_WORKFLOW_FIRST_ADD}
+          rep5_rep24_R1_scored=false
+          issue72_intervention_surface_generated=false
+          issue72_intervention_R1_scored=false
+          EOF
+          cat /tmp/issue72-b2a/SHA256SUMS.txt
+          cat /tmp/issue72-b2a/PROVENANCE.txt
+
+      - name: Upload exact B2a evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-stageB2a-support-${{ github.sha }}
+          path: /tmp/issue72-b2a
+          if-no-files-found: error
+          retention-days: 90
