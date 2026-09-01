@@ -1,4 +1,4 @@
-name: Issue72 V2 regenerate and repair Stage B0 target-blind authority
+name: Issue72 V2 recover Stage B0 from original target-blind artifact
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: write
 
 jobs:
@@ -21,23 +22,60 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
 
-      - name: Verify frozen generator and incident chronology
+      - name: Verify frozen generator and corruption incident ancestry
         shell: bash
         run: |
           set -euo pipefail
           test "$(git hash-object experiments/naibbe-r1-decomposition-v2/b0_support72_v2.py)" = 'ef3144591839395c18e1bdf308311bf99562bf9a'
+          git merge-base --is-ancestor 98f8ee4499aa88ad039198bac398a5a7b9b09087 HEAD
           git merge-base --is-ancestor c45c67a665a7e4ad24c1d2706f83c65931d950a9 HEAD
-          git merge-base --is-ancestor 6e946b5416866ce5c2c063ff3d5b351944ceb6ac HEAD
-          git merge-base --is-ancestor 01f3e4251243bd9f18e9cb9809c6d8a92291204a HEAD
           python - <<'PY'
           import json
           p='experiments/naibbe-r1-decomposition-v2/stage_b0_support.json'
           try:
               json.load(open(p,encoding='utf-8'))
           except json.JSONDecodeError as e:
-              print('confirmed current B0 corruption:',e)
+              print('confirmed repository B0 corruption:',e)
           else:
-              raise SystemExit('current B0 unexpectedly parses; stop rather than overwrite')
+              raise SystemExit('repository B0 unexpectedly parses; stop rather than overwrite')
+          PY
+
+      - name: Download original successful target-blind Stage B0 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: issue72-v2-stageB0-support-135e8ac956541e2c2259431efee0fdb064b9c03e
+          path: /tmp/original-b0
+          github-token: ${{ github.token }}
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33462658689
+
+      - name: Verify original artifact identity and firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum /tmp/original-b0/stage_b0_support.json | cut -d' ' -f1)" = '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+          test "$(sha256sum /tmp/original-b0/stdout.txt | cut -d' ' -f1)" = '426b07f1fbae59f9fd110716b5763ff1f1f47e3a8da6dfb2ebfaa0623677c8fa'
+          python -m json.tool /tmp/original-b0/stage_b0_support.json >/dev/null
+          grep '^workflow_run=33462658689$' /tmp/original-b0/PROVENANCE.txt
+          grep '^branch_head=135e8ac956541e2c2259431efee0fdb064b9c03e$' /tmp/original-b0/PROVENANCE.txt
+          grep '^rep1_rep4_R1_scored=false$' /tmp/original-b0/PROVENANCE.txt
+          grep '^issue72_intervention_R1_scored=false$' /tmp/original-b0/PROVENANCE.txt
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/original-b0/stage_b0_support.json',encoding='utf-8'))
+          assert r['status']=='UNCHANGED_NAIBBE_REP0_REP4_SURFACES_FROZEN'
+          assert set(r['reps'])=={'rep0','rep1','rep2','rep3','rep4'}
+          assert all(v is False for v in r['target_access'].values())
+          rep0=r['reps']['rep0']
+          assert rep0['primary_pooled_surface_sha256']=='47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          assert rep0['support']['visible_tokens']==33574
+          assert rep0['support']['accepted_tokens']==29759
+          for i in range(5):
+              row=r['reps'][f'rep{i}']
+              assert row['rep']==i
+              for mi,ms in enumerate(['BIS193','CLM13027','Mazarine915','UBL758']):
+                  assert row['per_manuscript'][ms]['seed']==6480000+100*mi+i
+          print('original B0 artifact population and firewall valid')
           PY
 
       - name: Checkout frozen CREMMA authority
@@ -57,75 +95,55 @@ jobs:
       - name: Install frozen preexisting dependencies
         run: python -m pip install --disable-pip-version-check numpy scipy pandas
 
-      - name: Regenerate exact target-blind B0 from frozen generator
+      - name: Independently regenerate B0 from frozen generator
         shell: bash
         run: |
           set -euo pipefail
           python experiments/naibbe-r1-decomposition-v2/b0_support72_v2.py \
-            external/cremma external/naibbe /tmp/stage_b0_support.regenerated.json \
-            > /tmp/b0_stdout.txt
-          python -m json.tool /tmp/stage_b0_support.regenerated.json >/dev/null
+            external/cremma external/naibbe /tmp/regenerated-b0.json \
+            > /tmp/regenerated-stdout.txt
+          python -m json.tool /tmp/regenerated-b0.json >/dev/null
 
-      - name: Compare regenerated identities with pre-repair historical B0
+      - name: Require byte-for-byte equality with original artifact
         shell: bash
         run: |
           set -euo pipefail
-          git show 083f5c161c45da09a41346dfe16094f79380a531:experiments/naibbe-r1-decomposition-v2/stage_b0_support.json > /tmp/stage_b0_support.historical.json
-          python - <<'PY'
-          import json
-          new=json.load(open('/tmp/stage_b0_support.regenerated.json',encoding='utf-8'))
-          old=json.load(open('/tmp/stage_b0_support.historical.json',encoding='utf-8'))
-          assert new['status']=='UNCHANGED_NAIBBE_REP0_REP4_SURFACES_FROZEN'
-          assert all(v is False for v in new['target_access'].values())
-          assert new['authority']==old['authority']
-          assert new['historical_population']==old['historical_population']
-          for rep in range(5):
-              nr=new['reps'][f'rep{rep}']; orr=old['reps'][f'rep{rep}']
-              assert nr['primary_pooled_surface_sha256']==orr['primary_pooled_surface_sha256']
-              assert nr['raw_pooled_surface_sha256']==orr['raw_pooled_surface_sha256']
-              assert nr['support']['visible_tokens']==orr['support']['visible_tokens']
-              assert nr['support']['accepted_tokens']==orr['support']['accepted_tokens']
-              for ms in ['BIS193','CLM13027','Mazarine915','UBL758']:
-                  nm=nr['per_manuscript'][ms]; om=orr['per_manuscript'][ms]
-                  assert nm['seed']==om['seed']
-                  assert nm['primary_surface_sha256']==om['primary_surface_sha256']
-                  assert nm['raw_surface_sha256']==om['raw_surface_sha256']
-                  assert nm['support']['visible_tokens']==om['support']['visible_tokens']
-                  assert nm['support']['accepted_tokens']==om['support']['accepted_tokens']
-                  assert nm['generation_diagnostics']['ambiguity_retries']==om['generation_diagnostics']['ambiguity_retries']
-          print('all rep0..4 historical surface identities and support counts reproduce exactly')
-          PY
+          cmp /tmp/regenerated-b0.json /tmp/original-b0/stage_b0_support.json
+          test "$(sha256sum /tmp/regenerated-b0.json | cut -d' ' -f1)" = '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
+          echo 'regenerated B0 is byte-identical to original successful target-blind artifact'
 
-      - name: Freeze repair provenance
+      - name: Freeze exact recovery provenance
         shell: bash
         run: |
           set -euo pipefail
-          NEW_SHA=$(sha256sum /tmp/stage_b0_support.regenerated.json | cut -d' ' -f1)
-          OLD_PARENT_SHA=$(sha256sum /tmp/stage_b0_support.historical.json | cut -d' ' -f1)
-          CURRENT_BAD_SHA=$(sha256sum experiments/naibbe-r1-decomposition-v2/stage_b0_support.json | cut -d' ' -f1)
+          BAD_SHA=$(sha256sum experiments/naibbe-r1-decomposition-v2/stage_b0_support.json | cut -d' ' -f1)
           cat > /tmp/STAGE_B0_REPAIR_PROVENANCE.txt <<EOF
-          repair_workflow_run=${GITHUB_RUN_ID}
-          repair_head=${GITHUB_SHA}
+          recovery_workflow_run=${GITHUB_RUN_ID}
+          recovery_head=${GITHUB_SHA}
+          original_stage_b0_run=33462658689
+          original_stage_b0_head=135e8ac956541e2c2259431efee0fdb064b9c03e
+          original_stage_b0_artifact_id=9783720673
+          original_stage_b0_artifact_zip_sha256=0bdb5022c5c348b0898a8de253c2b644576c2654c19710059edabc79bb3b03b5
+          original_stage_b0_json_sha256=96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58
           frozen_generator_blob=ef3144591839395c18e1bdf308311bf99562bf9a
-          historical_parent_commit=083f5c161c45da09a41346dfe16094f79380a531
-          historical_parent_sha256=${OLD_PARENT_SHA}
-          corrupted_repair_commit=350463fcf696446a0bc995b000b03c4b7db44a1d
-          corrupted_current_sha256=${CURRENT_BAD_SHA}
-          regenerated_sha256=${NEW_SHA}
+          corrupted_repository_json_sha256=${BAD_SHA}
+          regenerated_byte_identical_to_original=true
           target_loaded=false
           R1_computed=false
-          historical_surface_identity_replay=true
+          PT_surface_generated=false
           EOF
           cat /tmp/STAGE_B0_REPAIR_PROVENANCE.txt
 
-      - name: Replace corrupt B0 with regenerated exact authority
+      - name: Restore exact original B0 bytes to repository
         shell: bash
         run: |
           set -euo pipefail
-          cp /tmp/stage_b0_support.regenerated.json experiments/naibbe-r1-decomposition-v2/stage_b0_support.json
+          cp /tmp/original-b0/stage_b0_support.json experiments/naibbe-r1-decomposition-v2/stage_b0_support.json
           cp /tmp/STAGE_B0_REPAIR_PROVENANCE.txt experiments/naibbe-r1-decomposition-v2/STAGE_B0_REPAIR_PROVENANCE_20260901.txt
+          python -m json.tool experiments/naibbe-r1-decomposition-v2/stage_b0_support.json >/dev/null
+          test "$(sha256sum experiments/naibbe-r1-decomposition-v2/stage_b0_support.json | cut -d' ' -f1)" = '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58'
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add experiments/naibbe-r1-decomposition-v2/stage_b0_support.json experiments/naibbe-r1-decomposition-v2/STAGE_B0_REPAIR_PROVENANCE_20260901.txt
-          git commit -m 'Issue72 V2: restore regenerated exact Stage B0 authority'
+          git commit -m 'Issue72 V2: restore exact original Stage B0 artifact authority'
           git push origin HEAD:issue72-r1-causal-decomposition-v2
