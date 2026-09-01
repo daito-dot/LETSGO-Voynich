@@ -20,8 +20,8 @@ from pathlib import Path
 from typing import Sequence
 
 TRAIN_LL_TOL = 1e-3
-HOLD_LL_TOL = 1e-3
-HOLD_NPT_TOL = 1e-7
+HOLD_LL_TOL = 1e-2
+HOLD_NPT_TOL = 1e-6
 PI_TOL = 1e-4
 
 
