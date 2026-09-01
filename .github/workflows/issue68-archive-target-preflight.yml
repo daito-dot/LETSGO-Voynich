@@ -1,0 +1,137 @@
+name: Issue68 archive exact target-free preflight
+
+on:
+  push:
+    branches: [issue68-joint-constraint-target]
+    paths:
+      - '.github/workflows/issue68-archive-target-preflight.yml'
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue68-joint-constraint-target
+          fetch-depth: 0
+
+      - name: Recover exact successful preflight artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api /repos/${GITHUB_REPOSITORY}/actions/artifacts/9781331687/zip > /tmp/preflight.zip
+          echo '94a9b6d6fb4574218684b1aac7e9769424877c2b77ecf01dce6d365ec2fd6aac  /tmp/preflight.zip' | sha256sum -c -
+          mkdir -p /tmp/preflight
+          unzip -q /tmp/preflight.zip -d /tmp/preflight
+          test -f /tmp/preflight/preflight.json
+          echo 'fdd2b1138542bf1b332b20f27a9869ac7a3501038e7d4ec9ccf40910e3b98771  /tmp/preflight/preflight.json' | sha256sum -c -
+          grep -q '^target_reveal=false$' /tmp/preflight/PROVENANCE.txt
+          grep -q '^real_candidate_R1_pair_or_residual_metrics=false$' /tmp/preflight/PROVENANCE.txt
+
+      - name: Verify frozen pretarget dispositions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/preflight/preflight.json'))
+          assert r['target_reveal'] is False
+          assert r['real_candidate_pair_or_residual_metrics_computed'] is False
+          assert not any(r['forbidden_R1_quantities'].values())
+          assert r['preflight_dispositions']['A1_R1_representation'] == 'FAIL_REPRESENTATION_COMPATIBILITY'
+          assert r['preflight_dispositions']['Naibbe_R1_representation'] == 'AUTHORIZED_FOR_R1_REVEAL'
+          assert r['preflight_dispositions']['Naibbe_R4_primary'] == 'FAIL'
+          assert abs(r['A1_primary']['pooled_coverage']['coverage'] - 0.3883942278170095) < 1e-15
+          assert abs(r['Naibbe_primary']['pooled_coverage']['coverage'] - 0.886370405671055) < 1e-15
+          assert r['Naibbe_primary']['R4_primary_rep0_aggregate']['unique_exact_lines'] == 1167
+          assert r['Naibbe_primary']['R4_primary_rep0_aggregate']['lines'] == 1778
+          assert r['Naibbe_primary']['R4_primary_rep0_aggregate']['unresolved_lines'] == 603
+          assert r['Naibbe_primary']['R4_primary_rep0_aggregate']['unique_wrong_lines'] == 8
+          assert r['historical_frozen_responsibilities']['A1']['R2']['pass'] is True
+          assert r['historical_frozen_responsibilities']['A1']['R3']['pass'] is True
+          assert r['historical_frozen_responsibilities']['Naibbe_C1_E0']['R2']['pass'] is False
+          assert r['historical_frozen_responsibilities']['Naibbe_C1_E0']['R3']['pass'] is False
+          print('pretarget dispositions verified')
+          PY
+
+      - name: Install permanent archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=experiments/joint-constraint-tournament/preflight
+          mkdir -p "$DIR"
+          cp /tmp/preflight/preflight.json "$DIR/preflight.json"
+          cp /tmp/preflight/PROVENANCE.txt "$DIR/ACTIONS_PROVENANCE.txt"
+          cp /tmp/preflight/legacy_stdout.txt "$DIR/legacy_stdout.txt"
+          cat > "$DIR/PROVENANCE.md" <<'EOF'
+          # Issue #68 target-free preflight provenance
+
+          Status: **PERMANENT EXACT PRETARGET ARCHIVE**
+
+          No real-candidate R1 pair-Q, residual-Z, residual-energy, reliability, target-topology or R1 p-value was computed in this preflight.
+
+          ## Exact successful execution
+
+          - workflow: `Issue68 target-free candidate preflight`
+          - run: `33455622645`
+          - job: `99694846814`
+          - exact branch head: `7a62b1ba9d10877906390979274ecb1d2b8868a8`
+          - design main: `b2298d7fe251070dacd21852ae3b5a1dac95fe65`
+          - artifact ID: `9781331687`
+          - artifact ZIP SHA-256: `94a9b6d6fb4574218684b1aac7e9769424877c2b77ecf01dce6d365ec2fd6aac`
+          - canonical `preflight.json` SHA-256: `fdd2b1138542bf1b332b20f27a9869ac7a3501038e7d4ec9ccf40910e3b98771`
+
+          ## Frozen pretarget dispositions
+
+          - A1 direct 12-slot parser coverage: `12650 / 32570 = 0.3883942278170095`
+          - A1 R1 disposition: `FAIL_REPRESENTATION_COMPATIBILITY`
+          - Naibbe direct parser coverage: `29759 / 33574 = 0.886370405671055`
+          - Naibbe R1 disposition: `AUTHORIZED_FOR_R1_REVEAL`
+          - Naibbe primary R4 unique exact normalized-stream closure: `1167 / 1778 = 0.656355455568054`
+          - unresolved lines: `603`
+          - unique-wrong lines: `8`
+          - Naibbe R4 disposition: `FAIL`
+          - A1 historical R2: `PASS`
+          - A1 historical R3: `PASS`
+          - Naibbe historical R2: `FAIL`
+          - Naibbe historical R3: `FAIL`
+
+          These are preregistered pre-R1 gates. They may not be repaired by changing parser policy, seed, output view, normalization, decoder side information, or thresholds after this archive.
+          EOF
+          cat > "$DIR/PRETARGET_STATE.md" <<'EOF'
+          # Issue #68 pretarget state
+
+          Status: **R1 FIRST REVEAL NOT YET RUN**
+
+          The target-free preflight has frozen the first tournament's candidate state:
+
+          | candidate | R1 representation | R2 | R3 | R4 |
+          |---|---|---|---|---|
+          | A1/A1-R1 | **FAIL** — coverage 0.388394 < 0.60 | PASS | PASS | not a decoder |
+          | Naibbe C1-E0 | **AUTHORIZED** — coverage 0.886370 | FAIL | FAIL | **FAIL** — 1167/1778 unique exact |
+
+          Consequences fixed before R1 reveal:
+
+          1. **A1 must not receive a real R1 pair/residual calculation in this tournament.** Its preregistered representation gate already failed.
+          2. **Naibbe remains the only representation-compatible R1 candidate and must still receive the planned complete-66 R1 reveal.** Its already-known R2/R3/R4 failures do not justify stopping early.
+          3. Because A1 cannot pass R1 and Naibbe already fails R2, R3 and R4, neither candidate can reach a joint-competitive class under the frozen rules. Nevertheless Naibbe R1 remains scientifically useful: it directly tests whether this published reversible-cipher family reproduces the independently replicated token-construction core.
+          4. No target gate may be changed because the global tournament outcome is already constrained by preflight failures.
+          EOF
+          sha256sum "$DIR/preflight.json" > "$DIR/SHA256SUMS.txt"
+
+      - name: Commit archive and remove one-off workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/issue68-archive-target-preflight.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experiments/joint-constraint-tournament/preflight .github/workflows/issue68-archive-target-preflight.yml
+          git commit -m 'Archive exact Issue68 target-free preflight'
+          git push origin HEAD:issue68-joint-constraint-target
