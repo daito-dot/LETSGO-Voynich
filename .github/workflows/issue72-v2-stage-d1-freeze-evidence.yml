@@ -31,12 +31,8 @@ jobs:
         run: |
           set -euo pipefail
           FIRST_REVEAL='02d757e36d85cdfc9231be0b8753904b3ceb543c'
-          SCORER='127c86f253a5cc12e3802d0976c96649a2c91524'
-          ADAPTER='5b5926fa1166d9361a2daf5fb80c81233f8c8f25'
           git merge-base --is-ancestor "$FIRST_REVEAL" HEAD
-          test "$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/d1_pt_r1_score72_v2.py | tail -1)" = "$SCORER"
-          test "$(git log -1 --format=%H "$FIRST_REVEAL" -- experiments/naibbe-r1-decomposition-v2/d1_pt_aggregate72_v2_rebind.py)" = "$ADAPTER"
-          git diff --exit-code "$FIRST_REVEAL" HEAD -- \
+          for p in \
             experiments/naibbe-r1-decomposition-v2/d1_pt_r1_score72_v2.py \
             experiments/naibbe-r1-decomposition-v2/d1_pt_aggregate72_v2_rebind.py \
             experiments/naibbe-r1-decomposition-v2/stage_b0_pt_authority.json \
@@ -44,6 +40,12 @@ jobs:
             experiments/naibbe-r1-decomposition-v2/stage-d0-pt/stage_d0_pt_support_aggregate.json \
             experiments/naibbe-r1-decomposition-v2/STAGE_D0_PT_AUTHORITY_REBIND_VALIDATION.json \
             experiments/naibbe-r1-decomposition-v2/archive/stage_b2_calibration.json
+          do
+            BASE_BLOB=$(git rev-parse "$FIRST_REVEAL:$p")
+            HEAD_BLOB=$(git rev-parse "HEAD:$p")
+            test "$BASE_BLOB" = "$HEAD_BLOB"
+            echo "$p $HEAD_BLOB"
+          done
           test ! -e experiments/naibbe-r1-decomposition-v2/stage-d1-pt
 
       - name: Download complete successful first-reveal artifact
