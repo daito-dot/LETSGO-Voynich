@@ -1,0 +1,96 @@
+name: Issue75 Phase C recovered M3 first reveal
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths: ['.github/workflows/issue75-phaseC-recovered-first-reveal.yml']
+permissions: {actions: read, contents: read}
+jobs:
+  authorize:
+    runs-on: ubuntu-latest
+    outputs:
+      head: ${{ steps.a.outputs.head }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ github.sha }}', fetch-depth: 0}
+      - id: a
+        env: {GH_TOKEN: '${{ github.token }}'}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e experiments/minimal-occupancy-generator/stage-c-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_C.md
+          git diff --exit-code 8f592a979a44bb5c981e52afa4cbfd53f7f36d58 HEAD -- experiments/minimal-occupancy-generator/PRETARGET_EXECUTION_FREEZE_C.md
+          git diff --exit-code 32d2f8c99a9c9cf608af8b393f597412556c6f5d HEAD -- experiments/minimal-occupancy-generator/phase75c_generator_support.py
+          git diff --exit-code 77bcf3b8c4a56ac55eba8bffa775998f39a412d8 HEAD -- experiments/minimal-occupancy-generator/phase75c_score.py
+          git diff --exit-code ad92c4f08d27da38157dc1bc581328416115a48f HEAD -- experiments/minimal-occupancy-generator/phase75c_aggregate.py
+          echo '1ff4469f57a84093b8c5d6463bb276a8de6fc108eed666bf63c9c7dacbf622a6  experiments/minimal-occupancy-generator/stage-c0/generator_authority.json' | sha256sum -c -
+          echo 'fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540  experiments/minimal-occupancy-generator/stage-a-first-reveal/phase75a_aggregate.json' | sha256sum -c -
+          test "$(git rev-parse HEAD:experiments/joint-constraint-tournament/target68.py)" = e94a24fbdfbb922099407313f23a1b87859130b6
+          for r in 33508138601 33508315635 33508396294; do test "$(gh api repos/daito-dot/LETSGO-Voynich/actions/runs/$r --jq .conclusion)" = success; done
+          gh api repos/daito-dot/LETSGO-Voynich/actions/runs/33506588721/jobs --jq '.jobs[]|[.name,.conclusion]|@tsv' > /tmp/old
+          grep -Fx $'score\tskipped' /tmp/old; grep -Fx $'aggregate\tskipped' /tmp/old
+          echo "head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+  score:
+    needs: authorize
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 31
+      matrix: {rep: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ needs.authorize.outputs.head }}', fetch-depth: 0}
+      - uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cb
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+      - shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+          mkdir -p /tmp/s
+          python experiments/minimal-occupancy-generator/phase75c_score.py _cb/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt '${{ matrix.rep }}' '/tmp/s/M3-KRS-CHAIN_${{ matrix.rep }}.json' > '/tmp/s/M3-KRS-CHAIN_${{ matrix.rep }}.stdout.txt'
+          python - <<'PY'
+          import json,math
+          n=${{ matrix.rep }}; r=json.load(open(f'/tmp/s/M3-KRS-CHAIN_{n}.json'))
+          assert r['status']=='PHASE_C_M3_FIRST_REVEAL_CASE_SCORED' and r['rep']==n
+          assert r['candidate_audit']['phase_c0_authority_sha256']=='1ff4469f57a84093b8c5d6463bb276a8de6fc108eed666bf63c9c7dacbf622a6'
+          assert r['candidate_audit']['exact_phase_c0_replay'] and r['no_case_selection'] and r['no_reroll']
+          assert all(r['target_access'].values()) and math.isfinite(r['T'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with: {name: 'issue75-c3-score-${{ matrix.rep }}-${{ needs.authorize.outputs.head }}', path: /tmp/s, retention-days: 90}
+  aggregate:
+    needs: [authorize, score]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ needs.authorize.outputs.head }}', fetch-depth: 0}
+      - uses: actions/download-artifact@v4
+        with: {pattern: 'issue75-c3-score-*-${{ needs.authorize.outputs.head }}', path: /tmp/r, merge-multiple: true}
+      - shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find /tmp/r -maxdepth 1 -name 'M3-KRS-CHAIN_*.json' | wc -l)" -eq 31
+          mkdir -p /tmp/f/individual
+          python experiments/minimal-occupancy-generator/phase75c_aggregate.py /tmp/r /tmp/f/phase75c_aggregate.json '${{ needs.authorize.outputs.head }}' > /tmp/f/aggregate.stdout.txt
+          cp /tmp/r/M3-KRS-CHAIN_*.json /tmp/f/individual/
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/f/phase75c_aggregate.json'))
+          assert r['status']=='PHASE_C_M3_COMPLETE_31_CASE_POPULATION_AGGREGATED'
+          assert r['population']['total_results']==31 and r['population']['complete_population'] and r['population']['no_drops'] and r['population']['no_rerolls']
+          assert r['frozen_phase_a_positive_control']['delta_plus_q95']==0.009768313008182594
+          assert r['primary']['no_material_loss']==(r['primary']['gap_M3']>=-0.009768313008182594)
+          assert all(v is False for v in r['guardrails'].values())
+          PY
+          (cd /tmp/f && sha256sum phase75c_aggregate.json aggregate.stdout.txt > SHA256SUMS.txt)
+          echo "scientific_head=${{ needs.authorize.outputs.head }}" > /tmp/f/PROVENANCE.txt
+          echo 'pretarget_freeze=8f592a979a44bb5c981e52afa4cbfd53f7f36d58' >> /tmp/f/PROVENANCE.txt
+          echo 'prior_phase_c_target_scores=0' >> /tmp/f/PROVENANCE.txt
+      - uses: actions/upload-artifact@v4
+        with: {name: 'issue75-phaseC-RECOVERED-FIRST-REVEAL-${{ needs.authorize.outputs.head }}', path: /tmp/f, retention-days: 90}
