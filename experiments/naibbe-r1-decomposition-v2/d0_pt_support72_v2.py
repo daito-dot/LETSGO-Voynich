@@ -30,7 +30,7 @@ if str(HERE.parent) not in sys.path:
 import b0_support72_v2 as b0  # noqa: E402
 
 EXPECTED_B0_SUPPORT_SCRIPT_BLOB = "ef3144591839395c18e1bdf308311bf99562bf9a"
-EXPECTED_B0_RAW_SHA256 = "96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58"
+EXPECTED_B0_PT_AUTHORITY_SHA256 = "703991a4b176e78ea18c30210ec730187b446c0c8b14052fc2d25e4a8d8f86e4"
 STAGE_D_PLAN_COMMIT = "c45c67a665a7e4ad24c1d2706f83c65931d950a9"
 J_VALUES = tuple(range(31))
 REPS = tuple(range(5))
@@ -197,13 +197,19 @@ def encrypt_pt_manuscript(
 
 
 def load_b0_authority() -> dict:
-    path = HERE.parent / "stage_b0_support.json"
+    path = HERE.parent / "stage_b0_pt_authority.json"
     got = sha256_file(path)
-    if got != EXPECTED_B0_RAW_SHA256:
-        raise RuntimeError(f"Stage B0 authority SHA changed: {got} != {EXPECTED_B0_RAW_SHA256}")
+    if got != EXPECTED_B0_PT_AUTHORITY_SHA256:
+        raise RuntimeError(f"Stage B0 PT authority SHA changed: {got} != {EXPECTED_B0_PT_AUTHORITY_SHA256}")
     obj = json.loads(path.read_text(encoding="utf-8"))
+    if obj["schema"] != "issue72-v2-stage-d0-pt-baseline-authority-v1":
+        raise RuntimeError("Stage B0 PT authority schema changed")
+    if obj["scientific_role"] != "TARGET_BLIND_BASELINE_REPLAY_AUTHORITY_FOR_STAGE_D_PT":
+        raise RuntimeError("Stage B0 PT authority role changed")
     if obj["status"] != "UNCHANGED_NAIBBE_REP0_REP4_SURFACES_FROZEN":
-        raise RuntimeError("Stage B0 authority status changed")
+        raise RuntimeError("Stage B0 PT authority status changed")
+    if obj["source_artifact"]["full_stage_b0_json_sha256"] != "96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58":
+        raise RuntimeError("Stage B0 source artifact identity changed")
     if set(obj["reps"]) != {f"rep{i}" for i in REPS}:
         raise RuntimeError("Stage B0 historical rep population changed")
     if any(obj["target_access"].values()):
@@ -242,7 +248,7 @@ def verify_baseline(
             raise RuntimeError(f"baseline visible mismatch rep{rep} {manuscript}")
         if support["accepted_tokens"] != frozen["support"]["accepted_tokens"]:
             raise RuntimeError(f"baseline accepted mismatch rep{rep} {manuscript}")
-        if int(diag["ambiguity_retries"]) != int(frozen["generation_diagnostics"]["ambiguity_retries"]):
+        if int(diag["ambiguity_retries"]) != int(frozen["ambiguity_retries"]):
             raise RuntimeError(f"baseline retry mismatch rep{rep} {manuscript}")
         pooled_primary.extend(primary)
         pooled_raw.extend(raw)
@@ -356,7 +362,9 @@ def main(argv: Sequence[str]) -> int:
         "authority": auth,
         "implementation_authority": {
             "b0_support72_v2.py_git_blob": got_b0_blob,
-            "stage_b0_support_json_sha256": EXPECTED_B0_RAW_SHA256,
+            "stage_b0_pt_authority_json_sha256": EXPECTED_B0_PT_AUTHORITY_SHA256,
+            "source_full_stage_b0_json_sha256": "96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58",
+            "source_stage_b0_artifact_id": 9783720673,
         },
         "assignment": {
             "j": int(j),
