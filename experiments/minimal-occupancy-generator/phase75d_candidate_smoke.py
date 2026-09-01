@@ -15,6 +15,10 @@ if str(HERE) not in sys.path:
 import phase75d_score as score  # noqa: E402
 
 
+def _forbidden_target_loader(*_args, **_kwargs):
+    raise RuntimeError("TARGET FIREWALL: target loader called during Phase-D candidate smoke")
+
+
 def main(argv: Sequence[str]) -> int:
     if len(argv) != 4:
         raise SystemExit(f"usage: {argv[0]} ZL3B_PATH REP OUTPUT_JSON")
@@ -23,6 +27,9 @@ def main(argv: Sequence[str]) -> int:
     out = Path(argv[3]).resolve()
     if rep not in range(score.N_REPS):
         raise SystemExit("REP must be 0..30")
+
+    # Hard fail if any future code path accidentally attempts to reveal targets.
+    score.a_score.t68.load_target_references = _forbidden_target_loader
 
     authority, cases, d0_sha = score.load_d0()
     candidate, X, audit = score.build_exact_case(src, rep, authority, cases, d0_sha)
@@ -44,6 +51,7 @@ def main(argv: Sequence[str]) -> int:
         "rep": rep,
         "candidate_audit": audit,
         "measurement": m,
+        "target_firewall": "load_target_references monkeypatched to hard fail",
         "target_access": {
             "pair_Q_computed": True,
             "residual_Z_computed": True,
