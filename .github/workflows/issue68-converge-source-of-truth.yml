@@ -1,0 +1,206 @@
+name: Issue68 converge post-result research source of truth
+
+on:
+  push:
+    branches: [issue68-joint-constraint-target]
+    paths:
+      - '.github/workflows/issue68-converge-source-of-truth.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  converge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue68-joint-constraint-target
+          fetch-depth: 0
+
+      - name: Prepend authoritative post-Issue68 state blocks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          blocks = {
+          'research/STATUS.md': r'''
+          ## Current research state — Issue #68 first joint-constraint tournament (2026-09-01)
+
+          **Current frozen global classification:** `NO TESTED FAMILY JOINT-CONSTRAINT COMPETITIVE`.
+
+          Issue #68 changes how the token-construction result should be used:
+
+          - #58C/#58D remain accepted: the manuscript has a strong residual 12-slot token-construction graph, replicated across ZL3b and independent Takahashi/IT2a reading.
+          - published Naibbe C1-E0 **passes R1** against both readings under its own 1,000-reference + independent-1,000-test null calibration:
+            - residual energy `E=3.1784043855`, reliability `W=0.9547265391`, `p_exist=1/1001`;
+            - ZL3b topology `r=0.8830282501`, signs `60/66`, both maxT `p=1/1001`;
+            - IT2a topology `r=0.9000974100`, signs `61/66`, both maxT `p=1/1001`.
+          - Naibbe still fails the joint model because R2 H62, R3 signed S1 and R4 exact normalized-stream decoder closure fail.
+          - A1 was **not** given a real R1 graph because direct common-parser coverage was only `0.388394 < 0.60`; its historical R2/R3 passes remain valid. This is a common-representation gate failure, not a retrospective claim that A1 has no native internal grammar.
+          - permanent Issue #68 scientific JSON SHA-256: `5cef35e9df56149fb1db5edff8d52fad9291208476b0d4ac64bd9c8782faa471`.
+
+          **Interpretation revision:** R1 is now treated as a strong constraint on admissible output construction, **not** as a standalone discriminator against reversible cipher families. A target-aware Voynich-like codebook can reproduce R1 extremely well.
+
+          **Active frontier:** decompose Naibbe's R1 success into **codebook/inventory effect versus encryption-process effect** under a new preregistered complete-graph counterfactual program. Do not return to selected-edge discovery and do not repair Naibbe R2/R3/R4 after seeing #68.
+          ''',
+
+          'RESUME.md': r'''
+          ## Resume here — after Issue #68 first joint-constraint tournament
+
+          The latest completed scientific reveal is Issue #68. Read, in order:
+
+          1. `experiments/joint-constraint-tournament/REPORT_A.md`
+          2. `experiments/joint-constraint-tournament/first-reveal/PROVENANCE.md`
+          3. `experiments/joint-constraint-tournament/first-reveal/issue68_joint_tournament_results.json`
+          4. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE68_RESULT.md`
+          5. `research/NEXT_RESEARCH_FRONTIER.md`
+
+          Frozen Issue #68 state:
+
+          - global: `NO TESTED FAMILY JOINT-CONSTRAINT COMPETITIVE`;
+          - Naibbe: R1 PASS / R2 FAIL / R3 FAIL / R4 FAIL / R5 PASS → `NOT COMPETITIVE`;
+          - A1: R1 common-representation gate FAIL, R2 PASS, R3 PASS, R5 PASS → `PARTIAL STRUCTURAL MODEL`; no real A1 R1 graph was computed;
+          - Naibbe R1 vs ZL3b `r=.8830`, vs IT2a `r=.9001`, sign agreement `60/66` and `61/66`, all topology maxT p-values `1/1001`;
+          - scientific first execution was run `33456282445` / job `99696811349`; result bytes were deterministically recovered after a stdout-framing transport failure. Do not relabel the recovery run as the first reveal.
+
+          **Next scientific move:** first integrate/verify Issue #68 on main. Then open a fresh preregistered codebook/process-decomposition issue from post-merge main. Ask whether Naibbe's R1 success survives codebook-association and inventory controls while the encryption architecture is held fixed.
+
+          **Do not:** lower the 60% parser gate, remap A1 after its failure, select favorable Naibbe realizations/views, add locality/paragraph-entry repairs to Naibbe, or use individual R1 edges to design the next control.
+          ''',
+
+          'ROADMAP.md': r'''
+          ## Active roadmap — post Issue #68
+
+          ### Completed: replicated token-construction constraint and first joint tournament
+
+          - #58A: broad signed occupancy grammar.
+          - #58B: raw stratum similarity inconclusive under line-local null.
+          - #58C: non-null residual complete-66 construction graph with stratum modulation.
+          - #58D: independent-reading replication, ZL3b↔IT2a `r=.98845`, `65/66` signs.
+          - #68: first preregistered joint-constraint tournament.
+            - Naibbe **R1 PASS** but R2/R3/R4 FAIL → `NOT COMPETITIVE`.
+            - A1 common direct R1 representation gate FAIL, historical R2/R3 PASS → `PARTIAL STRUCTURAL MODEL`.
+            - global `NO TESTED FAMILY JOINT-CONSTRAINT COMPETITIVE`.
+
+          ### Current frontier: codebook/process decomposition of Naibbe R1
+
+          Objective: determine whether the R1 complete residual topology is generated by the **cipher process** or largely embedded in the **Voynich-target-aware emitted codebook/inventory**.
+
+          Required next design characteristics:
+
+          - preregister counterfactual families before any new complete-graph scoring;
+          - preserve the published Naibbe architecture where the hypothesis requires it;
+          - use full 66-edge R1, candidate-owned null calibration and both frozen ZL3b/IT2a references;
+          - include codebook-association neutralization and inventory-only controls sufficient to distinguish codebook grammar from process dynamics;
+          - no selected-edge analysis may promote;
+          - retain R2/R3/R4 as separate hard responsibilities; the decomposition is about interpreting R1, not rescuing Naibbe.
+
+          ### Decision after decomposition
+
+          - If R1 survives codebook/inventory neutralization, downgrade R1 primarily to an **output-inventory grammar constraint** and prioritize unseen boundary/dynamic/inverse constraints.
+          - If R1 collapses when codebook association/inventory structure is neutralized, treat the published Naibbe architecture/codebook interaction as materially specific and design a separately preregistered reversible-family follow-up.
+          - In neither case should a new candidate be called decipherment without unseen prediction and exact inverse/content validation.
+          ''',
+
+          'research/NEXT_RESEARCH_FRONTIER.md': r'''
+          ## CURRENT FRONTIER — after Issue #68: where does Naibbe's R1 match come from?
+
+          Issue #68 resolves the previous frontier. The manuscript's residual token-construction graph is real and transcription-robust, but it is **not unique to the manuscript or to A1-like generation**: published Naibbe C1-E0 reproduces it strongly while remaining a failed joint model.
+
+          The next highest-value question is therefore not another Voynich edge and not an immediate Naibbe repair.
+
+          > **Does Naibbe pass R1 because its homophonic/stateful encryption process generates the manuscript's construction grammar, or because its target-aware Voynich-like codebook/inventory already contains that grammar?**
+
+          Why this is now the frontier:
+
+          - R1 Naibbe vs ZL3b: `r=0.8830282501`, `60/66` signs.
+          - R1 Naibbe vs IT2a: `r=0.9000974100`, `61/66` signs.
+          - Naibbe residual existence/reliability are strong (`E=3.1784`, `W=.9547`, `p=1/1001`).
+          - Yet Naibbe R2, R3 and R4 all fail.
+          - Naibbe's concrete glyph codebook is explicitly target-aware, so R1 cannot yet be attributed to reversible encryption dynamics.
+
+          ### Required next program shape
+
+          Start with a source/architecture audit and preregistration **before** counterfactual R1 scoring. Freeze a small family of controls that separates three causal components:
+
+          1. **published process + published target-aware codebook** — already observed Issue #68 reference;
+          2. **published process + codebook-association neutralization** — preserve prospective table/state/codebook capacity and glyph inventory while breaking the semantic/state-to-glyph association in a frozen outcome-independent way;
+          3. **inventory-only emission control** — preserve prospectively defined emitted-token/codebook marginals while removing plaintext/cipher dynamics, to ask whether the R1 graph is already an inventory property;
+          4. optionally, only if definable without using Issue #68 edge outcomes, a **non-target-aware codebook control** built from an external historical/synthetic authority.
+
+          The exact control construction must be frozen before executable scoring. Do not invent a neutralization after seeing which of the 66 edges Naibbe matches.
+
+          ### Primary outcome
+
+          Use complete-graph residual existence and topology against both frozen ZL3b and IT2a references, with candidate/control-family maxT protection. Individual edges are diagnostic only after the family-level reveal and cannot promote a hypothesis.
+
+          ### Interpretive gates
+
+          - **CODEBOOK/INVENTORY DOMINANT:** association-neutralized and/or inventory-only controls retain a comparably strong familywise R1 match. Then R1 is mainly an output-construction constraint and weak evidence about encryption process.
+          - **PROCESS/ASSOCIATION MATTERS:** published Naibbe remains strong while prospectively neutralized controls fail materially. Then the architecture/codebook interaction contains mechanism-specific structure worth deeper reversible-family testing.
+          - **INCONCLUSIVE:** support/representation/null reliability prevents a fair family comparison; do not repair controls after reveal.
+
+          ### Hard boundary
+
+          This next phase does **not** try to make Naibbe pass R2, R3 or R4. Those failures remain frozen. The objective is to correctly interpret the surprising R1 success before using R1 to rank future inverse models.
+          ''',
+
+          'research/TOKEN_CONSTRUCTION_PROGRAM.md': r'''
+          ## Program update — Issue #68 changes the evidential role of the token-construction graph
+
+          The core empirical finding remains accepted:
+
+          > Voynich space-delimited tokens, under the frozen 12-slot representation, exhibit a strong non-null residual construction graph that replicates across independent ZL3b and IT2a readings.
+
+          Issue #68 adds a crucial mechanism-control result:
+
+          > Published target-aware Naibbe C1-E0 also passes the complete-66 R1 residual constraint very strongly (`r=.883` vs ZL3b, `.900` vs IT2a; `60/66` and `61/66` signs; familywise `p=1/1001`).
+
+          Therefore the program must distinguish **existence of the token-construction rule** from **identification of the historical process that produced it**.
+
+          Current responsibility hierarchy:
+
+          - **R1 token construction:** strong, replicated output-grammar constraint; no longer sufficient alone to rule out reversible cipher families.
+          - **R2 short-range recurrence geometry (H62):** dynamic/local-family responsibility not automatically implied by R1; Naibbe fails the frozen joint gate.
+          - **R3 signed paragraph-entry S1:** currently the hardest tested structural discriminator; Naibbe is wrong-sign in all five frozen comparisons.
+          - **R4 inverse closure:** source-side requirement for a claimed decoder; published Naibbe closes uniquely/exactly on only `1167/1778` primary lines under the frozen rule.
+          - **R5 access/complexity:** protects against target-guided repair.
+
+          The token-construction program should now ask **what layer R1 lives in**: codebook inventory, codebook association, encryption/generation process, or an interaction among them. The next phase must decompose that question prospectively at complete-graph level.
+
+          Do not reinterpret R1 PASS as evidence for Naibbe historical identity, Latin plaintext, or encryption. Conversely, do not discard R1 because a target-aware cipher can reproduce it. Its role is now precisely defined as one constraint in a joint falsification system.
+          ''',
+          }
+
+          for name, block in blocks.items():
+              p=Path(name)
+              text=p.read_text(encoding='utf-8')
+              marker=block.strip().splitlines()[0]
+              if marker in text:
+                  raise SystemExit(f'authoritative block already present: {name}')
+              lines=text.splitlines(keepends=True)
+              if not lines:
+                  raise SystemExit(f'empty source-of-truth file: {name}')
+              new=lines[0].rstrip('\n')+'\n\n'+block.strip()+'\n\n'+''.join(lines[1:]).lstrip('\n')
+              p.write_text(new,encoding='utf-8')
+          PY
+
+      - name: Remove temporary Issue68 workflows from final integration diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          find .github/workflows -maxdepth 1 -type f -name 'issue68-*' -print -delete
+          test -z "$(find .github/workflows -maxdepth 1 -type f -name 'issue68-*' -print -quit)"
+
+      - name: Commit Source-of-Truth convergence and workflow cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add research/STATUS.md RESUME.md ROADMAP.md research/NEXT_RESEARCH_FRONTIER.md research/TOKEN_CONSTRUCTION_PROGRAM.md .github/workflows
+          git commit -m 'Converge research state after Issue68 first tournament'
+          git push origin HEAD:issue68-joint-constraint-target
