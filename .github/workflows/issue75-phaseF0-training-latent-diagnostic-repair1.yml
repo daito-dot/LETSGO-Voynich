@@ -1,0 +1,173 @@
+name: Issue75 Phase F0 repaired training-only latent diagnostic
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths: ['.github/workflows/issue75-phaseF0-training-latent-diagnostic-repair1.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact repaired F0 head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify frozen science and normalization-only repair chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=dc780cbe985e424dc3953003d05e682b8a492694
+          CLAR=431ff0e328d1c3cd065bba53fa4438780490fa92
+          CODE=201a4d3a1ff4ef374f1ab3b0c2f8adf7f886e394
+          FREEZE=bc1b35b011f8a98e107ebbd87cf3b1887b8009a2
+          FAIL=16d8faf70a322cd567450e22e7be93ffedd2130f
+          REPAIR=021b8420dcefe06ddbba9f6c0f101ab18310806b
+          RUNNER=2874f57a201fd36f8289e5375551a240ef5f02d4
+          RFREEZE=d3622e70495bc256451a1b6dede027e96c78da57
+          for C in "$PLAN" "$CLAR" "$CODE" "$FREEZE" "$FAIL" "$REPAIR" "$RUNNER" "$RFREEZE"; do git merge-base --is-ancestor "$C" HEAD; done
+          git diff --exit-code "$PLAN" HEAD -- experiments/minimal-occupancy-generator/PLAN_F0_TRAINING_LATENT_DIAGNOSTIC.md
+          git diff --exit-code "$CLAR" HEAD -- experiments/minimal-occupancy-generator/IMPLEMENTATION_CLARIFICATION_F0.md
+          git diff --exit-code "$CODE" HEAD -- experiments/minimal-occupancy-generator/phase75f0_training_latent_diagnostic.py
+          git diff --exit-code "$FREEZE" HEAD -- experiments/minimal-occupancy-generator/IMPLEMENTATION_FREEZE_F0.md
+          git diff --exit-code "$FAIL" HEAD -- experiments/minimal-occupancy-generator/F0_EXECUTION_ATTEMPT1_FAILURE.md
+          git diff --exit-code "$REPAIR" HEAD -- experiments/minimal-occupancy-generator/NUMERICAL_REPAIR_F0.md
+          git diff --exit-code "$RUNNER" HEAD -- experiments/minimal-occupancy-generator/phase75f0_stable_runner.py
+          git diff --exit-code "$RFREEZE" HEAD -- experiments/minimal-occupancy-generator/IMPLEMENTATION_FREEZE_F0_REPAIR1.md
+          echo '983aa0370d949690d7e117fbf2f1273f3a157975d51a06a5e149f4ea1861c0c5  experiments/minimal-occupancy-generator/stage-e-first-reveal/phase75e_aggregate.json' | sha256sum -c -
+          test ! -e experiments/minimal-occupancy-generator/stage-f0
+          ! grep -Eq 'target68|load_target_references|phase75[a-e]_score' experiments/minimal-occupancy-generator/phase75f0_training_latent_diagnostic.py experiments/minimal-occupancy-generator/phase75f0_stable_runner.py
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cb
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify source and install frozen dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cb hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = 2a4533ab9bdfa85db9bad602d590978953055df1
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+          python -m py_compile experiments/minimal-occupancy-generator/phase75e_generator_support.py experiments/minimal-occupancy-generator/phase75f0_training_latent_diagnostic.py experiments/minimal-occupancy-generator/phase75f0_stable_runner.py
+
+      - name: Run complete repaired five-fold training-only diagnostic
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/f0
+          python experiments/minimal-occupancy-generator/phase75f0_stable_runner.py \
+            _cb/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            /tmp/f0/phase75f0_training_latent_diagnostic.json \
+            > /tmp/f0/stdout.txt
+
+      - name: Validate repaired F0 authority and frozen selection law
+        id: validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math,numpy as np
+          r=json.load(open('/tmp/f0/phase75f0_training_latent_diagnostic.json',encoding='utf-8'))
+          assert r['schema']=='issue75-phaseF0-training-latent-diagnostic-v1'
+          assert r['status']=='PHASE_F0_TRAINING_ONLY_LATENT_FRONTIER_DIAGNOSTIC_COMPLETE'
+          assert r['source']['ZL3b_blob']=='2a4533ab9bdfa85db9bad602d590978953055df1'
+          assert r['source']['parsed_tokens']==25071
+          assert r['source']['fold_parsed_tokens']==[4430,4810,5516,5447,4868]
+          assert r['families']['baseline']['free_continuous_parameters']==43
+          assert r['families']['g2']['free_continuous_parameters']==46
+          assert r['families']['g3']['free_continuous_parameters']==65
+          for k in ('g2','g3'):
+              assert r['families'][k]['explicit_nonadjacent_parameters']==0
+              assert r['families'][k]['generic_distance_parameters']==0
+              assert r['families'][k]['signature_specific_parameters']==0
+          folds=r['outer_folds']; expected=[4430,4810,5516,5447,4868]
+          assert len(folds)==5 and [x['fold'] for x in folds]==list(range(5))
+          for f,x in enumerate(folds):
+              assert x['heldout_tokens']==expected[f] and x['training_tokens']==25071-expected[f]
+              for family in ('m5','g2','g3'):
+                  assert 0 <= x[family]['selected_start_index'] <= 8
+                  assert math.isfinite(x[family]['heldout_nats_per_token'])
+              assert len(x['g2']['all_starts'])==9 and len(x['g3']['all_starts'])==9
+              assert {s['start_index'] for s in x['g2']['all_starts']}==set(range(9))
+              assert {s['start_index'] for s in x['g3']['all_starts']}==set(range(9))
+              assert x['g2']['training_conditional_log_likelihood'] >= x['m5']['training_conditional_log_likelihood']-1e-7
+              assert x['g3']['training_conditional_log_likelihood'] >= x['m5']['training_conditional_log_likelihood']-1e-7
+              assert x['g2']['minimum_descriptor_gate_probability'] > 1e-8
+              assert x['g2']['maximum_descriptor_gate_probability'] < 1-1e-8
+              assert min(x['g3']['global_weights']) > 1e-8
+          assert folds[0]['g2']['gradient_audit']['passed'] is True
+          assert folds[0]['g3']['gradient_audit']['passed'] is True
+          assert all(v is False for v in r['guardrails'].values())
+          d2=np.array([x['g2']['heldout_gain_over_m5_nats_per_token'] for x in folds],float)
+          d3=np.array([x['g3']['heldout_gain_over_m5_nats_per_token'] for x in folds],float)
+          d32=np.array([x['direct_g3_minus_g2_nats_per_token'] for x in folds],float)
+          s2=bool(np.all(d2>0) and np.median(d2)>=0.01)
+          s3=bool(np.all(d3>0) and np.median(d3)>=0.01)
+          n32=int(np.sum(d32>0)); m32=float(np.median(d32))
+          assert r['support']['g2_over_m5']['supported'] is s2
+          assert r['support']['g3_over_m5']['supported'] is s3
+          if s2 and not s3: cls='F0_SELECT_KRS_GATED_TWO_MODE_CHAIN'
+          elif s3 and not s2: cls='F0_SELECT_GLOBAL_THREE_MODE_CHAIN'
+          elif s2 and s3: cls='F0_SELECT_GLOBAL_THREE_MODE_CHAIN' if (n32>=4 and m32>=0.01) else 'F0_SELECT_KRS_GATED_TWO_MODE_CHAIN'
+          else: cls='F0_GLOBAL_MIXTURE_EXTENSIONS_NOT_PREDICTIVELY_SUPPORTED_WITHIN_TOKEN_STATE_FRONTIER_REQUIRED'
+          assert r['selection']['classification']==cls
+          print({'classification':cls,'g2_gains':d2.tolist(),'g2_median':float(np.median(d2)),'g2_supported':s2,'g3_gains':d3.tolist(),'g3_median':float(np.median(d3)),'g3_supported':s3,'g3_minus_g2':d32.tolist(),'g3_minus_g2_median':m32})
+          PY
+          sha256sum /tmp/f0/phase75f0_training_latent_diagnostic.json /tmp/f0/stdout.txt > /tmp/f0/SHA256SUMS.txt
+          AUTH_SHA=$(sha256sum /tmp/f0/phase75f0_training_latent_diagnostic.json | cut -d' ' -f1)
+          echo "authority_sha=$AUTH_SHA" >> "$GITHUB_OUTPUT"
+          cat > /tmp/f0/PROVENANCE.txt <<EOF
+          scientific_role=PRETARGET_TRAINING_ONLY_LATENT_FRONTIER_DIAGNOSTIC_AUTHORITY
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          execution_head=${GITHUB_SHA}
+          plan_commit=dc780cbe985e424dc3953003d05e682b8a492694
+          scientific_executable_commit=201a4d3a1ff4ef374f1ab3b0c2f8adf7f886e394
+          attempt1_failure_run=33543350071
+          normalization_repair_commit=021b8420dcefe06ddbba9f6c0f101ab18310806b
+          stable_runner_commit=2874f57a201fd36f8289e5375551a240ef5f02d4
+          repair_freeze_commit=d3622e70495bc256451a1b6dede027e96c78da57
+          authority_sha256=${AUTH_SHA}
+          source_blob=2a4533ab9bdfa85db9bad602d590978953055df1
+          physical_folds=5
+          external_reference_measurements_accessed=false
+          random_restarts=false
+          rerolls=false
+          EOF
+
+      - name: Upload immutable repaired F0 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseF0-training-latent-diagnostic-repair1-${{ github.sha }}
+          path: /tmp/f0
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Commit exact repaired F0 authority into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/minimal-occupancy-generator/stage-f0
+          test ! -e "$DEST"
+          mkdir -p "$DEST"
+          cp /tmp/f0/phase75f0_training_latent_diagnostic.json "$DEST/"
+          cp /tmp/f0/stdout.txt "$DEST/"
+          cp /tmp/f0/SHA256SUMS.txt "$DEST/"
+          cp /tmp/f0/PROVENANCE.txt "$DEST/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Issue75 Phase F0: freeze repaired training-only latent diagnostic authority'
+          git push origin HEAD:issue75-minimal-occupancy-generator
