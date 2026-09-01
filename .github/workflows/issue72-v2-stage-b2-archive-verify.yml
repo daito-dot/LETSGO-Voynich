@@ -1,0 +1,69 @@
+name: Issue72 V2 Stage B2 permanent archive verification
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - 'experiments/naibbe-r1-decomposition-v2/archive/stage_b2_calibration.json.gz.b64.part*'
+      - '.github/workflows/issue72-v2-stage-b2-archive-verify.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+          fetch-depth: 0
+
+      - name: Verify all ten chunk identities and exact reconstruction
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experiments/naibbe-r1-decomposition-v2/archive
+          echo '2b2bb79f8d9e417674004e214c3e463cc48e282d2f5151cc6cc9e27c7748006a  '"$ROOT"'/stage_b2_calibration.json.gz.b64.part00' | sha256sum -c -
+          echo 'b987204a2d0f9828ccede79f20718ca7b19b32408455afcb7b309f31ede5f3e5  '"$ROOT"'/stage_b2_calibration.json.gz.b64.part01' | sha256sum -c -
+          echo 'a57ccbd89434105f43d3f870e49830f404e8d3cb31a87ef6488bd6c835f3c880  '"$ROOT"'/stage_b2_calibration.json.gz.b64.part02' | sha256sum -c -
+          echo 'f7f05226db7ce2e3810e166632a9413ade39ea27921e18fed1ca6ff9cc6723c0  '"$ROOT"'/stage_b2_calibration.json.gz.b64.part03' | sha256sum -c -
+          echo '3e31eb4e642fdbbc51bd273a7245dc6a5bd04b6db5d82984d51a910349939b5f  '"$ROOT"'/stage_b2_calibration.json.gz.b64.part04' | sha256sum -c -
+          echo 'e38f2c92f9f8503ccd9705d6e140ea7ab4405ec564bdeee5341d27e72e302a96  '"$ROOT"'/stage_b2_calibration.json.gz.b64.part05' | sha256sum -c -
+          echo 'fe5fa40edd53a6e0bfc245b85fc8db593c3a6c95a1df3f49a766e4281b6bb122  '"$ROOT"'/stage_b2_calibration.json.gz.b64.part06' | sha256sum -c -
+          echo 'f803632874058e415a23c76062bfdcd72122306160ead0e2f9f566a819cb5b6e  '"$ROOT"'/stage_b2_calibration.json.gz.b64.part07' | sha256sum -c -
+          echo 'd7227ebe3088a5baa0e2e1cd126868b49e83445c36f149a08cfedb87720bd139  '"$ROOT"'/stage_b2_calibration.json.gz.b64.part08' | sha256sum -c -
+          echo 'c2b73d5a50f923a54f62fd6e28612da4169e1de28f29a9cdd4acf8f7a9f80906  '"$ROOT"'/stage_b2_calibration.json.gz.b64.part09' | sha256sum -c -
+
+          cat "$ROOT"/stage_b2_calibration.json.gz.b64.part0{0,1,2,3,4,5,6,7,8,9} > /tmp/stage_b2_calibration.json.gz.b64
+          test "$(wc -c < /tmp/stage_b2_calibration.json.gz.b64)" -eq 45640
+          echo 'b781889759f62d586371b835e8fe66879a8ad88400924790821eb7c988ae889d  /tmp/stage_b2_calibration.json.gz.b64' | sha256sum -c -
+
+          base64 -d /tmp/stage_b2_calibration.json.gz.b64 > /tmp/stage_b2_calibration.json.gz
+          test "$(wc -c < /tmp/stage_b2_calibration.json.gz)" -eq 34229
+          echo '0a3463008f10e8667c6aa1946aec3ea2378bdd331fa304c19c4c076fc0d50892  /tmp/stage_b2_calibration.json.gz' | sha256sum -c -
+
+          gzip -dc /tmp/stage_b2_calibration.json.gz > /tmp/stage_b2_calibration.json
+          test "$(wc -c < /tmp/stage_b2_calibration.json)" -eq 157852
+          echo '2da5f0a4f8191820875ed264284f2d3b651489a7e8aeed3805cc2ed4d08c5147  /tmp/stage_b2_calibration.json' | sha256sum -c -
+
+      - name: Verify scientific firewall encoded in raw aggregate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/stage_b2_calibration.json'))
+          assert r['status']=='EXTENDED UNCHANGED-NAIBBE R1 DISTRIBUTION CALIBRATED'
+          assert r['population']['n']==25
+          assert r['population']['reps']==list(range(25))
+          assert len(r['pairwise_residual_topology'])==300
+          assert r['decision_policy']['hard_intervention_threshold_derived'] is False
+          assert r['decision_policy']['worst_positive_is_fail_cutoff'] is False
+          assert r['decision_policy']['gaussian_tail_used_as_truth_region'] is False
+          assert r['issue72_intervention_surface_loaded_or_generated'] is False
+          assert r['issue72_intervention_R1_computed'] is False
+          print('B2 archive exact and intervention firewall clean')
+          PY
