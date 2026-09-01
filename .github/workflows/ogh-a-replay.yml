@@ -1,6 +1,10 @@
 name: OGH-A occupancy-generation hierarchy replay
 
 on:
+  push:
+    branches: [claude/performance-test-project-eiv6up]
+    paths:
+      - '.github/workflows/ogh-a-replay.yml'
   workflow_dispatch:
     inputs:
       source:
@@ -47,10 +51,10 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/ogh
           IT=""
-          if [ "${{ inputs.source }}" = "IT2a" ]; then IT=/tmp/vms/IT2a-n.txt; fi
+          if [ "${{ inputs.source || 'ZL3b' }}" = "IT2a" ]; then IT=/tmp/vms/IT2a-n.txt; fi
           python experiments/occupancy-generation-hierarchy/ogh_a.py --score \
-            "${{ inputs.source }}" "${{ inputs.model }}" "${{ inputs.rep }}" /tmp/vms/ZL3b-n.txt $IT \
-            "/tmp/ogh/${{ inputs.source }}_${{ inputs.model }}_rep${{ inputs.rep }}.json"
+            "${{ inputs.source || 'ZL3b' }}" "${{ inputs.model || 'G4' }}" "${{ inputs.rep || '0' }}" /tmp/vms/ZL3b-n.txt $IT \
+            "/tmp/ogh/${{ inputs.source || 'ZL3b' }}_${{ inputs.model || 'G4' }}_rep${{ inputs.rep || '0' }}.json"
           sha256sum /tmp/ogh/*.json
       - name: Compare with committed first-reveal result
         shell: bash
@@ -70,6 +74,6 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: ogh-a-replay-${{ inputs.source }}-${{ inputs.model }}-rep${{ inputs.rep }}-${{ github.sha }}
+          name: ogh-a-replay-${{ inputs.source || 'ZL3b' }}-${{ inputs.model || 'G4' }}-rep${{ inputs.rep || '0' }}-${{ github.sha }}
           path: /tmp/ogh
           retention-days: 90
