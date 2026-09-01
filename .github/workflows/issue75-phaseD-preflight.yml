@@ -1,0 +1,70 @@
+name: Issue75 Phase D target-blind exact replay preflight
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths: ['.github/workflows/issue75-phaseD-preflight.yml']
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix: {rep: [0,30]}
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: '${{ github.sha }}', fetch-depth: 0}
+      - name: Verify frozen D0/scorer authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/minimal-occupancy-generator/D0_FREEZE_D.md
+          test ! -e experiments/minimal-occupancy-generator/stage-d-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_D.md
+          git diff --exit-code ef8edcb94e287a3fd6c559308ff902dc7d1c41ee HEAD -- experiments/minimal-occupancy-generator/phase75d_generator_support.py
+          git diff --exit-code 5449d31480d783f5bb335958be557e6ad8cbadb6 HEAD -- experiments/minimal-occupancy-generator/phase75d_score.py
+          echo '5c31aaa5fdb959873d89d7762dfd78db42c1a773a091b71a9f0731e90fa269cb  experiments/minimal-occupancy-generator/stage-d0/generator_authority.json' | sha256sum -c -
+      - uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cb
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+      - name: Regenerate exact D0 case with target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cb hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = 2a4533ab9bdfa85db9bad602d590978953055df1
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+          mkdir -p /tmp/p
+          python experiments/minimal-occupancy-generator/phase75d_score.py \
+            _cb/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            '${{ matrix.rep }}' '/tmp/p/M4_${{ matrix.rep }}.json' --verify-only \
+            > '/tmp/p/M4_${{ matrix.rep }}.stdout.txt'
+          python - <<'PY'
+          import json
+          rep=${{ matrix.rep }}
+          r=json.load(open(f'/tmp/p/M4_{rep}.json'))
+          assert r['schema']=='issue75-phaseD-m4-r1-preflight-v1'
+          assert r['status']=='EXACT_D0_M4_CORPUS_REGENERATED_TARGET_BLIND'
+          assert r['family']=='M4-KRS-CHAIN-DISTANCE' and r['rep']==rep
+          a=r['candidate_audit']
+          assert a['phase_d0_authority_sha256']=='5c31aaa5fdb959873d89d7762dfd78db42c1a773a091b71a9f0731e90fa269cb'
+          assert a['exact_phase_d0_replay'] is True and a['rank_29_revalidated'] is True
+          assert a['fit_tolerance_revalidated'] is True and a['regenerated_fit_max_abs_reported_moment_error'] <= 1e-10
+          d0=json.load(open('experiments/minimal-occupancy-generator/stage-d0/generator_authority.json'))
+          frozen=next(x for x in d0['cases'] if x['rep']==rep)
+          assert a['occupancy_sha256']==frozen['occupancy_sha256']
+          assert r['no_case_selection'] is True and r['no_reroll'] is True
+          assert all(v is False for v in r['target_access'].values())
+          print({'rep':rep,'occupancy_sha256':a['occupancy_sha256'],'target_blind':True})
+          PY
+          sha256sum /tmp/p/* > /tmp/p/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseD-preflight-rep${{ matrix.rep }}-${{ github.sha }}
+          path: /tmp/p
+          if-no-files-found: error
+          retention-days: 90
