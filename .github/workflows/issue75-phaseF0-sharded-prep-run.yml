@@ -1,0 +1,144 @@
+name: Issue75 Phase F0 isolated sharded fallback execution
+
+on:
+  push:
+    branches: [issue75-f0-sharded-prep]
+    paths: ['.github/workflows/issue75-phaseF0-sharded-prep-run.yml']
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  shard:
+    name: fold-${{ matrix.fold }}-${{ matrix.family }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [0, 1, 2, 3, 4]
+        family: [G2, G3]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Verify isolated sharding authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = issue75-f0-sharded-prep
+          for C in f9a452f8f865a12dfa6c1a946677d35a955b5f33 a96ca018fccac26298d6cc02a98032637a476036 e540cca7e698cb16d6fdc18b82912af6ab50e4e9 033e528adf26f3ad68dd570193edd67d7f62e0e0 4ebcd5afa2f092a1d752c05668397df7be48e69e; do git merge-base --is-ancestor "$C" HEAD; done
+          test ! -e experiments/minimal-occupancy-generator/stage-f0
+          ! grep -Eq 'target68|load_target_references|phase75[a-e]_score' experiments/minimal-occupancy-generator/phase75f0_shard_runner.py experiments/minimal-occupancy-generator/phase75f0_shard_aggregate.py
+      - uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cb
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+      - name: Install and run exact shard
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cb hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = 2a4533ab9bdfa85db9bad602d590978953055df1
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+          mkdir -p /tmp/shard
+          python experiments/minimal-occupancy-generator/phase75f0_shard_runner.py _cb/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt '${{ matrix.fold }}' '${{ matrix.family }}' '/tmp/shard/phase75f0_shard_fold${{ matrix.fold }}_${{ matrix.family }}.json' > '/tmp/shard/stdout_fold${{ matrix.fold }}_${{ matrix.family }}.txt'
+          python - <<'PY'
+          import json,math
+          f=int('${{ matrix.fold }}'); k='${{ matrix.family }}'
+          r=json.load(open(f'/tmp/shard/phase75f0_shard_fold{f}_{k}.json'))
+          assert r['schema']=='issue75-phaseF0-fold-family-shard-v1' and r['fold']==f and r['candidate_key']==k
+          assert r['source']['ZL3b_blob']=='2a4533ab9bdfa85db9bad602d590978953055df1'
+          c=r['candidate']; assert len(c['all_starts'])==9 and c['gradient_audit']['passed'] is True
+          assert c['training_conditional_log_likelihood'] >= r['m5']['training_conditional_log_likelihood']-1e-7
+          assert math.isfinite(c['heldout_nats_per_token']) and all(v is False for v in r['guardrails'].values())
+          if k=='G2': assert c['free_continuous_parameters']==46 and c['minimum_descriptor_gate_probability']>1e-8 and c['maximum_descriptor_gate_probability']<1-1e-8
+          else: assert c['free_continuous_parameters']==65 and min(c['global_weights'])>1e-8
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseF0-prep-shard-${{ github.sha }}-${{ matrix.fold }}-${{ matrix.family }}
+          path: /tmp/shard
+          if-no-files-found: error
+          retention-days: 90
+
+  aggregate:
+    name: aggregate-all-ten-shards
+    needs: shard
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: issue75-phaseF0-prep-shard-${{ github.sha }}-*
+          path: /tmp/shards
+          merge-multiple: true
+      - name: Aggregate and validate frozen decision
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+          test "$(find /tmp/shards -maxdepth 1 -name 'phase75f0_shard_fold*_G*.json' | wc -l)" -eq 10
+          mkdir -p /tmp/f0
+          python experiments/minimal-occupancy-generator/phase75f0_shard_aggregate.py /tmp/shards /tmp/f0/phase75f0_training_latent_diagnostic.json > /tmp/f0/stdout.txt
+          mkdir -p /tmp/f0/shards
+          cp /tmp/shards/phase75f0_shard_fold*_G*.json /tmp/f0/shards/
+          cp /tmp/shards/stdout_fold*_G*.txt /tmp/f0/shards/
+          (cd /tmp/f0 && find shards -type f -print0 | sort -z | xargs -0 sha256sum) > /tmp/f0/SHARD_SHA256SUMS.txt
+          python - <<'PY'
+          import json,numpy as np
+          r=json.load(open('/tmp/f0/phase75f0_training_latent_diagnostic.json'))
+          assert r['schema']=='issue75-phaseF0-training-latent-diagnostic-v1' and r['execution_mode']=='EXACT_TEN_SHARD_EXECUTION_ONLY_FALLBACK'
+          folds=r['outer_folds']; assert len(folds)==5 and [x['fold'] for x in folds]==list(range(5))
+          d2=np.array([x['g2']['heldout_gain_over_m5_nats_per_token'] for x in folds]); d3=np.array([x['g3']['heldout_gain_over_m5_nats_per_token'] for x in folds]); d32=np.array([x['direct_g3_minus_g2_nats_per_token'] for x in folds])
+          s2=bool(np.all(d2>0) and np.median(d2)>=.01); s3=bool(np.all(d3>0) and np.median(d3)>=.01); n32=int(np.sum(d32>0)); m32=float(np.median(d32))
+          if s2 and not s3: cls='F0_SELECT_KRS_GATED_TWO_MODE_CHAIN'
+          elif s3 and not s2: cls='F0_SELECT_GLOBAL_THREE_MODE_CHAIN'
+          elif s2 and s3: cls='F0_SELECT_GLOBAL_THREE_MODE_CHAIN' if (n32>=4 and m32>=.01) else 'F0_SELECT_KRS_GATED_TWO_MODE_CHAIN'
+          else: cls='F0_GLOBAL_MIXTURE_EXTENSIONS_NOT_PREDICTIVELY_SUPPORTED_WITHIN_TOKEN_STATE_FRONTIER_REQUIRED'
+          assert r['selection']['classification']==cls and all(v is False for v in r['guardrails'].values())
+          print({'classification':cls,'g2':d2.tolist(),'g2_median':float(np.median(d2)),'g3':d3.tolist(),'g3_median':float(np.median(d3)),'g3_minus_g2':d32.tolist(),'g3_minus_g2_median':m32})
+          PY
+          AUTH_SHA=$(sha256sum /tmp/f0/phase75f0_training_latent_diagnostic.json | cut -d' ' -f1)
+          sha256sum /tmp/f0/phase75f0_training_latent_diagnostic.json /tmp/f0/stdout.txt /tmp/f0/SHARD_SHA256SUMS.txt > /tmp/f0/SHA256SUMS.txt
+          cat > /tmp/f0/PROVENANCE.txt <<EOF
+          scientific_role=PRETARGET_TRAINING_ONLY_LATENT_FRONTIER_DIAGNOSTIC_AUTHORITY_CANDIDATE
+          authority_precedence=SERIAL_REPAIR1_RUN_33545246568_IF_SUCCESSFUL
+          execution_mode=EXACT_TEN_SHARD_EXECUTION_ONLY_FALLBACK
+          workflow_run=${GITHUB_RUN_ID}
+          execution_head=${GITHUB_SHA}
+          authority_sha256=${AUTH_SHA}
+          source_blob=2a4533ab9bdfa85db9bad602d590978953055df1
+          complete_shards=10
+          external_reference_measurements_accessed=false
+          random_restarts=false
+          rerolls=false
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseF0-prep-sharded-authority-${{ github.sha }}
+          path: /tmp/f0
+          if-no-files-found: error
+          retention-days: 90
+      - name: Commit isolated authority candidate to prep branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = issue75-f0-sharded-prep
+          DEST=experiments/minimal-occupancy-generator/stage-f0
+          test ! -e "$DEST"
+          mkdir -p "$DEST"
+          cp -a /tmp/f0/. "$DEST/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Issue75 Phase F0: freeze isolated sharded authority candidate'
+          git push origin HEAD:issue75-f0-sharded-prep
