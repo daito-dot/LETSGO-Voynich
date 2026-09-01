@@ -1,0 +1,119 @@
+name: Issue72 target scorer synthetic preflight
+
+on:
+  push:
+    branches: [issue72-naibbe-r1-decomposition]
+    paths:
+      - 'experiments/naibbe-r1-decomposition/TARGET_IMPLEMENTATION.md'
+      - 'experiments/naibbe-r1-decomposition/TARGET_RUNTIME_FREEZE.md'
+      - 'experiments/naibbe-r1-decomposition/target72.py'
+      - 'experiments/naibbe-r1-decomposition/aggregate72.py'
+      - '.github/workflows/issue72-target-code-preflight.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue72-naibbe-r1-decomposition
+          fetch-depth: 0
+
+      - name: Verify frozen chronology and family-support archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/SOURCE_AUDIT_PLAN.md | tail -1)
+          TARGET_PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/PLAN_A.md | tail -1)
+          FAMILY_IMPL=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/FAMILY_PREFLIGHT_IMPLEMENTATION.md | tail -1)
+          FAMILY_FREEZE=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/family-preflight/preflight.json | tail -1)
+          TARGET_IMPL=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/TARGET_IMPLEMENTATION.md | tail -1)
+          RUNTIME=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/TARGET_RUNTIME_FREEZE.md | tail -1)
+          SCORER=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/target72.py | tail -1)
+          AGG=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/aggregate72.py | tail -1)
+          for x in "$SOURCE_PLAN" "$TARGET_PLAN" "$FAMILY_IMPL" "$FAMILY_FREEZE" "$TARGET_IMPL" "$RUNTIME" "$SCORER" "$AGG"; do test -n "$x"; done
+          git merge-base --is-ancestor "$SOURCE_PLAN" "$TARGET_PLAN"
+          git merge-base --is-ancestor "$TARGET_PLAN" "$FAMILY_IMPL"
+          git merge-base --is-ancestor "$FAMILY_IMPL" "$FAMILY_FREEZE"
+          git merge-base --is-ancestor "$FAMILY_FREEZE" "$TARGET_IMPL"
+          git merge-base --is-ancestor "$TARGET_IMPL" "$RUNTIME"
+          git merge-base --is-ancestor "$RUNTIME" "$SCORER"
+          git merge-base --is-ancestor "$SCORER" "$AGG"
+          test -f experiments/naibbe-r1-decomposition/source-audit/source_audit.json
+          test -f experiments/naibbe-r1-decomposition/source-audit/TARGET_ELIGIBLE_AXES.txt
+          test -f experiments/naibbe-r1-decomposition/family-preflight/preflight.json
+          test -f experiments/naibbe-r1-decomposition/family-preflight/TARGET_AUTHORIZED_AXES.txt
+          test -f experiments/naibbe-r1-decomposition/family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt
+          test ! -e experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+          echo "SOURCE_PLAN=$SOURCE_PLAN"
+          echo "TARGET_PLAN=$TARGET_PLAN"
+          echo "FAMILY_FREEZE=$FAMILY_FREEZE"
+          echo "SCORER=$SCORER"
+          echo "AGG=$AGG"
+
+      - name: Verify target-blind freeze consistency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('experiments/naibbe-r1-decomposition')
+          sa=json.load(open(root/'source-audit/source_audit.json'))
+          fp=json.load(open(root/'family-preflight/preflight.json'))
+          assert sa['counterfactual_R1_scored'] is False
+          assert not any(sa['forbidden_quantities_computed'].values())
+          assert fp['counterfactual_R1_scored'] is False
+          assert not any(fp['forbidden_quantities_computed'].values())
+          axes=[x.strip() for x in (root/'family-preflight/TARGET_AUTHORIZED_AXES.txt').read_text().splitlines() if x.strip()]
+          ids=[x.strip() for x in (root/'family-preflight/TARGET_AUTHORIZED_REALIZATIONS.txt').read_text().splitlines() if x.strip()]
+          assert axes == fp['target_authorized_axes']
+          assert ids == fp['target_authorized_realizations']
+          assert len(ids) == len(set(ids)) and len(ids) > 0
+          records={x['realization']:x for x in fp['realizations']}
+          assert set(ids) <= set(records)
+          assert all(records[x]['axis'] in axes for x in ids)
+          assert all(records[x]['support']['coverage'] >= 0.60 for x in ids)
+          assert all(fp['axis_support_status'][a]['all_realizations_support_eligible'] for a in axes)
+          print('authorized_axes=',axes)
+          print('authorized_realizations=',ids)
+          print('realization_count=',len(ids))
+          PY
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install exact frozen runtime
+        run: python -m pip install --disable-pip-version-check numpy==2.5.2 scipy==1.18.1 pandas==3.0.5
+
+      - name: Assert runtime versions
+        run: |
+          python - <<'PY'
+          import sys,numpy,scipy,pandas
+          assert sys.version_info[:2] == (3,13)
+          assert numpy.__version__ == '2.5.2'
+          assert scipy.__version__ == '1.18.1'
+          assert pandas.__version__ == '3.0.5'
+          print(sys.version)
+          print('numpy',numpy.__version__,'scipy',scipy.__version__,'pandas',pandas.__version__)
+          PY
+
+      - name: Compile target and aggregate code
+        run: |
+          python -m py_compile experiments/naibbe-r1-decomposition/target72.py
+          python -m py_compile experiments/naibbe-r1-decomposition/aggregate72.py
+
+      - name: Run synthetic self-tests only
+        run: |
+          python experiments/naibbe-r1-decomposition/target72.py --self-test
+          python experiments/naibbe-r1-decomposition/aggregate72.py --self-test
+
+      - name: Assert no real first-reveal artifact exists
+        run: |
+          test ! -e experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+          echo 'Issue72 real counterfactual R1 target: NOT RUN'
