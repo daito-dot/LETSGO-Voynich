@@ -33,27 +33,39 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
 
-      - name: Verify frozen Phase A chronology
+      - name: Verify frozen Phase A and replay-repair chronology
         shell: bash
         run: |
           set -euo pipefail
           PLAN='8d984cfa61a5616bef61b45248c0a7a5d213fbf8'
           A0='c703b2d01c941b6bfd17758f09868c71a200f212'
-          SCORER='21e7bbc176e593ef9fa025113fb17799ca500d8e'
+          SCORER_ADD='21e7bbc176e593ef9fa025113fb17799ca500d8e'
           AGG='d058a5dbe9571a7afa528e001d64d4a576f7c0ff'
           FREEZE='6dead1b0878ef9efde92d704c6e4e33ad1f43bb4'
-          PREFLIGHT=$(git rev-parse HEAD)
+          PREFLIGHT_ADD='7cf4c779acfcc90f180cf1e4fce02352737e3091'
+          INCIDENT='cae1873d824e0e4c5e99cd3068c5cfed5a787438'
+          SCORER_REPAIR='11cbcab12e9c02e5002bc286a132b9a8a9f267aa'
+          REPAIR_ADDENDUM='1235dc77cb27f888faced53a582e74e21a2f59e9'
+          PREFLIGHT_HEAD=$(git rev-parse HEAD)
           test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PLAN_A.md | tail -1)" = "$PLAN"
           test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/stage-a0/generator_authority.json | tail -1)" = "$A0"
-          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75a_score.py | tail -1)" = "$SCORER"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75a_score.py | tail -1)" = "$SCORER_ADD"
+          test "$(git log -1 --format=%H -- experiments/minimal-occupancy-generator/phase75a_score.py)" = "$SCORER_REPAIR"
           test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75a_aggregate.py | tail -1)" = "$AGG"
           test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/IMPLEMENTATION_FREEZE_A.md | tail -1)" = "$FREEZE"
-          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseA-preflight.yml | tail -1)" = "$PREFLIGHT"
+          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseA-preflight.yml | tail -1)" = "$PREFLIGHT_ADD"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PREFLIGHT_REPLAY_INCIDENT_20260901.md | tail -1)" = "$INCIDENT"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PREFLIGHT_REPLAY_REPAIR_ADDENDUM_20260901.md | tail -1)" = "$REPAIR_ADDENDUM"
+          test "$(git log -1 --format=%H -- .github/workflows/issue75-phaseA-preflight.yml)" = "$PREFLIGHT_HEAD"
           git merge-base --is-ancestor "$PLAN" "$A0"
-          git merge-base --is-ancestor "$A0" "$SCORER"
-          git merge-base --is-ancestor "$SCORER" "$AGG"
+          git merge-base --is-ancestor "$A0" "$SCORER_ADD"
+          git merge-base --is-ancestor "$SCORER_ADD" "$AGG"
           git merge-base --is-ancestor "$AGG" "$FREEZE"
-          git merge-base --is-ancestor "$FREEZE" "$PREFLIGHT"
+          git merge-base --is-ancestor "$FREEZE" "$PREFLIGHT_ADD"
+          git merge-base --is-ancestor "$PREFLIGHT_ADD" "$INCIDENT"
+          git merge-base --is-ancestor "$INCIDENT" "$SCORER_REPAIR"
+          git merge-base --is-ancestor "$SCORER_REPAIR" "$REPAIR_ADDENDUM"
+          git merge-base --is-ancestor "$REPAIR_ADDENDUM" "$PREFLIGHT_HEAD"
           test ! -e experiments/minimal-occupancy-generator/stage-a-first-reveal
           test ! -e experiments/minimal-occupancy-generator/REPORT_A.md
           echo '83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2  experiments/minimal-occupancy-generator/stage-a0/generator_authority.json' | sha256sum -c -
@@ -107,17 +119,21 @@ jobs:
           assert r['status']=='EXACT_A0_CORPUS_REGENERATED_TARGET_BLIND'
           assert r['plan_commit']=='8d984cfa61a5616bef61b45248c0a7a5d213fbf8'
           assert r['family']==family and r['rep']==rep
-          assert r['candidate_audit']['stage_a0_authority_sha256']=='83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2'
-          assert r['candidate_audit']['exact_stage_a0_replay'] is True
-          assert r['candidate_audit']['tokens']==25071
-          assert r['candidate_audit']['fold_tokens']==[4430,4810,5516,5447,4868]
-          assert r['candidate_audit']['all_zero_count']==0
+          a=r['candidate_audit']
+          assert a['stage_a0_authority_sha256']=='83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2'
+          assert a['exact_stage_a0_replay'] is True
+          assert a['fit_empirical_statistics_exact_stage_a0'] is True
+          assert a['fit_tolerance_revalidated'] is True
+          assert a['regenerated_fit_max_abs_marginal_error'] <= 1e-10
+          assert a['tokens']==25071
+          assert a['fold_tokens']==[4430,4810,5516,5447,4868]
+          assert a['all_zero_count']==0
           a0=json.load(open('experiments/minimal-occupancy-generator/stage-a0/generator_authority.json', encoding='utf-8'))
           frozen=next(x for x in a0['cases'] if x['family']==family and x['rep']==rep)
-          assert r['candidate_audit']['occupancy_sha256']==frozen['occupancy_sha256']
+          assert a['occupancy_sha256']==frozen['occupancy_sha256']
           assert all(v is False for v in r['target_access'].values())
           assert r['no_case_selection'] is True and r['no_reroll'] is True
-          print({'family':family,'rep':rep,'sha':frozen['occupancy_sha256'],'target_access':r['target_access']})
+          print({'family':family,'rep':rep,'sha':frozen['occupancy_sha256'],'refit_max_error':a['regenerated_fit_max_abs_marginal_error'],'target_access':r['target_access']})
           PY
 
       - name: Freeze preflight provenance
@@ -133,7 +149,11 @@ jobs:
           plan_commit=8d984cfa61a5616bef61b45248c0a7a5d213fbf8
           stage_a0_commit=c703b2d01c941b6bfd17758f09868c71a200f212
           stage_a0_sha256=83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2
-          scorer_commit=21e7bbc176e593ef9fa025113fb17799ca500d8e
+          scorer_add_commit=21e7bbc176e593ef9fa025113fb17799ca500d8e
+          failed_preflight_run=33501362053
+          replay_incident_commit=cae1873d824e0e4c5e99cd3068c5cfed5a787438
+          scorer_replay_repair_commit=11cbcab12e9c02e5002bc286a132b9a8a9f267aa
+          replay_repair_addendum_commit=1235dc77cb27f888faced53a582e74e21a2f59e9
           aggregator_commit=d058a5dbe9571a7afa528e001d64d4a576f7c0ff
           target_loaded=false
           pair_Q_computed=false
