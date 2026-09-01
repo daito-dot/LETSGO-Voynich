@@ -1,0 +1,169 @@
+name: Issue75 Phase B target-blind M2 candidate-null smoke
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseB-candidate-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact smoke head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify frozen Phase B chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN='f09ba414de015eabd1eef03f275be68b82752d7f'
+          B0='591accc7105e96ddd2b172c8d8c0f54fc0b7f4c1'
+          SCORE='6b09b2870b7693a9f098f51803363d75ae9674ef'
+          AGG='3bb949c926b9cef90fd56c9c7027ddb28c44db18'
+          FREEZE='61dd252fa7e07c0de34b7f319dfe38e9ec6efb0d'
+          PREFLIGHT='a0efaa67b91cf39d75d7da02fef8c23f9a35c6de'
+          SMOKE='d2c85c05b337fa8f6cd86bdd9f62d81a1ac6c403'
+          HEAD=$(git rev-parse HEAD)
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PLAN_B.md | tail -1)" = "$PLAN"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/stage-b0/generator_authority.json | tail -1)" = "$B0"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75b_score.py | tail -1)" = "$SCORE"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75b_aggregate.py | tail -1)" = "$AGG"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/IMPLEMENTATION_FREEZE_B.md | tail -1)" = "$FREEZE"
+          test "$(git log -1 --format=%H -- .github/workflows/issue75-phaseB-preflight.yml)" = "$PREFLIGHT"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75b_candidate_smoke.py | tail -1)" = "$SMOKE"
+          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseB-candidate-smoke.yml | tail -1)" = "$HEAD"
+          git merge-base --is-ancestor "$PLAN" "$B0"
+          git merge-base --is-ancestor "$B0" "$SCORE"
+          git merge-base --is-ancestor "$SCORE" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$FREEZE"
+          git merge-base --is-ancestor "$FREEZE" "$PREFLIGHT"
+          git merge-base --is-ancestor "$PREFLIGHT" "$SMOKE"
+          git merge-base --is-ancestor "$SMOKE" "$HEAD"
+          test ! -e experiments/minimal-occupancy-generator/stage-b-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_B.md
+          echo '9c180c7026e4f9464954dd029b71973cc1890f25223af6152959649dde57e834  experiments/minimal-occupancy-generator/stage-b0/generator_authority.json' | sha256sum -c -
+          echo 'fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540  experiments/minimal-occupancy-generator/stage-a-first-reveal/phase75a_aggregate.json' | sha256sum -c -
+
+      - name: Download successful rep0 replay preflight
+        uses: actions/download-artifact@v4
+        with:
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33503957561
+          github-token: ${{ github.token }}
+          name: issue75-phaseB-preflight-rep0-a0efaa67b91cf39d75d7da02fef8c23f9a35c6de
+          path: /tmp/preflight
+
+      - name: Verify downloaded preflight remains target blind
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/preflight/M2-KRS_0.json', encoding='utf-8'))
+          assert r['status']=='EXACT_B0_M2_CORPUS_REGENERATED_TARGET_BLIND'
+          assert r['rep']==0 and r['candidate_audit']['exact_phase_b0_replay'] is True
+          assert all(v is False for v in r['target_access'].values())
+          print({'rep':0,'sha':r['candidate_audit']['occupancy_sha256'],'target_blind':True})
+          PY
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cipher_benchmark rev-parse HEAD)" = '315f0cad4de3d021bd4185765c037cf2a28d341c'
+          test "$(git -C _cipher_benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = '2a4533ab9bdfa85db9bad602d590978953055df1'
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Compile frozen M2 scorer and smoke wrapper
+        run: |
+          python -m py_compile experiments/minimal-occupancy-generator/phase75b_score.py
+          python -m py_compile experiments/minimal-occupancy-generator/phase75b_candidate_smoke.py
+
+      - name: Execute candidate-owned M2 null machinery without target access
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/smoke
+          python experiments/minimal-occupancy-generator/phase75b_candidate_smoke.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            0 /tmp/smoke/M2-KRS_0.json \
+            > /tmp/smoke/M2-KRS_0.stdout.txt
+
+      - name: Enforce complete candidate-null measurement and target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math
+          r=json.load(open('/tmp/smoke/M2-KRS_0.json', encoding='utf-8'))
+          assert r['schema']=='issue75-phaseB-m2-candidate-null-smoke-v1'
+          assert r['status']=='M2_CANDIDATE_OWNED_NULL_EXECUTION_VERIFIED_TARGET_BLIND'
+          assert r['family']=='M2-KRS' and r['rep']==0
+          a=r['candidate_audit']
+          assert a['exact_phase_b0_replay'] is True
+          assert a['descriptor_distribution_exact_b0'] is True
+          assert a['fit_tolerance_revalidated'] is True
+          assert a['regenerated_fit_max_abs_marginal_error'] <= 1e-10
+          m=r['measurement']
+          assert m['reference_namespace']=='issue75:phaseB:M2-KRS:rep0:reference'
+          assert m['test_namespace']=='issue75:phaseB:M2-KRS:rep0:test'
+          assert m['n_reference']==1000 and m['n_test']==1000
+          assert len(m['z_full'])==66
+          assert math.isfinite(float(m['residual_energy']))
+          assert 0 < float(m['p_exist']) <= 1
+          t=r['target_access']
+          assert t['pair_Q_computed'] is True and t['residual_Z_computed'] is True
+          assert t['candidate_reference_null_computed'] is True and t['candidate_test_null_computed'] is True
+          assert t['Issue58C_target_vector_loaded'] is False and t['Issue58D_target_vector_loaded'] is False
+          assert t['target_correlation_computed'] is False and t['target_sign_agreement_computed'] is False and t['T_computed'] is False
+          print({'E':m['residual_energy'],'p_exist':m['p_exist'],'W':m['reliability']['median'],'target_loaded':False})
+          PY
+
+      - name: Freeze smoke provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/smoke/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          smoke_head=${GITHUB_SHA}
+          plan_b_commit=f09ba414de015eabd1eef03f275be68b82752d7f
+          phase_b0_sha256=9c180c7026e4f9464954dd029b71973cc1890f25223af6152959649dde57e834
+          scorer_commit=6b09b2870b7693a9f098f51803363d75ae9674ef
+          successful_preflight_run=33503957561
+          successful_preflight_head=a0efaa67b91cf39d75d7da02fef8c23f9a35c6de
+          target_loaded=false
+          pair_Q_computed=true
+          residual_Z_computed=true
+          target_correlation_computed=false
+          EOF
+
+      - name: Upload target-blind M2 candidate-null smoke evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseB-candidate-smoke-${{ github.sha }}
+          path: /tmp/smoke
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
