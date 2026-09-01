@@ -1,0 +1,41 @@
+{
+  "cases": 31,
+  "family": "M5-KRS-2MIX-CHAIN",
+  "generated_distinct_signature_range": [
+    859,
+    904
+  ],
+  "ll_gain_over_m3": [
+    8764.613790765754,
+    8526.688295586206,
+    8118.005517077578,
+    8258.540196385937,
+    8502.170395480589
+  ],
+  "output_sha256": "4c406e60872f8fcfd27901cc41901db04c1aa192fa9ee91a14c01ea3dbe46a89",
+  "pis": [
+    0.50513648776233,
+    0.5007281446534325,
+    0.4847643353490622,
+    0.4893164350476849,
+    0.488997472100751
+  ],
+  "plan_e_sha256": "47306bc503e0079166b362055de90f1b3a1015adf65dc12314efcf6210c69b2e",
+  "selected_starts": [
+    2,
+    3,
+    2,
+    2,
+    3
+  ],
+  "status": "M5_KRS_TWO_LATENT_CHAIN_MODES_31_CORPORA_FROZEN_TARGET_BLIND",
+  "target_access": {
+    "Issue58C_target_vector_loaded": false,
+    "Issue58D_target_vector_loaded": false,
+    "T_computed": false,
+    "pair_Q_computed": false,
+    "residual_Z_computed": false,
+    "target_correlation_computed": false,
+    "target_sign_agreement_computed": false
+  }
+}
