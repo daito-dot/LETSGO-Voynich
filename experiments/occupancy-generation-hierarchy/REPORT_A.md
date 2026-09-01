@@ -95,7 +95,7 @@ Not supported and not claimed:
 - anything about plaintext, semantics, cipher tables, spaces as words, Naibbe, Latin, or decipherment;
 - anything about R2 (recurrence), R3 (paragraph entry) or R4 (reversibility), which remain independent responsibilities.
 
-Design limits: three realizations per model (Issue #75 uses 31); the first reveal ran locally rather than on GitHub Actions (a replay workflow with byte-level comparison is provided); the IT2a arm inherits the ZL3b physical-leaf fold definition, as in #58D.
+Design limits: three realizations per model (Issue #75 uses 31); the first reveal ran locally rather than on GitHub Actions (the headline job ZL3b/G4/rep0 was then replayed on Actions run `33558417211` with byte-identical corpus and residual vector, see `first-reveal/PROVENANCE.md`); the IT2a arm inherits the ZL3b physical-leaf fold definition, as in #58D.
 
 ## 6. Stochastic sensitivity (realizations 1 and 2)
 

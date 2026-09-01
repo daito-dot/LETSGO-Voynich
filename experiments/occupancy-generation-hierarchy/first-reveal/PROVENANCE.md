@@ -1,6 +1,6 @@
 # OGH-A first-reveal provenance
 
-Status: **scientific first reveal complete — local execution, Actions replay workflow provided**
+Status: **scientific first reveal complete — local execution; headline job independently replayed on GitHub Actions with byte-identical result**
 
 ## Chronology (git)
 
@@ -27,6 +27,15 @@ Frozen references verified at every job: #58C raw `fba60daea6e30682065900a4cf15d
 ## Replay
 
 `.github/workflows/ogh-a-replay.yml` re-runs any single frozen job on GitHub Actions and asserts byte-identical generated corpus and residual vector against `results/`. Generation and nulls are seeded through `stable_seed` namespaces, so any machine with the pinned dependency majors should reproduce every number exactly.
+
+## Independent Actions replay (after the first reveal)
+
+- workflow: `.github/workflows/ogh-a-replay.yml`, run `33558417211`, job `100024809351`, conclusion `success`
+- head `3869c2dce74ffe0e07185c6ba9809ddae12e5f56` (documentation/fetch commits after the pre-reveal head; scorer and plan unchanged, verified by the workflow's chronology step)
+- job replayed: ZL3b skeleton, G4, rep 0
+- comparison against `results/ZL3b_G4_rep0.json`: `corpus_identical=True`, `max_abs_z_difference=0.0`, `R1_pass` identical (`True`)
+- replay artifact ID `9820299889`, ZIP SHA-256 `ede9b0cacbf3ec3d0211f1f23d9dbcd46efaa73905ec1adf54c1050d7385b6ba`
+- ubuntu-latest, Python 3.12, current numpy/scipy majors at run time
 
 ## Hashes
 

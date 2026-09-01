@@ -1,6 +1,6 @@
 # Hypothesis ledger addendum — OGH-A minimal occupancy-generation hierarchy
 
-Status: **FIRST REVEAL COMPLETE / FROZEN — local execution, Actions replay workflow provided**
+Status: **FIRST REVEAL COMPLETE / FROZEN — local execution; ZL3b G4 rep0 replayed on GitHub Actions run `33558417211` with byte-identical corpus and residual vector**
 
 Aggregate SHA-256: `6cabec85dcb4e49ca412df3468b544d7e427dacfb398379cb48248df7fa7a788` (42/42 jobs, 0 drops, 0 rerolls).
 
