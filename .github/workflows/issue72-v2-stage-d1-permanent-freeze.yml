@@ -1,0 +1,112 @@
+name: Issue72 V2 Stage D1 permanent first-reveal freeze
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-d1-permanent-freeze.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout archive head
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+          fetch-depth: 0
+
+      - name: Verify canonical scientific first-reveal ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          SCI=02d757e36d85cdfc9231be0b8753904b3ceb543c
+          git merge-base --is-ancestor "$SCI" HEAD
+          test "$(git show -s --format=%s "$SCI")" = 'Issue72 V2 Stage D1: launch frozen PT first reveal'
+          test ! -e experiments/naibbe-r1-decomposition-v2/stage-d1-pt
+          test ! -e experiments/naibbe-r1-decomposition-v2/STAGE_D1_PT_REPORT.md
+
+      - name: Download exact complete canonical first-reveal artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: issue72-v2-stageD1-PT-FIRST-REVEAL-02d757e36d85cdfc9231be0b8753904b3ceb543c
+          path: /tmp/d1-source
+          github-token: ${{ github.token }}
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33494367825
+
+      - name: Verify exact population hashes and frozen aggregation law
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find /tmp/d1-source/individual -maxdepth 1 -name 'PT_j*_rep*.json' | wc -l)" -eq 155
+          test "$(sha256sum /tmp/d1-source/stage_d1_pt_aggregate.json | cut -d' ' -f1)" = '402941d895c020e7f93c8ccab9585d684117227836fa69d7465376a609d24de2'
+          (cd /tmp/d1-source && sha256sum -c SHA256SUMS.txt)
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/d1-source/stage_d1_pt_aggregate.json'))
+          assert r['schema']=='issue72-v2-stage-d1-pt-aggregate-rebind-v1'
+          assert r['status']=='STAGE_D1_COMPLETE_PT_TOTAL_EFFECT_AGGREGATED'
+          assert r['scientific_head']=='02d757e36d85cdfc9231be0b8753904b3ceb543c'
+          assert r['population']['total_results']==155
+          assert r['population']['complete_population'] is True
+          assert r['population']['no_drops'] is True
+          assert r['population']['no_rerolls'] is True
+          assert r['aggregation_policy']['D_is_equal_mean_over_rep0_rep4'] is True
+          assert r['aggregation_policy']['hard_intervention_threshold_applied'] is False
+          assert r['aggregation_policy']['readings_averaged'] is False
+          assert r['aggregation_policy']['coverage_gate_applied'] is False
+          assert r['aggregation_policy']['baseline_rescored'] is False
+          assert r['assignment_direction_counts']=={'both_negative':10,'both_nonnegative':15,'mixed':6}
+          assert r['readings']['ZL3b']['p_nonloss']==0.625
+          assert r['readings']['IT2a']['p_nonloss']==0.5625
+          assert r['p_both']==0.625
+          print('Stage D1 canonical permanent-freeze verification passed')
+          PY
+
+      - name: Copy exact canonical first-reveal authority into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/naibbe-r1-decomposition-v2/stage-d1-pt
+          rm -rf "$DEST"
+          mkdir -p "$DEST"
+          cp -a /tmp/d1-source/individual "$DEST/"
+          cp /tmp/d1-source/stage_d1_pt_aggregate.json "$DEST/"
+          cp /tmp/d1-source/aggregate.stdout.txt "$DEST/"
+          cp /tmp/d1-source/SHA256SUMS.txt "$DEST/"
+          cp /tmp/d1-source/PROVENANCE.txt "$DEST/"
+          cat > "$DEST/ARTIFACT_AUTHORITY.txt" <<'EOF'
+          source_workflow_run=33494367825
+          source_workflow_conclusion=success
+          source_artifact_id=9795439622
+          source_artifact_name=issue72-v2-stageD1-PT-FIRST-REVEAL-02d757e36d85cdfc9231be0b8753904b3ceb543c
+          source_artifact_zip_sha256=f06f6190f802411494bbae77611c803e363013a366196993913a91394c5d6852
+          aggregate_sha256=402941d895c020e7f93c8ccab9585d684117227836fa69d7465376a609d24de2
+          scientific_head=02d757e36d85cdfc9231be0b8753904b3ceb543c
+          total_assignment_results=155
+          drops=0
+          rerolls=0
+          permanent_freeze_is_post_reveal_transport_only=true
+          non_authoritative_duplicate_run=33494555298
+          non_authoritative_duplicate_score_executed=false
+          non_authoritative_duplicate_aggregate_executed=false
+          duplicate_workflow_retired_commit=30b9981bd712704fac829e0adcc421f50c779478
+          EOF
+
+      - name: Commit permanent canonical first-reveal authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/naibbe-r1-decomposition-v2/stage-d1-pt
+          git diff --cached --quiet && exit 0
+          git commit -m 'Issue72 V2 Stage D1: freeze exact 155-case PT first-reveal authority'
+          git push origin HEAD:issue72-r1-causal-decomposition-v2
