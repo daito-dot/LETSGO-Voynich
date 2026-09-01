@@ -168,6 +168,7 @@ def _newton_fit_m1(X: np.ndarray) -> dict:
         return float(z - target_free @ v)
 
     converged = False
+    last_obj = objective(theta)
     for it in range(FIT_MAX_ITER):
         lam = np.zeros(N_SLOTS, dtype=np.float64)
         lam[1:] = theta
@@ -194,15 +195,23 @@ def _newton_fit_m1(X: np.ndarray) -> dict:
         old_obj = objective(theta)
         alpha = 1.0
         accepted = False
-        for _ in range(40):
+        for _ in range(60):
             cand = theta + alpha * step_vec
-            if objective(cand) < old_obj:
+            _cand_prob, cand_mu = _m1_distribution(cand, qk)
+            cand_maxerr = float(np.max(np.abs(target - cand_mu)))
+            cand_obj = objective(cand)
+            obj_slack = 1e-12 * max(1.0, abs(old_obj))
+            if cand_maxerr < maxerr and cand_obj <= old_obj + obj_slack:
                 theta = cand
+                last_obj = cand_obj
                 accepted = True
                 break
             alpha *= 0.5
         if not accepted:
-            raise RuntimeError(f"M1 deterministic line search failed at iteration {it}")
+            raise RuntimeError(
+                f"M1 deterministic moment damping failed at iteration {it}: "
+                f"maxerr={maxerr:.17g}, objective={old_obj:.17g}, last_objective={last_obj:.17g}"
+            )
     prob, mu = _m1_distribution(theta, qk)
     maxerr = float(np.max(np.abs(target - mu)))
     if not converged and maxerr > FIT_TOL:
