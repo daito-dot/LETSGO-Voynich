@@ -5,6 +5,7 @@ on:
     branches: [claude/performance-test-project-eiv6up]
     paths:
       - '.github/workflows/ogh-a-replay.yml'
+      - 'data/fetch_transcriptions.py'
   workflow_dispatch:
     inputs:
       source:

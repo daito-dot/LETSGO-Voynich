@@ -41,7 +41,9 @@ def main(argv):
         name, blob, sha, size = EXPECTED[label]
         path = target / name
         if not path.exists():
-            with urllib.request.urlopen(BASE + name, timeout=120) as r:
+            # voynich.nu answers 406 to the default urllib User-Agent; identify as a plain HTTP client.
+            req = urllib.request.Request(BASE + name, headers={"User-Agent": "curl/8.0 (LETSGO-Voynich fetch_transcriptions)", "Accept": "*/*"})
+            with urllib.request.urlopen(req, timeout=120) as r:
                 path.write_bytes(r.read())
         data = path.read_bytes()
         got = (git_blob_sha1(data), hashlib.sha256(data).hexdigest(), len(data))
