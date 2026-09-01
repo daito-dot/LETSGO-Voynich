@@ -15,6 +15,13 @@ Each phase should preferably contain:
 
 Generated caches, large third-party corpora, manuscript images, and duplicated transcription files should normally stay out of Git.
 
+## Token-construction lane (2026-09)
+
+- `occupancy-graph*/` — #58A–#58D: the replicated 66-edge residual 12-slot token-construction graph.
+- `joint-constraint-tournament/` — Issue #68: first joint R1–R5 tournament (Naibbe passes R1 only).
+- `naibbe-r1-decomposition-v2/` — Issue #72: Naibbe R1 causal decomposition (C1 / PT / FI).
+- `occupancy-generation-hierarchy/` — OGH-A: minimal occupancy-generation ladder G0–G6; a 78-parameter last-occupied-slot successor grammar passes the Issue #68 R1 gate on both readings and skeletons. Complements Issue #75 (`minimal-occupancy-generator/` on its branch).
+
 ## Current consolidation scope
 
 The first public archive concentrates on Phases 44–52 because these contain the current mechanism-comparison frontier:

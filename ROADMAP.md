@@ -1,6 +1,29 @@
 # Research roadmap
 
-## Active roadmap — post Issue #68
+## Active roadmap — post Issue #72 / Issue #75 A–F0 / OGH-A
+
+### Completed: Naibbe R1 decomposition and the minimal occupancy-generator ladder
+
+- #72: Naibbe R1 lives in the parsed 12-slot occupancy-signature inventory (C1 supported; PT and FI refuted).
+- #75 A–F0 (branch): M0/M1 fail; M2 `0.29` → M3 `0.59` → M4 `0.62` → M5 `0.73` insufficient vs M+ `0.965`; F0 selects K/R/S-gated two-mode chain (M6) for the next target test.
+- OGH-A: independent-harness replication of the Phase-A fork on both skeletons; pairwise maxent control shows R1 is second-order sufficient to within `≈0.02`; a 78-parameter last-occupied-slot successor grammar passes the Issue #68 R1 gate (`r 0.91–0.93`, both readings, both skeletons). Frozen class `COMPACT CONSTRUCTION GRAMMAR SUFFICIENT`.
+
+### Current frontier: close the successor-grammar gap, then re-enter the joint tournament
+
+1. Integrate #75 and OGH-A on `main`; keep both ladders' authorities intact.
+2. Preregister one compact extension of G4 (second-order successor context, or K/R/S-gated successor tables). Selection must use training-only held-out likelihood; the frozen 66 edges may not be consulted.
+3. Score it under both criteria: Issue #68 R1 gate and Issue #75 M+-equivalence (`gap ≥ −0.0098`).
+4. Whatever the outcome, carry the frozen successor grammar into the next joint R1–R5 tournament as the emission-stage comparator; R2/R3/R4 remain independent responsibilities.
+
+### Decision after the extension test
+
+- Gap closed to the pairwise ceiling: the token-construction law is a compact second-order successor grammar; move effort to R2/R3/R4 and to embedding the grammar in reversible candidates.
+- Gap not closed: report which pair couplings the successor family cannot express (diagnostic only), and preregister a structurally different compact family; do not add pair-specific terms one by one.
+
+Last consolidated: 2026-09-01
+
+## Previous roadmap — post Issue #68
+
 
 ### Completed: replicated token-construction constraint and first joint tournament
 
