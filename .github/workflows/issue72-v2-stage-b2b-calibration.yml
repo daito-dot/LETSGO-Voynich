@@ -7,7 +7,8 @@ on:
       - 'experiments/naibbe-r1-decomposition-v2/b2b_r1_calibration72_v2.py'
       - 'experiments/naibbe-r1-decomposition-v2/aggregate_b2b72_v2.py'
       - 'experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64'
-      - 'experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64'
+      - 'experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part*'
+      - 'experiments/naibbe-r1-decomposition-v2/STAGE_B2A_ARCHIVE_REPAIR_20260901.md'
       - '.github/workflows/issue72-v2-stage-b2b-calibration.yml'
   workflow_dispatch:
 
@@ -26,40 +27,70 @@ jobs:
           ref: issue72-r1-causal-decomposition-v2
           fetch-depth: 0
 
-      - name: Verify B2 chronology and permanent authorities
+      - name: Verify scientific chronology and repair separation
         id: chronology
         shell: bash
         run: |
           set -euo pipefail
           test "$(git merge-base 98a04953aabe9e228a17fa5808adf506a0833362 HEAD)" = "98a04953aabe9e228a17fa5808adf506a0833362"
           PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_B2_POSITIVE_CONTROL_EXTENSION_PLAN.md | tail -1)
-          B2A=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64 | tail -1)
+          B2AREPORT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_B2A_REPORT.md | tail -1)
           B1ARCH=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64 | tail -1)
           SCORER=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/b2b_r1_calibration72_v2.py | tail -1)
           AGG=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/aggregate_b2b72_v2.py | tail -1)
           WORKFLOW=$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-v2-stage-b2b-calibration.yml | tail -1)
-          for x in "$PLAN" "$B2A" "$B1ARCH" "$SCORER" "$AGG" "$WORKFLOW"; do test -n "$x"; done
-          git merge-base --is-ancestor "$PLAN" "$B2A"
-          git merge-base --is-ancestor "$B2A" "$B1ARCH"
+          REPAIR=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_B2A_ARCHIVE_REPAIR_20260901.md | tail -1)
+          for x in "$PLAN" "$B2AREPORT" "$B1ARCH" "$SCORER" "$AGG" "$WORKFLOW" "$REPAIR"; do test -n "$x"; done
+          git merge-base --is-ancestor "$PLAN" "$B2AREPORT"
+          git merge-base --is-ancestor "$B2AREPORT" "$B1ARCH"
           git merge-base --is-ancestor "$B1ARCH" "$SCORER"
           git merge-base --is-ancestor "$SCORER" "$AGG"
           git merge-base --is-ancestor "$AGG" "$WORKFLOW"
+          # Repair transport is deliberately allowed to postdate scorer/workflow because
+          # failed run 33465741047 stopped before any B2b score job. Science stays fixed.
+          for p in experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part00 \
+                   experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part01 \
+                   experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part02 \
+                   experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part03 \
+                   experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part04; do
+            test -s "$p"
+          done
           echo "exact_head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           echo "B2_PLAN_FIRST_ADD=$PLAN" >> "$GITHUB_ENV"
-          echo "B2A_ARCHIVE_FIRST_ADD=$B2A" >> "$GITHUB_ENV"
+          echo "B2A_REPORT_FIRST_ADD=$B2AREPORT" >> "$GITHUB_ENV"
           echo "B1_ARCHIVE_FIRST_ADD=$B1ARCH" >> "$GITHUB_ENV"
           echo "B2B_SCORER_FIRST_ADD=$SCORER" >> "$GITHUB_ENV"
           echo "B2B_AGG_FIRST_ADD=$AGG" >> "$GITHUB_ENV"
           echo "B2B_WORKFLOW_FIRST_ADD=$WORKFLOW" >> "$GITHUB_ENV"
+          echo "B2A_REPAIR_FIRST_ADD=$REPAIR" >> "$GITHUB_ENV"
 
-      - name: Reconstruct exact B1 and B2a raw authorities
+      - name: Reconstruct and verify exact B1 and B2a raw authorities
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/issue72-b2-authority
-          base64 -d experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64 | gzip -dc > /tmp/issue72-b2-authority/stage_b1_calibration.json
-          base64 -d experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64 | gzip -dc > /tmp/issue72-b2-authority/stage_b2a_support.json
+
+          # B1: single transport is small enough to verify directly.
+          echo '39096f044618596859fac80bac58df9f6acd627a549f9f5b9b4919009f36f9a1  experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64' | sha256sum -c -
+          base64 -d experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64 > /tmp/issue72-b2-authority/stage_b1_calibration.json.gz
+          echo '135e2f0280cfdf7ad8286139545c1598a058959d90d44a346d2f524b827aa2d2  /tmp/issue72-b2-authority/stage_b1_calibration.json.gz' | sha256sum -c -
+          gzip -dc /tmp/issue72-b2-authority/stage_b1_calibration.json.gz > /tmp/issue72-b2-authority/stage_b1_calibration.json
           echo 'b37d285b25d17623fa19910ff3f8f4586846bb8f19825c3dbdd6e8b19bb2e31d  /tmp/issue72-b2-authority/stage_b1_calibration.json' | sha256sum -c -
+
+          # B2a: verify each repaired chunk, then every transport layer.
+          echo '6550601a713f73c697e509a68ff200dbd3463a0bd604d529e3e5e14ff9001807  experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part00' | sha256sum -c -
+          echo 'ef10e5f044edfd3d12eb578aaa19a5db46b85f34aae0f2bcd884b8f141c3910c  experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part01' | sha256sum -c -
+          echo 'cf35194b99cf1a025bc6bcb1d26f5cfd3f0f42e80906abdf61c73891b717ffc9  experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part02' | sha256sum -c -
+          echo '00bf9fb0ae056c45d01b2107db5ec1d20eb28eb00af5d229131a63d887b4082f  experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part03' | sha256sum -c -
+          echo '62dee3379b924d71b8135123ab5b00856c81b2510336c899b74947b057ca59ae  experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part04' | sha256sum -c -
+          cat experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part0{0,1,2,3,4} > /tmp/issue72-b2-authority/stage_b2a_support.json.gz.b64
+          test "$(wc -c < /tmp/issue72-b2-authority/stage_b2a_support.json.gz.b64)" -eq 20124
+          echo '65f4e94d160c1e5538853532fc43054ff99682f5e1a8163ed4fc6e2e6b12e538  /tmp/issue72-b2-authority/stage_b2a_support.json.gz.b64' | sha256sum -c -
+          base64 -d /tmp/issue72-b2-authority/stage_b2a_support.json.gz.b64 > /tmp/issue72-b2-authority/stage_b2a_support.json.gz
+          test "$(wc -c < /tmp/issue72-b2-authority/stage_b2a_support.json.gz)" -eq 15092
+          echo '2b18b9b45fa5ba9619c96f8bf83647b31017544dc634bb7c0b7181ed54e21a8a  /tmp/issue72-b2-authority/stage_b2a_support.json.gz' | sha256sum -c -
+          gzip -dc /tmp/issue72-b2-authority/stage_b2a_support.json.gz > /tmp/issue72-b2-authority/stage_b2a_support.json
+          test "$(wc -c < /tmp/issue72-b2-authority/stage_b2a_support.json)" -eq 91795
           echo '1076940701ea7621bbaccaafa08e4f3d0b34a06af5cfb364e56fcdbdf620d83c  /tmp/issue72-b2-authority/stage_b2a_support.json' | sha256sum -c -
 
       - name: Compile B2b scorer and aggregator
@@ -114,11 +145,24 @@ jobs:
       - name: Install frozen measurement dependencies
         run: python -m pip install --disable-pip-version-check numpy scipy pandas
 
-      - name: Reconstruct exact B2a support authority
+      - name: Reconstruct exact B2a support authority from verified chunks
         shell: bash
         run: |
           set -euo pipefail
-          base64 -d experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64 | gzip -dc > /tmp/stage_b2a_support.json
+          for spec in \
+            '6550601a713f73c697e509a68ff200dbd3463a0bd604d529e3e5e14ff9001807 part00' \
+            'ef10e5f044edfd3d12eb578aaa19a5db46b85f34aae0f2bcd884b8f141c3910c part01' \
+            'cf35194b99cf1a025bc6bcb1d26f5cfd3f0f42e80906abdf61c73891b717ffc9 part02' \
+            '00bf9fb0ae056c45d01b2107db5ec1d20eb28eb00af5d229131a63d887b4082f part03' \
+            '62dee3379b924d71b8135123ab5b00856c81b2510336c899b74947b057ca59ae part04'; do
+            set -- $spec
+            echo "$1  experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.$2" | sha256sum -c -
+          done
+          cat experiments/naibbe-r1-decomposition-v2/archive/stage_b2a_support.json.gz.b64.part0{0,1,2,3,4} > /tmp/stage_b2a_support.json.gz.b64
+          echo '65f4e94d160c1e5538853532fc43054ff99682f5e1a8163ed4fc6e2e6b12e538  /tmp/stage_b2a_support.json.gz.b64' | sha256sum -c -
+          base64 -d /tmp/stage_b2a_support.json.gz.b64 > /tmp/stage_b2a_support.json.gz
+          echo '2b18b9b45fa5ba9619c96f8bf83647b31017544dc634bb7c0b7181ed54e21a8a  /tmp/stage_b2a_support.json.gz' | sha256sum -c -
+          gzip -dc /tmp/stage_b2a_support.json.gz > /tmp/stage_b2a_support.json
           echo '1076940701ea7621bbaccaafa08e4f3d0b34a06af5cfb364e56fcdbdf620d83c  /tmp/stage_b2a_support.json' | sha256sum -c -
 
       - name: Score unchanged positive-control rep ${{ matrix.rep }}
@@ -188,7 +232,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base64 -d experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64 | gzip -dc > /tmp/stage_b1_calibration.json
+          echo '39096f044618596859fac80bac58df9f6acd627a549f9f5b9b4919009f36f9a1  experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64' | sha256sum -c -
+          base64 -d experiments/naibbe-r1-decomposition-v2/archive/stage_b1_calibration.json.gz.b64 > /tmp/stage_b1_calibration.json.gz
+          echo '135e2f0280cfdf7ad8286139545c1598a058959d90d44a346d2f524b827aa2d2  /tmp/stage_b1_calibration.json.gz' | sha256sum -c -
+          gzip -dc /tmp/stage_b1_calibration.json.gz > /tmp/stage_b1_calibration.json
           echo 'b37d285b25d17623fa19910ff3f8f4586846bb8f19825c3dbdd6e8b19bb2e31d  /tmp/stage_b1_calibration.json' | sha256sum -c -
 
       - name: Aggregate 25-rep unchanged-mechanism distribution
@@ -242,6 +289,7 @@ jobs:
           parent_main=98a04953aabe9e228a17fa5808adf506a0833362
           stage_b1_raw_sha256=b37d285b25d17623fa19910ff3f8f4586846bb8f19825c3dbdd6e8b19bb2e31d
           stage_b2a_raw_sha256=1076940701ea7621bbaccaafa08e4f3d0b34a06af5cfb364e56fcdbdf620d83c
+          b2a_archive_repair=chunked-byte-transport-only
           issue72_intervention_surface_generated=false
           issue72_intervention_R1_scored=false
           hard_intervention_threshold_derived=false
