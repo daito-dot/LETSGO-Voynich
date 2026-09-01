@@ -1,0 +1,161 @@
+name: Issue72 target-blind family support preflight
+
+on:
+  push:
+    branches: [issue72-naibbe-r1-decomposition]
+    paths:
+      - '.github/workflows/issue72-family-support-preflight.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  family-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue72-naibbe-r1-decomposition
+          fetch-depth: 0
+
+      - name: Verify plan-before-family-code chronology and R1 firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/PLAN_A.md | tail -1)
+          IMPL=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/FAMILY_PREFLIGHT_IMPLEMENTATION.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/family_preflight72.py | tail -1)
+          test -n "$PLAN" && test -n "$IMPL" && test -n "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$IMPL"
+          git merge-base --is-ancestor "$IMPL" "$SCRIPT"
+          test ! -e experiments/naibbe-r1-decomposition/target72.py
+          test ! -e experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+          test -f experiments/naibbe-r1-decomposition/source-audit/source_audit.json
+          test -f experiments/naibbe-r1-decomposition/source-audit/TARGET_ELIGIBLE_AXES.txt
+          echo "TARGET_PLAN_FIRST_ADD=$PLAN" >> "$GITHUB_ENV"
+          echo "FAMILY_IMPL_FIRST_ADD=$IMPL" >> "$GITHUB_ENV"
+          echo "FAMILY_PREFLIGHT_FIRST_ADD=$SCRIPT" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify frozen source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+
+      - name: Install runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile target-blind family preflight
+        run: python -m py_compile experiments/naibbe-r1-decomposition/family_preflight72.py
+
+      - name: Build all preregistered family surfaces without R1 scoring
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/naibbe-r1-decomposition/family_preflight72.py external/cremma external/naibbe > /tmp/raw_stdout.txt
+          test -s /tmp/raw_stdout.txt
+
+      - name: Isolate and validate preflight JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          raw=Path('/tmp/raw_stdout.txt').read_text(encoding='utf-8')
+          found=[]
+          for start in [0]+[i+1 for i,c in enumerate(raw) if c=='\n']:
+              if start>=len(raw) or raw[start]!='{': continue
+              try: obj=json.loads(raw[start:])
+              except json.JSONDecodeError: continue
+              found.append((start,obj))
+          if len(found)!=1: raise SystemExit(f'expected exactly one JSON suffix, found {len(found)}')
+          start,r=found[0]
+          assert r['counterfactual_R1_scored'] is False
+          assert not any(r['forbidden_quantities_computed'].values())
+          assert r['target_scored_family_frozen'] is True
+          assert r['published_primary']['surface_sha256']=='47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          allowed=set('PLSTGI')
+          assert set(r['StageA_support_eligible_axes']) <= allowed
+          assert set(r['target_authorized_axes']) <= set(r['StageA_support_eligible_axes'])
+          ids=[x['realization'] for x in r['realizations']]
+          assert len(ids)==len(set(ids))
+          Path('/tmp/family_preflight.json').write_text(json.dumps(r,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          Path('/tmp/legacy_stdout.txt').write_text(raw[:start],encoding='utf-8')
+          print('StageA axes=',r['StageA_support_eligible_axes'])
+          print('target-authorized axes=',r['target_authorized_axes'])
+          for a,v in sorted(r['axis_support_status'].items()): print(a,v)
+          PY
+
+      - name: Install permanent family-support freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=experiments/naibbe-r1-decomposition/family-preflight
+          mkdir -p "$DIR"
+          cp /tmp/family_preflight.json "$DIR/preflight.json"
+          cp /tmp/raw_stdout.txt "$DIR/raw_stdout.txt"
+          cp /tmp/legacy_stdout.txt "$DIR/legacy_stdout.txt"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.load(open('experiments/naibbe-r1-decomposition/family-preflight/preflight.json'))
+          root=Path('experiments/naibbe-r1-decomposition/family-preflight')
+          root.joinpath('TARGET_AUTHORIZED_AXES.txt').write_text('\n'.join(r['target_authorized_axes'])+'\n',encoding='utf-8')
+          root.joinpath('TARGET_AUTHORIZED_REALIZATIONS.txt').write_text('\n'.join(r['target_authorized_realizations'])+'\n',encoding='utf-8')
+          lines=['# Issue #72 frozen family-support preflight','','Status: **COMPLETE — no counterfactual R1 score computed**','']
+          lines.append('Target-authorized axes: **'+(', '.join(r['target_authorized_axes']) if r['target_authorized_axes'] else 'none')+'**.')
+          lines.append('')
+          lines.append('| axis | family support | min coverage | max coverage | realizations |')
+          lines.append('|---|---|---:|---:|---|')
+          for a,v in sorted(r['axis_support_status'].items()):
+              lines.append(f"| {a} | {'AUTHORIZED' if v['all_realizations_support_eligible'] else 'INELIGIBLE'} | {v['min_coverage']:.12f} | {v['max_coverage']:.12f} | {', '.join(v['realization_ids'])} |")
+          lines.append('')
+          lines.append('Every target-authorized realization has a frozen surface SHA-256 in `preflight.json`. The target scorer must reproduce it before any pair-Q calculation.')
+          lines.append('')
+          lines.append('A support-ineligible axis is not allowed to contribute a selected subset of realizations later.')
+          root.joinpath('SUMMARY.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+          PY
+          PF_SHA=$(sha256sum "$DIR/preflight.json" | awk '{print $1}')
+          cat > "$DIR/PROVENANCE.md" <<EOF
+          # Issue #72 exact family-support preflight provenance
+
+          - workflow run: \`${GITHUB_RUN_ID}\`
+          - workflow attempt: \`${GITHUB_RUN_ATTEMPT}\`
+          - exact branch head: \`${GITHUB_SHA}\`
+          - target plan first-add: \`${TARGET_PLAN_FIRST_ADD}\`
+          - family implementation freeze first-add: \`${FAMILY_IMPL_FIRST_ADD}\`
+          - family preflight executable first-add: \`${FAMILY_PREFLIGHT_FIRST_ADD}\`
+          - exact preflight JSON SHA-256: \`${PF_SHA}\`
+          - counterfactual R1 scored: **false**
+
+          The target family is frozen by `TARGET_AUTHORIZED_AXES.txt`, `TARGET_AUTHORIZED_REALIZATIONS.txt`, and the realization surface SHA-256 values in `preflight.json`.
+          EOF
+          sha256sum "$DIR"/*.json "$DIR"/*.txt | sort > "$DIR/SHA256SUMS.txt"
+
+      - name: Commit permanent preflight and remove one-off workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/issue72-family-support-preflight.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experiments/naibbe-r1-decomposition/family-preflight .github/workflows/issue72-family-support-preflight.yml
+          git commit -m 'Freeze Issue72 counterfactual target family support'
+          git push origin HEAD:issue72-naibbe-r1-decomposition
