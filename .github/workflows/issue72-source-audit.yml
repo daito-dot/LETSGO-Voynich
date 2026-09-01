@@ -1,0 +1,190 @@
+name: Issue72 target-blind source architecture audit
+
+on:
+  push:
+    branches: [issue72-naibbe-r1-decomposition]
+    paths:
+      - 'experiments/naibbe-r1-decomposition/SOURCE_AUDIT_PLAN.md'
+      - 'experiments/naibbe-r1-decomposition/SOURCE_AUDIT_IMPLEMENTATION.md'
+      - 'experiments/naibbe-r1-decomposition/source_audit72.py'
+      - '.github/workflows/issue72-source-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout Issue72 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-naibbe-r1-decomposition
+          fetch-depth: 0
+
+      - name: Verify plan-before-code chronology and R1 firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git merge-base ce49de68a3bd308b9432f5904b5368fc4c6f9c8f HEAD)" = "ce49de68a3bd308b9432f5904b5368fc4c6f9c8f"
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/SOURCE_AUDIT_PLAN.md | tail -1)
+          IMPL=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/SOURCE_AUDIT_IMPLEMENTATION.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/source_audit72.py | tail -1)
+          test -n "$PLAN" && test -n "$IMPL" && test -n "$SCRIPT"
+          test "$PLAN" != "$IMPL" && test "$IMPL" != "$SCRIPT"
+          git merge-base --is-ancestor "$PLAN" "$IMPL"
+          git merge-base --is-ancestor "$IMPL" "$SCRIPT"
+          test ! -e experiments/naibbe-r1-decomposition/PLAN_A.md
+          test ! -e experiments/naibbe-r1-decomposition/target72.py
+          test ! -e experiments/naibbe-r1-decomposition/first-reveal/issue72_results.json
+          echo "SOURCE_PLAN_FIRST_ADD=$PLAN" >> "$GITHUB_ENV"
+          echo "SUPPORT_FREEZE_FIRST_ADD=$IMPL" >> "$GITHUB_ENV"
+          echo "SOURCE_AUDIT_FIRST_ADD=$SCRIPT" >> "$GITHUB_ENV"
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify exact external source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+          test "$(git -C external/naibbe hash-object decrypt_naibbe.py)" = "b56a1e6e615a7b2e31ad386efdf7e6f2ef2b9d7b"
+          echo 'fdd2b1138542bf1b332b20f27a9869ac7a3501038e7d4ec9ccf40910e3b98771  experiments/joint-constraint-tournament/preflight/preflight.json' | sha256sum -c -
+
+      - name: Install preexisting runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile Stage A audit
+        run: python -m py_compile experiments/naibbe-r1-decomposition/source_audit72.py
+
+      - name: Run target-blind source / support audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/naibbe-r1-decomposition/source_audit72.py \
+            external/cremma \
+            external/naibbe \
+            > /tmp/issue72_source_audit_raw_stdout.txt
+          test -s /tmp/issue72_source_audit_raw_stdout.txt
+
+      - name: Isolate final audit JSON from legacy stdout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          raw=Path('/tmp/issue72_source_audit_raw_stdout.txt').read_text(encoding='utf-8')
+          starts=[0]+[i+1 for i,c in enumerate(raw) if c=='\n']
+          found=[]
+          for start in starts:
+              if start >= len(raw) or raw[start] != '{':
+                  continue
+              try:
+                  obj=json.loads(raw[start:])
+              except json.JSONDecodeError:
+                  continue
+              found.append((start,obj))
+          if len(found) != 1:
+              raise SystemExit(f'expected exactly one parseable JSON suffix, found {len(found)}')
+          start,obj=found[0]
+          Path('/tmp/issue72_source_audit.json').write_text(
+              json.dumps(obj,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8'
+          )
+          prefix=raw[:start]
+          Path('/tmp/issue72_source_audit_legacy_stdout.txt').write_text(prefix,encoding='utf-8')
+          print('legacy_prefix_bytes=',len(prefix.encode('utf-8')))
+          print('audit_json_bytes=',Path('/tmp/issue72_source_audit.json').stat().st_size)
+          PY
+
+      - name: Enforce Stage A scientific firewall and summarize support only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/issue72_source_audit.json'))
+          assert r['counterfactual_R1_scored'] is False
+          assert not any(r['forbidden_quantities_computed'].values())
+          assert r['source_authority']['Naibbe_commit'] == 'f2675ec5dd275268bc64dd48ea64fc0e0e9827a2'
+          assert r['source_authority']['CREMMA_commit'] == '292525969ad98380b398e6606a9c2a36d51913ae'
+          assert r['published_primary_reproduction']['pooled_surface_sha256'] == '47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          s=r['published_primary_reproduction']['support']
+          assert s['visible_tokens'] == 33574
+          assert s['accepted_tokens'] == 29759
+          assert r['codebook']['full_cells'] == 468
+          assert r['codebook']['effective_cells'] == 414
+          assert r['codebook']['excluded_cells'] == 54
+          assert set(r['support_pilots']) == {'P0','L0','S0','T0','G0','I0'}
+          assert r['stageA_classification'] in {
+              'COUNTERFACTUAL DECOMPOSITION INTERFACES IDENTIFIABLE',
+              'DECOMPOSITION DESIGN NOT IDENTIFIABLE'
+          }
+          print('Stage A classification:',r['stageA_classification'])
+          print('Codebook:',{
+              'effective_cells':r['codebook']['effective_cells'],
+              'distinct_effective_glyph_values':r['codebook']['distinct_effective_glyph_values'],
+              'duplicate_effective_glyph_value_count':r['codebook']['duplicate_effective_glyph_value_count'],
+              'cell_parser_coverage':r['codebook']['effective_cell_support']['coverage'],
+          })
+          print('Published support:',r['published_primary_reproduction']['support'])
+          print('Support-eligible axes:',r['support_eligible_axes'])
+          for k in ['P0','L0','S0','T0','G0','I0']:
+              v=r['support_pilots'][k]
+              print(k,{
+                  'surface_sha256':v['surface_sha256'],
+                  'coverage':v['support']['coverage'],
+                  'accepted':v['support']['accepted_tokens'],
+                  'visible':v['support']['visible_tokens'],
+                  'eligible':v['support']['eligible'],
+                  'ambiguity_retries':v['ambiguity_retries_by_manuscript'],
+              })
+          PY
+
+      - name: Package exact Stage A evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=/tmp/issue72-stageA
+          mkdir -p "$DIR"
+          cp /tmp/issue72_source_audit.json "$DIR/source_audit.json"
+          cp /tmp/issue72_source_audit_raw_stdout.txt "$DIR/raw_stdout.txt"
+          cp /tmp/issue72_source_audit_legacy_stdout.txt "$DIR/legacy_stdout.txt"
+          sha256sum "$DIR"/*.json "$DIR"/*.txt | sort > "$DIR/SHA256SUMS.txt"
+          cat > "$DIR/PROVENANCE.txt" <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          branch_head=${GITHUB_SHA}
+          parent_main=ce49de68a3bd308b9432f5904b5368fc4c6f9c8f
+          source_plan_first_add=${SOURCE_PLAN_FIRST_ADD}
+          support_freeze_first_add=${SUPPORT_FREEZE_FIRST_ADD}
+          source_audit_first_add=${SOURCE_AUDIT_FIRST_ADD}
+          counterfactual_R1_scored=false
+          EOF
+          cat "$DIR/SHA256SUMS.txt"
+          cat "$DIR/PROVENANCE.txt"
+
+      - name: Upload exact Stage A evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-stageA-source-audit-${{ github.sha }}
+          path: /tmp/issue72-stageA
+          if-no-files-found: error
+          retention-days: 90
