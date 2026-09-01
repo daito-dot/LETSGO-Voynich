@@ -1,0 +1,214 @@
+name: Issue72 V2 Stage C0 recovery 2 order-independent validation
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - '.github/workflows/issue72-v2-stage-c0-support-recovery2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  c0-recovery2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact recovery2 branch head
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+          fetch-depth: 0
+
+      - name: Verify frozen chronology and target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_C_FIXED_PATH_RANDOMIZATION_PLAN.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/c0_support72_v2.py | tail -1)
+          INCIDENT1=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_C0_IMPLEMENTATION_INCIDENT_20260901.md | tail -1)
+          WRAPPER=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/c0_support72_v2_recovery.py | tail -1)
+          RECOVERY1=$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-v2-stage-c0-support-recovery.yml | tail -1)
+          INCIDENT2=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_C0_RECOVERY_VALIDATION_INCIDENT_20260901.md | tail -1)
+          THIS_WORKFLOW=$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-v2-stage-c0-support-recovery2.yml | tail -1)
+          test "$PLAN" = '79b498ef359b4cd69c3b8917e62eb11adbfb29d2'
+          test "$SCRIPT" = '7f07e26cb56ba3fbc219cbb20f25de5e824b7574'
+          test "$WRAPPER" = 'c3572ff2f49138ac8c9ebb66e5fe976bab50e6bb'
+          git merge-base --is-ancestor "$PLAN" "$SCRIPT"
+          git merge-base --is-ancestor "$SCRIPT" "$INCIDENT1"
+          git merge-base --is-ancestor "$INCIDENT1" "$WRAPPER"
+          git merge-base --is-ancestor "$WRAPPER" "$RECOVERY1"
+          git merge-base --is-ancestor "$RECOVERY1" "$INCIDENT2"
+          git merge-base --is-ancestor "$INCIDENT2" "$THIS_WORKFLOW"
+          test ! -e experiments/naibbe-r1-decomposition-v2/c1_r1_target72_v2.py
+          test ! -e experiments/naibbe-r1-decomposition-v2/STAGE_C_TARGET_IMPLEMENTATION.md
+          echo "PLAN_FIRST_ADD=$PLAN" >> "$GITHUB_ENV"
+          echo "SCRIPT_FIRST_ADD=$SCRIPT" >> "$GITHUB_ENV"
+          echo "WRAPPER_FIRST_ADD=$WRAPPER" >> "$GITHUB_ENV"
+          echo "RECOVERY1_FIRST_ADD=$RECOVERY1" >> "$GITHUB_ENV"
+          echo "INCIDENT2_FIRST_ADD=$INCIDENT2" >> "$GITHUB_ENV"
+          echo "RECOVERY2_WORKFLOW_FIRST_ADD=$THIS_WORKFLOW" >> "$GITHUB_ENV"
+          echo "SCIENTIFIC_HEAD=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Verify exact Stage B2 raw authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(wc -c < experiments/naibbe-r1-decomposition-v2/archive/stage_b2_calibration.json)" -eq 157852
+          echo '2da5f0a4f8191820875ed264284f2d3b651489a7e8aeed3805cc2ed4d08c5147  experiments/naibbe-r1-decomposition-v2/archive/stage_b2_calibration.json' | sha256sum -c -
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C external/cremma rev-parse HEAD)" = '292525969ad98380b398e6606a9c2a36d51913ae'
+          test "$(git -C external/naibbe rev-parse HEAD)" = 'f2675ec5dd275268bc64dd48ea64fc0e0e9827a2'
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = 'b566ad82e4b6ff0782ecdddebf77718dac44f292'
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = '5cd34fb81d80faf3b4d57dbf1719c05ffde25302'
+          test "$(git -C external/naibbe hash-object decrypt_naibbe.py)" = 'b56a1e6e615a7b2e31ad386efdf7e6f2ef2b9d7b'
+
+      - name: Install preexisting dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile frozen C0 and invariant-only wrapper
+        run: |
+          python -m py_compile experiments/naibbe-r1-decomposition-v2/c0_support72_v2.py
+          python -m py_compile experiments/naibbe-r1-decomposition-v2/c0_support72_v2_recovery.py
+
+      - name: Regenerate identical target-blind C0 population
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/issue72-c0
+          mkdir -p /tmp/issue72-c0
+          python experiments/naibbe-r1-decomposition-v2/c0_support72_v2_recovery.py \
+            external/cremma external/naibbe \
+            experiments/naibbe-r1-decomposition-v2/archive/stage_b2_calibration.json \
+            /tmp/issue72-c0 \
+            > /tmp/issue72-c0/stdout.txt
+          test -s /tmp/issue72-c0/stage_c0_support.json
+          test -s /tmp/issue72-c0/MANIFEST.json
+          test "$(find /tmp/issue72-c0 -maxdepth 1 -name 'trace_rep*_*.json.gz' | wc -l)" -eq 20
+
+      - name: Validate population membership independently of JSON object order
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/issue72-c0/stage_c0_support.json').read_text())
+          assert r['status']=='STAGE C0 FIXED-PATH RANDOMIZATION SUPPORT FROZEN'
+          assert r['stage_b2_authority_sha256']=='2da5f0a4f8191820875ed264284f2d3b651489a7e8aeed3805cc2ed4d08c5147'
+          assert r['population']['process_reps']==list(range(5))
+          assert r['population']['axes']==['EL','ES','ET','EG']
+          assert r['population']['randomizations_per_axis']==31
+          assert len(r['trace_manifest'])==20
+          assert all(v is False for v in r['target_access'].values())
+          for row in r['trace_manifest'].values():
+              assert row['instrumented_equals_historical_primary'] is True
+              assert row['instrumented_equals_historical_raw'] is True
+              assert row['trace_render_equals_instrumented_primary'] is True
+              assert row['trace_render_equals_instrumented_raw'] is True
+              assert row['historical_ambiguity_retries']==row['instrumented_ambiguity_retries']
+          expected_keys={f'r{i}' for i in range(31)}
+          expected_ids=set(range(31))
+          for axis in ['EL','ES','ET','EG']:
+              rows=r['randomizations'][axis]
+              assert set(rows)==expected_keys
+              assert {int(x['randomization']) for x in rows.values()}==expected_ids
+              for x in rows.values():
+                  assert x['axis']==axis
+                  assert x['retry_history_not_rerun'] is True
+                  assert x['spacing_mask_not_rerun'] is True
+                  assert x['ambiguity_legality']['role']=='DIAGNOSTIC_ONLY_NOT_A_REPAIR_OR_ELIGIBILITY_GATE'
+                  assert x['invariants']['unreachable_jkw_unchanged'] is True
+                  assert x['invariants']['unreachable_jkw_domain_semantics']=='PRESENT_VALUES_UNCHANGED_AND_ABSENT_KEYS_REMAIN_ABSENT'
+                  assert x['common_support']['visible_positions']==r['baseline']['pooled_five_path_parser_support']['visible_tokens']
+          print('C0 status:',r['status'])
+          print('baseline pooled coverage:',r['baseline']['pooled_five_path_parser_support']['coverage'])
+          for axis in ['EL','ES','ET','EG']:
+              xs=list(r['randomizations'][axis].values())
+              cov=sorted(x['parser_support']['coverage'] for x in xs)
+              com=sorted(x['common_support']['common_support_fraction'] for x in xs)
+              chg=sorted(x['common_support']['changed_final_token_fraction'] for x in xs)
+              amb=sorted(x['ambiguity_legality']['admissible_fraction'] for x in xs)
+              cells=sorted(x['invariants']['changed_effective_cell_fraction'] for x in xs)
+              print(axis,{
+                  'coverage':[cov[0],cov[15],cov[-1]],
+                  'common_support':[com[0],com[15],com[-1]],
+                  'changed_token_fraction':[chg[0],chg[15],chg[-1]],
+                  'ambiguity_admissible':[amb[0],amb[15],amb[-1]],
+                  'changed_cell_fraction':[cells[0],cells[15],cells[-1]],
+              })
+          PY
+
+      - name: Freeze exact C0 provenance and hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum /tmp/issue72-c0/stage_c0_support.json /tmp/issue72-c0/MANIFEST.json /tmp/issue72-c0/trace_rep*_*.json.gz | sort > /tmp/issue72-c0/SHA256SUMS.txt
+          cat > /tmp/issue72-c0/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          scientific_head=${SCIENTIFIC_HEAD}
+          parent_main=98a04953aabe9e228a17fa5808adf506a0833362
+          stage_c_plan_first_add=${PLAN_FIRST_ADD}
+          stage_c0_script_first_add=${SCRIPT_FIRST_ADD}
+          recovery_wrapper_first_add=${WRAPPER_FIRST_ADD}
+          original_failed_run=33467776608
+          first_recovery_failed_validation_run=33467964705
+          first_recovery_workflow_first_add=${RECOVERY1_FIRST_ADD}
+          validation_incident_first_add=${INCIDENT2_FIRST_ADD}
+          recovery2_workflow_first_add=${RECOVERY2_WORKFLOW_FIRST_ADD}
+          scientific_generator_unchanged_from_recovery1=true
+          recovery2_scope=VALIDATION_KEY_ORDER_ONLY
+          stage_b2_raw_sha256=2da5f0a4f8191820875ed264284f2d3b651489a7e8aeed3805cc2ed4d08c5147
+          counterfactual_R1_target_scored=false
+          PT_generated_or_scored=false
+          FI_generated_or_scored=false
+          EOF
+          cat /tmp/issue72-c0/SHA256SUMS.txt
+          cat /tmp/issue72-c0/PROVENANCE.txt
+
+      - name: Upload exact C0 evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-stageC0-recovery2-${{ env.SCIENTIFIC_HEAD }}
+          path: /tmp/issue72-c0
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
+
+      - name: Permanently commit exact C0 authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/naibbe-r1-decomposition-v2/stage-c0
+          rm -rf "$DEST"
+          mkdir -p "$DEST"
+          cp /tmp/issue72-c0/stage_c0_support.json "$DEST/"
+          cp /tmp/issue72-c0/MANIFEST.json "$DEST/"
+          cp /tmp/issue72-c0/trace_rep*_*.json.gz "$DEST/"
+          cp /tmp/issue72-c0/SHA256SUMS.txt "$DEST/"
+          cp /tmp/issue72-c0/PROVENANCE.txt "$DEST/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Issue72 V2 C0: freeze target-blind fixed-path support authority'
+          git push origin HEAD:issue72-r1-causal-decomposition-v2
