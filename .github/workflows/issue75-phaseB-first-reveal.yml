@@ -1,0 +1,376 @@
+name: Issue75 Phase B M2 complete first reveal
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseB-first-reveal.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  authorize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      scientific_head: ${{ steps.auth.outputs.scientific_head }}
+      reps: ${{ steps.auth.outputs.reps }}
+    steps:
+      - name: Checkout exact first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify complete frozen Phase B chronology
+        id: auth
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN='f09ba414de015eabd1eef03f275be68b82752d7f'
+          B0='591accc7105e96ddd2b172c8d8c0f54fc0b7f4c1'
+          SCORE='6b09b2870b7693a9f098f51803363d75ae9674ef'
+          AGG='3bb949c926b9cef90fd56c9c7027ddb28c44db18'
+          FREEZE='61dd252fa7e07c0de34b7f319dfe38e9ec6efb0d'
+          PREFLIGHT='a0efaa67b91cf39d75d7da02fef8c23f9a35c6de'
+          SMOKE_SCRIPT='d2c85c05b337fa8f6cd86bdd9f62d81a1ac6c403'
+          SMOKE_HEAD='97f56cac6d3be7cb5d3254d46e0c79d9eda848d3'
+          EXEC_FREEZE='d66496a75b289110ec257636eaf8203d48130c38'
+          HEAD=$(git rev-parse HEAD)
+
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PLAN_B.md | tail -1)" = "$PLAN"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/stage-b0/generator_authority.json | tail -1)" = "$B0"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75b_score.py | tail -1)" = "$SCORE"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75b_aggregate.py | tail -1)" = "$AGG"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/IMPLEMENTATION_FREEZE_B.md | tail -1)" = "$FREEZE"
+          test "$(git log -1 --format=%H -- .github/workflows/issue75-phaseB-preflight.yml)" = "$PREFLIGHT"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75b_candidate_smoke.py | tail -1)" = "$SMOKE_SCRIPT"
+          test "$(git log -1 --format=%H -- .github/workflows/issue75-phaseB-candidate-smoke.yml)" = "$SMOKE_HEAD"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PRETARGET_EXECUTION_FREEZE_B.md | tail -1)" = "$EXEC_FREEZE"
+          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseB-first-reveal.yml | tail -1)" = "$HEAD"
+
+          git merge-base --is-ancestor "$PLAN" "$B0"
+          git merge-base --is-ancestor "$B0" "$SCORE"
+          git merge-base --is-ancestor "$SCORE" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$FREEZE"
+          git merge-base --is-ancestor "$FREEZE" "$PREFLIGHT"
+          git merge-base --is-ancestor "$PREFLIGHT" "$SMOKE_SCRIPT"
+          git merge-base --is-ancestor "$SMOKE_SCRIPT" "$SMOKE_HEAD"
+          git merge-base --is-ancestor "$SMOKE_HEAD" "$EXEC_FREEZE"
+          git merge-base --is-ancestor "$EXEC_FREEZE" "$HEAD"
+
+          git diff --exit-code "$AGG" "$HEAD" -- \
+            experiments/minimal-occupancy-generator/PLAN_B.md \
+            experiments/minimal-occupancy-generator/phase75b_generator_support.py \
+            experiments/minimal-occupancy-generator/stage-b0/generator_authority.json \
+            experiments/minimal-occupancy-generator/phase75b_score.py \
+            experiments/minimal-occupancy-generator/phase75b_aggregate.py \
+            experiments/minimal-occupancy-generator/stage-a-first-reveal/phase75a_aggregate.json \
+            experiments/joint-constraint-tournament/target68.py
+
+          echo '9c180c7026e4f9464954dd029b71973cc1890f25223af6152959649dde57e834  experiments/minimal-occupancy-generator/stage-b0/generator_authority.json' | sha256sum -c -
+          echo 'fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540  experiments/minimal-occupancy-generator/stage-a-first-reveal/phase75a_aggregate.json' | sha256sum -c -
+          test "$(git rev-parse HEAD:experiments/joint-constraint-tournament/target68.py)" = 'e94a24fbdfbb922099407313f23a1b87859130b6'
+          test ! -e experiments/minimal-occupancy-generator/stage-b-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_B.md
+
+          echo "scientific_head=$HEAD" >> "$GITHUB_OUTPUT"
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          print('reps='+json.dumps(list(range(31)), separators=(',',':')))
+          PY
+
+      - name: Download both successful target-blind replay preflights
+        uses: actions/download-artifact@v4
+        with:
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33503957561
+          github-token: ${{ github.token }}
+          pattern: issue75-phaseB-preflight-*-a0efaa67b91cf39d75d7da02fef8c23f9a35c6de
+          path: /tmp/preflight
+
+      - name: Verify boundary replay evidence remains target blind
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import glob,json
+          paths=glob.glob('/tmp/preflight/**/*.json', recursive=True)
+          assert len(paths)==2, paths
+          got=set()
+          for p in paths:
+              r=json.load(open(p, encoding='utf-8'))
+              assert r['status']=='EXACT_B0_M2_CORPUS_REGENERATED_TARGET_BLIND'
+              assert r['candidate_audit']['exact_phase_b0_replay'] is True
+              assert r['candidate_audit']['descriptor_distribution_exact_b0'] is True
+              assert all(v is False for v in r['target_access'].values())
+              got.add(r['rep'])
+          assert got=={0,30}, got
+          print({'preflight_run':33503957561,'reps':sorted(got),'target_blind':True})
+          PY
+
+      - name: Download successful target-blind M2 candidate-null smoke
+        uses: actions/download-artifact@v4
+        with:
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33504179109
+          github-token: ${{ github.token }}
+          name: issue75-phaseB-candidate-smoke-97f56cac6d3be7cb5d3254d46e0c79d9eda848d3
+          path: /tmp/smoke
+
+      - name: Verify candidate-null smoke remains target blind
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math
+          r=json.load(open('/tmp/smoke/M2-KRS_0.json', encoding='utf-8'))
+          assert r['status']=='M2_CANDIDATE_OWNED_NULL_EXECUTION_VERIFIED_TARGET_BLIND'
+          assert r['candidate_audit']['exact_phase_b0_replay'] is True
+          m=r['measurement']
+          assert m['n_reference']==1000 and m['n_test']==1000 and len(m['z_full'])==66
+          assert math.isfinite(float(m['residual_energy'])) and 0 < float(m['p_exist']) <= 1
+          t=r['target_access']
+          assert t['pair_Q_computed'] is True and t['residual_Z_computed'] is True
+          assert t['Issue58C_target_vector_loaded'] is False and t['Issue58D_target_vector_loaded'] is False
+          assert t['target_correlation_computed'] is False and t['T_computed'] is False
+          print({'smoke_run':33504179109,'rep':0,'target_blind':True})
+          PY
+
+  score:
+    needs: authorize
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 31
+      matrix:
+        rep: ${{ fromJSON(needs.authorize.outputs.reps) }}
+    steps:
+      - name: Checkout exact authorized first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.scientific_head }}
+          fetch-depth: 0
+
+      - name: Verify exact frozen scientific authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git log -1 --format=%H -- experiments/minimal-occupancy-generator/phase75b_score.py)" = '6b09b2870b7693a9f098f51803363d75ae9674ef'
+          test "$(git log -1 --format=%H -- experiments/minimal-occupancy-generator/phase75b_aggregate.py)" = '3bb949c926b9cef90fd56c9c7027ddb28c44db18'
+          echo '9c180c7026e4f9464954dd029b71973cc1890f25223af6152959649dde57e834  experiments/minimal-occupancy-generator/stage-b0/generator_authority.json' | sha256sum -c -
+          echo 'fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540  experiments/minimal-occupancy-generator/stage-a-first-reveal/phase75a_aggregate.json' | sha256sum -c -
+          test "$(git rev-parse HEAD:experiments/joint-constraint-tournament/target68.py)" = 'e94a24fbdfbb922099407313f23a1b87859130b6'
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cipher_benchmark rev-parse HEAD)" = '315f0cad4de3d021bd4185765c037cf2a28d341c'
+          test "$(git -C _cipher_benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = '2a4533ab9bdfa85db9bad602d590978953055df1'
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Compile frozen M2 scorer
+        run: python -m py_compile experiments/minimal-occupancy-generator/phase75b_score.py
+
+      - name: FIRST REVEAL score exact frozen M2 corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/score
+          python experiments/minimal-occupancy-generator/phase75b_score.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            '${{ matrix.rep }}' \
+            '/tmp/score/M2-KRS_${{ matrix.rep }}.json' \
+            > '/tmp/score/M2-KRS_${{ matrix.rep }}.stdout.txt'
+
+      - name: Validate exact scored M2 case without selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math
+          rep=${{ matrix.rep }}
+          r=json.load(open(f'/tmp/score/M2-KRS_{rep}.json', encoding='utf-8'))
+          assert r['schema']=='issue75-phaseB-m2-r1-score-v1'
+          assert r['status']=='PHASE_B_M2_FIRST_REVEAL_CASE_SCORED'
+          assert r['plan_b_commit']=='f09ba414de015eabd1eef03f275be68b82752d7f'
+          assert r['family']=='M2-KRS' and r['rep']==rep
+          assert r['pair_count']==66 and r['target_readings_averaged'] is False
+          assert r['no_case_selection'] is True and r['no_reroll'] is True
+          a=r['candidate_audit']
+          assert a['phase_b0_authority_sha256']=='9c180c7026e4f9464954dd029b71973cc1890f25223af6152959649dde57e834'
+          assert a['exact_phase_b0_replay'] is True
+          assert a['training_slot_marginals_exact_b0'] is True
+          assert a['descriptor_distribution_exact_b0'] is True
+          assert a['fit_tolerance_revalidated'] is True and a['regenerated_fit_max_abs_marginal_error'] <= 1e-10
+          assert a['tokens']==25071 and a['fold_tokens']==[4430,4810,5516,5447,4868] and a['all_zero_count']==0
+          b0=json.load(open('experiments/minimal-occupancy-generator/stage-b0/generator_authority.json', encoding='utf-8'))
+          frozen=next(x for x in b0['cases'] if x['rep']==rep)
+          assert a['occupancy_sha256']==frozen['occupancy_sha256']
+          m=r['measurement']
+          assert m['reference_namespace']==f'issue75:phaseB:M2-KRS:rep{rep}:reference'
+          assert m['test_namespace']==f'issue75:phaseB:M2-KRS:rep{rep}:test'
+          assert m['n_reference']==1000 and m['n_test']==1000 and len(m['z_full'])==66
+          assert math.isfinite(float(m['residual_energy'])) and 0 < float(m['p_exist']) <= 1
+          for target in ('ZL3b','IT2a'):
+              t=r['topology'][target]
+              assert math.isfinite(float(t['pearson']))
+              assert 0 <= int(t['sign_agreement']) <= 66 and t['sign_denominator']==66
+          assert math.isfinite(float(r['T']))
+          assert abs(float(r['T'])-min(float(r['topology']['ZL3b']['pearson']),float(r['topology']['IT2a']['pearson']))) <= 1e-15
+          assert all(v is True for v in r['target_access'].values())
+          print({'rep':rep,'T':r['T'],'R_ZL3b':r['topology']['ZL3b']['pearson'],'R_IT2a':r['topology']['IT2a']['pearson'],'E':m['residual_energy'],'p_exist':m['p_exist'],'W':m['reliability']['median']})
+          PY
+          sha256sum '/tmp/score/M2-KRS_${{ matrix.rep }}.json' '/tmp/score/M2-KRS_${{ matrix.rep }}.stdout.txt' > '/tmp/score/SHA256_${{ matrix.rep }}.txt'
+
+      - name: Upload immutable M2 scored case
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseB-score-M2-KRS-${{ matrix.rep }}-${{ needs.authorize.outputs.scientific_head }}
+          path: /tmp/score
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
+
+  aggregate:
+    needs: [authorize, score]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact authorized first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.scientific_head }}
+          fetch-depth: 0
+
+      - name: Download all 31 scored M2 cases
+        uses: actions/download-artifact@v4
+        with:
+          pattern: issue75-phaseB-score-M2-KRS-*-${{ needs.authorize.outputs.scientific_head }}
+          path: /tmp/results
+          merge-multiple: true
+
+      - name: Enforce complete no-drop M2 population
+        shell: bash
+        run: |
+          set -euo pipefail
+          COUNT=$(find /tmp/results -maxdepth 1 -type f -name 'M2-KRS_*.json' | wc -l)
+          test "$COUNT" -eq 31
+          python - <<'PY'
+          import glob,json
+          got=[]
+          for p in glob.glob('/tmp/results/M2-KRS_*.json'):
+              r=json.load(open(p, encoding='utf-8'))
+              got.append(r['rep'])
+          assert len(got)==31 and len(set(got))==31 and set(got)==set(range(31))
+          print({'complete_population':True,'count':31,'drops':0,'rerolls':0})
+          PY
+
+      - name: Aggregate frozen Phase B decision against Phase A M+
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/final/individual
+          python experiments/minimal-occupancy-generator/phase75b_aggregate.py \
+            /tmp/results \
+            /tmp/final/phase75b_aggregate.json \
+            '${{ needs.authorize.outputs.scientific_head }}' \
+            > /tmp/final/aggregate.stdout.txt
+          cp /tmp/results/M2-KRS_*.json /tmp/final/individual/
+
+      - name: Validate frozen aggregate and reveal classification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/final/phase75b_aggregate.json', encoding='utf-8'))
+          assert r['schema']=='issue75-phaseB-m2-aggregate-v1'
+          assert r['status']=='PHASE_B_M2_COMPLETE_31_CASE_POPULATION_AGGREGATED'
+          assert r['scientific_head']=='${{ needs.authorize.outputs.scientific_head }}'
+          assert r['plan_b_commit']=='f09ba414de015eabd1eef03f275be68b82752d7f'
+          assert r['phase_b0_authority_sha256']=='9c180c7026e4f9464954dd029b71973cc1890f25223af6152959649dde57e834'
+          assert r['phase_a_positive_control_aggregate_sha256']=='fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540'
+          assert r['population']['total_results']==31 and r['population']['complete_population'] is True
+          assert r['population']['no_drops'] is True and r['population']['no_rerolls'] is True
+          assert r['frozen_phase_a_positive_control']['positive_control_valid'] is True
+          assert r['frozen_phase_a_positive_control']['delta_plus_q95']==0.009768313008182594
+          assert len(r['frozen_phase_a_positive_control']['T_plus_center'])==31
+          allowed={
+              'M2_GENERIC_KRS_SHAPE_DESCRIPTORS_SUFFICIENT',
+              'M2_GENERIC_KRS_SHAPE_DESCRIPTORS_INSUFFICIENT_STATEFUL_CONFIGURATION_RULE_REQUIRED',
+          }
+          assert r['primary']['classification'] in allowed
+          assert r['primary']['no_material_loss']==(r['primary']['gap_M2'] >= -0.009768313008182594)
+          g=r['guardrails']
+          assert g['target_edge_loss_optimized'] is False
+          assert g['selected_edges_used'] is False
+          assert g['readings_averaged'] is False
+          assert g['phase_a_positive_control_rerun_or_reselected'] is False
+          assert g['M3_executed'] is False
+          print({
+              'T_median':r['measurement']['T']['median'],
+              'R_ZL3b_median':r['measurement']['R_ZL3b']['median'],
+              'R_IT2a_median':r['measurement']['R_IT2a']['median'],
+              'E_median':r['measurement']['residual_energy']['median'],
+              'W':r['measurement']['reliability_W'],
+              'gap_M2':r['primary']['gap_M2'],
+              'delta_plus_q95':r['frozen_phase_a_positive_control']['delta_plus_q95'],
+              'classification':r['primary']['classification'],
+          })
+          PY
+
+      - name: Freeze exact first-reveal provenance and hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/final/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          scientific_head=${{ needs.authorize.outputs.scientific_head }}
+          plan_b_commit=f09ba414de015eabd1eef03f275be68b82752d7f
+          phase_b0_commit=591accc7105e96ddd2b172c8d8c0f54fc0b7f4c1
+          phase_b0_sha256=9c180c7026e4f9464954dd029b71973cc1890f25223af6152959649dde57e834
+          scorer_commit=6b09b2870b7693a9f098f51803363d75ae9674ef
+          aggregator_commit=3bb949c926b9cef90fd56c9c7027ddb28c44db18
+          successful_preflight_run=33503957561
+          successful_preflight_head=a0efaa67b91cf39d75d7da02fef8c23f9a35c6de
+          successful_candidate_smoke_run=33504179109
+          successful_candidate_smoke_head=97f56cac6d3be7cb5d3254d46e0c79d9eda848d3
+          phase_a_positive_control_aggregate_sha256=fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540
+          target68_blob=e94a24fbdfbb922099407313f23a1b87859130b6
+          population=M2-KRS:31,total:31
+          drops=0
+          rerolls=0
+          target_edge_loss_optimized=false
+          selected_edges_used=false
+          readings_averaged=false
+          phase_a_positive_control_rerun_or_reselected=false
+          M3_executed=false
+          EOF
+          (cd /tmp/final && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum) > /tmp/final/SHA256SUMS.txt
+
+      - name: Upload complete Phase B first-reveal evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseB-FIRST-REVEAL-${{ needs.authorize.outputs.scientific_head }}
+          path: /tmp/final
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
