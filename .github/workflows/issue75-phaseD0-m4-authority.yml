@@ -20,13 +20,14 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 0
 
-      - name: Verify corrected plan-before-code and target-blind implementation
+      - name: Verify final plan-before-code and target-blind implementation
         shell: bash
         run: |
           set -euo pipefail
-          PLAN=dcf652ef20418f230a1da9521ec036bb0c58e24c
+          PLAN=f9e60ed9e9261b30c3294c576cf7ea037cf2c2c7
           GEN=ef8edcb94e287a3fd6c559308ff902dc7d1c41ee
-          FREEZE=48e4d8c8777e9d5e47b896e2a5bdd3419007fb73
+          FREEZE=7a6f3d3257f9fdfaa43edefd63dec4cea4dbe5f2
+          test "$(git rev-parse ${GEN}^)" = "$PLAN"
           git merge-base --is-ancestor "$PLAN" "$GEN"
           git merge-base --is-ancestor "$GEN" "$FREEZE"
           git merge-base --is-ancestor "$FREEZE" HEAD
@@ -137,12 +138,13 @@ jobs:
           workflow_run=${GITHUB_RUN_ID}
           workflow_attempt=${GITHUB_RUN_ATTEMPT}
           generation_head=${GITHUB_SHA}
-          normative_plan_d_commit=dcf652ef20418f230a1da9521ec036bb0c58e24c
+          normative_plan_d_commit=f9e60ed9e9261b30c3294c576cf7ea037cf2c2c7
           plan_d_sha256=${PLAN_SHA}
-          corrected_generator_commit=ef8edcb94e287a3fd6c559308ff902dc7d1c41ee
-          corrected_implementation_freeze_commit=48e4d8c8777e9d5e47b896e2a5bdd3419007fb73
+          authoritative_generator_commit=ef8edcb94e287a3fd6c559308ff902dc7d1c41ee
+          implementation_freeze_commit=7a6f3d3257f9fdfaa43edefd63dec4cea4dbe5f2
           obsolete_distance_only_run=33510176784
-          obsolete_distance_only_run_authoritative=false
+          obsolete_intermediate_plan_run=33510519140
+          obsolete_runs_authoritative=false
           generator_authority_sha256=${AUTH_SHA}
           phase_c_aggregate_sha256=34affe98b68a1e410ea3d4384a917450c2b58e7a8e02a30da8befa660712421a
           cases=31
@@ -176,5 +178,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "$DEST"
-          git commit -m 'Issue75 Phase D0: freeze corrected 31-case target-blind M4 authority'
+          git commit -m 'Issue75 Phase D0: freeze final 31-case target-blind M4 authority'
           git push origin HEAD:issue75-minimal-occupancy-generator
