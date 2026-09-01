@@ -1,0 +1,298 @@
+name: Issue72 V2 Stage B1 calibration recovery
+
+on:
+  push:
+    branches: [issue72-r1-causal-decomposition-v2]
+    paths:
+      - 'experiments/naibbe-r1-decomposition-v2/STAGE_B0_ARCHIVE_TRANSPORT_INCIDENT.md'
+      - 'experiments/naibbe-r1-decomposition-v2/stage_b0_authority.json'
+      - 'experiments/naibbe-r1-decomposition-v2/b1_r1_calibration72_v2_transport_repair.py'
+      - '.github/workflows/issue72-v2-stage-b1-r1-calibration-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  rep0-exact-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact V2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+          fetch-depth: 0
+
+      - name: Verify recovery chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git merge-base 98a04953aabe9e228a17fa5808adf506a0833362 HEAD)" = "98a04953aabe9e228a17fa5808adf506a0833362"
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_B_POSITIVE_CONTROL_PLAN.md | tail -1)
+          AMEND=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_B_AMENDMENT_B1.md | tail -1)
+          SCORE=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/b1_r1_calibration72_v2.py | tail -1)
+          INCIDENT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/STAGE_B0_ARCHIVE_TRANSPORT_INCIDENT.md | tail -1)
+          AUTH=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/stage_b0_authority.json | tail -1)
+          WRAPPER=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition-v2/b1_r1_calibration72_v2_transport_repair.py | tail -1)
+          WF=$(git log --diff-filter=A --format=%H -- .github/workflows/issue72-v2-stage-b1-r1-calibration-recovery.yml | tail -1)
+          test -n "$PLAN" && test -n "$AMEND" && test -n "$SCORE" && test -n "$INCIDENT" && test -n "$AUTH" && test -n "$WRAPPER" && test -n "$WF"
+          git merge-base --is-ancestor "$PLAN" "$AMEND"
+          git merge-base --is-ancestor "$AMEND" "$SCORE"
+          git merge-base --is-ancestor "$SCORE" "$INCIDENT"
+          git merge-base --is-ancestor "$INCIDENT" "$AUTH"
+          git merge-base --is-ancestor "$AUTH" "$WRAPPER"
+          git merge-base --is-ancestor "$WRAPPER" "$WF"
+          echo "RECOVERY_INCIDENT_FIRST_ADD=$INCIDENT" >> "$GITHUB_ENV"
+          echo "COMPACT_AUTH_FIRST_ADD=$AUTH" >> "$GITHUB_ENV"
+          echo "TRANSPORT_WRAPPER_FIRST_ADD=$WRAPPER" >> "$GITHUB_ENV"
+          echo "RECOVERY_WORKFLOW_FIRST_ADD=$WF" >> "$GITHUB_ENV"
+
+      - name: Download exact successful B0 artifact by frozen run
+        uses: actions/download-artifact@v4
+        with:
+          name: issue72-v2-stageB0-support-135e8ac956541e2c2259431efee0fdb064b9c03e
+          path: /tmp/b0-source
+          github-token: ${{ github.token }}
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33462658689
+
+      - name: Re-derive and verify compact B0 authority from exact artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58  /tmp/b0-source/stage_b0_support.json' | sha256sum -c -
+          python - <<'PY'
+          import json, hashlib
+          src=json.load(open('/tmp/b0-source/stage_b0_support.json'))
+          out={
+            'schema':'issue72-v2-stage-b0-compact-authority-v1',
+            'status':src['status'],
+            'source_artifact':{
+              'workflow_run':33462658689,
+              'job':99715920669,
+              'artifact_id':9783720673,
+              'artifact_zip_sha256':'0bdb5022c5c348b0898a8de253c2b644576c2654c19710059edabc79bb3b03b5',
+              'full_stage_b0_json_sha256':'96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58',
+            },
+            'target_access':src['target_access'],
+            'reps':{},
+          }
+          for k,row in src['reps'].items():
+            out['reps'][k]={
+              'rep':row['rep'],
+              'primary_pooled_surface_sha256':row['primary_pooled_surface_sha256'],
+              'support':{x:row['support'][x] for x in ('visible_tokens','accepted_tokens','coverage')},
+              'per_manuscript':{},
+            }
+            for ms,x in row['per_manuscript'].items():
+              out['reps'][k]['per_manuscript'][ms]={
+                'seed':x['seed'],
+                'primary_surface_sha256':x['primary_surface_sha256'],
+                'support':{y:x['support'][y] for y in ('visible_tokens','accepted_tokens','coverage')},
+              }
+          raw=(json.dumps(out, ensure_ascii=False, sort_keys=True, separators=(',',':'))+'\n').encode()
+          open('/tmp/b0-source/rederived_authority.json','wb').write(raw)
+          got=hashlib.sha256(raw).hexdigest()
+          assert got=='d38ab785b421bcd7eea0e48fb03d5c6f55d8f733dc662fc4793a1f7c0d161d28', got
+          repo=open('experiments/naibbe-r1-decomposition-v2/stage_b0_authority.json','rb').read()
+          assert repo==raw
+          print('B0_COMPACT_AUTHORITY_EXACT=PASS')
+          PY
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile unchanged scientific scorer and transport wrapper
+        run: |
+          python -m py_compile experiments/naibbe-r1-decomposition-v2/b1_r1_calibration72_v2.py
+          python -m py_compile experiments/naibbe-r1-decomposition-v2/b1_r1_calibration72_v2_transport_repair.py
+          python -m py_compile experiments/naibbe-r1-decomposition-v2/b1_aggregate72_v2.py
+
+      - name: Rep0 exact Issue68 reference-calibration replay gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rep0gate
+          python experiments/naibbe-r1-decomposition-v2/b1_r1_calibration72_v2_transport_repair.py \
+            external/cremma external/naibbe 0 /tmp/rep0gate/rep0_primary_gate.json --primary-only \
+            > /tmp/rep0gate/stdout.txt
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/rep0gate/rep0_primary_gate.json'))
+          p=r['primary']
+          assert r['rep']==0
+          assert r['secondary'] is None
+          assert r['p_values_computed'] is False
+          assert r['test_nulls_computed'] is False
+          assert r['issue72_intervention_R1_computed'] is False
+          assert abs(p['residual_energy']-3.1784043855151296)<=1e-12
+          assert abs(p['reliability']['median']-0.954726539114345)<=1e-12
+          assert abs(p['topology']['ZL3b']['pearson']-0.8830282501011794)<=1e-12
+          assert abs(p['topology']['IT2a']['pearson']-0.9000974100381157)<=1e-12
+          assert p['topology']['ZL3b']['sign_agreement']==60
+          assert p['topology']['IT2a']['sign_agreement']==61
+          print('REP0_EXACT_GATE=PASS')
+          PY
+          sha256sum /tmp/rep0gate/* | sort > /tmp/rep0gate/SHA256SUMS.txt
+
+      - name: Upload rep0 exact gate evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-b1-recovery-rep0-exact-gate-${{ github.sha }}
+          path: /tmp/rep0gate
+          if-no-files-found: error
+          retention-days: 90
+
+  positive-control-reps:
+    needs: rep0-exact-gate
+    strategy:
+      fail-fast: true
+      matrix:
+        rep: [0, 1, 2, 3, 4]
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - name: Checkout exact V2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+
+      - name: Checkout frozen CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout pinned Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Install runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Score unchanged-mechanism rep with two independent reference calibrations
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b1-rep
+          python experiments/naibbe-r1-decomposition-v2/b1_r1_calibration72_v2_transport_repair.py \
+            external/cremma external/naibbe ${{ matrix.rep }} /tmp/b1-rep/rep${{ matrix.rep }}.json \
+            > /tmp/b1-rep/stdout_rep${{ matrix.rep }}.txt
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/b1-rep/rep${{ matrix.rep }}.json'))
+          assert r['rep']==${{ matrix.rep }}
+          assert r['secondary'] is not None
+          assert r['calibration_noise'] is not None
+          assert r['classification'] is None
+          assert r['p_values_computed'] is False
+          assert r['test_nulls_computed'] is False
+          assert r['issue72_intervention_surface_loaded_or_generated'] is False
+          assert r['issue72_intervention_R1_computed'] is False
+          print({
+            'rep':r['rep'],
+            'coverage':r['surface']['coverage'],
+            'E':r['primary']['residual_energy'],
+            'W':r['primary']['reliability']['median'],
+            'R_ZL3b':r['primary']['topology']['ZL3b']['pearson'],
+            'R_IT2a':r['primary']['topology']['IT2a']['pearson'],
+            'sign_ZL3b':r['primary']['topology']['ZL3b']['sign_agreement'],
+            'sign_IT2a':r['primary']['topology']['IT2a']['sign_agreement'],
+            'calibration_noise':r['calibration_noise'],
+          })
+          PY
+          sha256sum /tmp/b1-rep/* | sort > /tmp/b1-rep/SHA256SUMS.txt
+
+      - name: Upload exact per-rep calibration
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-b1-recovery-rep-${{ matrix.rep }}-${{ github.sha }}
+          path: /tmp/b1-rep
+          if-no-files-found: error
+          retention-days: 90
+
+  aggregate:
+    needs: positive-control-reps
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact V2 branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue72-r1-causal-decomposition-v2
+
+      - name: Install runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Download all recovery per-rep calibrations
+        uses: actions/download-artifact@v4
+        with:
+          pattern: issue72-v2-b1-recovery-rep-*
+          path: /tmp/b1-download
+          merge-multiple: true
+
+      - name: Aggregate calibration without intervention threshold
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/b1-final/reps
+          cp /tmp/b1-download/rep*.json /tmp/b1-final/reps/
+          python experiments/naibbe-r1-decomposition-v2/b1_aggregate72_v2.py \
+            /tmp/b1-final/reps /tmp/b1-final/stage_b1_calibration.json \
+            > /tmp/b1-final/stdout.txt
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/b1-final/stage_b1_calibration.json'))
+          assert r['status']=='UNCHANGED-NAIBBE R1 STOCHASTIC VARIATION CHARACTERIZED'
+          assert r['classification'] is None
+          assert r['hard_intervention_threshold_derived'] is False
+          print('status:',r['status'])
+          print('spread:',{k:{x:v[x] for x in ['min','max','range','median','MAD']} for k,v in r['primary_coordinate_spread'].items()})
+          print('calibration_noise_max:',{k:v['max'] for k,v in r['reference_calibration_noise'].items()})
+          print('pairwise_rep_Z:',r['pairwise_primary_residual_topology_summary'])
+          PY
+          sha256sum /tmp/b1-final/stage_b1_calibration.json /tmp/b1-final/reps/*.json /tmp/b1-final/stdout.txt | sort > /tmp/b1-final/SHA256SUMS.txt
+          cat > /tmp/b1-final/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          branch_head=${GITHUB_SHA}
+          parent_main=98a04953aabe9e228a17fa5808adf506a0833362
+          source_B0_run=33462658689
+          source_B0_artifact=9783720673
+          source_B0_full_json_sha256=96b2865496306b48a4d843b590da32b06684520e4db6a21dd0ed0b859ca27d58
+          compact_B0_authority_sha256=d38ab785b421bcd7eea0e48fb03d5c6f55d8f733dc662fc4793a1f7c0d161d28
+          recovery_incident_first_add=${RECOVERY_INCIDENT_FIRST_ADD:-recorded-in-rep0-job}
+          rep0_exact_gate_required=true
+          test_nulls_computed=false
+          B1_p_values_computed=false
+          issue72_intervention_R1_computed=false
+          hard_intervention_threshold_derived=false
+          EOF
+
+      - name: Upload exact B1 recovery calibration evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue72-v2-stageB1-recovery-calibration-${{ github.sha }}
+          path: /tmp/b1-final
+          if-no-files-found: error
+          retention-days: 90
