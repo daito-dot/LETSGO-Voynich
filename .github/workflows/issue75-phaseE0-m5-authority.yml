@@ -1,0 +1,174 @@
+name: Issue75 Phase E0 target-blind M5 two-mode latent authority
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths: ['.github/workflows/issue75-phaseE0-m5-authority.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact E0 head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify final plan-before-code and Phase-D license
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=b2ef72d19111445f164d68ded813f1f81e297af6
+          GEN=e6eb4fd32a7428a152b6370562f29eb453e4f049
+          FREEZE=e277f964ceb2cf45959231c471c4d01bd3267b58
+          test "$(git rev-parse ${GEN}^)" = "$PLAN"
+          git merge-base --is-ancestor "$PLAN" "$GEN"
+          git merge-base --is-ancestor "$GEN" "$FREEZE"
+          git merge-base --is-ancestor "$FREEZE" HEAD
+          git diff --exit-code "$PLAN" HEAD -- experiments/minimal-occupancy-generator/PLAN_E.md
+          git diff --exit-code "$GEN" HEAD -- experiments/minimal-occupancy-generator/phase75e_generator_support.py
+          git diff --exit-code "$FREEZE" HEAD -- experiments/minimal-occupancy-generator/IMPLEMENTATION_FREEZE_E.md
+          echo 'c15ffb92030220596cacef9db9cb3bdb26c92607f675c24ff0fa607e16764489  experiments/minimal-occupancy-generator/stage-d-first-reveal/phase75d_aggregate.json' | sha256sum -c -
+          python - <<'PY'
+          import json
+          r=json.load(open('experiments/minimal-occupancy-generator/stage-d-first-reveal/phase75d_aggregate.json'))
+          assert r['primary']['classification']=='M4_KRS_CHAIN_DISTANCE_NONLOCAL_GRAMMAR_INSUFFICIENT_LATENT_CONFIGURATION_RULE_REQUIRED'
+          assert r['primary']['no_material_loss'] is False
+          PY
+          test -e experiments/minimal-occupancy-generator/DECISION_D_LATENT_REQUIRED.md
+          test ! -e experiments/minimal-occupancy-generator/stage-e0
+          test ! -e experiments/minimal-occupancy-generator/REPORT_E.md
+          ! grep -q 'target68\|load_target_references\|phase75a_score' experiments/minimal-occupancy-generator/phase75e_generator_support.py
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cb
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify source and install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cb hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = 2a4533ab9bdfa85db9bad602d590978953055df1
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+          python -m py_compile experiments/minimal-occupancy-generator/phase75e_generator_support.py
+
+      - name: Generate complete 31-case M5 target-blind authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/e0
+          python experiments/minimal-occupancy-generator/phase75e_generator_support.py \
+            _cb/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            /tmp/e0/generator_authority.json \
+            > /tmp/e0/stdout.txt
+
+      - name: Validate frozen E0 contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math
+          r=json.load(open('/tmp/e0/generator_authority.json'))
+          assert r['schema']=='issue75-phaseE0-m5-krs-2mix-chain-generator-authority-v1'
+          assert r['status']=='M5_KRS_TWO_LATENT_CHAIN_MODES_31_CORPORA_FROZEN_TARGET_BLIND'
+          assert r['family']=='M5-KRS-2MIX-CHAIN'
+          assert r['source']['ZL3b_blob']=='2a4533ab9bdfa85db9bad602d590978953055df1'
+          assert r['source']['parsed_tokens']==25071
+          assert r['source']['fold_parsed_tokens']==[4430,4810,5516,5447,4868]
+          m=r['model_definition']
+          assert m['latent_states']==2 and m['free_continuous_parameters']==43
+          assert m['free_parameters_per_component']==21 and m['free_gate_parameters']==1
+          assert m['explicit_nonadjacent_parameters']==0
+          assert m['generic_distance_parameters']==0
+          assert m['named_distant_pair_parameters']==0
+          assert m['signature_specific_parameters']==0
+          assert m['start_count']==9
+          assert len(r['fit'])==5
+          for f in range(5):
+              x=r['fit'][str(f)]
+              assert x['free_continuous_parameters']==43
+              assert x['explicit_nonadjacent_parameters']==0
+              assert x['generic_distance_parameters']==0
+              assert x['signature_specific_parameters']==0
+              assert len(x['all_starts'])==9
+              assert set(s['start_index'] for s in x['all_starts'])==set(range(9))
+              assert 0 <= x['selected_start_index'] <= 8
+              assert x['selected_log_likelihood'] >= x['m3_baseline_log_likelihood'] - 1e-8
+              assert 1e-8 < float(x['pi']) < 1-1e-8
+              assert x['normalization_audit']['max_descriptor_normalization_error'] <= 1e-12
+              assert x['normalization_audit']['total_normalization_error'] <= 1e-12
+              assert x['canonicalization']['max_abs_probability_change'] <= 1e-15
+              assert math.isfinite(float(x['selected_log_likelihood_gain_over_m3']))
+          assert r['fit']['0']['gradient_audit']['passed'] is True
+          assert len(r['cases'])==31 and {x['rep'] for x in r['cases']}==set(range(31))
+          assert len({x['occupancy_sha256'] for x in r['cases']})==31
+          assert all(x['tokens']==25071 and x['all_zero_count']==0 for x in r['cases'])
+          assert all(x['pair_Q_computed'] is False and x['residual_Z_computed'] is False for x in r['cases'])
+          assert all(x['target_topology_loaded'] is False and x['target_correlation_computed'] is False for x in r['cases'])
+          assert all(v is False for v in r['target_access'].values())
+          assert r['no_drops'] is True and r['no_rerolls'] is True
+          print({
+            'selected_starts':[r['fit'][str(f)]['selected_start_index'] for f in range(5)],
+            'pi':[r['fit'][str(f)]['pi'] for f in range(5)],
+            'll_gain':[r['fit'][str(f)]['selected_log_likelihood_gain_over_m3'] for f in range(5)],
+            'distinct_signature_range':[min(x['distinct_signatures'] for x in r['cases']),max(x['distinct_signatures'] for x in r['cases'])],
+            'target_access':r['target_access']})
+          PY
+          sha256sum /tmp/e0/generator_authority.json /tmp/e0/stdout.txt > /tmp/e0/SHA256SUMS.txt
+          PLAN_SHA=$(sha256sum experiments/minimal-occupancy-generator/PLAN_E.md | cut -d' ' -f1)
+          AUTH_SHA=$(sha256sum /tmp/e0/generator_authority.json | cut -d' ' -f1)
+          cat > /tmp/e0/PROVENANCE.txt <<EOF
+          scientific_role=PRETARGET_CROSSFITTED_TWO_LATENT_LOCAL_CHAIN_GENERATOR_AUTHORITY
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          generation_head=${GITHUB_SHA}
+          normative_plan_e_commit=b2ef72d19111445f164d68ded813f1f81e297af6
+          plan_e_sha256=${PLAN_SHA}
+          generator_commit=e6eb4fd32a7428a152b6370562f29eb453e4f049
+          implementation_freeze_commit=e277f964ceb2cf45959231c471c4d01bd3267b58
+          generator_authority_sha256=${AUTH_SHA}
+          phase_d_aggregate_sha256=c15ffb92030220596cacef9db9cb3bdb26c92607f675c24ff0fa607e16764489
+          cases=31
+          target_loaded=false
+          pair_Q_computed=false
+          residual_Z_computed=false
+          target_correlation_computed=false
+          drops=0
+          rerolls=0
+          EOF
+
+      - name: Upload immutable target-blind E0 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseE0-M5-KRS-2MIX-CHAIN-${{ github.sha }}
+          path: /tmp/e0
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Commit exact E0 authority into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/minimal-occupancy-generator/stage-e0
+          test ! -e "$DEST"
+          mkdir -p "$DEST"
+          cp /tmp/e0/generator_authority.json "$DEST/"
+          cp /tmp/e0/stdout.txt "$DEST/"
+          cp /tmp/e0/SHA256SUMS.txt "$DEST/"
+          cp /tmp/e0/PROVENANCE.txt "$DEST/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Issue75 Phase E0: freeze 31-case target-blind M5 authority'
+          git push origin HEAD:issue75-minimal-occupancy-generator
