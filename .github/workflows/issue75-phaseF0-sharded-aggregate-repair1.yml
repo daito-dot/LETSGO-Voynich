@@ -1,0 +1,144 @@
+name: Issue75 Phase F0 sharded aggregate repair1
+
+on:
+  push:
+    branches: [issue75-f0-sharded-prep]
+    paths: ['.github/workflows/issue75-phaseF0-sharded-aggregate-repair1.yml']
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact aggregate-repair head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify aggregate-only repair chronology and no prior authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = issue75-f0-sharded-prep
+          for C in c9ab9368eb1b95ee999aa501836ede38c18b7c85 c3ba85ad3cb90c28df37baac1eb69c3e2a1c7f7b 200f68c1d5af9d81b22356d04f2a4f46e7cac4c6 8e9bc47b95437c81c459414d8917c69a8fe3df61; do git merge-base --is-ancestor "$C" HEAD; done
+          git diff --exit-code e540cca7e698cb16d6fdc18b82912af6ab50e4e9 HEAD -- experiments/minimal-occupancy-generator/phase75f0_shard_aggregate.py
+          git diff --exit-code 200f68c1d5af9d81b22356d04f2a4f46e7cac4c6 HEAD -- experiments/minimal-occupancy-generator/phase75f0_shard_baseline_reconcile.py
+          test ! -e experiments/minimal-occupancy-generator/stage-f0
+          ! grep -Eq 'target68|load_target_references|phase75[a-e]_score' experiments/minimal-occupancy-generator/phase75f0_shard_baseline_reconcile.py experiments/minimal-occupancy-generator/phase75f0_shard_aggregate.py
+
+      - name: Download exact ten successful source shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: issue75-phaseF0-prep-shard-2f90f3e866f171b5d43d37e85c02260ae7c0710d-*
+          path: /tmp/raw
+          merge-multiple: true
+          github-token: ${{ github.token }}
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33548214504
+
+      - name: Reconcile redundant M5 metadata and aggregate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+          test "$(find /tmp/raw -maxdepth 1 -name 'phase75f0_shard_fold*_G*.json' | wc -l)" -eq 10
+          mkdir -p /tmp/work /tmp/f0
+          python experiments/minimal-occupancy-generator/phase75f0_shard_baseline_reconcile.py /tmp/raw /tmp/work/reconciled /tmp/f0/reconciliation_audit.json > /tmp/f0/reconciliation.stdout.txt
+          python experiments/minimal-occupancy-generator/phase75f0_shard_aggregate.py /tmp/work/reconciled /tmp/f0/phase75f0_training_latent_diagnostic.json > /tmp/f0/stdout.txt
+          mkdir -p /tmp/f0/raw-shards /tmp/f0/reconciled-shards
+          cp /tmp/raw/phase75f0_shard_fold*_G*.json /tmp/f0/raw-shards/
+          cp /tmp/work/reconciled/phase75f0_shard_fold*_G*.json /tmp/f0/reconciled-shards/
+          (cd /tmp/f0 && find raw-shards reconciled-shards -type f -print0 | sort -z | xargs -0 sha256sum) > /tmp/f0/SHARD_SHA256SUMS.txt
+
+      - name: Validate complete frozen F0 decision
+        id: validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math,numpy as np
+          a=json.load(open('/tmp/f0/reconciliation_audit.json'))
+          assert a['schema']=='issue75-phaseF0-shard-baseline-reconcile-v1'
+          assert a['status']=='REDUNDANT_M5_METADATA_RECONCILED_WITHIN_FROZEN_NUMERICAL_TOLERANCES'
+          assert a['source_run']==33548214504
+          assert a['candidate_fields_modified'] is False and a['model_selection_performed'] is False
+          assert len(a['folds'])==5
+          assert max(x['absolute_m5_differences_before_reconciliation']['training_conditional_log_likelihood'] for x in a['folds']) <= 1e-3
+          assert max(x['absolute_m5_differences_before_reconciliation']['heldout_conditional_log_likelihood'] for x in a['folds']) <= 1e-3
+          assert max(x['absolute_m5_differences_before_reconciliation']['heldout_nats_per_token'] for x in a['folds']) <= 1e-7
+          assert max(x['absolute_m5_differences_before_reconciliation']['pi'] for x in a['folds']) <= 1e-4
+
+          r=json.load(open('/tmp/f0/phase75f0_training_latent_diagnostic.json'))
+          assert r['schema']=='issue75-phaseF0-training-latent-diagnostic-v1'
+          assert r['status']=='PHASE_F0_TRAINING_ONLY_LATENT_FRONTIER_DIAGNOSTIC_COMPLETE'
+          assert r['execution_mode']=='EXACT_TEN_SHARD_EXECUTION_ONLY_FALLBACK'
+          assert r['source']['ZL3b_blob']=='2a4533ab9bdfa85db9bad602d590978953055df1'
+          assert r['source']['parsed_tokens']==25071 and r['source']['fold_parsed_tokens']==[4430,4810,5516,5447,4868]
+          folds=r['outer_folds']; assert len(folds)==5 and [x['fold'] for x in folds]==list(range(5))
+          for x in folds:
+              assert x['g2']['free_continuous_parameters']==46 and x['g3']['free_continuous_parameters']==65
+              assert len(x['g2']['all_starts'])==9 and len(x['g3']['all_starts'])==9
+              assert x['g2']['gradient_audit']['passed'] is True and x['g3']['gradient_audit']['passed'] is True
+          d2=np.array([x['g2']['heldout_gain_over_m5_nats_per_token'] for x in folds],float)
+          d3=np.array([x['g3']['heldout_gain_over_m5_nats_per_token'] for x in folds],float)
+          d32=np.array([x['direct_g3_minus_g2_nats_per_token'] for x in folds],float)
+          s2=bool(np.all(d2>0) and np.median(d2)>=.01); s3=bool(np.all(d3>0) and np.median(d3)>=.01)
+          n32=int(np.sum(d32>0)); m32=float(np.median(d32))
+          if s2 and not s3: cls='F0_SELECT_KRS_GATED_TWO_MODE_CHAIN'
+          elif s3 and not s2: cls='F0_SELECT_GLOBAL_THREE_MODE_CHAIN'
+          elif s2 and s3: cls='F0_SELECT_GLOBAL_THREE_MODE_CHAIN' if (n32>=4 and m32>=.01) else 'F0_SELECT_KRS_GATED_TWO_MODE_CHAIN'
+          else: cls='F0_GLOBAL_MIXTURE_EXTENSIONS_NOT_PREDICTIVELY_SUPPORTED_WITHIN_TOKEN_STATE_FRONTIER_REQUIRED'
+          assert r['support']['g2_over_m5']['supported'] is s2
+          assert r['support']['g3_over_m5']['supported'] is s3
+          assert r['selection']['classification']==cls
+          assert all(v is False for v in r['guardrails'].values())
+          print({'classification':cls,'g2_gains':d2.tolist(),'g2_median':float(np.median(d2)),'g2_supported':s2,'g3_gains':d3.tolist(),'g3_median':float(np.median(d3)),'g3_supported':s3,'g3_minus_g2':d32.tolist(),'g3_minus_g2_median':m32,'g3_minus_g2_positive_folds':n32})
+          PY
+          AUTH_SHA=$(sha256sum /tmp/f0/phase75f0_training_latent_diagnostic.json | cut -d' ' -f1)
+          REC_SHA=$(sha256sum /tmp/f0/reconciliation_audit.json | cut -d' ' -f1)
+          echo "authority_sha=$AUTH_SHA" >> "$GITHUB_OUTPUT"
+          echo "reconcile_sha=$REC_SHA" >> "$GITHUB_OUTPUT"
+          sha256sum /tmp/f0/phase75f0_training_latent_diagnostic.json /tmp/f0/reconciliation_audit.json /tmp/f0/stdout.txt /tmp/f0/reconciliation.stdout.txt /tmp/f0/SHARD_SHA256SUMS.txt > /tmp/f0/SHA256SUMS.txt
+          cat > /tmp/f0/PROVENANCE.txt <<EOF
+          scientific_role=PRETARGET_TRAINING_ONLY_LATENT_FRONTIER_DIAGNOSTIC_AUTHORITY_CANDIDATE
+          authority_precedence=SERIAL_REPAIR1_RUN_33545246568_IF_SUCCESSFUL
+          source_scientific_shard_run=33548214504
+          source_scientific_shard_head=2f90f3e866f171b5d43d37e85c02260ae7c0710d
+          aggregate_repair_execution_head=${GITHUB_SHA}
+          authority_sha256=${AUTH_SHA}
+          reconciliation_audit_sha256=${REC_SHA}
+          source_blob=2a4533ab9bdfa85db9bad602d590978953055df1
+          complete_shards=10
+          candidate_fields_modified=false
+          external_reference_measurements_accessed=false
+          random_restarts=false
+          rerolls=false
+          EOF
+
+      - name: Upload complete authority candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseF0-sharded-aggregate-repair1-${{ github.sha }}
+          path: /tmp/f0
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Commit authority candidate to prep branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = issue75-f0-sharded-prep
+          DEST=experiments/minimal-occupancy-generator/stage-f0
+          test ! -e "$DEST"
+          mkdir -p "$DEST"
+          cp -a /tmp/f0/. "$DEST/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Issue75 Phase F0: freeze sharded aggregate authority candidate'
+          git push origin HEAD:issue75-f0-sharded-prep
