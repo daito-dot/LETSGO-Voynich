@@ -1,0 +1,188 @@
+name: Issue68 first-reveal transport recovery
+
+on:
+  push:
+    branches: [issue68-joint-constraint-target]
+    paths:
+      - '.github/workflows/issue68-first-reveal-transport-recovery.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  recover-first-result-transport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      ORIGINAL_FIRST_HEAD: 65e020cb2827a28670005da6d5d02bd6a6c1e51a
+      TARGET_HEAD_SHA: 65e020cb2827a28670005da6d5d02bd6a6c1e51a
+      ORIGINAL_TARGET_BLOB: e94a24fbdfbb922099407313f23a1b87859130b6
+      ORIGINAL_FIRST_RUN: 33456282445
+      ORIGINAL_FIRST_JOB: 99696811349
+
+    steps:
+      - name: Checkout exact original first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: 65e020cb2827a28670005da6d5d02bd6a6c1e51a
+          fetch-depth: 0
+
+      - name: Verify exact original scorer and immutable pretarget state
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$ORIGINAL_FIRST_HEAD"
+          test "$(git hash-object experiments/joint-constraint-tournament/target68.py)" = "$ORIGINAL_TARGET_BLOB"
+          echo 'fdd2b1138542bf1b332b20f27a9869ac7a3501038e7d4ec9ccf40910e3b98771  experiments/joint-constraint-tournament/preflight/preflight.json' | sha256sum -c -
+          python - <<'PY'
+          import json
+          r=json.load(open('experiments/joint-constraint-tournament/preflight/preflight.json'))
+          assert r['target_reveal'] is False
+          assert r['real_candidate_pair_or_residual_metrics_computed'] is False
+          assert not any(r['forbidden_R1_quantities'].values())
+          assert r['preflight_dispositions']['A1_R1_representation'] == 'FAIL_REPRESENTATION_COMPATIBILITY'
+          assert r['preflight_dispositions']['Naibbe_R1_representation'] == 'AUTHORIZED_FOR_R1_REVEAL'
+          assert r['preflight_dispositions']['Naibbe_R4_primary'] == 'FAIL'
+          PY
+
+      - name: Checkout exact CREMMA authority
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout exact Naibbe authority
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify exact external source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+          test "$(git -C external/naibbe hash-object decrypt_naibbe.py)" = "b56a1e6e615a7b2e31ad386efdf7e6f2ef2b9d7b"
+
+      - name: Reconstruct exact first-run Python package environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check \
+            numpy==2.5.2 scipy==1.18.1 pandas==3.0.5
+          python - <<'PY'
+          import sys, numpy, scipy, pandas
+          assert numpy.__version__ == '2.5.2'
+          assert scipy.__version__ == '1.18.1'
+          assert pandas.__version__ == '3.0.5'
+          print('python=', sys.version)
+          print('numpy=', numpy.__version__)
+          print('scipy=', scipy.__version__)
+          print('pandas=', pandas.__version__)
+          PY
+
+      - name: Verify exact scorer compiles and synthetic self-test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/joint-constraint-tournament/target68.py
+          python experiments/joint-constraint-tournament/target68.py --self-test
+          test "$(git hash-object experiments/joint-constraint-tournament/target68.py)" = "$ORIGINAL_TARGET_BLOB"
+
+      - name: Deterministically reconstruct original scientific stdout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/joint-constraint-tournament/target68.py \
+            external/cremma \
+            external/naibbe \
+            > /tmp/issue68_first_reveal_recovery_raw_stdout.txt
+          test -s /tmp/issue68_first_reveal_recovery_raw_stdout.txt
+
+      - name: Isolate final scientific JSON without modifying content
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          raw_path=Path('/tmp/issue68_first_reveal_recovery_raw_stdout.txt')
+          raw=raw_path.read_text(encoding='utf-8')
+          starts=[0] + [i+1 for i,c in enumerate(raw) if c=='\n']
+          parsed=[]
+          for start in starts:
+              if start >= len(raw) or raw[start] != '{':
+                  continue
+              try:
+                  obj=json.loads(raw[start:])
+              except json.JSONDecodeError:
+                  continue
+              parsed.append((start,obj))
+
+          if len(parsed) != 1:
+              raise SystemExit(f'expected exactly one parseable JSON suffix, found {len(parsed)}')
+          start,obj=parsed[0]
+          scientific_text=raw[start:]
+          # Preserve the exact scorer-emitted JSON text, only excluding preceding legacy stdout.
+          Path('/tmp/issue68_joint_tournament_results_recovered.json').write_text(scientific_text,encoding='utf-8')
+          Path('/tmp/issue68_first_reveal_legacy_prefix.txt').write_text(raw[:start],encoding='utf-8')
+
+          assert obj['target_reveal'] is True
+          assert obj['github_sha'] == '65e020cb2827a28670005da6d5d02bd6a6c1e51a'
+          assert obj['candidate']['surface_sha256'] == '47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          assert obj['candidate']['population']['visible_tokens'] == 33574
+          assert obj['candidate']['population']['parsed_tokens'] == 29759
+          assert obj['candidate_classifications']['A1_A1R1']['real_R1_pair_or_residual_metrics_computed'] is False
+          assert len(obj['pairs']) == 66
+          assert len(obj['real_Naibbe_R1']['q_full']) == 66
+          assert len(obj['real_Naibbe_R1']['z_full']) == 66
+          assert len(obj['test_null']['energy_values']) == 1000
+          assert len(obj['test_null']['correlation_maxT_over_target_readings_values']) == 1000
+          assert len(obj['test_null']['sign_maxT_over_target_readings_values']) == 1000
+
+          print('legacy_prefix_bytes=',len(raw[:start].encode('utf-8')))
+          print('scientific_json_bytes=',len(scientific_text.encode('utf-8')))
+          print('transport_recovery_validation=PASS')
+          PY
+
+      - name: Package deterministic transport-recovery evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=/tmp/issue68-transport-recovery
+          mkdir -p "$DIR"
+          cp /tmp/issue68_first_reveal_recovery_raw_stdout.txt "$DIR/raw_stdout.txt"
+          cp /tmp/issue68_first_reveal_legacy_prefix.txt "$DIR/legacy_prefix.txt"
+          cp /tmp/issue68_joint_tournament_results_recovered.json "$DIR/issue68_joint_tournament_results_recovered.json"
+          sha256sum "$DIR"/*.txt "$DIR"/*.json | sort > "$DIR/SHA256SUMS.txt"
+          cat > "$DIR/PROVENANCE.txt" <<EOF
+          scientific_first_execution_run=${ORIGINAL_FIRST_RUN}
+          scientific_first_execution_job=${ORIGINAL_FIRST_JOB}
+          scientific_first_execution_head=${ORIGINAL_FIRST_HEAD}
+          exact_target68_blob=${ORIGINAL_TARGET_BLOB}
+          recovery_run=${GITHUB_RUN_ID}
+          recovery_attempt=${GITHUB_RUN_ATTEMPT}
+          recovery_workflow_branch_head=${GITHUB_SHA}
+          code_checkout_head=${ORIGINAL_FIRST_HEAD}
+          target_head_sha_env=${TARGET_HEAD_SHA}
+          recovery_role=deterministic_transport_reconstruction_not_new_first_reveal
+          numpy=2.5.2
+          scipy=1.18.1
+          pandas=3.0.5
+          EOF
+          cat "$DIR/SHA256SUMS.txt"
+          cat "$DIR/PROVENANCE.txt"
+
+      - name: Upload transport-recovery evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue68-first-reveal-transport-recovery-${{ github.run_id }}
+          path: /tmp/issue68-transport-recovery
+          if-no-files-found: error
+          retention-days: 90
