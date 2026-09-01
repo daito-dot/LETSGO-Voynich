@@ -1,0 +1,162 @@
+name: Issue72 record exact target-blind Stage A audit
+
+on:
+  push:
+    branches: [issue72-naibbe-r1-decomposition]
+    paths:
+      - '.github/workflows/issue72-source-audit-record.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  source-audit-record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue72-naibbe-r1-decomposition
+          fetch-depth: 0
+
+      - name: Verify chronology and target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/SOURCE_AUDIT_PLAN.md | tail -1)
+          IMPL=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/SOURCE_AUDIT_IMPLEMENTATION.md | tail -1)
+          SCRIPT=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/source_audit72.py | tail -1)
+          FIX=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/source_audit72_runtime_fix.py | tail -1)
+          FIXDOC=$(git log --diff-filter=A --format=%H -- experiments/naibbe-r1-decomposition/SOURCE_AUDIT_MECHANICAL_FIX.md | tail -1)
+          for x in "$PLAN" "$IMPL" "$SCRIPT" "$FIX" "$FIXDOC"; do test -n "$x"; done
+          git merge-base --is-ancestor "$PLAN" "$IMPL"
+          git merge-base --is-ancestor "$IMPL" "$SCRIPT"
+          git merge-base --is-ancestor "$SCRIPT" "$FIX"
+          git merge-base --is-ancestor "$FIX" "$FIXDOC"
+          test ! -e experiments/naibbe-r1-decomposition/PLAN_A.md
+          test ! -e experiments/naibbe-r1-decomposition/target72.py
+          test ! -e experiments/naibbe-r1-decomposition/source-audit/source_audit.json
+          echo "SOURCE_PLAN_FIRST_ADD=$PLAN" >> "$GITHUB_ENV"
+          echo "SUPPORT_FREEZE_FIRST_ADD=$IMPL" >> "$GITHUB_ENV"
+          echo "SOURCE_AUDIT_FIRST_ADD=$SCRIPT" >> "$GITHUB_ENV"
+          echo "MECHANICAL_FIX_FIRST_ADD=$FIX" >> "$GITHUB_ENV"
+          echo "MECHANICAL_FIX_RECORD=$FIXDOC" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify exact frozen authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+          test "$(git -C external/naibbe hash-object decrypt_naibbe.py)" = "b56a1e6e615a7b2e31ad386efdf7e6f2ef2b9d7b"
+          echo 'fdd2b1138542bf1b332b20f27a9869ac7a3501038e7d4ec9ccf40910e3b98771  experiments/joint-constraint-tournament/preflight/preflight.json' | sha256sum -c -
+
+      - name: Install runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+
+      - name: Compile target-blind audit
+        run: |
+          python -m py_compile experiments/naibbe-r1-decomposition/source_audit72.py
+          python -m py_compile experiments/naibbe-r1-decomposition/source_audit72_runtime_fix.py
+
+      - name: Run target-blind audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/naibbe-r1-decomposition/source_audit72_runtime_fix.py external/cremma external/naibbe > /tmp/raw_stdout.txt
+          test -s /tmp/raw_stdout.txt
+
+      - name: Isolate and validate final JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          raw=Path('/tmp/raw_stdout.txt').read_text(encoding='utf-8')
+          found=[]
+          for start in [0]+[i+1 for i,c in enumerate(raw) if c=='\n']:
+              if start >= len(raw) or raw[start] != '{': continue
+              try: obj=json.loads(raw[start:])
+              except json.JSONDecodeError: continue
+              found.append((start,obj))
+          if len(found) != 1: raise SystemExit(f'expected exactly one JSON suffix; found {len(found)}')
+          start,r=found[0]
+          assert r['counterfactual_R1_scored'] is False
+          assert not any(r['forbidden_quantities_computed'].values())
+          assert r['published_primary_reproduction']['pooled_surface_sha256'] == '47d52d28d4e2ac126bb8681c881ec339cb339c9b1bb329fb48263e6c1e9758bd'
+          pub=r['published_primary_reproduction']['support']
+          assert (pub['visible_tokens'],pub['accepted_tokens']) == (33574,29759)
+          assert (r['codebook']['full_cells'],r['codebook']['effective_cells'],r['codebook']['excluded_cells']) == (468,414,54)
+          assert set(r['support_pilots']) == {'P0','L0','S0','T0','G0','I0'}
+          Path('/tmp/source_audit.json').write_text(json.dumps(r,ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          Path('/tmp/legacy_stdout.txt').write_text(raw[:start],encoding='utf-8')
+          print('Stage A:',r['stageA_classification'])
+          print('support_eligible_axes=',r['support_eligible_axes'])
+          for k in ['P0','L0','S0','T0','G0','I0']:
+              v=r['support_pilots'][k]
+              print(k,'coverage=',v['support']['coverage'],'eligible=',v['support']['eligible'],'sha=',v['surface_sha256'])
+          PY
+
+      - name: Install permanent Stage A audit record
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=experiments/naibbe-r1-decomposition/source-audit
+          mkdir -p "$DIR"
+          cp /tmp/source_audit.json "$DIR/source_audit.json"
+          cp /tmp/raw_stdout.txt "$DIR/raw_stdout.txt"
+          cp /tmp/legacy_stdout.txt "$DIR/legacy_stdout.txt"
+          AUDIT_SHA=$(sha256sum "$DIR/source_audit.json" | awk '{print $1}')
+          RAW_SHA=$(sha256sum "$DIR/raw_stdout.txt" | awk '{print $1}')
+          LEGACY_SHA=$(sha256sum "$DIR/legacy_stdout.txt" | awk '{print $1}')
+          cat > "$DIR/PROVENANCE.md" <<EOF
+          # Issue #72 Stage A exact source-audit provenance
+
+          Status: **PERMANENT TARGET-BLIND SOURCE / SUPPORT AUDIT**
+
+          - workflow run: \`${GITHUB_RUN_ID}\`
+          - workflow attempt: \`${GITHUB_RUN_ATTEMPT}\`
+          - exact branch head used by audit: \`${GITHUB_SHA}\`
+          - parent main: \`ce49de68a3bd308b9432f5904b5368fc4c6f9c8f\`
+          - source plan first-add: \`${SOURCE_PLAN_FIRST_ADD}\`
+          - support freeze first-add: \`${SUPPORT_FREEZE_FIRST_ADD}\`
+          - source-audit executable first-add: \`${SOURCE_AUDIT_FIRST_ADD}\`
+          - mechanical key fix first-add: \`${MECHANICAL_FIX_FIRST_ADD}\`
+          - mechanical fix record: \`${MECHANICAL_FIX_RECORD}\`
+          - exact source-audit JSON SHA-256: \`${AUDIT_SHA}\`
+          - complete raw stdout SHA-256: \`${RAW_SHA}\`
+          - legacy-prefix SHA-256: \`${LEGACY_SHA}\`
+
+          No counterfactual pair-Q, residual-Z, residual energy, residual reliability, target topology, R1 p-value, or per-edge difference was computed in this Stage A audit.
+          EOF
+          {
+            sha256sum "$DIR/source_audit.json"
+            sha256sum "$DIR/raw_stdout.txt"
+            sha256sum "$DIR/legacy_stdout.txt"
+          } > "$DIR/SHA256SUMS.txt"
+
+      - name: Commit permanent audit and remove one-off recorder
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/issue72-source-audit-record.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experiments/naibbe-r1-decomposition/source-audit .github/workflows/issue72-source-audit-record.yml
+          git commit -m 'Archive exact Issue72 Stage A source audit'
+          git push origin HEAD:issue72-naibbe-r1-decomposition
