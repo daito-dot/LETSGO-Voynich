@@ -4,13 +4,19 @@ Status: **V2 COMPLETE / ALL THREE RESPONSIBILITY CLASSES FROZEN**
 
 Issue #72 asked which layers can validly be identified as contributing to the Naibbe/Voynich R1 resemblance when fixed-realization direct-emission effects, total upstream pipeline effects, and final-surface sufficiency are separated.
 
-The result narrows R1 from a general process resemblance into a more specific **complete-token construction/inventory constraint**.
+## Representation authority
 
-## H72-C1-EL — effective-letter emitted-value association contributes directly to R1
+R1 does not directly score literal glyph identity or literal token strings.
 
-### Prediction
+For every parser-accepted token, the frozen scorer uses `SlotParser(min)` and converts the token to a binary 12-slot occupancy vector:
 
-Under an exactly fixed realized process path, randomizing the association between effective-letter identity and emitted values should systematically reduce R1 if that association is part of the R1-generating scaffold.
+`X[token, slot] = occupied / empty`
+
+The 66-edge R1 object is the null-residual dependency topology over all `C(12,2)=66` unordered occupancy pairs.
+
+Accordingly, Issue #72 localizes the causal production of a **12-slot token-occupancy grammar**, not a complete lexical/string grammar.
+
+## H72-C1-EL — effective-letter emitted-value association contributes upstream to R1
 
 ### Result
 
@@ -22,13 +28,11 @@ Across 31 prospectively fixed assignments:
 - IT2a median ΔR `-0.253840`
 - direction: `31/31` both negative
 
-The effect is large relative to Stage B2 positive-control variation.
+Because R1 scores parsed occupancy rather than glyph identity, the causal path is:
 
-## H72-C1-ES — functional-state emitted-value association contributes directly to R1
+`effective-letter value association -> emitted token form -> parsed occupancy signature -> R1`
 
-### Prediction
-
-If unigram/prefix/suffix specialization contributes directly to the surface topology, randomizing state-value association on the fixed realized process path should reduce R1.
+## H72-C1-ES — functional-state emitted-value association contributes upstream to R1
 
 ### Result
 
@@ -37,6 +41,8 @@ If unigram/prefix/suffix specialization contributes directly to the surface topo
 - ZL3b median ΔR `-0.213530`
 - IT2a median ΔR `-0.233840`
 - direction: `31/31` both negative
+
+Unigram/prefix/suffix state specialization materially affects the occupancy topology produced by the fixed path.
 
 ## H72-C1-ET — table-label emitted-value association is a major direct R1 scaffold
 
@@ -50,7 +56,7 @@ If unigram/prefix/suffix specialization contributes directly to the surface topo
 
 Specific allocation across table labels is substantially more exchangeable than EL, ES or EG under this experiment.
 
-## H72-C1-EG — global reachable-cell emitted-value association contributes directly to R1
+## H72-C1-EG — global reachable-cell emitted-value association contributes upstream to R1
 
 ### Result
 
@@ -62,21 +68,19 @@ Specific allocation across table labels is substantially more exchangeable than 
 
 ## Direct-emission localization after C1
 
-The compact mechanistic summary supported by C1 is:
+The compact upstream mechanistic summary remains:
 
 > `effective-letter × functional-state -> emitted glyph value`
 
-This is a major direct-emission scaffold for the Naibbe/Voynich R1 resemblance under fixed realized process paths.
+but its R1 consequence should be stated precisely as:
 
-It does not establish historical Naibbe use.
+> structured state-dependent emission is a major upstream determinant of which 12-slot occupancy signatures are generated.
+
+This does not establish historical Naibbe use.
 
 ## H72-PT — observed local plaintext character order is materially necessary for R1 through the full pipeline
 
-### Prediction
-
-If exact local plaintext sequence materially drives R1 through Naibbe's complete stateful pipeline, then shuffling character order within each plaintext line while preserving that line's exact character multiset and count should systematically reduce R1 after a complete rerun.
-
-### Frozen result
+### Result
 
 **REFUTED UNDER THE PREREGISTERED PT ESTIMAND.**
 
@@ -95,17 +99,13 @@ Block-averaged displacement:
 
 Interpretation:
 
-> Exact within-line plaintext character order is not supported as a material causal necessity for the Naibbe R1 resemblance when linewise character composition is held fixed.
+> Exact within-line plaintext character order is not supported as a material causal necessity for the resulting R1 occupancy topology when each line's character composition is held fixed.
 
 This does not eliminate effects of plaintext composition, global statistics, semantics, or other source properties.
 
-## H72-FI-M — observed placement of complete tokens within manuscripts is necessary for R1
+## H72-FI-M — observed placement of occupancy signatures within manuscripts is necessary for R1
 
-### Prediction
-
-If the final placement of already-produced tokens within each manuscript contributes materially to R1 beyond the manuscript's token inventory, then within-manuscript complete-token randomization should place the observed identity statistic unusually high in the randomization distribution.
-
-### Frozen result
+### Result
 
 **REFUTED.**
 
@@ -115,18 +115,14 @@ If the final placement of already-produced tokens within each manuscript contrib
 - `145/199` randomizations had `T >= T_identity`
 - raw p `0.730`
 - Holm-adjusted p `1.000`
-- about `99.6%` of token slots changed token identity
-- each manuscript's exact complete-token multiset and parser-accepted count were preserved
+- about `99.6%` of literal token slots changed token identity
+- each manuscript's exact complete-token multiset was preserved
 
-Observed within-manuscript token placement carries no detected extra R1 requirement once the complete-token inventory is fixed.
+Because complete-token shuffling also preserves each token's parsed occupancy signature, FI-M shows that observed within-manuscript placement of those occupancy signatures carries no detected extra R1 requirement.
 
-## H72-FI-G — observed allocation of complete-token inventories among manuscripts is necessary for R1
+## H72-FI-G — observed manuscript/line allocation of occupancy signatures is necessary for R1
 
-### Prediction
-
-If corpus-level R1 depends materially on which manuscript receives which already-produced token instances, then globally redistributing the fixed complete-token inventory across the retained token-slot skeleton should reduce T relative to identity.
-
-### Frozen result
+### Result
 
 **REFUTED.**
 
@@ -136,39 +132,39 @@ If corpus-level R1 depends materially on which manuscript receives which already
 - `138/199` randomizations had `T >= T_identity`
 - raw p `0.695`
 - Holm-adjusted p `1.000`
-- about `99.6%` of token slots changed token identity
+- about `99.6%` of literal token slots changed token identity
 
-Even manuscript-level allocation of the already-produced complete-token inventory is not required to retain comparable R1 under the tested control.
+Even global redistribution of the already-produced occupancy-signature inventory across manuscripts and lines is not required to retain comparable R1 under the tested control.
 
 ## H72-FI — final complete-token inventory is sufficient under the tested allocation controls
 
 ### Result
 
-**SUPPORTED.**
+**SUPPORTED UNDER THE PREREGISTERED LABEL.**
 
 Frozen aggregate classification:
 
 > `FINAL_COMPLETE_TOKEN_INVENTORY_SUFFICIENT_UNDER_TESTED_FI_CONTROLS`
 
-This is a sufficiency statement, not an upstream-origin statement.
+Representation-level clarification:
+
+> The R1 information retained by that complete-token inventory is carried through its multiset of parsed 12-slot occupied/empty signatures. FI is therefore strongest as a test of **occupancy-pattern allocation sufficiency**, not literal lexical identity sufficiency.
 
 ## Integrated scientific revision caused by Issue #72
 
-Issue #68 showed that published Naibbe can reproduce the replicated R1 topology very well, but did not say what aspect of Naibbe generated that resemblance.
+Issue #68 showed that published Naibbe can reproduce the replicated R1 topology very well, but did not identify which aspect of the mechanism mattered.
 
-Issue #72 now separates that resemblance into three responsibility layers.
+Issue #72 now separates the resemblance into three responsibility layers:
 
-The combined evidence is:
-
-1. **State-dependent emitted-value association matters strongly.** Breaking EL, ES or EG while holding the realized path fixed produces large R1 losses.
-2. **Exact local plaintext order does not matter detectably under PT.** Destroying local source sequence while retaining linewise composition and rerunning the whole pipeline leaves R1 essentially unchanged.
-3. **Final placement of complete tokens does not matter detectably under FI.** Relocating almost every finished token instance, even globally across manuscripts, leaves R1 typical of or slightly above the original identity allocation.
+1. **State-dependent emitted-value association matters strongly upstream.** Breaking EL, ES or EG changes the parsed occupancy grammar and produces large R1 losses.
+2. **Exact local plaintext order does not matter detectably under PT.** Destroying local source sequence while retaining linewise composition and rerunning the complete pipeline leaves R1 essentially unchanged.
+3. **Final placement of already-existing occupancy signatures does not matter detectably under FI.** Relocating almost every finished token instance, even globally across manuscripts, leaves R1 typical of or slightly above the original allocation.
 
 The best current localization is therefore:
 
-> **R1 primarily constrains the generation and corpus-level distribution of internally structured complete token forms. It does not currently constrain exact local plaintext sequence or the observed placement of finished tokens.**
+> **R1 primarily constrains the corpus-level distribution and residual dependency topology of 12-slot occupied/empty token shapes. It does not currently constrain exact local plaintext sequence or the observed placement of those shapes.**
 
-A compact causal picture is:
+A representation-correct causal picture is:
 
 `source composition / encoder state opportunities`
 
@@ -178,43 +174,51 @@ A compact causal picture is:
 
 `        ↓`
 
-`internally structured complete-token inventory + frequencies   <-- R1-sensitive`
+`surface token strings`
+
+`        ↓  SlotParser(min)`
+
+`12-slot occupancy-signature inventory + 66-edge residual topology   <-- R1`
 
 `        ↓`
 
-`token placement / sequence / manuscript allocation             <-- no detected extra R1 requirement`
+`token sequence / line / manuscript allocation                       <-- no detected extra R1 requirement`
 
 ## Consequence for future inverse mechanism search
 
-R1 should no longer be credited as evidence that a candidate reproduces Voynich syntax, paragraph logic, document layout, or source-language sequence merely because its corpus-level residual topology matches.
+R1 should no longer be credited as evidence that a candidate reproduces Voynich syntax, literal token spellings, paragraph logic, document layout, or source-language sequence merely because its residual graph matches.
 
-Its appropriate role is narrower:
+Its direct role is:
 
-> **Does the candidate mechanism naturally generate the right family of internally structured complete-token forms, in roughly the right corpus-level distribution?**
+> **Does the candidate mechanism naturally generate the correct family and corpus-level distribution of 12-slot occupied/empty token shapes, including the replicated 66-edge residual dependency topology?**
 
-Sequence, recurrence, paragraph-entry behavior, reversibility and other responsibilities must remain independent constraints.
+Literal glyph identity, token spelling, recurrence, paragraph-entry behavior, sequence organization and reversibility remain independent responsibilities.
 
-This also clarifies why Naibbe's R1 success does not rescue its overall Issue #68 status: Naibbe remains `NOT COMPETITIVE` because it fails R2, R3 and R4 despite satisfying this token-construction/inventory constraint.
+This also clarifies why Naibbe's R1 success does not rescue its overall Issue #68 status: Naibbe remains `NOT COMPETITIVE` because it fails R2, R3 and R4.
 
 ## New falsifiable frontier
 
-The next useful step should not continue perturbing placement or local plaintext order. Those responsibilities are now empirically weak for R1.
+The next useful step should decompose the occupancy inventory itself rather than continue perturbing token placement or local plaintext order.
 
-The next frontier is to turn the C1 localization into a **mechanism-class constraint**:
+Primary question:
 
-> Which minimal families of state-dependent token generators can reproduce the frozen Voynich R1 inventory topology without using a target-aware Voynich-derived codebook, and which structural features are actually necessary?
+> **What is the minimal within-token occupancy-generation rule needed to reproduce the replicated R1 residual topology?**
 
-A defensible next experiment should separate at least:
+A defensible hierarchy should distinguish, prospectively and without using selected observed edges as tuning targets:
 
-1. target-aware glyph/codebook choice from generic state-dependent emission architecture;
-2. effective-letter/state specialization from merely matching token-length and glyph-frequency marginals;
-3. internally generated complete-token inventory from direct resampling of an already-matching inventory;
-4. R1 success from the independent R2/R3/R4 responsibilities.
+1. **independent-slot marginals** — preserve only occupancy frequency of each of the 12 slots;
+2. **occupancy-count / shape-size structure** — additionally preserve how many slots a token occupies;
+3. **lower-order occupancy-pattern families** — preserve broad pattern classes without preserving the exact empirical signature inventory;
+4. **state-dependent construction grammar** — generate occupancy signatures through a compact latent/state rule rather than empirical resampling;
+5. **empirical occupancy-inventory resampling** — positive sufficiency control, not a mechanistic explanation.
+
+All models should be evaluated on the complete 66-edge residual vector and, where possible, independent transcription/held-out strata. No model should be allowed to fit the target 66 edges directly and then claim them as validation.
 
 ### Falsifying directions
 
-- If generic non-target-aware state-dependent generators reproduce R1 after matching only broad marginals, R1 is a broad token-grammar universality class and weak as a mechanism discriminator.
-- If R1 survives only when specific Voynich-derived codebook structure is retained, the target-aware codebook itself accounts for much of Naibbe's R1 success.
-- If a minimal generic generator reproduces R1 and also improves independent R2/R3/R4 responsibilities, that family becomes materially more interesting than Naibbe itself.
+- If independent slot marginals or simple occupied-slot-count models reproduce R1, the residual topology is much less mechanism-specific than currently assumed.
+- If those fail but a small generic state-dependent occupancy generator succeeds, R1 identifies a broad morphotactic generator class rather than Naibbe-like codebooks specifically.
+- If only empirical occupancy-inventory resampling succeeds, R1 remains a strong descriptive constraint but no compact generative explanation has yet been found.
+- If a compact generator also improves independent R2/R3/R4 responsibilities, it becomes materially more interesting than Naibbe itself.
 
 Historical Naibbe use, Latin plaintext and decipherment remain unsupported by Issue #72.
