@@ -1,6 +1,6 @@
 # RESUME — deterministic restart point
 
-## Resume here — after Issue #72, Issue #75 Phases A–F0, OGH-A and OGH-B (R1 lane closed)
+## Resume here — after Issue #72, Issue #75 Phases A–F0, OGH-A/B/C (token-internal chapter closed)
 
 The latest completed scientific reveals are Issue #72 (Naibbe R1 causal decomposition, merged to `main`), Issue #75 Phases A–F0 (branch `issue75-minimal-occupancy-generator`, minimal occupancy generator ladder M0–M5, F0 architecture selection; M6 target reveal pending) and OGH-A (`experiments/occupancy-generation-hierarchy/`). Read, in order:
 
@@ -10,7 +10,8 @@ The latest completed scientific reveals are Issue #72 (Naibbe R1 causal decompos
 4. `experiments/occupancy-generation-hierarchy/REPORT_A.md`
 5. `research/HYPOTHESIS_LEDGER_ADDENDUM_OGH_A.md`
 6. `experiments/occupancy-generation-hierarchy/REPORT_B.md` and `research/HYPOTHESIS_LEDGER_ADDENDUM_OGH_B.md`
-7. `research/NEXT_RESEARCH_FRONTIER.md`
+7. `experiments/occupancy-generation-hierarchy/REPORT_C.md` and `research/HYPOTHESIS_LEDGER_ADDENDUM_OGH_C.md`
+8. `research/NEXT_RESEARCH_FRONTIER.md`
 
 Frozen OGH-A state:
 
@@ -21,13 +22,15 @@ Frozen OGH-A state:
 
 Frozen OGH-B state (PRs #77/#78 integrated #75 A–F0 and OGH-A on `main`): target-blind selection picked G7A (second-order successor, 298 params; K-gated G7B not eligible); G7A median `T = 0.948` (ZL3b arm, gap `−0.0165`) / `0.962` (IT2a arm, gap `−0.0079`, inside δ = 0.0098); Issue #68 gate 6/6; decision `SUCCESSOR GRAMMAR NEAR-SUFFICIENT`; **R1 generation lane closed** — do not add another R1 rung.
 
-**Next scientific move:** plan-first slot-**value** generator (successor grammar over values, complete token generator; report held-out bits per token), then test it against R2 (H62) and R3 (S1). Carry frozen G4/G7A into the joint tournament as emission-stage comparators.
+Frozen OGH-C state: information budget `7.01` bits shape / `9.71` bits shape+values (V2) / `9.01` memorized-vocabulary ceiling (7% OOV) per parsed token; memoryless V2 in the manuscript skeleton gives S1/S2/S3 ≈ `0.03×` Voynich and raw H62 excess ≈ 1/10 of Voynich; frozen label `MEMORYLESS TOKEN GRAMMAR PARTIAL` with the H62 normalization caveat recorded in `REPORT_C.md` §2.2.
+
+**Next scientific move:** plan-first **memory-augmented** token generator: V2 conditioned on a minimal cross-token state (previous token shape; previous-10 near-family presence; paragraph-entry flag), scored with the frozen Phase64B pipeline plus a preregistered raw-excess H62 magnitude gate. Ask which memory recovers S1 (sign and size), S2 and the raw H62 excess while keeping R1.
 
 **Do not:** select target edges to extend G4, promote G5/G6 as mechanisms, average ZL3b and IT2a, relabel a locally executed reveal as an Actions run (use `.github/workflows/ogh-a-replay.yml` to replay), or infer slot meanings.
 
 Transcriptions are fetched and hash-verified with `data/fetch_transcriptions.py`.
 
-Last consolidated: 2026-09-02
+Last consolidated: 2026-09-02 (OGH-C)
 
 ## Previous resume point — after Issue #68 first joint-constraint tournament
 
