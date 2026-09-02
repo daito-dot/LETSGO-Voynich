@@ -1,5 +1,9 @@
 # Token-construction program — purpose, object, and decision path
 
+## Program update — OGH-B closes the R1 generation lane
+
+The target-blind selected second-order successor grammar (G7A, 298 counted probabilities) reproduces the replicated 66-edge R1 topology to within `0.01–0.02` of inventory memorization on both readings (`REPORT_B.md`). R1 is henceforth a cheap necessary condition on a candidate mechanism's emission stage, not a discriminator. The lane's next object is the **value** filling each occupied slot and the cross-token responsibilities R2/R3.
+
 ## Program update — OGH-A identifies a compact second-order successor grammar behind R1
 
 After Issue #72 (R1 lives in the occupancy-signature inventory) and Issue #75 Phases A–F0 (low-order and local-chain families insufficient), OGH-A establishes:

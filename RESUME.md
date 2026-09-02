@@ -1,6 +1,6 @@
 # RESUME — deterministic restart point
 
-## Resume here — after Issue #72, Issue #75 Phases A–F0 and OGH-A
+## Resume here — after Issue #72, Issue #75 Phases A–F0, OGH-A and OGH-B (R1 lane closed)
 
 The latest completed scientific reveals are Issue #72 (Naibbe R1 causal decomposition, merged to `main`), Issue #75 Phases A–F0 (branch `issue75-minimal-occupancy-generator`, minimal occupancy generator ladder M0–M5, F0 architecture selection; M6 target reveal pending) and OGH-A (`experiments/occupancy-generation-hierarchy/`). Read, in order:
 
@@ -9,7 +9,8 @@ The latest completed scientific reveals are Issue #72 (Naibbe R1 causal decompos
 3. `experiments/occupancy-generation-hierarchy/PLAN_A.md`
 4. `experiments/occupancy-generation-hierarchy/REPORT_A.md`
 5. `research/HYPOTHESIS_LEDGER_ADDENDUM_OGH_A.md`
-6. `research/NEXT_RESEARCH_FRONTIER.md`
+6. `experiments/occupancy-generation-hierarchy/REPORT_B.md` and `research/HYPOTHESIS_LEDGER_ADDENDUM_OGH_B.md`
+7. `research/NEXT_RESEARCH_FRONTIER.md`
 
 Frozen OGH-A state:
 
@@ -18,13 +19,15 @@ Frozen OGH-A state:
 - G5 pairwise maxent control `0.948–0.969`; G6 empirical ceiling `0.962–0.973`; G0–G3 fail;
 - G4 is **not** within the Issue #75 M+-equivalence tolerance (`0.0098`; median gap `≈−0.06`); G5 is inside it on the ZL3b arm (`−0.001`) and marginally outside on the IT2a arm (`−0.012`). OGH-A's label is defined by the Issue #68 gate.
 
-**Next scientific move:** integrate Issue #75 and OGH-A on `main`; then preregister one extension of the successor grammar (second-order successor context, or K/R/S-gated successor tables) chosen by training-only held-out likelihood, and score it under both the Issue #68 gate and the Issue #75 equivalence criterion. Carry the frozen G4 grammar into the next joint tournament as the emission-stage comparator.
+Frozen OGH-B state (PRs #77/#78 integrated #75 A–F0 and OGH-A on `main`): target-blind selection picked G7A (second-order successor, 298 params; K-gated G7B not eligible); G7A median `T = 0.948` (ZL3b arm, gap `−0.0165`) / `0.962` (IT2a arm, gap `−0.0079`, inside δ = 0.0098); Issue #68 gate 6/6; decision `SUCCESSOR GRAMMAR NEAR-SUFFICIENT`; **R1 generation lane closed** — do not add another R1 rung.
+
+**Next scientific move:** plan-first slot-**value** generator (successor grammar over values, complete token generator; report held-out bits per token), then test it against R2 (H62) and R3 (S1). Carry frozen G4/G7A into the joint tournament as emission-stage comparators.
 
 **Do not:** select target edges to extend G4, promote G5/G6 as mechanisms, average ZL3b and IT2a, relabel a locally executed reveal as an Actions run (use `.github/workflows/ogh-a-replay.yml` to replay), or infer slot meanings.
 
 Transcriptions are fetched and hash-verified with `data/fetch_transcriptions.py`.
 
-Last consolidated: 2026-09-01
+Last consolidated: 2026-09-02
 
 ## Previous resume point — after Issue #68 first joint-constraint tournament
 

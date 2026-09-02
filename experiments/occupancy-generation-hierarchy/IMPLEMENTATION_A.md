@@ -54,3 +54,7 @@ Cross-fitted held-out mean log-likelihood per token (natural log; `covered` excl
 Note for interpretation later: with equal nominal parameter count, the left-to-right last-occupied grammar (G4) predicts held-out signatures better than the full pairwise maxent (G5) on both readings. This is a predictive-fit statement only; it says nothing yet about R1.
 
 Primary-corpus SHA-256 prefixes (rep 0) are recorded in the preflight JSONs and must match the scored corpora.
+
+## OGH-B implementation clarification (before stage-B0 selection result)
+
+G7B assigns probability zero to any held-out token whose occupied-slot count `K` did not occur in its training folds (the same boundary effect OGH-A recorded for G3, `4e-5` of tokens). The selection likelihood is therefore the OGH-A `mean_log_likelihood_covered` (tokens with positive probability), the zero-probability fraction is recorded per fold, and a candidate is eligible only if that fraction is `≤ 1e-3` in every fold. Fixed before any selection number was seen; the first `--select` run aborted on this `None` before printing any likelihood.
