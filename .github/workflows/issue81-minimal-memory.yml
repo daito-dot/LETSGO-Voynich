@@ -1,0 +1,178 @@
+name: Issue81 minimal cross-token memory
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/cross-token-memory/**'
+      - '.github/workflows/issue81-minimal-memory.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  stage1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and self-test
+        shell: bash
+        run: |
+          python -m py_compile experiments/cross-token-memory/issue81_minimal_memory.py
+          python -m py_compile experiments/cross-token-memory/apply_amendment_a.py
+          python experiments/cross-token-memory/issue81_minimal_memory.py --self-test
+
+      - name: Run frozen cross-token first reveal
+        shell: bash
+        run: |
+          python experiments/cross-token-memory/issue81_minimal_memory.py --stage1 "$ZL3B" issue81_stage1.json
+          python -m json.tool issue81_stage1.json > /dev/null
+          sha256sum issue81_stage1.json
+
+      - name: Print stage1 summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue81_stage1.json'))
+          print(json.dumps({
+              'selected_pi_by_fold': x['selected_pi_by_fold'],
+              'cross_entropy': x['heldout_cross_entropy']['summary'],
+              'X4_license': x['X4_license'],
+              'gates': {m:r['issue81_gates'] for m,r in x['models'].items()},
+          }, indent=2))
+          PY
+
+      - name: Upload stage1 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue81-stage1
+          path: issue81_stage1.json
+
+  r1:
+    needs: stage1
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [X0, X1, X2, X3, X4]
+        rep: [0, 1, 2]
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Download frozen stage1 authority
+        uses: actions/download-artifact@v4
+        with:
+          name: issue81-stage1
+
+      - name: Score frozen Issue68 R1
+        shell: bash
+        run: |
+          mkdir -p r1
+          python experiments/cross-token-memory/issue81_minimal_memory.py \
+            --r1 "$ZL3B" issue81_stage1.json "${{ matrix.model }}" "${{ matrix.rep }}" \
+            "r1/${{ matrix.model }}_rep${{ matrix.rep }}.json"
+          python -m json.tool "r1/${{ matrix.model }}_rep${{ matrix.rep }}.json" > /dev/null
+
+      - name: Upload R1 result
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue81-r1-${{ matrix.model }}-${{ matrix.rep }}
+          path: r1/${{ matrix.model }}_rep${{ matrix.rep }}.json
+
+  aggregate:
+    needs: r1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Download stage1 authority
+        uses: actions/download-artifact@v4
+        with:
+          name: issue81-stage1
+
+      - name: Download all R1 results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: issue81-r1-*
+          path: r1
+          merge-multiple: true
+
+      - name: Aggregate frozen decision
+        shell: bash
+        run: |
+          python experiments/cross-token-memory/issue81_minimal_memory.py \
+            --aggregate issue81_stage1.json r1 issue81_final.json
+          python experiments/cross-token-memory/apply_amendment_a.py issue81_stage1.json issue81_final.json
+          python -m json.tool issue81_final.json > /dev/null
+          sha256sum issue81_final.json
+          python - <<'PY'
+          import json
+          x=json.load(open('issue81_final.json'))
+          print(json.dumps({
+              'conclusion': x['conclusion'],
+              'recoverers': x['recoverers'],
+              'classifications': {m:r['classification'] for m,r in x['models'].items()},
+              'X4_license': x['X4_license'],
+              'amendment_A': x['amendment_A'],
+          }, indent=2))
+          PY
+
+      - name: Upload final first reveal
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue81-first-reveal
+          path: |
+            issue81_stage1.json
+            issue81_final.json
+            r1/*.json

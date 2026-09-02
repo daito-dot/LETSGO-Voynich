@@ -1,0 +1,74 @@
+{
+  "schema": "issue81-results-summary-v1",
+  "date": "2026-09-02",
+  "base_main": "3a55c53c9cdd57ccf9a48b29f50eb81ef43dead8",
+  "science_implementation": "c8654fdc72365426062ce8b62e9c7a65cbeb81b1",
+  "authority": {
+    "workflow_run_id": 33612699253,
+    "workflow_head": "0c7933635e57ff1e2579a4ce69b0468fe45839e7",
+    "artifact_id": 9839900477,
+    "artifact_digest": "sha256:05c6ccd834b7660d5247b713d70bfa3b76bd40a47509511ae9c96e14f75a207b",
+    "stage1_json_sha256": "b7c3de603c2bed9a26ae9cc896bea69c88ff0f58bba1bab6b170cbda8032e584",
+    "final_json_sha256": "98aaabefec0409763f07e41badba3aff10027cc59b68cdcd73c66e2927ebb68e"
+  },
+  "selected_pi_by_fold": [0.1, 0.1, 0.1, 0.1, 0.1],
+  "heldout_surface_bits_per_token": {
+    "X0": 9.708906204106745,
+    "X1": 10.293365249609184,
+    "X2": 9.649570575034732,
+    "X3": 9.771667023490652,
+    "X2_gain_vs_X0": 0.059335629072012175
+  },
+  "A1_R1_H62_comparator": {
+    "mean_D_profile": 0.7665018009178945,
+    "mean_abs_C_short_diff": 0.11767986235112631
+  },
+  "models": {
+    "X0": {
+      "S1_ratio": 0.032938511109165985,
+      "S2_ratio": -0.029025742672484652,
+      "raw_H62_ratio": 0.09123463847706181,
+      "mean_D_profile": 1.3399710931562978,
+      "mean_abs_C_short_diff": 0.5897778651365762,
+      "R1_all_three_reps_pass": true,
+      "classification": "INSUFFICIENT"
+    },
+    "X1": {
+      "S1_ratio": 0.06555527215454042,
+      "S2_ratio": 0.2913708957190561,
+      "raw_H62_ratio": 0.6771715906450467,
+      "mean_D_profile": 1.262203453528704,
+      "mean_abs_C_short_diff": 0.3096614511803338,
+      "R1_all_three_reps_pass": true,
+      "classification": "INSUFFICIENT"
+    },
+    "X2": {
+      "S1_ratio": 0.10504666324420503,
+      "S2_ratio": 0.787658766691929,
+      "raw_H62_ratio": 2.122737226405377,
+      "mean_D_profile": 0.7514255368871942,
+      "mean_abs_C_short_diff": 0.1256895313010843,
+      "R1_all_three_reps_pass": true,
+      "classification": "INSUFFICIENT"
+    },
+    "X3": {
+      "S1_ratio": 0.7183862246166493,
+      "S2_ratio": 0.002064204278037425,
+      "raw_H62_ratio": 0.39306706406615796,
+      "mean_D_profile": 1.0875783074925445,
+      "mean_abs_C_short_diff": 0.3400924608316787,
+      "R1_all_three_reps_pass": true,
+      "classification": "PARTIAL"
+    }
+  },
+  "X4": {
+    "licensed": false,
+    "reason": "X2 failed the frozen combined S2+raw-H62+H62-profile responsibility because mean abs_C_short_diff 0.1256895 was worse than A1-R1 0.1176799. No X4 target generation was run."
+  },
+  "conclusion": "PREDECLARED MINIMAL MEMORY FAMILY INSUFFICIENT",
+  "interpretation_boundary": {
+    "plaintext_recovered": false,
+    "semantic_content_tested": false,
+    "decipherment_established": false
+  }
+}
