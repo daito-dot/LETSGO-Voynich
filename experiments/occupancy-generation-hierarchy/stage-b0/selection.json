@@ -1,0 +1,609 @@
+{
+ "admissible_authority": {
+  "n_admissible": 4077,
+  "sha256": "8e938ce89024d94a3223de97c5433f317b55f62882bffc800000db295e5c0b33"
+ },
+ "arms": {
+  "IT2a": {
+   "G4": {
+    "free_parameters": 78,
+    "heldout_ll_by_fold": [
+     -5.075477215464031,
+     -5.007225425276767,
+     -4.968095891793138,
+     -5.0094339012160205,
+     -5.008761916446302
+    ],
+    "heldout_zero_probability_fraction_by_fold": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "per_fold_fit": [
+     {
+      "admissible_mass_before_renormalization": 0.999937429420827,
+      "fit_ok": true,
+      "free_parameters": 78,
+      "model": "G4",
+      "n_train_tokens": 23304
+     },
+     {
+      "admissible_mass_before_renormalization": 0.9999365001844022,
+      "fit_ok": true,
+      "free_parameters": 78,
+      "model": "G4",
+      "n_train_tokens": 22864
+     },
+     {
+      "admissible_mass_before_renormalization": 0.9999338396022537,
+      "fit_ok": true,
+      "free_parameters": 78,
+      "model": "G4",
+      "n_train_tokens": 22019
+     },
+     {
+      "admissible_mass_before_renormalization": 0.9999343265334882,
+      "fit_ok": true,
+      "free_parameters": 78,
+      "model": "G4",
+      "n_train_tokens": 22083
+     },
+     {
+      "admissible_mass_before_renormalization": 0.9999367798162346,
+      "fit_ok": true,
+      "free_parameters": 78,
+      "model": "G4",
+      "n_train_tokens": 22850
+     }
+    ],
+    "train_ll_by_fold": [
+     -4.986190986864775,
+     -4.999660556432794,
+     -5.010977470674595,
+     -4.998874108958731,
+     -4.999618167988753
+    ]
+   },
+   "G7A": {
+    "eligible": true,
+    "free_parameters": 298,
+    "gain_over_G4_by_fold": [
+     0.20574829954261897,
+     0.1717726051804478,
+     0.17456256800460856,
+     0.1787730720669085,
+     0.17694469009293812
+    ],
+    "gain_positive_folds": 5,
+    "heldout_ll_by_fold": [
+     -4.869728915921412,
+     -4.835452820096319,
+     -4.793533323788529,
+     -4.830660829149112,
+     -4.831817226353364
+    ],
+    "heldout_zero_probability_fraction_by_fold": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_heldout_zero_probability_fraction": 0.0,
+    "median_gain_over_G4": 0.17694469009293812,
+    "per_fold_fit": [
+     {
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 275,
+      "fit_ok": true,
+      "free_parameters": 298,
+      "model": "G7A",
+      "n_train_tokens": 23304
+     },
+     {
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 281,
+      "fit_ok": true,
+      "free_parameters": 298,
+      "model": "G7A",
+      "n_train_tokens": 22864
+     },
+     {
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 280,
+      "fit_ok": true,
+      "free_parameters": 298,
+      "model": "G7A",
+      "n_train_tokens": 22019
+     },
+     {
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 281,
+      "fit_ok": true,
+      "free_parameters": 298,
+      "model": "G7A",
+      "n_train_tokens": 22083
+     },
+     {
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 281,
+      "fit_ok": true,
+      "free_parameters": 298,
+      "model": "G7A",
+      "n_train_tokens": 22850
+     }
+    ],
+    "train_ll_by_fold": [
+     -4.799680510211518,
+     -4.804939990543937,
+     -4.817102560897274,
+     -4.806208968340861,
+     -4.8066563134902545
+    ]
+   },
+   "G7B": {
+    "eligible": false,
+    "free_parameters": 631,
+    "gain_over_G4_by_fold": [
+     -0.01666854771970172,
+     -0.024562598008968983,
+     0.019151968536564645,
+     0.011049328970342387,
+     -0.017834090195298913
+    ],
+    "gain_positive_folds": 2,
+    "heldout_ll_by_fold": [
+     -5.092145763183733,
+     -5.031788023285736,
+     -4.948943923256573,
+     -4.998384572245678,
+     -5.026596006641601
+    ],
+    "heldout_zero_probability_fraction_by_fold": [
+     0.00020096463022512,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_heldout_zero_probability_fraction": 0.00020096463022512,
+    "median_gain_over_G4": -0.01666854771970172,
+    "per_fold_fit": [
+     {
+      "K_classes_observed": 8,
+      "K_distribution": [
+       0.020425677995193958,
+       0.09830930312392722,
+       0.2351098523858565,
+       0.29338311019567453,
+       0.2185890834191555,
+       0.11483007209062822,
+       0.017507723995880537,
+       0.0018451767936834879,
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 460,
+      "fit_ok": true,
+      "free_parameters": 631,
+      "model": "G7B",
+      "n_train_tokens": 23304
+     },
+     {
+      "K_classes_observed": 9,
+      "K_distribution": [
+       0.020250174947515746,
+       0.10028866340097971,
+       0.24055283414975506,
+       0.29194366689993,
+       0.21435444366689993,
+       0.11450314905528342,
+       0.0164888033589923,
+       0.0015745276417074878,
+       4.37368789363191e-05,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 477,
+      "fit_ok": true,
+      "free_parameters": 710,
+      "model": "G7B",
+      "n_train_tokens": 22864
+     },
+     {
+      "K_classes_observed": 9,
+      "K_distribution": [
+       0.01966483491530042,
+       0.09973204959353286,
+       0.2343430673509242,
+       0.2947908624369862,
+       0.21585903083700442,
+       0.116989872382942,
+       0.016667423588718835,
+       0.0019074435714610109,
+       4.541532313002407e-05,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 479,
+      "fit_ok": true,
+      "free_parameters": 710,
+      "model": "G7B",
+      "n_train_tokens": 22019
+     },
+     {
+      "K_classes_observed": 9,
+      "K_distribution": [
+       0.01947199203006838,
+       0.097993931983879,
+       0.2414527011728479,
+       0.2933478241180999,
+       0.21514287008105784,
+       0.11325453969116515,
+       0.017253090612688492,
+       0.0020377666077978536,
+       4.528370239550786e-05,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 482,
+      "fit_ok": true,
+      "free_parameters": 710,
+      "model": "G7B",
+      "n_train_tokens": 22083
+     },
+     {
+      "K_classes_observed": 9,
+      "K_distribution": [
+       0.020568927789934355,
+       0.09698030634573304,
+       0.24144420131291028,
+       0.29177242888402627,
+       0.21326039387308535,
+       0.11663019693654267,
+       0.017461706783369804,
+       0.001838074398249453,
+       4.37636761487965e-05,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 484,
+      "fit_ok": true,
+      "free_parameters": 710,
+      "model": "G7B",
+      "n_train_tokens": 22850
+     }
+    ],
+    "train_ll_by_fold": [
+     -4.974445321090915,
+     -4.9829261813089465,
+     -4.996729831348275,
+     -4.984275877200931,
+     -4.984712173452069
+    ]
+   }
+  },
+  "ZL3b": {
+   "G4": {
+    "free_parameters": 78,
+    "heldout_ll_by_fold": [
+     -5.10671650071037,
+     -5.050301674557214,
+     -5.005333155480389,
+     -5.02389478356456,
+     -5.025732661774081
+    ],
+    "heldout_zero_probability_fraction_by_fold": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "per_fold_fit": [
+     {
+      "admissible_mass_before_renormalization": 0.9999313076804163,
+      "fit_ok": true,
+      "free_parameters": 78,
+      "model": "G4",
+      "n_train_tokens": 20641
+     },
+     {
+      "admissible_mass_before_renormalization": 0.9999300220275954,
+      "fit_ok": true,
+      "free_parameters": 78,
+      "model": "G4",
+      "n_train_tokens": 20261
+     },
+     {
+      "admissible_mass_before_renormalization": 0.9999275151701181,
+      "fit_ok": true,
+      "free_parameters": 78,
+      "model": "G4",
+      "n_train_tokens": 19555
+     },
+     {
+      "admissible_mass_before_renormalization": 0.9999280510730048,
+      "fit_ok": true,
+      "free_parameters": 78,
+      "model": "G4",
+      "n_train_tokens": 19624
+     },
+     {
+      "admissible_mass_before_renormalization": 0.99993048825027,
+      "fit_ok": true,
+      "free_parameters": 78,
+      "model": "G4",
+      "n_train_tokens": 20203
+     }
+    ],
+    "train_ll_by_fold": [
+     -5.013289985259988,
+     -5.024034977160325,
+     -5.036343965029332,
+     -5.030674374759048,
+     -5.030353906162516
+    ]
+   },
+   "G7A": {
+    "eligible": true,
+    "free_parameters": 298,
+    "gain_over_G4_by_fold": [
+     0.2062223046187981,
+     0.1668288485916829,
+     0.17914205071803124,
+     0.18188316889813372,
+     0.18309751239421512
+    ],
+    "gain_positive_folds": 5,
+    "heldout_ll_by_fold": [
+     -4.9004941960915716,
+     -4.883472825965531,
+     -4.826191104762358,
+     -4.8420116146664265,
+     -4.842635149379866
+    ],
+    "heldout_zero_probability_fraction_by_fold": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_heldout_zero_probability_fraction": 0.0,
+    "median_gain_over_G4": 0.18188316889813372,
+    "per_fold_fit": [
+     {
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 277,
+      "fit_ok": true,
+      "free_parameters": 298,
+      "model": "G7A",
+      "n_train_tokens": 20641
+     },
+     {
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 283,
+      "fit_ok": true,
+      "free_parameters": 298,
+      "model": "G7A",
+      "n_train_tokens": 20261
+     },
+     {
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 282,
+      "fit_ok": true,
+      "free_parameters": 298,
+      "model": "G7A",
+      "n_train_tokens": 19555
+     },
+     {
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 282,
+      "fit_ok": true,
+      "free_parameters": 298,
+      "model": "G7A",
+      "n_train_tokens": 19624
+     },
+     {
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 284,
+      "fit_ok": true,
+      "free_parameters": 298,
+      "model": "G7A",
+      "n_train_tokens": 20203
+     }
+    ],
+    "train_ll_by_fold": [
+     -4.8228720960829,
+     -4.824784873783496,
+     -4.840147804910613,
+     -4.834483178040825,
+     -4.8341960883464745
+    ]
+   },
+   "G7B": {
+    "eligible": false,
+    "free_parameters": 631,
+    "gain_over_G4_by_fold": [
+     -0.009459619034296374,
+     -0.030579034095410407,
+     0.01112785226493962,
+     0.0094406220943144,
+     -0.019005090057791385
+    ],
+    "gain_positive_folds": 2,
+    "heldout_ll_by_fold": [
+     -5.116176119744666,
+     -5.080880708652624,
+     -4.994205303215449,
+     -5.014454161470246,
+     -5.044737751831873
+    ],
+    "heldout_zero_probability_fraction_by_fold": [
+     0.00022573363431155347,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "max_heldout_zero_probability_fraction": 0.00022573363431155347,
+    "median_gain_over_G4": -0.009459619034296374,
+    "per_fold_fit": [
+     {
+      "K_classes_observed": 8,
+      "K_distribution": [
+       0.017683251780436993,
+       0.08231190349304782,
+       0.21806114044862168,
+       0.29291216510827967,
+       0.23555060316845114,
+       0.13012935419795552,
+       0.02112300760622063,
+       0.00222857419698658,
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 472,
+      "fit_ok": true,
+      "free_parameters": 631,
+      "model": "G7B",
+      "n_train_tokens": 20641
+     },
+     {
+      "K_classes_observed": 9,
+      "K_distribution": [
+       0.017471990523666155,
+       0.08355954789990622,
+       0.22368096342727406,
+       0.2925324515078229,
+       0.23098563743151868,
+       0.1296579635753418,
+       0.0199891417008045,
+       0.002072948028231578,
+       4.935590543408519e-05,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 473,
+      "fit_ok": true,
+      "free_parameters": 710,
+      "model": "G7B",
+      "n_train_tokens": 20261
+     },
+     {
+      "K_classes_observed": 9,
+      "K_distribution": [
+       0.016875479417028893,
+       0.08340577857325492,
+       0.21779596011250318,
+       0.2938378931219637,
+       0.23252365124009206,
+       0.13295832267962157,
+       0.020097161851188955,
+       0.0024546151879314753,
+       5.113781641523907e-05,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 484,
+      "fit_ok": true,
+      "free_parameters": 710,
+      "model": "G7B",
+      "n_train_tokens": 19555
+     },
+     {
+      "K_classes_observed": 9,
+      "K_distribution": [
+       0.01640847941296372,
+       0.0812780269058296,
+       0.22396045658377498,
+       0.29336526701997556,
+       0.2329800244598451,
+       0.12826131267835303,
+       0.021147574398695475,
+       0.0025479005299633103,
+       5.0958010599266205e-05,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 482,
+      "fit_ok": true,
+      "free_parameters": 710,
+      "model": "G7B",
+      "n_train_tokens": 19624
+     },
+     {
+      "K_classes_observed": 9,
+      "K_distribution": [
+       0.01687868138395288,
+       0.0816710389546107,
+       0.22298668514577044,
+       0.2930257882492699,
+       0.2292233826659407,
+       0.13275256150076722,
+       0.021135474929465922,
+       0.0022768895708558134,
+       4.949759936643073e-05,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "backoff_pseudocount": 1.0,
+      "contexts_observed_in_training": 481,
+      "fit_ok": true,
+      "free_parameters": 710,
+      "model": "G7B",
+      "n_train_tokens": 20203
+     }
+    ],
+    "train_ll_by_fold": [
+     -5.000475506199057,
+     -5.0067126878285695,
+     -5.021892717610575,
+     -5.016233965319602,
+     -5.014903615434465
+    ]
+   }
+  }
+ },
+ "environment": {
+  "machine": "x86_64",
+  "numpy": "2.4.6",
+  "platform": "Linux-6.18.44-fc-v22-x86_64-with-glibc2.39",
+  "python": "3.11.15",
+  "scipy": "1.17.1"
+ },
+ "phase": "OGH-B",
+ "real_R1_pair_or_residual_metrics_computed": false,
+ "schema": "ogh-b-selection-v1",
+ "selection": {
+  "IT2a_used_for_selection": false,
+  "rule": "single eligible candidate",
+  "selected": "G7A",
+  "selection_arm": "ZL3b"
+ },
+ "target_reveal": false
+}
