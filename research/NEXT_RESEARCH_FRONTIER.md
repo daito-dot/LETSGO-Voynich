@@ -1,6 +1,16 @@
 # Next research frontier — prospectively constrained reversible / inverse mechanism tournament
 
-## CURRENT FRONTIER — after OGH-B: R1 is closed; move to slot values and cross-token responsibilities
+## CURRENT FRONTIER — after OGH-C: the smallest cross-token memory
+
+OGH-C (`REPORT_C.md`) measured the per-token information budget (`7.0` bits shape, `9.7` bits shape+values, memorized-vocabulary ceiling `9.0`) and showed that the best memoryless token grammar, placed in the manuscript skeleton, leaves S1/S2/S3 at ≈ `0.03×` Voynich and produces ≈ 1/10 of the raw H62 recurrence excess. Cross-token structure is therefore not token-internal.
+
+Next plan-first question:
+
+> **Which minimal cross-token state — previous-token shape, previous-10 near-family activation, or paragraph-entry flag — added to the frozen memoryless grammar V2 recovers S1 (sign and size), S2 and the raw H62 excess, and at what cost in bits per token?**
+
+Required: training-only selection; frozen Phase64B scoring plus a preregistered raw-excess H62 magnitude gate; R1 retained as a necessary condition; A1-R1 as the memory comparator. Everything below is the OGH-B-era frontier, retained for history.
+
+## Previous frontier — after OGH-B: R1 is closed; move to slot values and cross-token responsibilities
 
 OGH-B (`experiments/occupancy-generation-hierarchy/REPORT_B.md`) closed the gap OGH-A left: the target-blind selected second-order successor grammar (298 counted probabilities) reaches median `T = 0.948 / 0.962` on the ZL3b / IT2a skeletons, within `0.0165 / 0.0079` of the empirical-inventory ceiling (δ = 0.0098). Frozen decision `SUCCESSOR GRAMMAR NEAR-SUFFICIENT`. **No further R1 rung is licensed.**
 

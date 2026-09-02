@@ -1,0 +1,408 @@
+{
+ "admissible_authority": {
+  "n_admissible": 4077,
+  "sha256": "8e938ce89024d94a3223de97c5433f317b55f62882bffc800000db295e5c0b33"
+ },
+ "cross_token_statistic_computed": false,
+ "environment": {
+  "machine": "x86_64",
+  "numpy": "2.4.6",
+  "platform": "Linux-6.18.44-fc-v22-x86_64-with-glibc2.39",
+  "python": "3.11.15",
+  "scipy": "1.17.1"
+ },
+ "folds": {
+  "0": {
+   "models": {
+    "V+": {
+     "bits_per_token": null,
+     "bits_per_token_covered": 9.059404709158668,
+     "free_parameters": 2701,
+     "n_tokens": 4430,
+     "oov_fraction": 0.07652370203160275
+    },
+    "V0": {
+     "bits_per_token": 11.30773300550795,
+     "bits_per_token_covered": 11.30773300550795,
+     "free_parameters": 319,
+     "n_tokens": 4430,
+     "oov_fraction": 0.0
+    },
+    "V1": {
+     "bits_per_token": 10.024419040722533,
+     "bits_per_token_covered": 10.024419040722533,
+     "free_parameters": 524,
+     "n_tokens": 4430,
+     "observed_contexts": 34,
+     "oov_fraction": 0.0
+    },
+    "V2": {
+     "bits_per_token": 9.855356231818696,
+     "bits_per_token_covered": 9.855356231818696,
+     "free_parameters": 3473,
+     "n_tokens": 4430,
+     "observed_contexts": 308,
+     "oov_fraction": 0.0
+    }
+   },
+   "n_heldout_tokens": 4430,
+   "n_train_tokens": 20641,
+   "n_train_types": 2702,
+   "shape_only_bits_per_token_G7A": 7.069918674606458
+  },
+  "1": {
+   "models": {
+    "V+": {
+     "bits_per_token": null,
+     "bits_per_token_covered": 9.044356350694713,
+     "free_parameters": 2691,
+     "n_tokens": 4810,
+     "oov_fraction": 0.07567567567567568
+    },
+    "V0": {
+     "bits_per_token": 11.209899101261136,
+     "bits_per_token_covered": 11.209899101261136,
+     "free_parameters": 319,
+     "n_tokens": 4810,
+     "oov_fraction": 0.0
+    },
+    "V1": {
+     "bits_per_token": 9.950659949588214,
+     "bits_per_token_covered": 9.950659949588214,
+     "free_parameters": 524,
+     "n_tokens": 4810,
+     "observed_contexts": 34,
+     "oov_fraction": 0.0
+    },
+    "V2": {
+     "bits_per_token": 9.77132274979149,
+     "bits_per_token_covered": 9.77132274979149,
+     "free_parameters": 3599,
+     "n_tokens": 4810,
+     "observed_contexts": 316,
+     "oov_fraction": 0.0
+    }
+   },
+   "n_heldout_tokens": 4810,
+   "n_train_tokens": 20261,
+   "n_train_types": 2692,
+   "shape_only_bits_per_token_G7A": 7.045362028336483
+  },
+  "2": {
+   "models": {
+    "V+": {
+     "bits_per_token": null,
+     "bits_per_token_covered": 8.935581068585972,
+     "free_parameters": 2689,
+     "n_tokens": 5516,
+     "oov_fraction": 0.06617113850616385
+    },
+    "V0": {
+     "bits_per_token": 10.931459555297511,
+     "bits_per_token_covered": 10.931459555297511,
+     "free_parameters": 319,
+     "n_tokens": 5516,
+     "oov_fraction": 0.0
+    },
+    "V1": {
+     "bits_per_token": 9.768026737283513,
+     "bits_per_token_covered": 9.768026737283513,
+     "free_parameters": 524,
+     "n_tokens": 5516,
+     "observed_contexts": 34,
+     "oov_fraction": 0.0
+    },
+    "V2": {
+     "bits_per_token": 9.585982582719467,
+     "bits_per_token_covered": 9.585982582719467,
+     "free_parameters": 3527,
+     "n_tokens": 5516,
+     "observed_contexts": 312,
+     "oov_fraction": 0.0
+    }
+   },
+   "n_heldout_tokens": 5516,
+   "n_train_tokens": 19555,
+   "n_train_types": 2690,
+   "shape_only_bits_per_token_G7A": 6.962721973223081
+  },
+  "3": {
+   "models": {
+    "V+": {
+     "bits_per_token": null,
+     "bits_per_token_covered": 8.959215051798887,
+     "free_parameters": 2707,
+     "n_tokens": 5447,
+     "oov_fraction": 0.06370479162841935
+    },
+    "V0": {
+     "bits_per_token": 10.977990987159748,
+     "bits_per_token_covered": 10.977990987159748,
+     "free_parameters": 319,
+     "n_tokens": 5447,
+     "oov_fraction": 0.0
+    },
+    "V1": {
+     "bits_per_token": 9.794154792570655,
+     "bits_per_token_covered": 9.794154792570655,
+     "free_parameters": 524,
+     "n_tokens": 5447,
+     "observed_contexts": 34,
+     "oov_fraction": 0.0
+    },
+    "V2": {
+     "bits_per_token": 9.581429100306792,
+     "bits_per_token_covered": 9.581429100306792,
+     "free_parameters": 3595,
+     "n_tokens": 5447,
+     "observed_contexts": 316,
+     "oov_fraction": 0.0
+    }
+   },
+   "n_heldout_tokens": 5447,
+   "n_train_tokens": 19624,
+   "n_train_types": 2708,
+   "shape_only_bits_per_token_G7A": 6.985546144406016
+  },
+  "4": {
+   "models": {
+    "V+": {
+     "bits_per_token": null,
+     "bits_per_token_covered": 9.063553232344523,
+     "free_parameters": 2714,
+     "n_tokens": 4868,
+     "oov_fraction": 0.06963845521774858
+    },
+    "V0": {
+     "bits_per_token": 11.183370559989731,
+     "bits_per_token_covered": 11.183370559989731,
+     "free_parameters": 319,
+     "n_tokens": 4868,
+     "oov_fraction": 0.0
+    },
+    "V1": {
+     "bits_per_token": 9.919863306564665,
+     "bits_per_token_covered": 9.919863306564665,
+     "free_parameters": 524,
+     "n_tokens": 4868,
+     "observed_contexts": 34,
+     "oov_fraction": 0.0
+    },
+    "V2": {
+     "bits_per_token": 9.750766216156215,
+     "bits_per_token_covered": 9.750766216156215,
+     "free_parameters": 3633,
+     "n_tokens": 4868,
+     "observed_contexts": 320,
+     "oov_fraction": 0.0
+    }
+   },
+   "n_heldout_tokens": 4868,
+   "n_train_tokens": 20203,
+   "n_train_types": 2715,
+   "shape_only_bits_per_token_G7A": 6.986445714844918
+  }
+ },
+ "phase": "OGH-C",
+ "schema": "ogh-c-c0-v1",
+ "selection": {
+  "V2_bits_saved_over_V1_by_fold": [
+   0.16906280890383663,
+   0.17933719979672347,
+   0.18204415456404632,
+   0.21272569226386295,
+   0.16909709040844945
+  ],
+  "positive_folds": 5,
+  "rule": "V2 if bits saved in >= 4/5 folds else V1",
+  "selected_content_grammar": "V2"
+ },
+ "summary": {
+  "V+": {
+   "by_fold": [
+    9.059404709158668,
+    9.044356350694713,
+    8.935581068585972,
+    8.959215051798887,
+    9.063553232344523
+   ],
+   "mean_bits_per_token_covered": 9.012422082516554
+  },
+  "V+_mean_oov_fraction": 0.07034275261192205,
+  "V0": {
+   "by_fold": [
+    11.30773300550795,
+    11.209899101261136,
+    10.931459555297511,
+    10.977990987159748,
+    11.183370559989731
+   ],
+   "mean_bits_per_token_covered": 11.122090641843215
+  },
+  "V1": {
+   "by_fold": [
+    10.024419040722533,
+    9.950659949588214,
+    9.768026737283513,
+    9.794154792570655,
+    9.919863306564665
+   ],
+   "mean_bits_per_token_covered": 9.891424765345917
+  },
+  "V2": {
+   "by_fold": [
+    9.855356231818696,
+    9.77132274979149,
+    9.585982582719467,
+    9.581429100306792,
+    9.750766216156215
+   ],
+   "mean_bits_per_token_covered": 9.708971376158532
+  },
+  "shape_only_G7A": {
+   "by_fold": [
+    7.069918674606458,
+    7.045362028336483,
+    6.962721973223081,
+    6.985546144406016,
+    6.986445714844918
+   ],
+   "mean_bits_per_token": 7.009998907083391
+  }
+ },
+ "target_reveal": false,
+ "units": [
+  [
+   0,
+   "q"
+  ],
+  [
+   0,
+   "s"
+  ],
+  [
+   0,
+   "d"
+  ],
+  [
+   1,
+   "o"
+  ],
+  [
+   1,
+   "y"
+  ],
+  [
+   2,
+   "l"
+  ],
+  [
+   2,
+   "r"
+  ],
+  [
+   3,
+   "t"
+  ],
+  [
+   3,
+   "k"
+  ],
+  [
+   3,
+   "p"
+  ],
+  [
+   3,
+   "f"
+  ],
+  [
+   4,
+   "ch"
+  ],
+  [
+   4,
+   "sh"
+  ],
+  [
+   5,
+   "cth"
+  ],
+  [
+   5,
+   "ckh"
+  ],
+  [
+   5,
+   "cph"
+  ],
+  [
+   5,
+   "cfh"
+  ],
+  [
+   6,
+   "e"
+  ],
+  [
+   6,
+   "ee"
+  ],
+  [
+   6,
+   "eee"
+  ],
+  [
+   7,
+   "s"
+  ],
+  [
+   7,
+   "d"
+  ],
+  [
+   8,
+   "o"
+  ],
+  [
+   8,
+   "a"
+  ],
+  [
+   9,
+   "i"
+  ],
+  [
+   9,
+   "ii"
+  ],
+  [
+   9,
+   "iii"
+  ],
+  [
+   10,
+   "d"
+  ],
+  [
+   10,
+   "l"
+  ],
+  [
+   10,
+   "r"
+  ],
+  [
+   10,
+   "m"
+  ],
+  [
+   10,
+   "n"
+  ],
+  [
+   11,
+   "y"
+  ]
+ ]
+}

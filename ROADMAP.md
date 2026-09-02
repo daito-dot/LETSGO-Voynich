@@ -1,6 +1,6 @@
 # Research roadmap
 
-## Active roadmap — post Issue #72 / Issue #75 A–F0 / OGH-A / OGH-B
+## Active roadmap — post Issue #72 / Issue #75 A–F0 / OGH-A/B/C
 
 ### Completed: Naibbe R1 decomposition and the minimal occupancy-generator ladder
 
@@ -8,16 +8,17 @@
 - #75 A–F0 (branch): M0/M1 fail; M2 `0.29` → M3 `0.59` → M4 `0.62` → M5 `0.73` insufficient vs M+ `0.965`; F0 selects K/R/S-gated two-mode chain (M6) for the next target test.
 - OGH-A: independent-harness replication of the Phase-A fork on both skeletons; pairwise maxent control shows R1 is second-order sufficient to within `≈0.01`; a 78-parameter last-occupied-slot successor grammar passes the Issue #68 R1 gate (`r 0.91–0.93`, both readings, both skeletons). Frozen class `COMPACT CONSTRUCTION GRAMMAR SUFFICIENT`.
 - OGH-B: target-blind selected second-order successor grammar (298 params) reaches median `T 0.948 / 0.962`, within `0.0165 / 0.0079` of the empirical ceiling. Frozen decision `SUCCESSOR GRAMMAR NEAR-SUFFICIENT`; **R1 generation lane closed**.
+- OGH-C: per-token information budget `7.0` bits shape / `9.7` bits shape+values; the complete memoryless token grammar leaves S1/S2/S3 at ≈ `0.03×` Voynich and ≈ 1/10 of the raw H62 excess (`MEMORYLESS TOKEN GRAMMAR PARTIAL`; cross-token structure is not token-internal). **Token-internal chapter closed.**
 
-### Current frontier: from token shape to token content and cross-token structure
+### Current frontier: the smallest cross-token memory
 
-1. **Slot-value generator (plan first).** Extend the successor grammar from occupancy to values: a complete token generator in which each filled slot's value is conditioned on the previous filled slot's value. Report cross-fitted held-out bits per token (the per-token information budget) on ZL3b and IT2a. No target statistic beyond likelihood in the selection stage.
-2. **Cross-token test.** Score the memoryless complete token generator, placed into the manuscript line skeleton, against R2 (H62 near-family recurrence geometry) and R3 (signed S1 paragraph entry) with the frozen Phase62/64 scorecards. Expected: fail, thereby locating the content-bearing signal in cross-token memory.
-3. **Joint tournament re-entry.** Frozen G4/G7A are the emission-stage comparators; a candidate mechanism whose emission stage does not reach `T ≈ 0.90–0.95` at ≤ 300 counted parameters is not competitive on R1.
+1. **Memory-augmented token generator (plan first).** Keep the frozen memoryless V2 as emission stage and add one minimal cross-token state at a time: (a) previous token's parsed shape; (b) presence of a near-family form in the previous ten tokens; (c) paragraph-entry flag. Select by training-only held-out likelihood; report added bits per token.
+2. **Frozen cross-token scoring with a magnitude gate.** Phase64B pipeline unchanged, plus a preregistered raw H62 excess gate (candidate `abs_excess_sum ≥ 0.5×` held-out Voynich) before any profile-shape comparison. Responsibilities: S1 sign and size, S2, S3, H62 raw excess and profile, R1 retained.
+3. **Joint tournament re-entry.** G4/G7A/V2 are the emission-stage comparators and memoryless nulls; A1-R1 is the memory comparator.
 
-R1 is closed: no further occupancy-only rungs.
+Token-internal work is closed: no further occupancy-only or value-only rungs.
 
-Last consolidated: 2026-09-02
+Last consolidated: 2026-09-02 (OGH-C)
 
 ## Previous roadmap — post Issue #68
 

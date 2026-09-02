@@ -1,5 +1,9 @@
 # Token-construction program — purpose, object, and decision path
 
+## Program update — OGH-C closes the token-internal chapter
+
+A parsed Voynich token carries ≈ `9.7` bits under the best compact memoryless grammar (`7.0` shape, ≈ `2.7` values). A complete memoryless token generator reproduces none of the cross-token responsibilities (S1, S2, S3 ≈ 0.03× Voynich; raw H62 excess ≈ 1/10). The lane's object moves from token-internal construction to **cross-token memory** (`REPORT_C.md`). Frozen G4/G7A/V2 remain as emission-stage comparators.
+
 ## Program update — OGH-B closes the R1 generation lane
 
 The target-blind selected second-order successor grammar (G7A, 298 counted probabilities) reproduces the replicated 66-edge R1 topology to within `0.01–0.02` of inventory memorization on both readings (`REPORT_B.md`). R1 is henceforth a cheap necessary condition on a candidate mechanism's emission stage, not a discriminator. The lane's next object is the **value** filling each occupied slot and the cross-token responsibilities R2/R3.
