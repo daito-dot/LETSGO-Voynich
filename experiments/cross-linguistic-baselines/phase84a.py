@@ -105,7 +105,7 @@ def parse_voynich_v101(path: Path):
 
 # ------------------------------------------------------------------ Bible
 
-SEG = re.compile(r"<seg id='b\.([^.']+)\.(\d+)\.(\d+)'[^>]*>(.*?)</seg>", re.S)
+SEG = re.compile(r"<seg id=[\'\"]b\.([^.\'\"]+)\.(\d+)\.(\d+)[\'\"][^>]*>(.*?)</seg>", re.S)
 
 
 def clean_word(w: str) -> str:

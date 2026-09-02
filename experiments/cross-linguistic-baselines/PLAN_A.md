@@ -59,3 +59,7 @@ The Bible is one genre (narrative/religious prose); genre controls are Phase C. 
 ## 6. Prohibited
 
 Adding/removing corpora after seeing values; changing bins, nulls, seeds, size rule or regime definitions; using exploratory ZL3b values as thresholds.
+
+## Implementation clarification (2026-09-02, before any full-population value was used)
+
+The first full execution parsed only the 8 Bible files whose `<seg>` attributes use single quotes; 96 files use double quotes and were mis-reported as `NO_NT_MARKER`. The segment regex now accepts both quote styles. No statistic, corpus rule, bin, null or regime definition changed; the 8 scored languages and all Voynich readings are recomputed identically in the rerun. The partial first execution is retained in git history (`first-reveal/` of commit b6c09b1's successor) for transparency and is not used.
