@@ -1,6 +1,12 @@
 # RESUME — deterministic restart point
 
-## Resume here — after Issue #72, Issue #75 Phases A–F0, OGH-A/B/C (token-internal chapter closed)
+## Resume here — after Issue #84 Phase A (cross-linguistic baseline) and Issue #81 (minimal memory)
+
+Latest reveals: Issue #84 Phase A (`experiments/cross-linguistic-baselines/REPORT_A.md`): `NO NATURAL LANGUAGE IN VOYNICH REGIME` (101 languages), `VOYNICH REGIME TRANSCRIPTION-ROBUST` (7 readings incl. Currier/FSG/v101). Issue #81 (PR #82, `experiments/cross-token-memory/`): X3 entry/body tables recover S1 `0.72×`; X2 10% edit-1 reuse recovers S2 `0.79×` but over-produces raw H62 (`2.1×`); predictive gain `0.06` bit/token. Next: Issue #81 soft near-family reweighting + recency kernel (held-out likelihood only), then compose with X3; Issue #84 Phases B (cipher-family map on CREMMA + Naibbe) and C (genre controls). Frozen far-bin criterion of Phase A was uninformative under chapter-length documents — Phase B/C plans should use the 1–2 and 21–40 bins, which discriminate strongly.
+
+Last consolidated: 2026-09-02 (Issue #84 A)
+
+## Previous resume point — after OGH-C (token-internal chapter closed)
 
 The latest completed scientific reveals are Issue #72 (Naibbe R1 causal decomposition, merged to `main`), Issue #75 Phases A–F0 (branch `issue75-minimal-occupancy-generator`, minimal occupancy generator ladder M0–M5, F0 architecture selection; M6 target reveal pending) and OGH-A (`experiments/occupancy-generation-hierarchy/`). Read, in order:
 

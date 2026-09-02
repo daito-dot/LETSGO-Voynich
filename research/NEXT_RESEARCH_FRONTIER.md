@@ -1,6 +1,10 @@
 # Next research frontier — prospectively constrained reversible / inverse mechanism tournament
 
-## CURRENT FRONTIER — after OGH-C: the smallest cross-token memory
+## CURRENT FRONTIER — after Issue #84 Phase A
+
+The OGH synthesis has passed its first control-tested challenge (`experiments/cross-linguistic-baselines/REPORT_A.md`): no natural language among 101, in any of seven transcription lineages, reaches the Voynich regime of adjacent-token dependence. Two questions remain open and are the next plan-first steps: (1) **which cipher families applied to Latin reach the Voynich regime** (Issue #84 Phase B: substitution, homophonic, nomenclator, nulls, transposition, verbose/Naibbe) — this decides whether "encrypted language" survives at all and, if so, in which redundancy class; (2) **whether enumerative genres do** (Phase C). In parallel Issue #81 continues to the soft near-family memory. Bins 1–2 and 21–40 of the repeat statistic, not the far bins, are the discriminating components.
+
+## Frontier after OGH-C: the smallest cross-token memory
 
 OGH-C (`REPORT_C.md`) measured the per-token information budget (`7.0` bits shape, `9.7` bits shape+values, memorized-vocabulary ceiling `9.0`) and showed that the best memoryless token grammar, placed in the manuscript skeleton, leaves S1/S2/S3 at ≈ `0.03×` Voynich and produces ≈ 1/10 of the raw H62 recurrence excess. Cross-token structure is therefore not token-internal.
 

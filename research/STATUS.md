@@ -1,6 +1,10 @@
 # Current research status
 
-## Current research state — after Issue #72, Issue #75 Phases A–F0, OGH-A/B/C (2026-09-02)
+## Current research state — after Issue #72, #75 A–F0, OGH-A/B/C, Issue #81, Issue #84 Phase A (2026-09-02)
+
+**Issue #84 Phase A (cross-linguistic baseline, 101 languages × 7 Voynich readings):** `NO NATURAL LANGUAGE IN VOYNICH REGIME`, `VOYNICH REGIME TRANSCRIPTION-ROBUST`. Adjacent-token mutual information: Voynich `0.05–0.11` bits in all seven readings (EVA family, v101, Currier, FSG) vs `0.17–1.58` (median `0.82`) across 101 languages. Natural prose avoids immediate repetition (96/101 negative at distance 1–2) and shows mid-range burstiness (101/101 at 21–40); Voynich shows the reverse. Vocabulary size and per-character density are within the language range — the difference is in how tokens relate to their neighbours, not in how much a token carries. **Issue #81 (PR #82):** minimal memories decompose cleanly — entry/body tables give S1 `0.72×` (correct sign); a 10% edit-1 reuse gives S2 `0.79×` and raw H62 `2.1×` with `|ΔC_short|` `0.126` vs A1-R1 `0.118`; the predictive gain of that memory is only `0.06` bit/token.
+
+## Research state after OGH-C (2026-09-02)
 
 **Token-construction lane:** OGH-A `COMPACT CONSTRUCTION GRAMMAR SUFFICIENT` (Issue #68 gate, both skeletons); OGH-B `SUCCESSOR GRAMMAR NEAR-SUFFICIENT` — **the R1 generation lane is closed.** OGH-C: a parsed token carries **≈ 9.7 bits** under the best memoryless grammar (7.0 bits shape, ≈ 2.7 bits values); a complete memoryless token generator leaves S1, S2, S3 at ≈ 0.03× Voynich and produces only ≈ 1/10 of Voynich's raw H62 recurrence excess (frozen label `MEMORYLESS TOKEN GRAMMAR PARTIAL`, scientific reading: cross-token structure is not token-internal). **The token-internal chapter is closed; the content-bearing signal is cross-token memory.**
 
