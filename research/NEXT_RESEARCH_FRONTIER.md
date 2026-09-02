@@ -1,6 +1,30 @@
 # Next research frontier — prospectively constrained reversible / inverse mechanism tournament
 
-## CURRENT FRONTIER — after Issue #68: where does Naibbe's R1 match come from?
+## CURRENT FRONTIER — after OGH-A: close the successor-grammar gap and re-enter the joint tournament
+
+OGH-A (`experiments/occupancy-generation-hierarchy/REPORT_A.md`) and Issue #75 Phases A–F0 together resolve most of the post-#72 question "what generates the replicated R1 topology":
+
+- not parser admissibility (4,077/4,095 signatures admissible, uniform fails);
+- not slot marginals or occupied-slot count (strong residual energy, wrong geometry);
+- yes, to within `≈0.01`, the **pairwise couplings** of the signature distribution (full pairwise maxent `r 0.948–0.969`);
+- yes, to `r 0.91–0.93` on both readings and both skeletons, a **78-parameter left-to-right successor grammar** (next occupied slot conditioned on the last occupied slot), which passes the Issue #68 R1 gate that published Naibbe passed at `0.88–0.90`.
+
+The next highest-value, target-blind question is therefore narrow:
+
+> **Which minimal extension of the successor grammar closes the remaining `≈0.06` gap to the second-order ceiling, and does that grammar, embedded as the emission stage of a bounded reversible mechanism, help or hurt R2/R3/R4?**
+
+Required shape of the next plan:
+
+1. candidates: (a) second-order successor context (last two occupied slots), (b) K/R/S-gated successor tables (Issue #75 F0 direction), (c) unchanged G4 as anchor; select among (a)/(b) by cross-fitted held-out likelihood only;
+2. score the selected family under both the Issue #68 gate and the Issue #75 M+-equivalence criterion, both skeletons, fixed realizations, no rerolls;
+3. then carry the frozen grammar into a joint R1–R5 tournament as the emission-stage comparator; a mechanism whose emission stage cannot reach `r≈0.92` at ≤ 78 counted parameters is not competitive on R1.
+
+Hard boundaries unchanged: no target-edge selection, no averaging of readings, no slot semantics, no repair of Naibbe R2/R3/R4.
+
+Status: current frontier after OGH-A first reveal (2026-09-01).
+
+## Previous frontier — after Issue #68: where does Naibbe's R1 match come from?
+
 
 Issue #68 resolves the previous frontier. The manuscript's residual token-construction graph is real and transcription-robust, but it is **not unique to the manuscript or to A1-like generation**: published Naibbe C1-E0 reproduces it strongly while remaining a failed joint model.
 

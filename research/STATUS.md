@@ -1,6 +1,24 @@
 # Current research status
 
-## Current research state — Issue #68 first joint-constraint tournament (2026-09-01)
+## Current research state — after Issue #72, Issue #75 Phases A–F0 and OGH-A (2026-09-01)
+
+**Token-construction lane, current frozen classification (OGH-A):** `COMPACT CONSTRUCTION GRAMMAR SUFFICIENT` under the Issue #68 R1 gate, replicated on the ZL3b and IT2a skeletons.
+
+What is now established about the replicated 66-edge residual token-construction topology (R1):
+
+- Issue #72: for published Naibbe, R1 lives in the corpus inventory of parsed 12-slot occupancy signatures (state-dependent emission matters; exact plaintext order and final token placement do not).
+- Issue #75 Phases A–F0 (branch `issue75-minimal-occupancy-generator`, not yet on `main`): slot marginals (M0) and marginals + occupied-slot count (M1) fail; K/R/S shape descriptors (M2, `T≈0.29`), nearest-neighbour chains (M3, `0.59`), generic distance coupling (M4, `0.62`) and two latent chain modes (M5, `0.73`) are insufficient against the empirical-signature ceiling (`M+ ≈ 0.965`); F0 selected a K/R/S-gated two-mode chain (M6) for the next target test.
+- OGH-A (`experiments/occupancy-generation-hierarchy/`): with an independent harness the same low-order failures and the same `0.965` ceiling replicate on both skeletons. Two new results:
+  - the topology is **second-order sufficient to within ≈0.01**: a full pairwise maxent control reaches `r = 0.948–0.969` (median gap to the empirical ceiling `−0.001` on the ZL3b arm, `−0.012` on the IT2a arm);
+  - a **78-parameter left-to-right successor grammar** (probability of occupying a slot depends only on the last occupied slot) passes the Issue #68 R1 gate on both readings and both skeletons: `r = 0.917 / 0.933` (ZL3b arm), `0.908 / 0.933` (IT2a arm), `62–63/66` signs, `W ≈ 0.97`, `p = 1/1001`; better than published Naibbe (`0.883 / 0.900`) and every Issue #75 model so far, though still `≈0.06` below the empirical ceiling under the Issue #75 equivalence criterion.
+
+**Interpretation revision:** R1 is a compact second-order construction constraint over which slot subsets co-occur inside a token. It is generated well by a sequential successor rule and does not require latent construction states or higher-order configuration rules. Parser admissibility (4,077/4,095 signatures admissible) contributes nothing.
+
+**Active frontier:** preregister the smallest extension of the successor grammar that closes the remaining gap to the pairwise ceiling (second-order successor context or K/R/S-gated successor tables), using held-out likelihood, not target edges, to choose; then carry the successor grammar into the joint R1–R5 tournament as the emission-stage comparator. Do not repair Naibbe; do not use individual edges.
+
+Last consolidated: 2026-09-01
+
+## Previous research state — Issue #68 first joint-constraint tournament (2026-09-01)
 
 **Current frozen global classification:** `NO TESTED FAMILY JOINT-CONSTRAINT COMPETITIVE`.
 

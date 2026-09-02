@@ -1,6 +1,33 @@
 # RESUME — deterministic restart point
 
-## Resume here — after Issue #68 first joint-constraint tournament
+## Resume here — after Issue #72, Issue #75 Phases A–F0 and OGH-A
+
+The latest completed scientific reveals are Issue #72 (Naibbe R1 causal decomposition, merged to `main`), Issue #75 Phases A–F0 (branch `issue75-minimal-occupancy-generator`, minimal occupancy generator ladder M0–M5, F0 architecture selection; M6 target reveal pending) and OGH-A (`experiments/occupancy-generation-hierarchy/`). Read, in order:
+
+1. `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE72_RESULT.md`
+2. GitHub Issue #75 and, on its branch, `experiments/minimal-occupancy-generator/REPORT_A.md` … `REPORT_F0.md`
+3. `experiments/occupancy-generation-hierarchy/PLAN_A.md`
+4. `experiments/occupancy-generation-hierarchy/REPORT_A.md`
+5. `research/HYPOTHESIS_LEDGER_ADDENDUM_OGH_A.md`
+6. `research/NEXT_RESEARCH_FRONTIER.md`
+
+Frozen OGH-A state:
+
+- classification `COMPACT CONSTRUCTION GRAMMAR SUFFICIENT` (Issue #68 gate), identical on ZL3b and IT2a skeletons;
+- G4 last-occupied-slot successor grammar, 78 counted parameters: `r 0.917/0.933` (ZL3b arm), `0.908/0.933` (IT2a arm), signs `62–63/66`, `W≈0.97`, all `p=1/1001`;
+- G5 pairwise maxent control `0.948–0.969`; G6 empirical ceiling `0.962–0.973`; G0–G3 fail;
+- G4 is **not** within the Issue #75 M+-equivalence tolerance (`0.0098`; median gap `≈−0.06`); G5 is inside it on the ZL3b arm (`−0.001`) and marginally outside on the IT2a arm (`−0.012`). OGH-A's label is defined by the Issue #68 gate.
+
+**Next scientific move:** integrate Issue #75 and OGH-A on `main`; then preregister one extension of the successor grammar (second-order successor context, or K/R/S-gated successor tables) chosen by training-only held-out likelihood, and score it under both the Issue #68 gate and the Issue #75 equivalence criterion. Carry the frozen G4 grammar into the next joint tournament as the emission-stage comparator.
+
+**Do not:** select target edges to extend G4, promote G5/G6 as mechanisms, average ZL3b and IT2a, relabel a locally executed reveal as an Actions run (use `.github/workflows/ogh-a-replay.yml` to replay), or infer slot meanings.
+
+Transcriptions are fetched and hash-verified with `data/fetch_transcriptions.py`.
+
+Last consolidated: 2026-09-01
+
+## Previous resume point — after Issue #68 first joint-constraint tournament
+
 
 The latest completed scientific reveal is Issue #68. Read, in order:
 

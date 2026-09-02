@@ -13,6 +13,10 @@ The transcription itself is third-party source material and is not automatically
 
 When reproducing historical scripts, place the transcription locally and adjust the input path if necessary. New scripts should accept an explicit input path rather than depend on a private filename.
 
+## Fetching the transcriptions
+
+`data/fetch_transcriptions.py TARGET_DIR [ZL3b IT2a GC2a]` downloads the `voynich.nu` IVTFF files used by the frozen experiments and verifies Git blob SHA-1, SHA-256 and byte size against the identities recorded in the experiment code. The ZL3b file served by `voynich.nu` (`ZL3b-n.txt`) is byte-identical to the blob `2a4533ab9bdfa85db9bad602d590978953055df1` required by `#55`–`#58D`. Do not commit the downloaded files.
+
 ## Licensing boundary
 
 The repository licenses in `LICENSE`, `LICENSE-CODE`, and `LICENSE-CONTENT` apply only to material for which this project has the right to grant those licenses. They do **not** relicense third-party transcriptions, manuscript images, external corpora, quoted material, or other third-party source content.

@@ -1,5 +1,17 @@
 # Token-construction program — purpose, object, and decision path
 
+## Program update — OGH-A identifies a compact second-order successor grammar behind R1
+
+After Issue #72 (R1 lives in the occupancy-signature inventory) and Issue #75 Phases A–F0 (low-order and local-chain families insufficient), OGH-A establishes:
+
+- R1 is **second-order sufficient to within ≈0.01** (pairwise maxent control `r 0.948–0.969` vs empirical ceiling `≈0.965`);
+- a **left-to-right successor grammar** with 78 counted conditional probabilities (occupy slot `s` with a probability that depends only on the last occupied slot) passes the Issue #68 R1 gate on both readings and both skeletons (`r 0.91–0.93`, `62–63/66` signs), the first compact, interpretable token-construction rule to do so;
+- parser admissibility, slot prevalence and occupancy count do not generate the topology.
+
+The lane's object is therefore now: **the successor grammar of occupied structural positions inside one space-delimited token**, and how much of the remaining `≈0.06` correlation gap a minimal extension recovers. The grammar is structural; it assigns no meaning to slots and says nothing about R2/R3/R4.
+
+Authorities: `experiments/occupancy-generation-hierarchy/PLAN_A.md`, `REPORT_A.md`, `research/HYPOTHESIS_LEDGER_ADDENDUM_OGH_A.md`.
+
 ## Program update — Issue #68 changes the evidential role of the token-construction graph
 
 The core empirical finding remains accepted:

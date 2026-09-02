@@ -1,0 +1,9 @@
+OGH-A ZL3b G2 rep2 reference null 250/1000
+OGH-A ZL3b G2 rep2 reference null 500/1000
+OGH-A ZL3b G2 rep2 reference null 750/1000
+OGH-A ZL3b G2 rep2 reference null 1000/1000
+OGH-A ZL3b G2 rep2 test null 250/1000
+OGH-A ZL3b G2 rep2 test null 500/1000
+OGH-A ZL3b G2 rep2 test null 750/1000
+OGH-A ZL3b G2 rep2 test null 1000/1000
+{"E": 1.8744856589198475, "R1_pass": false, "W": 0.437347487485788, "model": "G2", "p_exist": 0.000999000999000999, "r_IT2a": 0.07000357392017827, "r_ZL3b": 0.08181233493453455, "rep": 2, "signs_IT2a": 40, "signs_ZL3b": 39, "source": "ZL3b"}

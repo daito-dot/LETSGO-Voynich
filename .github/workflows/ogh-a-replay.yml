@@ -1,0 +1,80 @@
+name: OGH-A occupancy-generation hierarchy replay
+
+on:
+  push:
+    branches: [claude/performance-test-project-eiv6up]
+    paths:
+      - '.github/workflows/ogh-a-replay.yml'
+      - 'data/fetch_transcriptions.py'
+  workflow_dispatch:
+    inputs:
+      source:
+        description: skeleton source (ZL3b or IT2a)
+        required: true
+        default: ZL3b
+      model:
+        description: model id (G0..G6)
+        required: true
+        default: G0
+      rep:
+        description: replicate index (0,1,2)
+        required: true
+        default: "0"
+
+permissions:
+  contents: read
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify frozen OGH-A chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/occupancy-generation-hierarchy/PLAN_A.md | tail -1)
+          CODE=$(git log --diff-filter=A --format=%H -- experiments/occupancy-generation-hierarchy/ogh_a.py | tail -1)
+          git merge-base --is-ancestor "$PLAN" "$CODE"
+          echo "plan_first_add=$PLAN code_first_add=$CODE"
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy pandas
+      - name: Fetch and verify third-party transcriptions
+        run: python data/fetch_transcriptions.py /tmp/vms ZL3b IT2a
+      - name: Self-test
+        run: python experiments/occupancy-generation-hierarchy/ogh_a.py --self-test
+      - name: Replay one frozen scoring job
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ogh
+          IT=""
+          if [ "${{ inputs.source || 'ZL3b' }}" = "IT2a" ]; then IT=/tmp/vms/IT2a-n.txt; fi
+          python experiments/occupancy-generation-hierarchy/ogh_a.py --score \
+            "${{ inputs.source || 'ZL3b' }}" "${{ inputs.model || 'G4' }}" "${{ inputs.rep || '0' }}" /tmp/vms/ZL3b-n.txt $IT \
+            "/tmp/ogh/${{ inputs.source || 'ZL3b' }}_${{ inputs.model || 'G4' }}_rep${{ inputs.rep || '0' }}.json"
+          sha256sum /tmp/ogh/*.json
+      - name: Compare with committed first-reveal result
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, glob, math
+          new = json.load(open(glob.glob('/tmp/ogh/*.json')[0]))
+          name = f"{new['source']}_{new['model']}_rep{new['rep']}.json"
+          old = json.load(open(f"experiments/occupancy-generation-hierarchy/first-reveal/results/{name}"))
+          keys = [("generation","corpus_sha256")]
+          assert new["generation"]["corpus_sha256"] == old["generation"]["corpus_sha256"], "generated corpus differs"
+          za, zb = new["real_R1"]["z_full"], old["real_R1"]["z_full"]
+          dz = max(abs(a-b) for a,b in zip(za,zb))
+          print({"corpus_identical": True, "max_abs_z_difference": dz, "R1_pass_new": new["R1_pass"], "R1_pass_old": old["R1_pass"]})
+          assert dz < 1e-9 and new["R1_pass"] == old["R1_pass"]
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ogh-a-replay-${{ inputs.source || 'ZL3b' }}-${{ inputs.model || 'G4' }}-rep${{ inputs.rep || '0' }}-${{ github.sha }}
+          path: /tmp/ogh
+          retention-days: 90

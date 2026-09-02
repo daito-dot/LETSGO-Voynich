@@ -1,0 +1,9 @@
+OGH-A IT2a G3 rep2 reference null 250/1000
+OGH-A IT2a G3 rep2 reference null 500/1000
+OGH-A IT2a G3 rep2 reference null 750/1000
+OGH-A IT2a G3 rep2 reference null 1000/1000
+OGH-A IT2a G3 rep2 test null 250/1000
+OGH-A IT2a G3 rep2 test null 500/1000
+OGH-A IT2a G3 rep2 test null 750/1000
+OGH-A IT2a G3 rep2 test null 1000/1000
+{"E": 3.133502814357964, "R1_pass": false, "W": 0.5838378251312267, "model": "G3", "p_exist": 0.000999000999000999, "r_IT2a": 0.12170891560937684, "r_ZL3b": 0.13473414439019854, "rep": 2, "signs_IT2a": 37, "signs_ZL3b": 38, "source": "IT2a"}
