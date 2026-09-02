@@ -163,8 +163,9 @@ def select(zl_path: Path, it_path: Path) -> dict:
         for m in ("G4", "G7A", "G7B"):
             fits = A.fit_all_folds(sk, m, in_a)
             arm[m] = {
-                "heldout_ll_by_fold": [x["heldout_loglik"]["mean_log_likelihood"] for x in fits],
-                "train_ll_by_fold": [x["train_loglik"]["mean_log_likelihood"] for x in fits],
+                "heldout_ll_by_fold": [x["heldout_loglik"]["mean_log_likelihood_covered"] for x in fits],
+                "heldout_zero_probability_fraction_by_fold": [x["heldout_loglik"]["zero_probability_fraction"] for x in fits],
+                "train_ll_by_fold": [x["train_loglik"]["mean_log_likelihood_covered"] for x in fits],
                 "free_parameters": fits[0]["fit"]["free_parameters"],
                 "per_fold_fit": [{k: v for k, v in x["fit"].items() if k not in ("conditionals_P_occupied_given_last",)} for x in fits],
             }
@@ -173,7 +174,8 @@ def select(zl_path: Path, it_path: Path) -> dict:
             arm[m]["gain_over_G4_by_fold"] = gains
             arm[m]["gain_positive_folds"] = int(sum(g > 0 for g in gains))
             arm[m]["median_gain_over_G4"] = float(statistics.median(gains))
-            arm[m]["eligible"] = arm[m]["gain_positive_folds"] >= 4
+            arm[m]["max_heldout_zero_probability_fraction"] = max(arm[m]["heldout_zero_probability_fraction_by_fold"])
+            arm[m]["eligible"] = arm[m]["gain_positive_folds"] >= 4 and arm[m]["max_heldout_zero_probability_fraction"] <= 1e-3
         out["arms"][source] = arm
     zl = out["arms"]["ZL3b"]
     elig = [m for m in NEW_MODELS if zl[m]["eligible"]]
