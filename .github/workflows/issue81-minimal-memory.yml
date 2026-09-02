@@ -44,6 +44,7 @@ jobs:
         shell: bash
         run: |
           python -m py_compile experiments/cross-token-memory/issue81_minimal_memory.py
+          python -m py_compile experiments/cross-token-memory/apply_amendment_a.py
           python experiments/cross-token-memory/issue81_minimal_memory.py --self-test
 
       - name: Run frozen cross-token first reveal
@@ -149,6 +150,7 @@ jobs:
         run: |
           python experiments/cross-token-memory/issue81_minimal_memory.py \
             --aggregate issue81_stage1.json r1 issue81_final.json
+          python experiments/cross-token-memory/apply_amendment_a.py issue81_stage1.json issue81_final.json
           python -m json.tool issue81_final.json > /dev/null
           sha256sum issue81_final.json
           python - <<'PY'
@@ -159,6 +161,7 @@ jobs:
               'recoverers': x['recoverers'],
               'classifications': {m:r['classification'] for m,r in x['models'].items()},
               'X4_license': x['X4_license'],
+              'amendment_A': x['amendment_A'],
           }, indent=2))
           PY
 
