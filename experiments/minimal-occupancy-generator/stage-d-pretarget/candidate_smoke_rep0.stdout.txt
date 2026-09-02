@@ -1,0 +1,10 @@
+{
+  "E": 3.0662698685620127,
+  "W": 0.9496019313081269,
+  "occupancy_sha256": "6831ee24022f34eb66e9e5db5ab16f553d370063f36b1e8e38cd7d206c08fd2d",
+  "output_sha256": "60613a2763a830e50a2b342ace218088968df9db4ed016c94028b07f0f84ab83",
+  "p_exist": 0.000999000999000999,
+  "rep": 0,
+  "status": "M4_CANDIDATE_OWNED_NULL_EXECUTION_VERIFIED_TARGET_BLIND",
+  "target_loaded": false
+}

@@ -1,0 +1,162 @@
+name: Issue75 Phase C permanent M3 first-reveal freeze
+
+on:
+  workflow_run:
+    workflows: ['Issue75 Phase C M3 complete first reveal']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  freeze:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout current research branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue75-minimal-occupancy-generator
+          fetch-depth: 0
+
+      - name: Resolve successful first-reveal run and scientific head
+        id: run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test '${{ github.event_name }}' = 'workflow_run'; then
+            RUN='${{ github.event.workflow_run.id }}'
+            SCI='${{ github.event.workflow_run.head_sha }}'
+            test '${{ github.event.workflow_run.conclusion }}' = 'success'
+          else
+            WF_HEAD=$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseC-first-reveal.yml | tail -1)
+            RUN=$(gh api --method GET "repos/daito-dot/LETSGO-Voynich/actions/runs?head_sha=${WF_HEAD}&status=completed&per_page=20" \
+              --jq '.workflow_runs[] | select(.path==".github/workflows/issue75-phaseC-first-reveal.yml" and .conclusion=="success") | .id' | head -1)
+            SCI="$WF_HEAD"
+          fi
+          test -n "$RUN" && test -n "$SCI"
+          INFO=$(gh api "repos/daito-dot/LETSGO-Voynich/actions/runs/${RUN}")
+          test "$(echo "$INFO" | jq -r .conclusion)" = 'success'
+          test "$(echo "$INFO" | jq -r .head_sha)" = "$SCI"
+          echo "run_id=$RUN" >> "$GITHUB_OUTPUT"
+          echo "scientific_head=$SCI" >> "$GITHUB_OUTPUT"
+
+      - name: Verify scientific code predates first-reveal head and no permanent result exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          SCI='${{ steps.run.outputs.scientific_head }}'
+          git merge-base --is-ancestor "$SCI" HEAD
+          SCORE=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75c_score.py | tail -1)
+          AGG=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75c_aggregate.py | tail -1)
+          EXEC=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PRETARGET_EXECUTION_FREEZE_C.md | tail -1)
+          git merge-base --is-ancestor "$SCORE" "$SCI"
+          git merge-base --is-ancestor "$AGG" "$SCI"
+          git merge-base --is-ancestor "$EXEC" "$SCI"
+          test ! -e experiments/minimal-occupancy-generator/stage-c-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_C.md
+
+      - name: Download exact successful Phase C first-reveal artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: issue75-phaseC-FIRST-REVEAL-${{ steps.run.outputs.scientific_head }}
+          path: /tmp/source
+          github-token: ${{ github.token }}
+          repository: daito-dot/LETSGO-Voynich
+          run-id: ${{ steps.run.outputs.run_id }}
+
+      - name: Verify complete 31-case first-reveal authority
+        id: result
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find /tmp/source/individual -maxdepth 1 -name 'M3-KRS-CHAIN_*.json' | wc -l)" -eq 31
+          (cd /tmp/source && sha256sum -c SHA256SUMS.txt)
+          AGGSHA=$(sha256sum /tmp/source/phase75c_aggregate.json | cut -d' ' -f1)
+          python - <<'PY'
+          import glob,json,math
+          paths=glob.glob('/tmp/source/individual/M3-KRS-CHAIN_*.json')
+          assert len(paths)==31
+          reps=set()
+          c0sha=None
+          for p in paths:
+              r=json.load(open(p, encoding='utf-8'))
+              assert r['schema']=='issue75-phaseC-m3-r1-score-v1'
+              assert r['status']=='PHASE_C_M3_FIRST_REVEAL_CASE_SCORED'
+              assert r['family']=='M3-KRS-CHAIN'
+              reps.add(r['rep'])
+              assert r['candidate_audit']['exact_phase_c0_replay'] is True
+              assert all(v is True for v in r['target_access'].values())
+              if c0sha is None: c0sha=r['candidate_audit']['phase_c0_authority_sha256']
+              assert r['candidate_audit']['phase_c0_authority_sha256']==c0sha
+          assert reps==set(range(31))
+          a=json.load(open('/tmp/source/phase75c_aggregate.json', encoding='utf-8'))
+          assert a['schema']=='issue75-phaseC-m3-aggregate-v1'
+          assert a['status']=='PHASE_C_M3_COMPLETE_31_CASE_POPULATION_AGGREGATED'
+          assert a['scientific_head']=='${{ steps.run.outputs.scientific_head }}'
+          assert a['phase_c0_authority_sha256']==c0sha
+          assert a['phase_a_positive_control_aggregate_sha256']=='fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540'
+          assert a['population']['total_results']==31
+          assert a['population']['complete_population'] is True
+          assert a['population']['no_drops'] is True and a['population']['no_rerolls'] is True
+          assert a['frozen_phase_a_positive_control']['positive_control_valid'] is True
+          assert a['frozen_phase_a_positive_control']['delta_plus_q95']==0.009768313008182594
+          allowed={
+              'M3_KRS_NEAREST_NEIGHBOR_TRANSITION_GRAMMAR_SUFFICIENT',
+              'M3_KRS_NEAREST_NEIGHBOR_TRANSITION_GRAMMAR_INSUFFICIENT_NONLOCAL_OR_LATENT_RULE_REQUIRED',
+          }
+          assert a['primary']['classification'] in allowed
+          assert a['primary']['no_material_loss']==(a['primary']['gap_M3'] >= -0.009768313008182594)
+          assert a['model_complexity']['free_continuous_parameters_per_fold']==21
+          assert all(v is False for v in a['guardrails'].values())
+          print({
+              'classification':a['primary']['classification'],
+              'T_median':a['measurement']['T']['median'],
+              'R_ZL3b_median':a['measurement']['R_ZL3b']['median'],
+              'R_IT2a_median':a['measurement']['R_IT2a']['median'],
+              'gap_M3':a['primary']['gap_M3'],
+          })
+          PY
+          echo "aggregate_sha=$AGGSHA" >> "$GITHUB_OUTPUT"
+
+      - name: Copy exact evidence into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/minimal-occupancy-generator/stage-c-first-reveal
+          rm -rf "$DEST"
+          mkdir -p "$DEST"
+          cp -a /tmp/source/individual "$DEST/"
+          cp /tmp/source/phase75c_aggregate.json "$DEST/"
+          cp /tmp/source/aggregate.stdout.txt "$DEST/"
+          cp /tmp/source/SHA256SUMS.txt "$DEST/"
+          cp /tmp/source/PROVENANCE.txt "$DEST/"
+          cat > "$DEST/ARTIFACT_AUTHORITY.txt" <<EOF
+          scientific_role=POSTREVEAL_TRANSPORT_ONLY_PERMANENT_AUTHORITY
+          source_workflow_run=${{ steps.run.outputs.run_id }}
+          source_workflow_conclusion=success
+          source_artifact_name=issue75-phaseC-FIRST-REVEAL-${{ steps.run.outputs.scientific_head }}
+          aggregate_sha256=${{ steps.result.outputs.aggregate_sha }}
+          scientific_head=${{ steps.run.outputs.scientific_head }}
+          phase_a_positive_control_aggregate_sha256=fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540
+          total_results=31
+          drops=0
+          rerolls=0
+          permanent_freeze_is_post_reveal_transport_only=true
+          EOF
+
+      - name: Commit permanent Phase C first-reveal authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/minimal-occupancy-generator/stage-c-first-reveal
+          git diff --cached --quiet && exit 0
+          git commit -m 'Issue75 Phase C: freeze exact 31-case M3 first-reveal authority'
+          git push origin HEAD:issue75-minimal-occupancy-generator

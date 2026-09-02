@@ -1,0 +1,163 @@
+name: Issue75 Phase C freeze first-reveal authorization
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseC-pretarget-freeze.yml'
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Issue75 Phase C target-blind M3 candidate-null smoke']
+    types: [completed]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  freeze:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout current research branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue75-minimal-occupancy-generator
+          fetch-depth: 0
+
+      - name: Require successful preflight and target-blind smoke
+        id: runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PREFLIGHT_HEAD=$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseC-preflight.yml | tail -1)
+          SMOKE_HEAD=$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseC-candidate-smoke.yml | tail -1)
+          test -n "$PREFLIGHT_HEAD" && test -n "$SMOKE_HEAD"
+          PREFLIGHT_RUN=$(gh api --method GET "repos/daito-dot/LETSGO-Voynich/actions/runs?head_sha=${PREFLIGHT_HEAD}&status=completed&per_page=20" \
+            --jq '.workflow_runs[] | select(.path==".github/workflows/issue75-phaseC-preflight.yml" and .conclusion=="success") | .id' | head -1)
+          SMOKE_RUN=$(gh api --method GET "repos/daito-dot/LETSGO-Voynich/actions/runs?head_sha=${SMOKE_HEAD}&status=completed&per_page=20" \
+            --jq '.workflow_runs[] | select(.path==".github/workflows/issue75-phaseC-candidate-smoke.yml" and .conclusion=="success") | .id' | head -1)
+          test -n "$PREFLIGHT_RUN"
+          test -n "$SMOKE_RUN"
+          echo "preflight_head=$PREFLIGHT_HEAD" >> "$GITHUB_OUTPUT"
+          echo "preflight_run=$PREFLIGHT_RUN" >> "$GITHUB_OUTPUT"
+          echo "smoke_head=$SMOKE_HEAD" >> "$GITHUB_OUTPUT"
+          echo "smoke_run=$SMOKE_RUN" >> "$GITHUB_OUTPUT"
+
+      - name: Verify frozen scientific authorities are unchanged
+        id: auth
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/minimal-occupancy-generator/DECISION_B_M3_LICENSED.md
+          test ! -f experiments/minimal-occupancy-generator/DECISION_B_M2_SUFFICIENT_STOP.md
+          test -f experiments/minimal-occupancy-generator/PLAN_C.md
+          test -f experiments/minimal-occupancy-generator/C0_FREEZE_C.md
+          test -f experiments/minimal-occupancy-generator/phase75c_score.py
+          test -f experiments/minimal-occupancy-generator/phase75c_aggregate.py
+          test -f experiments/minimal-occupancy-generator/IMPLEMENTATION_FREEZE_C.md
+          test ! -e experiments/minimal-occupancy-generator/stage-c-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_C.md
+          C0SHA=$(python - <<'PY'
+          import re,hashlib
+          from pathlib import Path
+          t=Path('experiments/minimal-occupancy-generator/C0_FREEZE_C.md').read_text(encoding='utf-8')
+          m=re.search(r'C0 authority SHA-256: `([0-9a-f]{64})`',t)
+          assert m
+          p=Path('experiments/minimal-occupancy-generator/stage-c0/generator_authority.json')
+          assert hashlib.sha256(p.read_bytes()).hexdigest()==m.group(1)
+          print(m.group(1))
+          PY
+          )
+          echo "c0_sha=$C0SHA" >> "$GITHUB_OUTPUT"
+          echo 'fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540  experiments/minimal-occupancy-generator/stage-a-first-reveal/phase75a_aggregate.json' | sha256sum -c -
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PLAN_C.md | tail -1)
+          GEN=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75c_generator_support.py | tail -1)
+          C0=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/stage-c0/generator_authority.json | tail -1)
+          C0META=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/C0_FREEZE_C.md | tail -1)
+          SCORE=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75c_score.py | tail -1)
+          AGG=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75c_aggregate.py | tail -1)
+          FREEZE=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/IMPLEMENTATION_FREEZE_C.md | tail -1)
+          git merge-base --is-ancestor "$PLAN" "$GEN"
+          git merge-base --is-ancestor "$GEN" "$C0"
+          git merge-base --is-ancestor "$C0" "$C0META"
+          git merge-base --is-ancestor "$C0META" "$SCORE"
+          git merge-base --is-ancestor "$SCORE" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$FREEZE"
+          echo "plan_commit=$PLAN" >> "$GITHUB_OUTPUT"
+          echo "generator_commit=$GEN" >> "$GITHUB_OUTPUT"
+          echo "c0_commit=$C0" >> "$GITHUB_OUTPUT"
+          echo "scorer_commit=$SCORE" >> "$GITHUB_OUTPUT"
+          echo "aggregator_commit=$AGG" >> "$GITHUB_OUTPUT"
+
+      - name: Write first-reveal authorization freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/minimal-occupancy-generator/PRETARGET_EXECUTION_FREEZE_C.md
+          if test -e "$DEST"; then
+            echo 'PRETARGET_EXECUTION_FREEZE_C.md already exists; leaving immutable.'
+            exit 0
+          fi
+          cat > "$DEST" <<EOF
+          # Issue #75 Phase C — pretarget execution freeze / first-reveal authorization
+
+          Date: 2026-09-01  
+          Status: **TARGET-BLIND EXECUTION VALIDATED; 31-CASE M3 FIRST REVEAL AUTHORIZED**
+
+          ## Frozen scientific authorities
+
+          - Plan C commit: `${{ steps.auth.outputs.plan_commit }}`
+          - M3 generator commit: `${{ steps.auth.outputs.generator_commit }}`
+          - permanent C0 commit: `${{ steps.auth.outputs.c0_commit }}`
+          - C0 authority SHA-256: `${{ steps.auth.outputs.c0_sha }}`
+          - M3 scorer commit: `${{ steps.auth.outputs.scorer_commit }}`
+          - M3 aggregator commit: `${{ steps.auth.outputs.aggregator_commit }}`
+          - Phase-A positive-control aggregate SHA-256: `fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540`
+          - frozen q95 delta: `0.009768313008182594`
+
+          ## Successful target-blind validation
+
+          Exact replay preflight:
+
+          - workflow head: `${{ steps.runs.outputs.preflight_head }}`
+          - successful run: `${{ steps.runs.outputs.preflight_run }}`
+          - reps 0 and 30 required exact C0 occupancy SHA equality before any target access.
+
+          Full candidate-owned null smoke:
+
+          - workflow head: `${{ steps.runs.outputs.smoke_head }}`
+          - successful run: `${{ steps.runs.outputs.smoke_run }}`
+          - exact rep0 completed all 66 Q values, 1000 reference nulls, residual Z, five-fold reliability, and 1000 test nulls while both frozen target vectors remained unloaded.
+
+          ## Authorized first reveal
+
+          The next licensed action is exactly one complete 31-case M3-KRS-CHAIN first reveal, reps `0..30`.
+
+          Every case must regenerate and match its C0 occupancy SHA, execute the unchanged candidate-owned null calibration, then load ZL3b and IT2a, retain both readings separately, and set `T=min(R_ZL3b,R_IT2a)`.
+
+          No drops, rerolls, target-edge optimization, nonadjacent interaction addition, reading average, positive-control reselection, or post-reveal R1 model change is licensed.
+
+          Primary decision remains:
+
+          `gap_M3 = median(T_M3[r] - T_plus_center_PhaseA[r])`.
+
+          - `gap_M3 >= -0.009768313008182594` -> `M3_KRS_NEAREST_NEIGHBOR_TRANSITION_GRAMMAR_SUFFICIENT`, then STOP the R1 complexity ladder;
+          - otherwise -> `M3_KRS_NEAREST_NEIGHBOR_TRANSITION_GRAMMAR_INSUFFICIENT_NONLOCAL_OR_LATENT_RULE_REQUIRED`.
+          EOF
+
+      - name: Commit pretarget execution freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- experiments/minimal-occupancy-generator/PRETARGET_EXECUTION_FREEZE_C.md; then
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/minimal-occupancy-generator/PRETARGET_EXECUTION_FREEZE_C.md
+          git commit -m 'Issue75 Phase C: authorize first reveal after target-blind M3 validation'
+          git push origin HEAD:issue75-minimal-occupancy-generator

@@ -1,0 +1,50 @@
+{
+  "cases": 31,
+  "descriptor_class_counts": [
+    110,
+    112,
+    111,
+    111,
+    112
+  ],
+  "family": "M4-KRS-CHAIN-DISTANCE",
+  "fit_max_abs_reported_moment_error": 8.900935544176036e-13,
+  "generated_distinct_signature_range": [
+    1172,
+    1236
+  ],
+  "output_sha256": "5c31aaa5fdb959873d89d7762dfd78db42c1a773a091b71a9f0731e90fa269cb",
+  "plan_d_sha256": "f99a432279f17aaaa5f07e4e014380bbfb9578a421f536073ebaf72ac4b5e114",
+  "rank_audit": {
+    "analytic_invariances": [
+      "sum_U_equals_K",
+      "sum_A_equals_K_minus_R",
+      "sum_C2_to_C11_equals_choose_K_2_minus_K_minus_R",
+      "C11_equals_indicator_S_equals_12"
+    ],
+    "expected_ranks": {
+      "full_33": 29,
+      "selected_free_29": 29,
+      "unary": 11,
+      "unary_plus_adjacent": 21
+    },
+    "method": "within-KRS integer feature differences; modular Gaussian elimination plus analytic identity upper bounds",
+    "prime": 1000003,
+    "ranks": {
+      "full_33": 29,
+      "selected_free_29": 29,
+      "unary": 11,
+      "unary_plus_adjacent": 21
+    }
+  },
+  "status": "M4_KRS_CHAIN_DISTANCE_31_CORPORA_FROZEN_TARGET_BLIND",
+  "target_access": {
+    "Issue58C_target_vector_loaded": false,
+    "Issue58D_target_vector_loaded": false,
+    "T_computed": false,
+    "pair_Q_computed": false,
+    "residual_Z_computed": false,
+    "target_correlation_computed": false,
+    "target_sign_agreement_computed": false
+  }
+}

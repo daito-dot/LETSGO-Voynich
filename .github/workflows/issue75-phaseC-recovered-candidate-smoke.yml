@@ -1,0 +1,125 @@
+name: Issue75 Phase C recovered target-blind candidate-null smoke
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseC-recovered-candidate-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact smoke head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify C0 and successful target-blind preflight
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/minimal-occupancy-generator/C0_FREEZE_C.md
+          test ! -e experiments/minimal-occupancy-generator/stage-c-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_C.md
+          echo '1ff4469f57a84093b8c5d6463bb276a8de6fc108eed666bf63c9c7dacbf622a6  experiments/minimal-occupancy-generator/stage-c0/generator_authority.json' | sha256sum -c -
+          git diff --exit-code 77bcf3b8c4a56ac55eba8bffa775998f39a412d8 HEAD -- experiments/minimal-occupancy-generator/phase75c_score.py
+          gh api repos/daito-dot/LETSGO-Voynich/actions/runs/33508315635 > /tmp/preflight_run.json
+          gh api repos/daito-dot/LETSGO-Voynich/actions/runs/33508315635/artifacts > /tmp/preflight_artifacts.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/preflight_run.json',encoding='utf-8'))
+          assert r['conclusion']=='success'
+          assert r['head_sha']=='35a99c2f47cb5eef0e9c0c997004c435d85ce471'
+          a=json.load(open('/tmp/preflight_artifacts.json',encoding='utf-8'))
+          names={x['name'] for x in a['artifacts']}
+          assert 'issue75-phaseC-recovered-preflight-rep0-35a99c2f47cb5eef0e9c0c997004c435d85ce471' in names
+          assert 'issue75-phaseC-recovered-preflight-rep30-35a99c2f47cb5eef0e9c0c997004c435d85ce471' in names
+          PY
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify source and install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cipher_benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = '2a4533ab9bdfa85db9bad602d590978953055df1'
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Execute rep0 candidate-owned null smoke without target vectors
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/smoke
+          python experiments/minimal-occupancy-generator/phase75c_candidate_smoke.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            0 \
+            /tmp/smoke/M3-KRS-CHAIN_0_candidate_smoke.json \
+            > /tmp/smoke/stdout.txt
+
+      - name: Enforce complete candidate-null computation and target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math
+          p='/tmp/smoke/M3-KRS-CHAIN_0_candidate_smoke.json'
+          r=json.load(open(p,encoding='utf-8'))
+          assert r['schema']=='issue75-phaseC-m3-candidate-null-smoke-v1'
+          assert r['status']=='M3_CANDIDATE_OWNED_NULL_EXECUTION_VERIFIED_TARGET_BLIND'
+          assert r['family']=='M3-KRS-CHAIN' and r['rep']==0
+          assert r['candidate_audit']['exact_phase_c0_replay'] is True
+          m=r['measurement']
+          assert m['n_reference']==1000 and m['n_test']==1000
+          assert len(m['z_full'])==66
+          assert math.isfinite(m['residual_energy'])
+          assert 0 < m['p_exist'] <= 1
+          t=r['target_access']
+          assert t['pair_Q_computed'] is True
+          assert t['residual_Z_computed'] is True
+          assert t['candidate_reference_null_computed'] is True
+          assert t['candidate_test_null_computed'] is True
+          assert t['Issue58C_target_vector_loaded'] is False
+          assert t['Issue58D_target_vector_loaded'] is False
+          assert t['target_correlation_computed'] is False
+          assert t['target_sign_agreement_computed'] is False
+          assert t['T_computed'] is False
+          print({'E':m['residual_energy'],'p_exist':m['p_exist'],'W':m['reliability']['median'],'target_loaded':False})
+          PY
+          sha256sum /tmp/smoke/M3-KRS-CHAIN_0_candidate_smoke.json /tmp/smoke/stdout.txt > /tmp/smoke/SHA256SUMS.txt
+          cat > /tmp/smoke/PROVENANCE.txt <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          smoke_head=${GITHUB_SHA}
+          rep=0
+          phase_c0_sha256=1ff4469f57a84093b8c5d6463bb276a8de6fc108eed666bf63c9c7dacbf622a6
+          preflight_run=33508315635
+          reference_nulls=1000
+          test_nulls=1000
+          target_loaded=false
+          target_correlation_computed=false
+          EOF
+
+      - name: Upload target-blind candidate-null smoke evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseC-recovered-candidate-smoke-${{ github.sha }}
+          path: /tmp/smoke
+          if-no-files-found: error
+          retention-days: 90

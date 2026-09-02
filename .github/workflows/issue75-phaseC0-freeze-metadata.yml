@@ -1,0 +1,110 @@
+name: Issue75 Phase C0 freeze M3 authority metadata
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseC0-freeze-metadata.yml'
+      - 'experiments/minimal-occupancy-generator/stage-c0/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue75-minimal-occupancy-generator
+          fetch-depth: 0
+
+      - name: Verify complete target-blind C0 authority
+        id: auth
+        shell: bash
+        run: |
+          set -euo pipefail
+          C0=experiments/minimal-occupancy-generator/stage-c0/generator_authority.json
+          test -f "$C0"
+          test -f experiments/minimal-occupancy-generator/stage-c0/SHA256SUMS.txt
+          test -f experiments/minimal-occupancy-generator/stage-c0/PROVENANCE.txt
+          (cd experiments/minimal-occupancy-generator/stage-c0 && sha256sum -c SHA256SUMS.txt)
+          SHA=$(sha256sum "$C0" | cut -d' ' -f1)
+          PLAN=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PLAN_C.md | tail -1)
+          GEN=$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75c_generator_support.py | tail -1)
+          C0COMMIT=$(git log --diff-filter=A --format=%H -- "$C0" | tail -1)
+          test -n "$PLAN" && test -n "$GEN" && test -n "$C0COMMIT"
+          git merge-base --is-ancestor "$PLAN" "$GEN"
+          git merge-base --is-ancestor "$GEN" "$C0COMMIT"
+          python - <<'PY'
+          import json
+          p='experiments/minimal-occupancy-generator/stage-c0/generator_authority.json'
+          r=json.load(open(p, encoding='utf-8'))
+          assert r['schema']=='issue75-phaseC0-m3-krs-chain-generator-authority-v1'
+          assert r['status']=='M3_KRS_CHAIN_31_CORPORA_FROZEN_TARGET_BLIND'
+          assert r['model_definition']['family']=='M3-KRS-CHAIN'
+          assert r['model_definition']['free_continuous_parameters']==21
+          assert r['model_definition']['explicit_nonadjacent_pair_interaction_parameters']==0
+          assert r['model_definition']['empirical_signature_specific_parameters']==0
+          assert len(r['cases'])==31
+          assert {x['rep'] for x in r['cases']}==set(range(31))
+          assert len({x['occupancy_sha256'] for x in r['cases']})==31
+          assert all(v is False for v in r['target_access'].values())
+          assert r['no_drops'] is True and r['no_rerolls'] is True
+          mx=max(r['fit'][str(f)]['max_abs_reported_moment_error'] for f in range(5))
+          assert mx <= 1e-10, mx
+          print({'cases':31,'fit_max_error':mx,'target_blind':True})
+          PY
+          echo "c0_sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "plan_commit=$PLAN" >> "$GITHUB_OUTPUT"
+          echo "generator_commit=$GEN" >> "$GITHUB_OUTPUT"
+          echo "c0_commit=$C0COMMIT" >> "$GITHUB_OUTPUT"
+
+      - name: Write permanent C0 metadata freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/minimal-occupancy-generator/C0_FREEZE_C.md
+          test ! -e "$DEST"
+          python - <<'PY' > "$DEST"
+          import json,hashlib
+          from pathlib import Path
+          p=Path('experiments/minimal-occupancy-generator/stage-c0/generator_authority.json')
+          r=json.loads(p.read_text(encoding='utf-8'))
+          sha=hashlib.sha256(p.read_bytes()).hexdigest()
+          mx=max(r['fit'][str(f)]['max_abs_reported_moment_error'] for f in range(5))
+          classes=[r['fit'][str(f)]['descriptor_class_count'] for f in range(5)]
+          train=[r['fit'][str(f)]['training_distinct_signatures'] for f in range(5)]
+          generated=[x['distinct_signatures'] for x in r['cases']]
+          print('# Issue #75 Phase C0 — permanent target-blind M3 authority freeze')
+          print()
+          print('Status: **31/31 M3-KRS-CHAIN CORPORA FROZEN BEFORE TARGET ACCESS**')
+          print()
+          print(f'- C0 authority SHA-256: `{sha}`')
+          print(f'- plan C commit: `${{ steps.auth.outputs.plan_commit }}`')
+          print(f'- generator commit: `${{ steps.auth.outputs.generator_commit }}`')
+          print(f'- permanent C0 data commit: `${{ steps.auth.outputs.c0_commit }}`')
+          print('- cases: `31/31`')
+          print('- drops: `0`')
+          print('- rerolls: `0`')
+          print('- target access: `false`')
+          print(f'- maximum fitted unary/adjacent moment error: `{mx}`')
+          print(f'- K/R/S descriptor classes by fold: `{classes}`')
+          print(f'- training distinct complete signatures by fold: `{train}`')
+          print(f'- generated distinct-signature range: `{min(generated)}..{max(generated)}`')
+          print()
+          print('The C0 authority fixes the exact 31 generated occupancy corpora. Later scoring must regenerate a requested rep and require exact occupancy SHA equality with this authority before any target load.')
+          PY
+
+      - name: Commit C0 metadata freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/minimal-occupancy-generator/C0_FREEZE_C.md
+          git commit -m 'Issue75 Phase C0: freeze target-blind M3 authority metadata'
+          git push origin HEAD:issue75-minimal-occupancy-generator

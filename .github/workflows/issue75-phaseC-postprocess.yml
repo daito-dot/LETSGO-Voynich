@@ -1,0 +1,100 @@
+name: Issue75 Phase C deterministic post-reveal reporting
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseC-postprocess.yml'
+      - 'experiments/minimal-occupancy-generator/stage-c-first-reveal/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+        with:
+          ref: issue75-minimal-occupancy-generator
+          fetch-depth: 0
+
+      - name: Require permanent Phase C first-reveal authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f experiments/minimal-occupancy-generator/stage-c-first-reveal/phase75c_aggregate.json
+          test -f experiments/minimal-occupancy-generator/stage-c-first-reveal/SHA256SUMS.txt
+          test -f experiments/minimal-occupancy-generator/stage-c-first-reveal/ARTIFACT_AUTHORITY.txt
+          test -f experiments/minimal-occupancy-generator/C0_FREEZE_C.md
+          test ! -e experiments/minimal-occupancy-generator/REPORT_C.md
+          test ! -e experiments/minimal-occupancy-generator/DECISION_C_R1_LADDER_STOP.md
+          test ! -e experiments/minimal-occupancy-generator/DECISION_C_NONLOCAL_LATENT_LICENSED.md
+
+      - name: Generate deterministic report and decision marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/minimal-occupancy-generator/phase75c_postprocess.py | tee /tmp/phase75c-postprocess.json
+          python - <<'PY'
+          import json,pathlib
+          r=json.load(open('/tmp/phase75c-postprocess.json', encoding='utf-8'))
+          assert r['marker'] in {'DECISION_C_R1_LADDER_STOP.md','DECISION_C_NONLOCAL_LATENT_LICENSED.md'}
+          assert (pathlib.Path('experiments/minimal-occupancy-generator')/r['marker']).exists()
+          assert pathlib.Path('experiments/minimal-occupancy-generator/REPORT_C.md').exists()
+          assert pathlib.Path('research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE75_PHASE_C.md').exists()
+          print(r)
+          PY
+
+      - name: Commit Phase C report and decision
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/minimal-occupancy-generator/REPORT_C.md \
+                  experiments/minimal-occupancy-generator/DECISION_C_*.md \
+                  research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE75_PHASE_C.md
+          git commit -m 'Issue75 Phase C: freeze M3 result report and next-frontier decision'
+          git push origin HEAD:issue75-minimal-occupancy-generator
+
+      - name: Post concise Phase C result to Issue 75
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' > /tmp/comment.md
+          import hashlib,json
+          from pathlib import Path
+          p=Path('experiments/minimal-occupancy-generator/stage-c-first-reveal/phase75c_aggregate.json')
+          r=json.loads(p.read_text(encoding='utf-8'))
+          m=r['measurement']; q=r['primary']
+          print('## Phase C complete — M3-KRS-CHAIN frozen result')
+          print()
+          print(f"- classification: `{q['classification']}`")
+          print(f"- median T: `{m['T']['median']}`")
+          print(f"- median R ZL3b: `{m['R_ZL3b']['median']}`")
+          print(f"- median R IT2a: `{m['R_IT2a']['median']}`")
+          print(f"- median E: `{m['residual_energy']['median']}`")
+          w=m['reliability_W']['finite']
+          print(f"- median W: `{None if w is None else w['median']}`")
+          print(f"- paired median gap vs frozen Phase-A M+ center: `{q['gap_M3']}`")
+          print(f"- frozen q95 allowed loss: `{r['frozen_phase_a_positive_control']['delta_plus_q95']}`")
+          print(f"- no material loss: `{q['no_material_loss']}`")
+          print('- population: `31/31`, drops `0`, rerolls `0`')
+          print(f"- scientific head: `{r['scientific_head']}`")
+          print(f"- aggregate SHA-256: `{hashlib.sha256(p.read_bytes()).hexdigest()}`")
+          print()
+          if q['classification']=='M3_KRS_NEAREST_NEIGHBOR_TRANSITION_GRAMMAR_SUFFICIENT':
+              print('The preregistered rule stops the R1 model-complexity ladder here. A richer R1 model is not licensed.')
+          else:
+              print('The preregistered rule licenses a separately preregistered compact nonlocal/latent configuration frontier. No such model has yet been fit.')
+          print()
+          print('Permanent report: `experiments/minimal-occupancy-generator/REPORT_C.md`.')
+          PY
+          gh issue comment 75 --repo daito-dot/LETSGO-Voynich --body-file /tmp/comment.md

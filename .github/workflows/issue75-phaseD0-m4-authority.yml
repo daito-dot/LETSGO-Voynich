@@ -1,0 +1,182 @@
+name: Issue75 Phase D0 target-blind M4-KRS-CHAIN-DISTANCE authority
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths: ['.github/workflows/issue75-phaseD0-m4-authority.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact D0 head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify final plan-before-code and target-blind implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=f9e60ed9e9261b30c3294c576cf7ea037cf2c2c7
+          GEN=ef8edcb94e287a3fd6c559308ff902dc7d1c41ee
+          FREEZE=7a6f3d3257f9fdfaa43edefd63dec4cea4dbe5f2
+          test "$(git rev-parse ${GEN}^)" = "$PLAN"
+          git merge-base --is-ancestor "$PLAN" "$GEN"
+          git merge-base --is-ancestor "$GEN" "$FREEZE"
+          git merge-base --is-ancestor "$FREEZE" HEAD
+          git diff --exit-code "$PLAN" HEAD -- experiments/minimal-occupancy-generator/PLAN_D.md
+          git diff --exit-code "$GEN" HEAD -- experiments/minimal-occupancy-generator/phase75d_generator_support.py
+          git diff --exit-code "$FREEZE" HEAD -- experiments/minimal-occupancy-generator/IMPLEMENTATION_FREEZE_D.md
+          test ! -e experiments/minimal-occupancy-generator/stage-d0
+          test ! -e experiments/minimal-occupancy-generator/REPORT_D.md
+          ! grep -q 'phase75a_score\|target68\|load_target_references' experiments/minimal-occupancy-generator/phase75d_generator_support.py
+          echo '34affe98b68a1e410ea3d4384a917450c2b58e7a8e02a30da8befa660712421a  experiments/minimal-occupancy-generator/stage-c-first-reveal/phase75c_aggregate.json' | sha256sum -c -
+          python - <<'PY'
+          import json
+          r=json.load(open('experiments/minimal-occupancy-generator/stage-c-first-reveal/phase75c_aggregate.json'))
+          assert r['primary']['classification']=='M3_KRS_NEAREST_NEIGHBOR_TRANSITION_GRAMMAR_INSUFFICIENT_NONLOCAL_OR_LATENT_RULE_REQUIRED'
+          assert r['primary']['no_material_loss'] is False
+          PY
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cb
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify source and install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cb hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = 2a4533ab9bdfa85db9bad602d590978953055df1
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+          python -m py_compile experiments/minimal-occupancy-generator/phase75d_generator_support.py
+
+      - name: Generate complete 31-case corrected M4 target-blind authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/d0
+          python experiments/minimal-occupancy-generator/phase75d_generator_support.py \
+            _cb/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            /tmp/d0/generator_authority.json \
+            > /tmp/d0/stdout.txt
+
+      - name: Validate corrected frozen D0 contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math
+          r=json.load(open('/tmp/d0/generator_authority.json'))
+          assert r['schema']=='issue75-phaseD0-m4-krs-chain-distance-generator-authority-v1'
+          assert r['status']=='M4_KRS_CHAIN_DISTANCE_31_CORPORA_FROZEN_TARGET_BLIND'
+          assert r['family']=='M4-KRS-CHAIN-DISTANCE'
+          assert r['source']['ZL3b_blob']=='2a4533ab9bdfa85db9bad602d590978953055df1'
+          assert r['source']['parsed_tokens']==25071
+          assert r['source']['fold_parsed_tokens']==[4430,4810,5516,5447,4868]
+          m=r['model_definition']
+          assert m['free_unary_parameters']==11
+          assert m['free_adjacent_parameters']==10
+          assert m['free_distance_parameters']==8
+          assert m['free_continuous_parameters']==29
+          assert m['explicit_pair_specific_nonadjacent_parameters']==0
+          assert m['empirical_signature_specific_parameters']==0
+          assert m['latent_state_parameters']==0
+          assert m['free_distance_terms']==list(range(3,11))
+          assert m['gauges_and_fixed']=={'h_0':0.0,'J_adjacent_0':0.0,'B_distance_2':0.0,'B_distance_11':0.0}
+          rank=m['exact_state_rank_audit']['ranks']
+          assert rank=={'unary':11,'unary_plus_adjacent':21,'full_33':29,'selected_free_29':29}
+          assert len(r['fit'])==5
+          for f in range(5):
+              x=r['fit'][str(f)]
+              assert x['free_continuous_parameters']==29
+              assert x['free_unary_parameters']==11
+              assert x['free_adjacent_parameters']==10
+              assert x['free_distance_parameters']==8
+              assert x['distance_labels']==list(range(2,12))
+              assert x['exact_state_rank_audit']['ranks']==rank
+              a=x['descriptor_identity_audit']
+              assert float(a['abs_error_K_identity']) <= 1e-12
+              assert float(a['abs_error_adjacent_identity']) <= 1e-12
+              assert float(a['abs_error_nonadjacent_identity']) <= 1e-12
+              assert float(a['abs_error_C11_span_identity']) <= 1e-12
+              assert math.isfinite(float(x['max_abs_reported_moment_error']))
+              assert float(x['max_abs_reported_moment_error']) <= 1e-10
+          assert float(r['fit_max_abs_reported_moment_error']) <= 1e-10
+          assert len(r['cases'])==31 and {x['rep'] for x in r['cases']}==set(range(31))
+          assert len({x['occupancy_sha256'] for x in r['cases']})==31
+          assert all(x['tokens']==25071 and x['all_zero_count']==0 for x in r['cases'])
+          assert all(x['pair_Q_computed'] is False for x in r['cases'])
+          assert all(x['residual_Z_computed'] is False for x in r['cases'])
+          assert all(x['target_topology_loaded'] is False for x in r['cases'])
+          assert all(x['target_correlation_computed'] is False for x in r['cases'])
+          assert all(v is False for v in r['target_access'].values())
+          assert r['no_drops'] is True and r['no_rerolls'] is True
+          print({
+            'cases':31,
+            'fit_max_error':r['fit_max_abs_reported_moment_error'],
+            'rank':rank,
+            'distinct_signature_range':[min(x['distinct_signatures'] for x in r['cases']),max(x['distinct_signatures'] for x in r['cases'])],
+            'target_access':r['target_access']})
+          PY
+          sha256sum /tmp/d0/generator_authority.json /tmp/d0/stdout.txt > /tmp/d0/SHA256SUMS.txt
+          PLAN_SHA=$(sha256sum experiments/minimal-occupancy-generator/PLAN_D.md | cut -d' ' -f1)
+          AUTH_SHA=$(sha256sum /tmp/d0/generator_authority.json | cut -d' ' -f1)
+          cat > /tmp/d0/PROVENANCE.txt <<EOF
+          scientific_role=PRETARGET_CROSSFITTED_KRS_CHAIN_DISTANCE_GENERATOR_AUTHORITY
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          generation_head=${GITHUB_SHA}
+          normative_plan_d_commit=f9e60ed9e9261b30c3294c576cf7ea037cf2c2c7
+          plan_d_sha256=${PLAN_SHA}
+          authoritative_generator_commit=ef8edcb94e287a3fd6c559308ff902dc7d1c41ee
+          implementation_freeze_commit=7a6f3d3257f9fdfaa43edefd63dec4cea4dbe5f2
+          obsolete_distance_only_run=33510176784
+          obsolete_intermediate_plan_run=33510519140
+          obsolete_runs_authoritative=false
+          generator_authority_sha256=${AUTH_SHA}
+          phase_c_aggregate_sha256=34affe98b68a1e410ea3d4384a917450c2b58e7a8e02a30da8befa660712421a
+          cases=31
+          target_loaded=false
+          pair_Q_computed=false
+          residual_Z_computed=false
+          target_correlation_computed=false
+          drops=0
+          rerolls=0
+          EOF
+
+      - name: Upload immutable corrected target-blind D0 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseD0-M4-KRS-CHAIN-DISTANCE-${{ github.sha }}
+          path: /tmp/d0
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Commit exact corrected D0 authority into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/minimal-occupancy-generator/stage-d0
+          test ! -e "$DEST"
+          mkdir -p "$DEST"
+          cp /tmp/d0/generator_authority.json "$DEST/"
+          cp /tmp/d0/stdout.txt "$DEST/"
+          cp /tmp/d0/SHA256SUMS.txt "$DEST/"
+          cp /tmp/d0/PROVENANCE.txt "$DEST/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Issue75 Phase D0: freeze final 31-case target-blind M4 authority'
+          git push origin HEAD:issue75-minimal-occupancy-generator

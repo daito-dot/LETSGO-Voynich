@@ -1,0 +1,181 @@
+name: Issue75 Phase A target-blind candidate-null smoke
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths:
+      - '.github/workflows/issue75-phaseA-candidate-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        family: [M0, M1, MPLUS-A, MPLUS-B]
+    steps:
+      - name: Checkout exact smoke head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify pretarget chronology and successful preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN='8d984cfa61a5616bef61b45248c0a7a5d213fbf8'
+          A0='c703b2d01c941b6bfd17758f09868c71a200f212'
+          SCORER_ADD='21e7bbc176e593ef9fa025113fb17799ca500d8e'
+          AGG='d058a5dbe9571a7afa528e001d64d4a576f7c0ff'
+          SCORER_REPAIR='11cbcab12e9c02e5002bc286a132b9a8a9f267aa'
+          PREFLIGHT_HEAD='698e7ee5503bc7e47d183deb7d8cc09d89502216'
+          SMOKE_SCRIPT='ab01373f631f7ddfb476fdd0a617d6a0120010ce'
+          HEAD=$(git rev-parse HEAD)
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/PLAN_A.md | tail -1)" = "$PLAN"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/stage-a0/generator_authority.json | tail -1)" = "$A0"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75a_score.py | tail -1)" = "$SCORER_ADD"
+          test "$(git log -1 --format=%H -- experiments/minimal-occupancy-generator/phase75a_score.py)" = "$SCORER_REPAIR"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75a_aggregate.py | tail -1)" = "$AGG"
+          test "$(git log -1 --format=%H -- .github/workflows/issue75-phaseA-preflight.yml)" = "$PREFLIGHT_HEAD"
+          test "$(git log --diff-filter=A --format=%H -- experiments/minimal-occupancy-generator/phase75a_candidate_smoke.py | tail -1)" = "$SMOKE_SCRIPT"
+          test "$(git log --diff-filter=A --format=%H -- .github/workflows/issue75-phaseA-candidate-smoke.yml | tail -1)" = "$HEAD"
+          git merge-base --is-ancestor "$PLAN" "$A0"
+          git merge-base --is-ancestor "$A0" "$SCORER_ADD"
+          git merge-base --is-ancestor "$SCORER_ADD" "$AGG"
+          git merge-base --is-ancestor "$AGG" "$SCORER_REPAIR"
+          git merge-base --is-ancestor "$SCORER_REPAIR" "$PREFLIGHT_HEAD"
+          git merge-base --is-ancestor "$PREFLIGHT_HEAD" "$SMOKE_SCRIPT"
+          git merge-base --is-ancestor "$SMOKE_SCRIPT" "$HEAD"
+          test ! -e experiments/minimal-occupancy-generator/stage-a-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_A.md
+          echo '83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2  experiments/minimal-occupancy-generator/stage-a0/generator_authority.json' | sha256sum -c -
+
+      - name: Download successful target-blind preflight evidence for family rep0
+        uses: actions/download-artifact@v4
+        with:
+          repository: daito-dot/LETSGO-Voynich
+          run-id: 33501747280
+          github-token: ${{ github.token }}
+          name: issue75-phaseA-preflight-${{ matrix.family }}-0-698e7ee5503bc7e47d183deb7d8cc09d89502216
+          path: /tmp/preflight
+
+      - name: Reconfirm downloaded preflight target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import glob,json
+          ps=glob.glob('/tmp/preflight/${{ matrix.family }}_0.json')
+          assert len(ps)==1, ps
+          r=json.load(open(ps[0], encoding='utf-8'))
+          assert r['status']=='EXACT_A0_CORPUS_REGENERATED_TARGET_BLIND'
+          assert r['family']=='${{ matrix.family }}' and r['rep']==0
+          assert r['candidate_audit']['exact_stage_a0_replay'] is True
+          assert all(v is False for v in r['target_access'].values())
+          print({'family':r['family'],'rep':0,'target_access':r['target_access']})
+          PY
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cipher_benchmark
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify exact source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cipher_benchmark rev-parse HEAD)" = '315f0cad4de3d021bd4185765c037cf2a28d341c'
+          test "$(git -C _cipher_benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = '2a4533ab9bdfa85db9bad602d590978953055df1'
+
+      - name: Install frozen dependencies
+        run: python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+
+      - name: Compile frozen scorer and target-blind smoke wrapper
+        run: |
+          python -m py_compile experiments/minimal-occupancy-generator/phase75a_score.py
+          python -m py_compile experiments/minimal-occupancy-generator/phase75a_candidate_smoke.py
+
+      - name: Execute full candidate-owned null machinery without target access
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/smoke
+          python experiments/minimal-occupancy-generator/phase75a_candidate_smoke.py \
+            _cipher_benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            '${{ matrix.family }}' 0 \
+            '/tmp/smoke/${{ matrix.family }}_0.json' \
+            > '/tmp/smoke/${{ matrix.family }}_0.stdout.txt'
+
+      - name: Enforce candidate-null measurement and target firewall
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,math
+          family='${{ matrix.family }}'
+          r=json.load(open(f'/tmp/smoke/{family}_0.json', encoding='utf-8'))
+          assert r['schema']=='issue75-phaseA-candidate-null-smoke-v1'
+          assert r['status']=='CANDIDATE_OWNED_NULL_EXECUTION_VERIFIED_TARGET_BLIND'
+          assert r['family']==family and r['rep']==0
+          assert r['candidate_audit']['exact_stage_a0_replay'] is True
+          assert r['candidate_audit']['fit_tolerance_revalidated'] is True
+          assert r['candidate_audit']['regenerated_fit_max_abs_marginal_error'] <= 1e-10
+          m=r['measurement']
+          assert m['reference_namespace']==f'issue75:phaseA:{family}:rep0:reference'
+          assert m['test_namespace']==f'issue75:phaseA:{family}:rep0:test'
+          assert m['n_reference']==1000 and m['n_test']==1000
+          assert len(m['z_full'])==66
+          assert math.isfinite(float(m['residual_energy']))
+          assert 0 < float(m['p_exist']) <= 1
+          a=r['target_access']
+          assert a['pair_Q_computed'] is True
+          assert a['residual_Z_computed'] is True
+          assert a['candidate_reference_null_computed'] is True
+          assert a['candidate_test_null_computed'] is True
+          assert a['Issue58C_target_vector_loaded'] is False
+          assert a['Issue58D_target_vector_loaded'] is False
+          assert a['target_correlation_computed'] is False
+          assert a['target_sign_agreement_computed'] is False
+          assert a['T_computed'] is False
+          print({'family':family,'E':m['residual_energy'],'p_exist':m['p_exist'],'W':m['reliability']['median'],'target_loaded':False})
+          PY
+
+      - name: Freeze smoke provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > '/tmp/smoke/PROVENANCE_${{ matrix.family }}.txt' <<EOF
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          smoke_head=${GITHUB_SHA}
+          family=${{ matrix.family }}
+          rep=0
+          successful_preflight_run=33501747280
+          successful_preflight_head=698e7ee5503bc7e47d183deb7d8cc09d89502216
+          stage_a0_sha256=83e5808576a6416e4b03e302242805509c05d16928403d3a58e5636bdbf9ecd2
+          scorer_replay_repair_commit=11cbcab12e9c02e5002bc286a132b9a8a9f267aa
+          target_loaded=false
+          pair_Q_computed=true
+          residual_Z_computed=true
+          target_correlation_computed=false
+          EOF
+
+      - name: Upload target-blind candidate-null smoke evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseA-candidate-smoke-${{ matrix.family }}-${{ github.sha }}
+          path: /tmp/smoke
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6

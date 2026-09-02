@@ -1,0 +1,162 @@
+name: Issue75 Phase E pretarget replay and candidate-null smoke
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths: ['.github/workflows/issue75-phaseE-pretarget.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pretarget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact pretarget head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Verify frozen authorities and chronology
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=b2ef72d19111445f164d68ded813f1f81e297af6
+          GEN=e6eb4fd32a7428a152b6370562f29eb453e4f049
+          E0=e89023ba6508822f77b49d2bc46a02e35b7a0f15
+          E0FREEZE=09929843dfe280490c037b1d520f0833011b40e8
+          SCORE=98392e084a94e55f723dff9d0c94994385ac61f7
+          AGG=46637f293c6d20c831614d4277767e6454790137
+          SMOKE=9cb0a473a33cafbfa873b282a78180671c6e9287
+          for c in "$PLAN" "$GEN" "$E0" "$E0FREEZE" "$SCORE" "$AGG" "$SMOKE"; do git merge-base --is-ancestor "$c" HEAD; done
+          git diff --exit-code "$PLAN" HEAD -- experiments/minimal-occupancy-generator/PLAN_E.md
+          git diff --exit-code "$GEN" HEAD -- experiments/minimal-occupancy-generator/phase75e_generator_support.py
+          git diff --exit-code "$E0" HEAD -- experiments/minimal-occupancy-generator/stage-e0/generator_authority.json
+          git diff --exit-code "$E0FREEZE" HEAD -- experiments/minimal-occupancy-generator/E0_FREEZE_E.md
+          git diff --exit-code "$SCORE" HEAD -- experiments/minimal-occupancy-generator/phase75e_score.py
+          git diff --exit-code "$AGG" HEAD -- experiments/minimal-occupancy-generator/phase75e_aggregate.py
+          git diff --exit-code "$SMOKE" HEAD -- experiments/minimal-occupancy-generator/phase75e_candidate_smoke.py
+          echo '4c406e60872f8fcfd27901cc41901db04c1aa192fa9ee91a14c01ea3dbe46a89  experiments/minimal-occupancy-generator/stage-e0/generator_authority.json' | sha256sum -c -
+          test ! -e experiments/minimal-occupancy-generator/stage-e-pretarget
+          test ! -e experiments/minimal-occupancy-generator/PRETARGET_EXECUTION_FREEZE_E.md
+          test ! -e experiments/minimal-occupancy-generator/stage-e-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_E.md
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cb
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Verify source and install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cb hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = 2a4533ab9bdfa85db9bad602d590978953055df1
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+          python -m py_compile experiments/minimal-occupancy-generator/phase75e_generator_support.py experiments/minimal-occupancy-generator/phase75e_score.py experiments/minimal-occupancy-generator/phase75e_candidate_smoke.py experiments/minimal-occupancy-generator/phase75e_aggregate.py
+
+      - name: Exact replay preflight reps 0 and 30
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/pretarget
+          SRC=_cb/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          python experiments/minimal-occupancy-generator/phase75e_score.py "$SRC" 0 /tmp/pretarget/preflight_rep0.json --verify-only > /tmp/pretarget/preflight_rep0.stdout.txt
+          python experiments/minimal-occupancy-generator/phase75e_score.py "$SRC" 30 /tmp/pretarget/preflight_rep30.json --verify-only > /tmp/pretarget/preflight_rep30.stdout.txt
+          python - <<'PY'
+          import json
+          expected={0:'1a651c319a4dbc52c357fbae9671a1d3ea421f5ff67c8e6a5544c6b42250f21c',30:'4eda55f6b9582784264e5c48f4f3c85b198b0ac6cfe81287d0c34473f1020959'}
+          for rep in (0,30):
+              r=json.load(open(f'/tmp/pretarget/preflight_rep{rep}.json'))
+              assert r['schema']=='issue75-phaseE-m5-r1-preflight-v1'
+              assert r['status']=='EXACT_E0_M5_CORPUS_REGENERATED_TARGET_BLIND'
+              assert r['family']=='M5-KRS-2MIX-CHAIN'
+              assert r['candidate_audit']['occupancy_sha256']==expected[rep]
+              assert r['candidate_audit']['phase_e0_authority_sha256']=='4c406e60872f8fcfd27901cc41901db04c1aa192fa9ee91a14c01ea3dbe46a89'
+              assert r['candidate_audit']['exact_phase_e0_replay'] is True
+              assert r['candidate_audit']['frozen_parameters_reconstructed'] is True
+              assert all(v is False for v in r['target_access'].values())
+          print('exact E0 replay target-blind preflight passed reps 0 and 30')
+          PY
+
+      - name: Candidate-owned null smoke rep 0 with target loader hard-blocked
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC=_cb/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          python experiments/minimal-occupancy-generator/phase75e_candidate_smoke.py "$SRC" 0 /tmp/pretarget/candidate_smoke_rep0.json > /tmp/pretarget/candidate_smoke_rep0.stdout.txt
+          python - <<'PY'
+          import json,math
+          r=json.load(open('/tmp/pretarget/candidate_smoke_rep0.json'))
+          assert r['schema']=='issue75-phaseE-m5-candidate-null-smoke-v1'
+          assert r['status']=='M5_CANDIDATE_OWNED_NULL_EXECUTION_VERIFIED_TARGET_BLIND'
+          assert r['family']=='M5-KRS-2MIX-CHAIN' and r['rep']==0
+          assert r['candidate_audit']['occupancy_sha256']=='1a651c319a4dbc52c357fbae9671a1d3ea421f5ff67c8e6a5544c6b42250f21c'
+          m=r['measurement']
+          assert m['n_reference']==1000 and m['n_test']==1000 and len(m['z_full'])==66
+          assert math.isfinite(float(m['residual_energy'])) and 0<float(m['p_exist'])<=1
+          a=r['target_access']
+          assert a['pair_Q_computed'] is True and a['residual_Z_computed'] is True
+          assert a['candidate_reference_null_computed'] is True and a['candidate_test_null_computed'] is True
+          for key in ('Issue58C_target_vector_loaded','Issue58D_target_vector_loaded','target_correlation_computed','target_sign_agreement_computed','T_computed'):
+              assert a[key] is False
+          assert 'hard fail' in r['target_firewall']
+          print({'E':m['residual_energy'],'p_exist':m['p_exist'],'W':m['reliability']['median'],'target_loaded':False})
+          PY
+
+      - name: Freeze exact pretarget evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum /tmp/pretarget/*.json /tmp/pretarget/*.stdout.txt > /tmp/pretarget/SHA256SUMS.txt
+          cat > /tmp/pretarget/PROVENANCE.txt <<EOF
+          scientific_role=PRETARGET_PHASE_E_REPLAY_AND_CANDIDATE_NULL_AUTHORITY
+          workflow_run=${GITHUB_RUN_ID}
+          workflow_attempt=${GITHUB_RUN_ATTEMPT}
+          execution_head=${GITHUB_SHA}
+          normative_plan_commit=b2ef72d19111445f164d68ded813f1f81e297af6
+          generator_commit=e6eb4fd32a7428a152b6370562f29eb453e4f049
+          e0_authority_sha256=4c406e60872f8fcfd27901cc41901db04c1aa192fa9ee91a14c01ea3dbe46a89
+          scorer_commit=98392e084a94e55f723dff9d0c94994385ac61f7
+          aggregate_commit=46637f293c6d20c831614d4277767e6454790137
+          smoke_commit=9cb0a473a33cafbfa873b282a78180671c6e9287
+          replay_reps=0,30
+          candidate_smoke_rep=0
+          n_reference=1000
+          n_test=1000
+          target_loaded=false
+          target_correlation_computed=false
+          target_sign_agreement_computed=false
+          T_computed=false
+          drops=0
+          rerolls=0
+          EOF
+
+      - name: Upload immutable pretarget evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseE-pretarget-${{ github.sha }}
+          path: /tmp/pretarget
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Commit exact pretarget evidence into repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=experiments/minimal-occupancy-generator/stage-e-pretarget
+          test ! -e "$DEST"
+          mkdir -p "$DEST"
+          cp /tmp/pretarget/* "$DEST/"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Issue75 Phase E: freeze target-blind replay and null smoke'
+          git push origin HEAD:issue75-minimal-occupancy-generator

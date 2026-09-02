@@ -1,0 +1,13 @@
+{
+  "E": null,
+  "R_IT2a": null,
+  "R_ZL3b": null,
+  "T": null,
+  "W": null,
+  "occupancy_sha256": "8a7b2a41bf95d865bf50714c43d582f2c51c4da905c00e8cc0a19d775580351e",
+  "output_sha256": "f1588e97c705707be252c783f8e263185663eedb036adc8c4dc73e1850ac52e3",
+  "p_exist": null,
+  "rep": 0,
+  "status": "EXACT_F1_M6_CORPUS_REGENERATED_TARGET_BLIND",
+  "verify_only": true
+}

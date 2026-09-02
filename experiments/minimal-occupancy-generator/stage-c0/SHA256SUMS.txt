@@ -1,0 +1,2 @@
+1ff4469f57a84093b8c5d6463bb276a8de6fc108eed666bf63c9c7dacbf622a6  /tmp/issue75-c0/generator_authority.json
+0bd95c009b8b067ad241ad92e623b2650e7ace3360047c483332221745553e97  /tmp/issue75-c0/stdout.txt

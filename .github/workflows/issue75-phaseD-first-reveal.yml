@@ -1,0 +1,192 @@
+name: Issue75 Phase D frozen M4 first reveal
+
+on:
+  push:
+    branches: [issue75-minimal-occupancy-generator]
+    paths: ['.github/workflows/issue75-phaseD-first-reveal.yml']
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  authorize:
+    runs-on: ubuntu-latest
+    outputs:
+      head: ${{ steps.authorize.outputs.head }}
+    steps:
+      - name: Checkout exact first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - id: authorize
+        name: Verify immutable pretarget authority
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAN=f9e60ed9e9261b30c3294c576cf7ea037cf2c2c7
+          GEN=ef8edcb94e287a3fd6c559308ff902dc7d1c41ee
+          D0=2e1e0545e73e857d595cd71bff05a910bfc10eee
+          SCORE=5449d31480d783f5bb335958be557e6ad8cbadb6
+          SMOKE=16ca05a186d3936d81f7fbe8c7527b0637a8406a
+          PRETARGET=af187ab80af1bb4868756b2625eefd866b69ee99
+          AGG=44c7955b834e51932bd9c9946d38d66da489d001
+          FREEZE=2486d8b7d8cc0f205ce9e684b27ad9231b4f2470
+          for c in "$PLAN" "$GEN" "$D0" "$SCORE" "$SMOKE" "$PRETARGET" "$AGG" "$FREEZE"; do
+            git merge-base --is-ancestor "$c" HEAD
+          done
+          git diff --exit-code "$PLAN" HEAD -- experiments/minimal-occupancy-generator/PLAN_D.md
+          git diff --exit-code "$GEN" HEAD -- experiments/minimal-occupancy-generator/phase75d_generator_support.py
+          git diff --exit-code "$D0" HEAD -- experiments/minimal-occupancy-generator/stage-d0/generator_authority.json
+          git diff --exit-code "$SCORE" HEAD -- experiments/minimal-occupancy-generator/phase75d_score.py
+          git diff --exit-code "$SMOKE" HEAD -- experiments/minimal-occupancy-generator/phase75d_candidate_smoke.py
+          git diff --exit-code "$PRETARGET" HEAD -- experiments/minimal-occupancy-generator/stage-d-pretarget
+          git diff --exit-code "$AGG" HEAD -- experiments/minimal-occupancy-generator/phase75d_aggregate.py
+          git diff --exit-code "$FREEZE" HEAD -- experiments/minimal-occupancy-generator/PRETARGET_EXECUTION_FREEZE_D.md
+          echo '5c31aaa5fdb959873d89d7762dfd78db42c1a773a091b71a9f0731e90fa269cb  experiments/minimal-occupancy-generator/stage-d0/generator_authority.json' | sha256sum -c -
+          echo '60613a2763a830e50a2b342ace218088968df9db4ed016c94028b07f0f84ab83  experiments/minimal-occupancy-generator/stage-d-pretarget/candidate_smoke_rep0.json' | sha256sum -c -
+          echo 'b802ed805c604572d58f0888c48fad1a45f067e4aac11dd260c87f7b77b11244  experiments/minimal-occupancy-generator/stage-d-pretarget/preflight_rep0.json' | sha256sum -c -
+          echo '923aa39259d73632ec352bf7a3663914b50cc9de521c953ab3ce8d15058ec1ca  experiments/minimal-occupancy-generator/stage-d-pretarget/preflight_rep30.json' | sha256sum -c -
+          echo 'fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540  experiments/minimal-occupancy-generator/stage-a-first-reveal/phase75a_aggregate.json' | sha256sum -c -
+          echo '34affe98b68a1e410ea3d4384a917450c2b58e7a8e02a30da8befa660712421a  experiments/minimal-occupancy-generator/stage-c-first-reveal/phase75c_aggregate.json' | sha256sum -c -
+          test "$(git rev-parse HEAD:experiments/joint-constraint-tournament/target68.py)" = e94a24fbdfbb922099407313f23a1b87859130b6
+          test "$(gh api repos/daito-dot/LETSGO-Voynich/actions/runs/33510693677 --jq .conclusion)" = success
+          test "$(gh api repos/daito-dot/LETSGO-Voynich/actions/runs/33511195719 --jq .conclusion)" = success
+          test ! -e experiments/minimal-occupancy-generator/stage-d-first-reveal
+          test ! -e experiments/minimal-occupancy-generator/REPORT_D.md
+          test ! -e experiments/minimal-occupancy-generator/DECISION_D_LATENT_REQUIRED.md
+          test ! -e experiments/minimal-occupancy-generator/DECISION_D_STOP_LADDER.md
+          echo "head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  score:
+    needs: authorize
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 31
+      matrix:
+        rep: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]
+    steps:
+      - name: Checkout frozen scientific head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.head }}
+          fetch-depth: 0
+
+      - name: Checkout frozen ZL3b source
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: _cb
+          sparse-checkout: benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+          sparse-checkout-cone-mode: false
+
+      - name: Score exact frozen M4 corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _cb hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = 2a4533ab9bdfa85db9bad602d590978953055df1
+          python -m pip install --disable-pip-version-check numpy==2.2.6 scipy==1.16.1
+          mkdir -p /tmp/s
+          python experiments/minimal-occupancy-generator/phase75d_score.py \
+            _cb/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            '${{ matrix.rep }}' \
+            '/tmp/s/M4-KRS-CHAIN-DISTANCE_${{ matrix.rep }}.json' \
+            > '/tmp/s/M4-KRS-CHAIN-DISTANCE_${{ matrix.rep }}.stdout.txt'
+          python - <<'PY'
+          import json,math
+          n=${{ matrix.rep }}
+          r=json.load(open(f'/tmp/s/M4-KRS-CHAIN-DISTANCE_{n}.json'))
+          assert r['schema']=='issue75-phaseD-m4-r1-score-v1'
+          assert r['status']=='PHASE_D_M4_FIRST_REVEAL_CASE_SCORED'
+          assert r['family']=='M4-KRS-CHAIN-DISTANCE' and r['rep']==n
+          a=r['candidate_audit']
+          assert a['phase_d0_authority_sha256']=='5c31aaa5fdb959873d89d7762dfd78db42c1a773a091b71a9f0731e90fa269cb'
+          assert a['exact_phase_d0_replay'] and a['rank_29_revalidated'] and a['fit_tolerance_revalidated']
+          assert r['pair_count']==66 and r['target_readings_averaged'] is False
+          assert r['no_case_selection'] and r['no_reroll']
+          assert all(r['target_access'].values())
+          assert math.isfinite(float(r['T']))
+          assert r['T']==min(r['topology']['ZL3b']['pearson'],r['topology']['IT2a']['pearson'])
+          PY
+
+      - name: Upload exact case score
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-d4-score-${{ matrix.rep }}-${{ needs.authorize.outputs.head }}
+          path: /tmp/s
+          if-no-files-found: error
+          retention-days: 90
+
+  aggregate:
+    needs: [authorize, score]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen scientific head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.head }}
+          fetch-depth: 0
+
+      - name: Download all 31 exact score artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: issue75-d4-score-*-${{ needs.authorize.outputs.head }}
+          path: /tmp/r
+          merge-multiple: true
+
+      - name: Aggregate under frozen decision law
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find /tmp/r -maxdepth 1 -name 'M4-KRS-CHAIN-DISTANCE_*.json' | wc -l)" -eq 31
+          mkdir -p /tmp/f/individual
+          python experiments/minimal-occupancy-generator/phase75d_aggregate.py \
+            /tmp/r /tmp/f/phase75d_aggregate.json '${{ needs.authorize.outputs.head }}' \
+            > /tmp/f/aggregate.stdout.txt
+          cp /tmp/r/M4-KRS-CHAIN-DISTANCE_*.json /tmp/f/individual/
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/f/phase75d_aggregate.json'))
+          assert r['schema']=='issue75-phaseD-m4-aggregate-v1'
+          assert r['status']=='PHASE_D_M4_COMPLETE_31_CASE_POPULATION_AGGREGATED'
+          assert r['population']['total_results']==31
+          assert r['population']['complete_population'] and r['population']['no_drops'] and r['population']['no_rerolls']
+          assert r['phase_d0_authority_sha256']=='5c31aaa5fdb959873d89d7762dfd78db42c1a773a091b71a9f0731e90fa269cb'
+          assert r['phase_a_positive_control_aggregate_sha256']=='fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540'
+          assert r['phase_c_m3_aggregate_sha256']=='34affe98b68a1e410ea3d4384a917450c2b58e7a8e02a30da8befa660712421a'
+          assert r['frozen_phase_a_positive_control']['delta_plus_q95']==0.009768313008182594
+          assert r['primary']['no_material_loss']==(r['primary']['gap_M4']>=-0.009768313008182594)
+          assert r['primary']['classification'] in (
+            'M4_KRS_CHAIN_DISTANCE_NONLOCAL_GRAMMAR_SUFFICIENT',
+            'M4_KRS_CHAIN_DISTANCE_NONLOCAL_GRAMMAR_INSUFFICIENT_LATENT_CONFIGURATION_RULE_REQUIRED')
+          assert all(v is False for v in r['guardrails'].values())
+          PY
+          (cd /tmp/f && sha256sum phase75d_aggregate.json aggregate.stdout.txt > SHA256SUMS.txt)
+          cat > /tmp/f/PROVENANCE.txt <<EOF
+          scientific_role=PHASE_D_FIRST_REVEAL_COMPLETE_31_CASE_AUTHORITY
+          scientific_head=${{ needs.authorize.outputs.head }}
+          pretarget_execution_freeze=2486d8b7d8cc0f205ce9e684b27ad9231b4f2470
+          d0_authority_sha256=5c31aaa5fdb959873d89d7762dfd78db42c1a773a091b71a9f0731e90fa269cb
+          phase_a_aggregate_sha256=fc3788c01bfa908bcae528a7a2606d508d26f694bf5ae51bc6cb537232efb540
+          phase_c_aggregate_sha256=34affe98b68a1e410ea3d4384a917450c2b58e7a8e02a30da8befa660712421a
+          prior_valid_phase_d_target_scores=0
+          cases=31
+          drops=0
+          rerolls=0
+          EOF
+
+      - name: Upload immutable complete first-reveal authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue75-phaseD-FIRST-REVEAL-${{ needs.authorize.outputs.head }}
+          path: /tmp/f
+          if-no-files-found: error
+          retention-days: 90
