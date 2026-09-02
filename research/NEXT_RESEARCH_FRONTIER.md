@@ -1,6 +1,16 @@
 # Next research frontier — prospectively constrained reversible / inverse mechanism tournament
 
-## CURRENT FRONTIER — after OGH-A: close the successor-grammar gap and re-enter the joint tournament
+## CURRENT FRONTIER — after OGH-B: R1 is closed; move to slot values and cross-token responsibilities
+
+OGH-B (`experiments/occupancy-generation-hierarchy/REPORT_B.md`) closed the gap OGH-A left: the target-blind selected second-order successor grammar (298 counted probabilities) reaches median `T = 0.948 / 0.962` on the ZL3b / IT2a skeletons, within `0.0165 / 0.0079` of the empirical-inventory ceiling (δ = 0.0098). Frozen decision `SUCCESSOR GRAMMAR NEAR-SUFFICIENT`. **No further R1 rung is licensed.**
+
+The next plan-first question is:
+
+> **How much information does a Voynich token carry beyond its slot shape, and does a complete memoryless token generator (shape + values) reproduce the cross-token constraints R2 and R3?**
+
+Required shape: (1) value-level successor grammar fitted on training leaves, reported as held-out bits per token on both readings; (2) frozen R2/R3 scoring of the generated corpus with the Phase62/64 scorecards; (3) no target inspection during model definition. Everything below this line is the OGH-A-era frontier, retained for history.
+
+## Previous frontier — after OGH-A: close the successor-grammar gap and re-enter the joint tournament
 
 OGH-A (`experiments/occupancy-generation-hierarchy/REPORT_A.md`) and Issue #75 Phases A–F0 together resolve most of the post-#72 question "what generates the replicated R1 topology":
 

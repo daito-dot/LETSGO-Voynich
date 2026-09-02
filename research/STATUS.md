@@ -1,8 +1,10 @@
 # Current research status
 
-## Current research state — after Issue #72, Issue #75 Phases A–F0 and OGH-A (2026-09-01)
+## Current research state — after Issue #72, Issue #75 Phases A–F0, OGH-A and OGH-B (2026-09-02)
 
-**Token-construction lane, current frozen classification (OGH-A):** `COMPACT CONSTRUCTION GRAMMAR SUFFICIENT` under the Issue #68 R1 gate, replicated on the ZL3b and IT2a skeletons.
+**Token-construction lane:** OGH-A `COMPACT CONSTRUCTION GRAMMAR SUFFICIENT` (Issue #68 gate, both skeletons); OGH-B `SUCCESSOR GRAMMAR NEAR-SUFFICIENT` — **the R1 generation lane is closed.**
+
+OGH-B (`REPORT_B.md`): the target-blind selected second-order successor grammar (G7A, 298 counted probabilities; next occupied slot conditioned on the two most recent occupied slots) reaches median `T = 0.948` (ZL3b skeleton) and `0.962` (IT2a skeleton), within `0.0165` and `0.0079` of the empirical-inventory ceiling (Issue #75 tolerance `0.0098`); Issue #68 gate 6/6; on the IT2a arm it exceeds the pairwise maxent control. K-gating of the successor table (G7B) added nothing in held-out likelihood.
 
 What is now established about the replicated 66-edge residual token-construction topology (R1):
 
@@ -14,9 +16,9 @@ What is now established about the replicated 66-edge residual token-construction
 
 **Interpretation revision:** R1 is a compact second-order construction constraint over which slot subsets co-occur inside a token. It is generated well by a sequential successor rule and does not require latent construction states or higher-order configuration rules. Parser admissibility (4,077/4,095 signatures admissible) contributes nothing.
 
-**Active frontier:** preregister the smallest extension of the successor grammar that closes the remaining gap to the pairwise ceiling (second-order successor context or K/R/S-gated successor tables), using held-out likelihood, not target edges, to choose; then carry the successor grammar into the joint R1–R5 tournament as the emission-stage comparator. Do not repair Naibbe; do not use individual edges.
+**Active frontier:** R1 is a solved, cheap necessary condition. Move to (1) slot **values**: extend the successor grammar to a complete token generator conditioned on the previous value, quantifying the per-token information budget; (2) test whether that memoryless token generator reproduces R2 (H62 recurrence) and R3 (signed S1). Carry frozen G4/G7A into the joint R1–R5 tournament as emission-stage comparators. Do not add further R1 rungs; do not repair Naibbe; do not use individual edges.
 
-Last consolidated: 2026-09-01
+Last consolidated: 2026-09-02
 
 ## Previous research state — Issue #68 first joint-constraint tournament (2026-09-01)
 

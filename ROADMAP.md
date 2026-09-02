@@ -1,26 +1,23 @@
 # Research roadmap
 
-## Active roadmap — post Issue #72 / Issue #75 A–F0 / OGH-A
+## Active roadmap — post Issue #72 / Issue #75 A–F0 / OGH-A / OGH-B
 
 ### Completed: Naibbe R1 decomposition and the minimal occupancy-generator ladder
 
 - #72: Naibbe R1 lives in the parsed 12-slot occupancy-signature inventory (C1 supported; PT and FI refuted).
 - #75 A–F0 (branch): M0/M1 fail; M2 `0.29` → M3 `0.59` → M4 `0.62` → M5 `0.73` insufficient vs M+ `0.965`; F0 selects K/R/S-gated two-mode chain (M6) for the next target test.
-- OGH-A: independent-harness replication of the Phase-A fork on both skeletons; pairwise maxent control shows R1 is second-order sufficient to within `≈0.02`; a 78-parameter last-occupied-slot successor grammar passes the Issue #68 R1 gate (`r 0.91–0.93`, both readings, both skeletons). Frozen class `COMPACT CONSTRUCTION GRAMMAR SUFFICIENT`.
+- OGH-A: independent-harness replication of the Phase-A fork on both skeletons; pairwise maxent control shows R1 is second-order sufficient to within `≈0.01`; a 78-parameter last-occupied-slot successor grammar passes the Issue #68 R1 gate (`r 0.91–0.93`, both readings, both skeletons). Frozen class `COMPACT CONSTRUCTION GRAMMAR SUFFICIENT`.
+- OGH-B: target-blind selected second-order successor grammar (298 params) reaches median `T 0.948 / 0.962`, within `0.0165 / 0.0079` of the empirical ceiling. Frozen decision `SUCCESSOR GRAMMAR NEAR-SUFFICIENT`; **R1 generation lane closed**.
 
-### Current frontier: close the successor-grammar gap, then re-enter the joint tournament
+### Current frontier: from token shape to token content and cross-token structure
 
-1. Integrate #75 and OGH-A on `main`; keep both ladders' authorities intact.
-2. Preregister one compact extension of G4 (second-order successor context, or K/R/S-gated successor tables). Selection must use training-only held-out likelihood; the frozen 66 edges may not be consulted.
-3. Score it under both criteria: Issue #68 R1 gate and Issue #75 M+-equivalence (`gap ≥ −0.0098`).
-4. Whatever the outcome, carry the frozen successor grammar into the next joint R1–R5 tournament as the emission-stage comparator; R2/R3/R4 remain independent responsibilities.
+1. **Slot-value generator (plan first).** Extend the successor grammar from occupancy to values: a complete token generator in which each filled slot's value is conditioned on the previous filled slot's value. Report cross-fitted held-out bits per token (the per-token information budget) on ZL3b and IT2a. No target statistic beyond likelihood in the selection stage.
+2. **Cross-token test.** Score the memoryless complete token generator, placed into the manuscript line skeleton, against R2 (H62 near-family recurrence geometry) and R3 (signed S1 paragraph entry) with the frozen Phase62/64 scorecards. Expected: fail, thereby locating the content-bearing signal in cross-token memory.
+3. **Joint tournament re-entry.** Frozen G4/G7A are the emission-stage comparators; a candidate mechanism whose emission stage does not reach `T ≈ 0.90–0.95` at ≤ 300 counted parameters is not competitive on R1.
 
-### Decision after the extension test
+R1 is closed: no further occupancy-only rungs.
 
-- Gap closed to the pairwise ceiling: the token-construction law is a compact second-order successor grammar; move effort to R2/R3/R4 and to embedding the grammar in reversible candidates.
-- Gap not closed: report which pair couplings the successor family cannot express (diagnostic only), and preregister a structurally different compact family; do not add pair-specific terms one by one.
-
-Last consolidated: 2026-09-01
+Last consolidated: 2026-09-02
 
 ## Previous roadmap — post Issue #68
 
