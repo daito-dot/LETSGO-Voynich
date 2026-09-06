@@ -32,6 +32,19 @@ def normalize_tau_record(rec: dict):
         rec["tau"] = "INF"
 
 
+def strict_json_safe(obj):
+    """Losslessly label non-finite diagnostic floats for strict JSON transport."""
+    if isinstance(obj, dict):
+        return {k: strict_json_safe(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [strict_json_safe(v) for v in obj]
+    if isinstance(obj, tuple):
+        return [strict_json_safe(v) for v in obj]
+    if isinstance(obj, float) and not math.isfinite(obj):
+        return "INF" if obj > 0 else "-INF"
+    return obj
+
+
 def run(zl_path: Path):
     out = P.run_preflight(zl_path)
     out["schema"] = "issue90-phase0-preflight-b-v1"
@@ -47,8 +60,7 @@ def run(zl_path: Path):
     out["authority_hashes"]["phase0_preflight_A_code.py"] = P.sha256_file(HERE.parent / "phase0_preflight.py")
     out["authority_hashes"]["phase0_preflight_B_wrapper.py"] = P.sha256_file(HERE)
 
-    # Convert non-finite tau values to the explicit scientific label before JSON serialization.
-    # Several diagnostics share the same selected dict object, so this helper is idempotent.
+    # Convert exact infinite decay scale to its scientific label before generic transport sanitization.
     for row in out["selections"].values():
         normalize_tau_record(row["selected"])
         for rec in row["candidate_table"]:
@@ -59,7 +71,8 @@ def run(zl_path: Path):
         for diag in rep["fold_diagnostics"].values():
             normalize_tau_record(diag["selected"])
 
-    # Recompute selection hash on the serialized authority representation.
+    out = strict_json_safe(out)
+    # Recompute selection hash on the strict serialized authority representation.
     out["selection_sha256"] = P.I.sha256_obj(out["selections"])
     return out
 
@@ -83,7 +96,7 @@ def main(argv=None):
         "predictive": out["outer_heldout_predictive"]["summary"],
         "selection_sha256": out["selection_sha256"],
         "target_score_calls": out["target_score_calls"],
-    }, indent=2, sort_keys=True))
+    }, indent=2, sort_keys=True, allow_nan=False))
     return 0
 
 
