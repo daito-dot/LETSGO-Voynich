@@ -1,0 +1,132 @@
+name: Issue145 common-EVA edge Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/common-eva-edge/ISSUE145_COMMON_EVA_EDGE_PLAN.md'
+      - 'experiments/predictive-information/common-eva-edge/issue145_common_eva_gate0.py'
+      - '.github/workflows/issue145-common-eva-edge-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue145_common_eva_edge_gate0.json
+
+jobs:
+  gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install score-free parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce score-free Gate0 executable
+        shell: bash
+        run: |
+          GATE=experiments/predictive-information/common-eva-edge/issue145_common_eva_gate0.py
+          test -f "$GATE"
+          if grep -E 'math\.log|np\.log|log2\(|bits_POS|bits_EDGE|bits_per_token|G_common|cross_entropy|smoothed_logp|token_logp|scientific_classification' "$GATE"; then
+            echo 'Predictive/target scoring path found in Issue145 Gate0 executable' >&2
+            exit 1
+          fi
+
+      - name: Compile and target-free self-test
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/common-eva-edge/issue145_common_eva_gate0.py
+          python experiments/predictive-information/common-eva-edge/issue145_common_eva_gate0.py --self-test
+
+      - name: Run score-free dual-source support Gate0
+        shell: bash
+        run: |
+          python experiments/predictive-information/common-eva-edge/issue145_common_eva_gate0.py --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue145_common_eva_edge_gate0.sha256
+
+      - name: Assert authority support and firewall
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue145_common_eva_edge_gate0.json',encoding='utf-8'))
+          assert x['schema']=='issue145-common-eva-edge-gate0-v1'
+          assert x['issue']==145 and x['gate_pass'] is True
+          assert x['scientific_target_metrics_computed'] is False
+          assert x['gate_disposition']=='PASS — PROCEED TO SEPARATELY COMMITTED COMMON-EVA DUAL EDGE SCORER'
+          assert x['sources']['ZL3b']['sha256']=='bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc'
+          assert x['sources']['IT2a']['sha256']=='7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5'
+          assert x['fold_authority']['identity_sha256']=='cf2df8edcf2b25c2f6388c4a9e2c1ee58a24ae05a9cf489ff9a43d2d28f0b64b'
+          assert x['representation']['n_atom_outcomes']==31
+          assert x['representation']['V_with_END']==32
+          assert x['representation']['clean_run_reset']=='source-line start and immediately after every unclean segment'
+          for name in ('ZL3b','IT2a'):
+              r=x['readings'][name]
+              assert r['physical_leaves']==x['fold_authority']['n_leaves']
+              assert set(r['by_fold'])=={'0','1','2','3','4'}
+              assert len(r['outer_training_support'])==5
+              for f in range(5):
+                  row=r['by_fold'][str(f)]
+                  assert row['primary_targets']>=300
+                  assert row['primary_run_body_targets']>=300
+              for row in r['outer_training_support']:
+                  assert row['training_run_start_tokens']>0
+                  assert row['training_run_body_tokens']>0
+                  assert row['unique_previous_terminal_atom_contexts']>=2
+                  assert row['unique_previous_terminal_to_initial_atom_pairs']>=2
+          fw=x['firewall']
+          assert fw['scientific_target_metrics_computed'] is False
+          assert fw['POS2_or_EDGE2_probability_computed'] is False
+          assert fw['likelihood_or_code_length_computed'] is False
+          assert fw['edge_gain_computed'] is False
+          assert fw['cross_reading_effect_ratio_computed'] is False
+          assert fw['literal_table_similarity_computed'] is False
+          print(json.dumps({
+              'gate_disposition':x['gate_disposition'],
+              'ZL3b':x['readings']['ZL3b']['by_fold'],
+              'IT2a':x['readings']['IT2a']['by_fold'],
+              'ZL3b_training':x['readings']['ZL3b']['outer_training_support'],
+              'IT2a_training':x['readings']['IT2a']['outer_training_support'],
+              'scientific_target_metrics_computed':x['scientific_target_metrics_computed'],
+          },indent=2,sort_keys=True,ensure_ascii=False))
+          PY
+
+      - name: Upload Gate0 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue145-common-eva-edge-gate0-${{ github.event.pull_request.head.sha }}
+          path: |
+            issue145_common_eva_edge_gate0.json
+            issue145_common_eva_edge_gate0.sha256
