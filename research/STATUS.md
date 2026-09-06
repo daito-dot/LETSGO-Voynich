@@ -9,82 +9,66 @@ This file records the accepted high-level interpretation. Exact methods, first-r
 
 The Voynich Manuscript is **not deciphered**.
 
-The strongest current structural picture is:
+The strongest current structural picture is now unusually constrained:
 
-1. a visible certain-space-delimited unit is a real construction boundary under the tested EVA/IVTFF representations, independently replicated in ZL3b and Takahashi/IT2a;
-2. inside that unit, a compact second-order occupied-slot successor grammar explains nearly all of the replicated token-internal topology;
-3. between nearby units, a short edit-distance-1 near-family recurrence mechanism is predictive and transports cleanly across Currier A/B;
-4. slower previous-paragraph / causal-prefix inventory also predicts, but its useful strength differs by Currier regime and the difference survives matching the common Herbal domain;
-5. corrected B3 (V2 + local/long history + observable line/paragraph state) reaches `9.51727 bits/token` from a `9.70891`-bit V2 baseline;
-6. Issue #118 found a further small robust cross-boundary residual, and Issue #121 now shows that it survives an exact same-order byte-model control: `G_edge = +0.0106322 bit/token`, positive in `5/5` folds;
-7. predeclared L1 diagnostics localize essentially all positive non-leaf-start contribution to **adjacent units within the same source line**; carrying the byte context across a line break gives no positive mean advantage.
+1. visible certain spaces behave as reproducible construction/production boundaries in both ZL3b and independent Takahashi/IT2a;
+2. inside each visible unit, a compact second-order occupied-slot successor grammar explains nearly all replicated token-internal topology;
+3. nearby units are weakly coupled by a short edit-distance-1 recurrence/cache process that transports across Currier A/B;
+4. slower prior-paragraph / causal-prefix inventory is predictive but its useful strength differs by Currier regime and the difference survives matched Herbal restriction;
+5. corrected B3 (V2 + local/long history + observable line/paragraph state) reaches `9.5172688 bits/token` from a `9.7089061`-bit V2 baseline;
+6. a further small surface residual survives B3, matched emission control and same-order byte control;
+7. Issue #123 now prospectively localizes that residual to **adjacent visible units within the same source line**: carrying the same byte context across a line break is worse in all five outer folds.
 
-The remaining residual is therefore narrower than a generic long hidden sequence memory. It is currently best treated as a small **within-line boundary-edge dependency** until stronger observable/topological controls say otherwise.
+The remaining unexplained signal is therefore not well described as generic long hidden sequence memory. Under the tested fixed-k2 representation it is a small **line-local boundary-edge dependency**.
 
-None of these results establishes plaintext, language, semantics, a cipher family, an author, hoax/artificial origin, a historical production algorithm, or a latent semantic state.
+None of this establishes plaintext, language, semantics, a cipher family, an author, hoax/artificial origin, a historical production algorithm, or a latent semantic state.
 
 ## 1. Visible spaces are validated construction boundaries
 
-Phase 4A/B directly challenged the assumption that the project could treat visible spaces as meaningful production cuts.
+Phase 4A/B challenged the assumption that transcription spaces were meaningful production cuts.
 
-### ZL3b — Issue #112
-
-Frozen first-reveal classification:
+ZL3b first reveal:
 
 > **SPACE IS A REPRODUCIBLE PRODUCTION BOUNDARY**
 
-Using a raw-EVA representation independent of the 12-slot parser:
+- real-space vs within-token reset: `D_RESET = +8.811905 bits/event`, positive `5/5`;
+- observed cut beats one-atom-left and one-atom-right shifted cuts in `5/5` folds.
 
-- real-space vs deterministic within-token reset contrast: `D_RESET = +8.811905 bits/event`, positive `5/5`;
-- observed cut vs one-atom-left shift: `-8.501803`, observed wins `5/5`;
-- observed cut vs one-atom-right shift: `-5.476602`, observed wins `5/5`.
-
-### Independent Takahashi/IT2a — Issue #115
-
-Without changing atomization, model order, smoothing, cut rules or sign gates:
-
-- `D_RESET = +8.092615`, positive `5/5`;
-- left shift `-7.968269`, observed wins `5/5`;
-- right shift `-5.279450`, observed wins `5/5`.
-
-Frozen cross-transcription classification:
+Independent Takahashi/IT2a replication:
 
 > **VISIBLE-SPACE PRODUCTION BOUNDARY REPLICATES ACROSS ZL3b/IT2a**
+
+- IT2a `D_RESET = +8.092615`, positive `5/5`;
+- observed cut again beats both shifted cuts in `5/5`.
 
 Literal certain spaces can therefore be treated as transcription-lineage-robust construction/production boundaries under these representations. They are **not** thereby proven natural-language word boundaries.
 
 ## 2. Token-internal construction is compact
 
-Issue #75 plus OGH-A/B/C closed the main token-internal model ladder.
+Issue #75 plus OGH-A/B/C established that the next occupied slot is well modeled from only the previous two occupied slots.
 
-The strongest compact construction rule is a second-order occupied-slot successor grammar: the next occupied slot depends only on the previous two occupied slots. It uses 298 counted conditional probabilities and reaches the empirical-signature ceiling to within roughly 1–2% across the tested readings.
+- 298 counted conditional probabilities;
+- within roughly 1–2% of the empirical-signature ceiling across tested readings;
+- complete memoryless V2 ≈ `7.0 bits/token` shape + `2.7 bits/token` values ≈ `9.7 bits/token` total.
 
-A complete memoryless V2 token grammar carries approximately:
-
-- `~7.0 bits/token` in shape;
-- `~2.7 bits/token` additional value information;
-- `~9.7 bits/token` total.
-
-A rich latent token-internal state is not required by current evidence. Memoryless token generation, however, does not reproduce the major cross-token effects.
+A rich latent token-internal construction state is not currently required. Memoryless token generation, however, does not reproduce the major cross-token effects.
 
 ## 3. Corrected predictive-information budget
 
 The causal-source-order correction supersedes the original order-sensitive Phase-1/2 numbers.
-
-Corrected Phase 1:
 
 - B0 V2: `9.7089061 bits/token`;
 - B1 local history: `9.5943670`;
 - B2 longer causal history: `9.5461692`;
 - B3 + observable line/paragraph state: `9.5172688`.
 
-Thus corrected B3 improves on V2 by about `0.19164 bit/token`, roughly 2% of the V2 code length. Cross-token structure is reproducible but information-light compared with the information inside each bounded unit.
+B3 improves V2 by about `0.19164 bit/token`, roughly 2% of V2 code length. Cross-token structure is reproducible but information-light relative to the information inside each bounded unit.
 
 ## 4. Long-history prediction is mostly slow inventory
 
-Corrected Phase 2A/B/C shows that most apparent long-history gain is not literal detailed long-order memory.
+Corrected Phase 2A/B/C shows that most apparent long-history gain is not detailed long ordered memory.
 
-The dominant component is an order-free causal-prefix / prior-paragraph inventory of already activated edit-near token families. A smaller actual-order residual remains.
+The dominant component is an order-free causal-prefix / prior-paragraph inventory of activated edit-near token families. A smaller actual-order residual remains.
 
 Phase 2C:
 
@@ -93,61 +77,41 @@ Phase 2C:
 - same-side prior history `+0.0205711`, `5/5`;
 - cross-side prior history `+0.0237448`, `5/5`.
 
-The slow signal spans multiple prior paragraphs and crosses facing/page-side topology.
+The slow signal spans multiple prior paragraphs and crosses page-side topology.
 
 ## 5. LOCAL transports; PREV strength is regime-dependent
 
-Phase 3A shows the fixed LOCAL40 edit-near mechanism transports bidirectionally across Currier A/B with nearly unchanged strength:
+Phase 3A:
 
-- A `pi_LOCAL=.14`;
-- B `pi_LOCAL=.16`.
+- LOCAL40 transports bidirectionally across Currier A/B with nearly unchanged strength (`pi_LOCAL=.14` vs `.16`);
+- PREV_PARAS architecture is useful in both, but exact scalar strength differs (`alpha=.09` A vs `.19` B);
+- full CORE remains bidirectionally transportable.
 
-The slower PREV_PARAS mechanism is useful in both regimes, but exact scalar strength differs:
-
-- A `alpha_ALL_PREV=.09`;
-- B `alpha_ALL_PREV=.19`.
-
-Exact PREV scalar transfer passes A→B and fails B→A, while the full CORE remains bidirectionally transportable.
-
-Phase 3B found writing-hand metadata inadequately crossed with Currier, preventing a clean hand-causality test. Phase 3C therefore matched the common Herbal domain prospectively and still found:
-
-- A-H `pi=.10`, `alpha=.04`;
-- B-H `pi=.11`, `alpha=.08`;
-- LOCAL40 bidirectional;
-- PREV_PARAS A→B only;
-- CORE bidirectional.
+Phase 3C matched pure Herbal and still found approximately twofold PREV strength difference (`.04` A-H vs `.08` B-H) with A→B-only exact scalar transfer.
 
 Frozen interpretation:
 
 > **CURRIER PREV ASYMMETRY PERSISTS WITHIN HERBAL**
 
-Broad illustration/domain composition is not a sufficient explanation. Hand causality remains unresolved.
+Broad illustration/domain composition is not a sufficient explanation. Writing hand remains unresolved because it is inadequately crossed with Currier.
 
-## 6. Issue #118: residual beyond corrected B3
+## 6. Issue #118: flexible residual beyond corrected B3
 
-Issue #118 asked whether a flexible sequence model adds information because it carries context across visible-space boundaries, rather than merely because it supplies a different model of token spelling.
+Issue #118 compared the same byte n-gram family in two roles:
 
-The same byte n-gram family was used in two matched roles:
+- RESET: reset before every visible token;
+- CONTINUOUS: carry across visible spaces within the physical leaf.
 
-- `RESET`: reset byte history before every visible token;
-- `CONTINUOUS`: carry byte history across visible spaces until the physical-leaf boundary.
-
-Each expert was mixed independently with corrected B3 using inner-fold-only selection. The primary contrast was:
-
-`G_context = bits(MIX_RESET) - bits(MIX_CONT)`.
-
-Authoritative first reveal:
-
-- scientific head `8311c429e33b292e91582a349934705383335c68`;
-- workflow `34026324504`;
-- artifact `9987190901`;
-- result JSON SHA-256 `0aa224f64f4495dfba3b6433730f42fa553d998ac8d72ee682a8313f4664ce59`.
+Both were independently mixed with corrected B3 using inner-fold-only weight selection.
 
 Frozen classification:
 
 > **ROBUST FLEXIBLE SEQUENCE RESIDUAL EXISTS — LOCALIZATION REQUIRED**
 
-Mean `G_context = +0.0178533 bit/token`, positive `5/5`.
+`G_context = bits(MIX_RESET)-bits(MIX_CONT)`:
+
+- mean `+0.0178533 bit/token`;
+- positive `5/5`.
 
 Mean code lengths:
 
@@ -155,28 +119,11 @@ Mean code lengths:
 - MIX_RESET `9.50451671`;
 - MIX_CONT `9.48666342`.
 
-The complete CONT mixture improves B3 by `G_any = +0.0306054 bit/token`, positive `5/5`.
-
-The raw byte experts are worse than B3 in absolute code length, so the result is genuinely complementary rather than replacement by a better emission model.
+The residual is small but robust. It licensed localization, not latent-state interpretation.
 
 ## 7. Issue #121 L1: same-order boundary-edge control
 
-Issue #118 left one model-class concern: RESET had selected byte order `k=3` in folds 0–1 while CONT selected `k=2` in all folds.
-
-L1 removed that asymmetry prospectively by forcing **both** experts to exactly:
-
-- `k=2`;
-- `alpha=.01`.
-
-Only the boundary-history policy differed. Mixture weight `w` was still selected on inner folds only.
-
-Authority:
-
-- scientific head `30a7a8caf1a358d8c98fb4376ff9d4943d44b0ff`;
-- run `34026787486` — SUCCESS;
-- artifact `9987357230`;
-- artifact digest `sha256:3370dc79c17e7d8e700ac42264c242fed7ea93f50c9715ea1bc516e9b0b007cd`;
-- result JSON SHA-256 `574216279d545c9c0c7f468c1e36f0b022ab331f21fa450bd8f0e7bf6f17899c`.
+L1 removed the byte-order asymmetry by forcing both experts to `k=2, alpha=.01`.
 
 Frozen classification:
 
@@ -184,11 +131,6 @@ Frozen classification:
 
 `G_edge = bits(MIX_RESET2)-bits(MIX_CONT2)`:
 
-- fold0 `+0.0139393`;
-- fold1 `+0.0081150`;
-- fold2 `+0.0093004`;
-- fold3 `+0.0108658`;
-- fold4 `+0.0109406`;
 - mean `+0.0106322 bit/token`;
 - positive `5/5`.
 
@@ -198,84 +140,125 @@ Mean code lengths:
 - MIX_RESET2 `9.49729565`;
 - MIX_CONT2 `9.48666342`.
 
-RESET2 selects `w=.04` in all folds; CONT2 selects `.08,.08,.09,.08,.09`.
+Predeclared held-out localization showed essentially all positive non-leaf-start contribution on `SAME_LINE`; cross-line averages were approximately zero or slightly negative. Because that table was descriptive, Issue #123 converted the line-scope hypothesis into a prospectively frozen primary test.
 
-### Predeclared localization diagnostic
+## 8. Issue #123 L2: source-line reset scope
 
-The per-target held-out contrast was grouped without refitting by relation to the immediately previous visible token.
+L2 compared three identical fixed byte experts differing only in reset topology:
 
-- `SAME_LINE`: n=22,141, mean `+0.0114974`, total `+254.565 bits`;
-- `CROSS_LINE_SAME_ITEM`: n=2,631, mean `-0.0007373`, total `-1.940`;
-- `CROSS_ITEM_SAME_DOCUMENT`: n=226, mean `+0.0004219`, total `+0.095`;
-- `CROSS_DOCUMENT_SAME_LEAF`: n=36, mean `-0.0087033`, total `-0.313`;
-- `LEAF_START`: n=37, mean `+0.327669`, total `+12.124`.
+- RESET2: reset before every visible token;
+- LINECONT2: carry across spaces within one source line, reset at each line start;
+- LEAFCONT2: carry across line breaks within the physical leaf.
 
-`LEAF_START` is not cross-token evidence because no previous token exists there; it is the predeclared generic BOS/END start-distribution difference between experts.
+All use `k=2`, `alpha=.01`; mixture weights are selected on pooled inner folds only.
 
-For actual cross-token transitions, essentially all positive aggregate contribution comes from **SAME_LINE**. Across a line break the mean contribution is approximately zero or slightly negative.
+Authority:
 
-Entry/first-line targets show a larger descriptive mean than body/middle targets (`~0.0193` vs `~0.0083–0.0087`), but this is not yet a causal state attribution.
+- scientific head `87aee03e60e2eab72987eb0cc2bf8c4b992632a0`;
+- workflow run `34027611090` — SUCCESS;
+- artifact `9987613395`;
+- artifact digest `sha256:0e84611da8fb29810a61b25d48f6cc791e5ee39377e3b08de86fa7dc1128b80b`;
+- result JSON SHA-256 `dfdfca650a15f1d47bd7124898bc8483a139ce47bb17a2c2802a0d2e946dea55`;
+- corrected-core and exact Issue #121 parent regression both reproduced.
 
-### Interpretation
+Frozen classification:
 
-The residual is now much narrower than “some flexible sequence memory survives.”
+> **LINE-LOCAL CONTEXT CAPTURES RESIDUAL; NO ROBUST BEYOND-LINE GAIN**
+
+### Within-line information
+
+`G_line = bits(MIX_RESET2)-bits(MIX_LINECONT2)`:
+
+- fold0 `+0.0333904`;
+- fold1 `+0.0209321`;
+- fold2 `+0.0301701`;
+- fold3 `+0.0283997`;
+- fold4 `+0.0329147`;
+- mean `+0.0291614 bit/token`;
+- positive `5/5` — PASS.
+
+### Carry across line breaks
+
+`G_beyond_line = bits(MIX_LINECONT2)-bits(MIX_LEAFCONT2)`:
+
+- fold0 `-0.0194511`;
+- fold1 `-0.0128171`;
+- fold2 `-0.0208697`;
+- fold3 `-0.0175339`;
+- fold4 `-0.0219741`;
+- mean `-0.0185292 bit/token`;
+- positive `0/5` — FAIL.
+
+Mean code lengths:
+
+- B3 `9.51726884`;
+- MIX_RESET2 `9.49729565`;
+- MIX_LINECONT2 `9.46813424`;
+- MIX_LEAFCONT2 `9.48666342`.
+
+LINECONT2 is therefore not merely sufficient; under this fixed representation it is better than carrying the same context across line breaks in **every fold**.
+
+Mixture weights also move coherently under inner likelihood:
+
+- RESET2 `.04` in all folds;
+- LINECONT2 `.15,.16,.15,.15,.15`;
+- LEAFCONT2 `.08,.08,.09,.08,.09`.
+
+The prospectively defined state diagnostics point the same way: RESET2→LINECONT2 is positive for ENTRY/BODY and FIRST/MIDDLE/FINAL, while LINECONT2→LEAFCONT2 is negative in every reported stratum.
 
 Supported statement:
 
-> A small reproducible amount of immediate raw-surface information passes across adjacent visible construction units even after forcing the competing byte models to identical order and smoothing. In the predeclared localization, that advantage is concentrated within source lines and does not positively carry across line breaks.
+> The fixed-k2 residual is prospectively localized to immediate adjacency within a source line. Extending the same raw-surface history across a source-line break is predictively harmful, not beneficial, under the current model family.
 
-This is consistent with line-local boundary-adjacent morphotactics, local production sequencing, or another observable within-line dependency. It does not by itself imply a hidden semantic state.
+This does **not** mean a line is a sentence or semantic unit. It is a production-topology result.
 
-## 8. Cross-linguistic / cipher / historical controls
+## 9. Cross-linguistic / cipher / historical controls
 
 Issue #84 established a distinctive inter-unit relation regime across seven Voynich readings.
 
-Across 101 natural-language controls:
-
-- Voynich adjacent corrected MI is roughly `0.053–0.111 bits`;
-- controls range about `0.173–1.584`, median `~0.820`;
-- Voynich shows immediate exact-repeat excess while most ordinary-language controls suppress it;
-- ordinary-language controls show strong 21–40-token recurrence/burstiness while Voynich is weak there.
-
-Frozen common reversible-operation representatives and ten historical recipe/herbal/account/liturgical controls produced zero full hits under their preregistered joint criteria.
+Across 101 natural-language controls, Voynich has much lower adjacent corrected MI, immediate exact-repeat excess, and much weaker 21–40-token recurrence than typical controls. Frozen common reversible-operation representatives and ten historical recipe/herbal/account/liturgical controls produced zero full hits under their preregistered joint criteria.
 
 This narrows easy explanations but does not exclude all meaningful natural language, all historical genres or all cipher systems.
 
-## 9. Current integrated structural picture
+## 10. Current integrated structural picture
 
 ### Inside one visible unit
 
-A compact second-order construction grammar largely determines admissible shape; once shape is fixed, literal values add relatively little information.
+A compact second-order construction grammar largely determines admissible shape.
 
-### At the visible boundary
+### At the visible-space boundary
 
-A certain space is a sharp raw-shape context reset and the exact cut replicates across two reading lineages.
+A certain space is a sharp construction reset and its exact location replicates across two transcription lineages.
 
-### Between adjacent units on the same line
+### Between adjacent units on the same source line
 
-A small immediate boundary-edge dependency remains after corrected B3 and same-order emission control. This is currently the narrowest localized residual.
+A small immediate raw-surface boundary-edge dependency remains after corrected B3 and same-order emission control. This is now prospectively confirmed as **line-local** under the fixed-k2 representation.
 
-### Between nearby units more generally
+### At source-line breaks
 
-A short edit-near recurrence/cache mechanism is predictive and broadly transportable.
+The same short byte history should be reset. Carrying it across the break makes prediction worse in every L2 fold.
+
+### Across nearby units more generally
+
+A separate edit-near recurrence/cache mechanism remains predictive and broadly transportable.
 
 ### Across slower document history
 
-Prior-paragraph/cumulative family inventory adds reproducible but smaller prediction; its useful scalar strength varies by Currier regime.
+Prior-paragraph/cumulative family inventory adds reproducible prediction with Currier-dependent strength.
 
-The overall structure is therefore **compact and multiscale, with a small line-local adjacency residual not yet absorbed by the current observable non-latent model**.
+The overall structure is therefore **compact and multiscale, with a narrow line-local adjacency residual not yet absorbed by the current observable non-latent core**.
 
-## 10. Active frontier — confirm line-local scope before latent state
+## 11. Active frontier — explain the line-local edge before latent state
 
-The highest-value next test is not a rich hidden-state model.
+Issue #123 substantially narrows the remaining residual. The next high-value test should not be a generic hidden-state model.
 
-L1 suggests the remaining byte-context advantage is carried almost entirely between adjacent visible units on the same source line. That was a predeclared diagnostic, not the primary L1 gate, so the next step should convert it into a prospective confirmatory comparison:
+With `k=2`, the genuinely token-specific cross-boundary information available to LINECONT2 is principally the previous token's terminal byte at the next token's first-byte prediction. The next prospectively frozen challenger should therefore ask:
 
-> reset CONT2 history at every source-line boundary while still carrying it across spaces within the line, then compare against RESET2 under the same corrected B3 mixture protocol.
+> Can a compact explicit previous-terminal → next-initial boundary-edge model absorb the LINECONT2 gain when mixed with corrected B3?
 
-If a line-reset CONT2 reproduces the useful residual, the effective context scope is line-local. If it loses the residual, the L1 descriptive localization was insufficient and broader topology must be reconsidered.
+This is more diagnostic than fitting a rich sequence model: if the compact observable edge absorbs the gain, latent state becomes less justified. If a material residual remains after that compact edge and after already-authorized Currier/line-position controls, a separately preregistered latent-state challenger becomes more defensible.
 
-Only after line topology and already-authorized Currier/observable-state effects are tested prospectively should a latent-state challenger receive interpretation.
+A secondary transport question is whether this line-local edge mechanism has stable strength across Currier A/B, analogous to LOCAL40 transport.
 
 ## Interpretation firewall
 
@@ -289,4 +272,5 @@ Current evidence does not license claims of:
 - a specific cipher key or historical cipher family;
 - a historical copy/mutate algorithm;
 - latent semantic states;
-- visible spaces as proven natural-language word boundaries.
+- visible spaces as proven natural-language word boundaries;
+- source lines as proven sentences or semantic clauses.
