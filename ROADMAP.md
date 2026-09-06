@@ -6,17 +6,17 @@ This file controls **current sequencing**, not historical exact methods. Frozen 
 
 Program authority: Issue #88 and `research/PREDICTIVE_INFORMATION_PROGRAM.md`.
 
-Active executable issue: **#134 — residual closure with an augmented observable core before latent-state work**.
+Active executable issue: **#139 — independent IT2a replication of the same-line terminal→initial edge**.
 
-## Current frontier — close the residual against an augmented observable core
+## Current frontier — replicate the explicit edge independently
 
-The previous flexible residual has now been localized enough that a rich latent-state search would be premature.
+Issue #134 has closed the previously measured flexible residual for its prospectively frozen model-class comparison.
 
-The immediate question is:
+The immediate question is now:
 
-> **After corrected B3 is augmented with the explicit observable same-line terminal→initial edge, does any reproducible held-out sequence information remain?**
+> **Does the same-line previous-terminal → next-initial predictive architecture survive on independent Takahashi/IT2a when source, line mapping, symbol treatment, folds, smoothing and decision rule are frozen before target scoring?**
 
-Issue #134 owns this decision gate. Its first deliverable is a score-free design contract; predictive scoring must not begin until that contract freezes the exact core composition, Currier policy, challenger and pass rule.
+Issue #139 owns this gate. Its first deliverable is score-free. No IT2a edge gain may be used to choose normalization, exclusions, folds, symbol representation, smoothing, fallback or model family.
 
 ## Completed foundation
 
@@ -33,7 +33,7 @@ No new occupancy-only R1 rung is currently licensed.
 
 ### 2. Predictive-information budget — COMPLETE THROUGH B3
 
-After the source-order correction:
+After source-order correction:
 
 - B0 V2 `9.7089061`;
 - B1 local `9.5943670`;
@@ -44,56 +44,46 @@ Cross-token information is real but small relative to token-internal information
 
 ### 3. Long-history source attribution — COMPLETE FOR CURRENT FAMILIES
 
-The dominant longer-history increment is not literal long ordered memory. It is mostly causal-prefix / prior-paragraph inventory, with a smaller actual-order residual.
+The dominant longer-history increment is mostly causal-prefix / prior-paragraph inventory, with a smaller actual-order residual. Same-side and cross-side prior history both remain predictive.
 
-Phase 2C shows both same-side and cross-side prior history remain predictive. The useful slow inventory spans multiple paragraphs.
-
-### 4. Transport/localization of existing mechanisms — COMPLETE FOR CURRENT QUESTIONS
-
-- LOCAL40 transports bidirectionally across Currier A/B;
-- PREV_PARAS useful strength differs by Currier regime;
-- matched pure-Herbal controls do not remove that strength asymmetry;
-- writing hand is too confounded with Currier to support a clean causal attribution.
-
-### 5. Visible-space boundary validity — COMPLETE FOR ZL3b + IT2a
+### 4. Visible-space boundary validity — COMPLETE FOR ZL3b + IT2a
 
 Certain visible spaces behave as reproducible construction/production cuts. The exact cut beats nearby shifted cuts in both independent readings.
 
 This validates the tested production boundary, not a natural-language word interpretation.
 
-### 6. Flexible residual gate — PASSED, THEN LOCALIZED
+### 5. Flexible residual localization — COMPLETE
 
 Issue #118:
 
 - `G_context = +0.0178533 bit/token`, positive 5/5;
-- frozen class: `ROBUST FLEXIBLE SEQUENCE RESIDUAL EXISTS — LOCALIZATION REQUIRED`.
+- class `ROBUST FLEXIBLE SEQUENCE RESIDUAL EXISTS — LOCALIZATION REQUIRED`.
 
 Issue #121 same-order control:
 
-- boundary-edge residual survives, mean `+0.0106322`, positive 5/5;
-- descriptive gain is overwhelmingly inside source lines.
+- boundary-edge residual `+0.0106322`, positive 5/5.
 
 Issue #123 reset-scope control:
 
-- same-line continuation helps: `+0.0291614`, 5/5;
-- carrying the same context beyond the line is harmful: `-0.0185292`, 0/5.
+- same-line continuation `+0.0291614`, 5/5;
+- beyond-line continuation `-0.0185292`, 0/5.
 
-Issue #125 explicit decomposition:
+Issue #125 exact decomposition:
 
-- generic line-position/onset: `+0.00889185`, 5/5;
-- previous-terminal identity: `+0.02026956`, 5/5;
-- EDGE2 and the former flexible LINECONT2 expert are token-logp identical under fixed `k=2`.
+- generic line-position/onset `+0.00889185`, 5/5;
+- previous-terminal identity `+0.02026956`, 5/5;
+- EDGE2 and LINECONT2 token-logp identical under fixed `k=2`.
 
-The former flexible line-local residual therefore collapses, under this representation, to a compact observable adjacency mechanism rather than an unexplained longer local sequence state.
+The tested flexible line-local expert therefore reduces exactly to observable line position plus immediate terminal→initial identity.
 
-### 7. Currier transport of the explicit edge — COMPLETE
+### 6. Currier transport of the explicit edge — COMPLETE
 
 Issue #127:
 
 - native edge useful in A and B;
-- scalar strength compatible bidirectionally when the target table is supplied;
-- literal table transport is B→A only;
-- exact table+strength transport is none.
+- scalar strength compatible bidirectionally when target table is supplied;
+- literal table transport B→A only;
+- exact table+strength transport none.
 
 Issue #130 support-matched follow-up:
 
@@ -106,81 +96,106 @@ Issue #130 support-matched follow-up:
 
 The table asymmetry survives removal of the major A/B source-support imbalance.
 
-## Active gate — Issue #134 augmented observable core
+### 7. Augmented observable-core residual closure — COMPLETE
 
-### Core responsibility
+Issue #134 prospectively froze corrected B3 plus the explicit edge and Currier fallback policy before scoring.
 
-Construct the strongest currently justified **observable, non-latent** core. It must include:
+Gate0:
 
-1. corrected B3 exactly as authorized;
-2. the generic line-position/onset component from L3;
-3. the immediately previous visible unit's terminal-symbol → current-initial-symbol edge;
-4. a Currier table policy frozen before target scoring;
-5. a fixed fallback for non-A/B or unsupported contexts;
-6. the original physical-leaf outer-fold firewall.
+- passed before predictive scorer creation;
+- Gate result JSON SHA-256 `3e11615c731654854b6ad982007d5f340b47d3a0c088cd09ab2af08080489db1`.
 
-Because Issue #130 rejects one bidirectionally universal literal A/B table under the tested transport criterion, knowingly forcing a single manuscript-wide table would underfit the strongest observable authority. Conversely, hand-conditioned tables are not licensed because hand is inadequately crossed with Currier.
+First successful reveal:
 
-### Selection firewall
+- scorer commit `dbd787a457659b7d833dc06c3931f937031172b8`;
+- run `34035108074` — SUCCESS;
+- artifact `9990011421`;
+- result JSON SHA-256 `6779c2ea135e63f0c9c5be3e6200e564c18225fb95bb344f5349f946d73b9698`.
 
-Before any residual reveal, Issue #134 must freeze:
+Mean bits/token:
 
-- exact target population and source order;
-- edge representation and smoothing;
-- Currier A/B and unknown/other handling;
-- all mixture/strength grids;
-- inner-fold selection rule;
-- the flexible challenger family;
-- residual pass/fail rule;
-- finite-probability and support checks.
+- B3 `9.517268842963203`;
+- augmented observable core `9.451900585480233`;
+- MIX_RESET `9.451900585480233`;
+- MIX_LINE `9.451900585480233`.
 
-No S1/S2/H62/R1 target may tune this gate.
+Augmented core improves B3 by mean `+0.06536825748296984 bit/token`, positive 5/5, with `rho=[.19,.22,.20,.19,.21]`.
+
+Primary residual:
+
+- `G_residual=[0,0,0,0,0]`;
+- mean `0`;
+- positive outer folds `0/5`;
+- RESET and LINE final challenger `w=0` in all five folds.
+
+Frozen classification:
+
+**`NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE`**.
+
+Consequence: rich latent-state work is not licensed by the current residual program.
+
+## Active gate — Issue #139 independent IT2a edge replication
+
+### Replication responsibility
+
+Test the architecture established in Issue #125 without using IT2a target outcomes to redesign it.
+
+The score-free contract must freeze:
+
+1. exact independent Takahashi/IT2a source/version/hash and provenance;
+2. mapping to physical leaves and source lines;
+3. uncertainty/editorial-symbol treatment and visible-certain-space policy;
+4. physical-leaf outer-fold authority;
+5. target population and finite support;
+6. literal symbol representation;
+7. line reset and line-start/body onset representation;
+8. previous-terminal-conditioned next-initial identity edge;
+9. fixed short-order continuation representation;
+10. smoothing/fallback;
+11. held-out comparison and stability rule;
+12. leakage firewall.
 
 ### Primary comparison
 
-The new test should ask whether a separately frozen flexible sequence challenger improves held-out likelihood **after** the explicit observable edge is already in the core.
+`G_identity_IT2a = bits(POS2) - bits(EDGE2)`.
 
-Do not interpret a flexible challenger as an entropy bound. It is only an empirical model-class residual test.
+POS2 carries generic line-position/onset responsibility. EDGE2 differs only by conditioning the line-body first-symbol prediction on the immediately previous visible unit's terminal identity.
 
-## Decision fork
+### Frozen classes
 
-### A. No robust residual beyond augmented core
+#### `INDEPENDENT EDGE REPLICATION PASSES`
 
-Consequence:
+The preregistered held-out stability rule passes.
 
-- latent-state work remains **not licensed**;
-- consolidate the current compact multiscale observable description;
-- prioritize replication, reversibility/inverse constraints, and external/content tests rather than adding hidden sequence capacity.
+Consequence: the edge architecture is less plausibly a ZL3b-specific transcription artifact. Literal cross-transcription table equality remains a separate question.
 
-### B. Robust residual survives augmented core
+#### `INDEPENDENT EDGE REPLICATION FAILS`
 
-Consequence:
+The preregistered rule fails.
 
-- do not immediately assign semantics to a latent state;
-- first localize remaining support, representation, Currier/domain and longer observable-history effects;
-- only then freeze a latent architecture/state-count selection rule using training-only likelihood/complexity criteria.
+Consequence: downgrade the edge to ZL3b-lineage-specific or representation-sensitive structure before using it as a manuscript-wide production responsibility.
 
-### C. Core/support regression
+#### `INVALID INDEPENDENT REPLICATION`
 
-Consequence:
+Source/fold/line/boundary/support authority or faithful frozen representation cannot be established.
 
-- stop;
-- audit source order, target population, fold authority, finite support and reproduction of Issue #125/#130 components before any new model is scored.
+Consequence: stop without interpreting the target.
 
-## High-value follow-ups after residual closure
+No fourth post-reveal class.
 
-These are downstream, not substitutes for Issue #134:
+## High-value follow-ups after Issue #139
 
-1. **Independent IT2a replication of the explicit terminal→initial edge**, with representation frozen before scoring.
-2. **Issue #84 Phase D** only where it addresses a question not already superseded by Issue #88 and uses identifiable metadata.
-3. **Reversible/inverse mechanism tournaments** that must satisfy the now-constrained surface-production responsibilities without target-aware repair.
-4. **Localized external/content tests** where the external mapping is fixed independently of Voynichese similarity.
+1. **Reversible/inverse mechanism tournaments** that must satisfy the constrained surface-production responsibilities without target-aware repair.
+2. **Localized externally anchored content tests** where the external mapping is fixed independently of Voynichese similarity.
+3. **Issue #84 Phase D** only where it addresses a question not superseded by Issue #88 and uses identifiable metadata.
+4. If IT2a replication passes, a separately preregistered cross-transcription table/representation comparison may ask which parts of the edge mapping are transcription-stable.
 
 ## Parked / historical lanes
 
-- generic finite-memory/copy-mutate exploration (#24): useful theory background, but current predictive questions are governed by Issue #88/#134;
-- music-motif/self-similarity methods (#25): exploratory and separate; no direct-musical interpretation is supported;
-- older R1 generator ladders (#58/#75): completed scientific history, not current implementation frontier.
+- latent-state sequence modeling: not licensed after Issue #134 residual closure;
+- generic finite-memory/copy-mutate exploration (#24): theory background, not current executable frontier;
+- music-motif/self-similarity methods (#25): exploratory and separate; no direct-musical interpretation supported;
+- older R1 generator ladders (#58/#75): completed scientific history.
 
 ## Research boundary
 
@@ -195,4 +210,4 @@ Nothing on this roadmap currently establishes:
 - a historical production algorithm;
 - decipherment.
 
-The current job is narrower: determine whether the remaining measured predictive structure can be closed by explicit observable rules before adding hidden state.
+The current job is narrower: test whether the compact observable terminal→initial architecture is transcription-independent before promoting it to a manuscript-wide production responsibility.
