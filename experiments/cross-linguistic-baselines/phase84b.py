@@ -526,7 +526,7 @@ def main(argv: Sequence[str]) -> int:
     # Exact published Naibbe source checks are performed before candidate scoring.
     module = nb.load_naibbe(naibbe_root)
     original_map = dict(module.placeholder_to_glyph)
-    if len(original_map) != 6 * 3 * 26:
+    if len(original_map) != len(module.TABLES) * len(module.STATES) * len(nb.EFFECTIVE_LETTERS):
         raise RuntimeError("unexpected Naibbe codebook size")
     naibbe_primary: List[List[Item]] = []
     naibbe_raw: List[List[Item]] = []
