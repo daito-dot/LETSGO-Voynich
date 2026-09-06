@@ -265,11 +265,7 @@ def score(zl_path: Path, it_path: Path) -> dict:
     if fold_identity != G148.EXPECTED["fold_sha256"]:
         raise RuntimeError("fold authority changed after Gate")
 
-    leaf_fold = {
-        int(leaf): int(fold)
-        for fold, leaves in enumerate(G148.G145.frozen_fold_authority(zl_path)[1])
-        for leaf in leaves
-    }
+    leaf_fold = G148.G145.fold_authority(zl_path)[0]
     parser = G148.G145.E.SlotParser()
     G148.G145.E.validate_parser(parser)
     _zs, zl_lines = G148.G145.source_identity(zl_path, "ZL3b")
