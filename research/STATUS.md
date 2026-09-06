@@ -16,7 +16,7 @@ OGH-B (`REPORT_B.md`): the target-blind selected second-order successor grammar 
 What is now established about the replicated 66-edge residual token-construction topology (R1):
 
 - Issue #72: for published Naibbe, R1 lives in the corpus inventory of parsed 12-slot occupancy signatures (state-dependent emission matters; exact plaintext order and final token placement do not).
-- Issue #75 Phases A–F0 (branch `issue75-minimal-occupancy-generator`, not yet on `main`): slot marginals (M0) and marginals + occupied-slot count (M1) fail; K/R/S shape descriptors (M2, `T≈0.29`), nearest-neighbour chains (M3, `0.59`), generic distance coupling (M4, `0.62`) and two latent chain modes (M5, `0.73`) are insufficient against the empirical-signature ceiling (`M+ ≈ 0.965`); F0 selected a K/R/S-gated two-mode chain (M6) for the next target test.
+- Issue #75 Phases A–F0 (merged to `main`): slot marginals (M0) and marginals + occupied-slot count (M1) fail; K/R/S shape descriptors (M2, `T≈0.29`), nearest-neighbour chains (M3, `0.59`), generic distance coupling (M4, `0.62`) and two latent chain modes (M5, `0.73`) are insufficient against the empirical-signature ceiling (`M+ ≈ 0.965`); F0 selected a K/R/S-gated two-mode chain (M6) for the next target test.
 - OGH-A (`experiments/occupancy-generation-hierarchy/`): with an independent harness the same low-order failures and the same `0.965` ceiling replicate on both skeletons. Two new results:
   - the topology is **second-order sufficient to within ≈0.01**: a full pairwise maxent control reaches `r = 0.948–0.969` (median gap to the empirical ceiling `−0.001` on the ZL3b arm, `−0.012` on the IT2a arm);
   - a **78-parameter left-to-right successor grammar** (probability of occupying a slot depends only on the last occupied slot) passes the Issue #68 R1 gate on both readings and both skeletons: `r = 0.917 / 0.933` (ZL3b arm), `0.908 / 0.933` (IT2a arm), `62–63/66` signs, `W ≈ 0.97`, `p = 1/1001`; better than published Naibbe (`0.883 / 0.900`) and every Issue #75 model so far, though still `≈0.06` below the empirical ceiling under the Issue #75 equivalence criterion.
@@ -25,7 +25,7 @@ What is now established about the replicated 66-edge residual token-construction
 
 **Active frontier:** Issue #84 Phase C genre controls are now the highest-information next discriminator: test whether enumerative / recipe / herbal / calendar / liturgical / account-like source texts already move the exact-repeat 1–2 and 21–40 responsibilities away from ordinary prose before any target-tuned transform is introduced. Do not post-hoc compose the Phase-B partial mechanisms. In parallel, Issue #81 may continue its independently preregistered soft near-family / recency-kernel memory under training-only selection. Frozen G4/G7A/V2 remain emission-stage comparators; do not reopen R1 rungs or repair Naibbe from the Phase-B reveal.
 
-Last consolidated: 2026-09-02
+Last consolidated: 2026-09-06
 
 ## Previous research state — Issue #68 first joint-constraint tournament (2026-09-01)
 
