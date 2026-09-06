@@ -1,0 +1,99 @@
+name: Issue127 Currier edge Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/residual-gate/L4_CURRIER_GATE0_PLAN.md'
+      - 'experiments/predictive-information/residual-gate/currier_edge_gate0.py'
+      - '.github/workflows/issue127-currier-edge-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  currier-edge-gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+
+      - name: Enforce score-free boundary
+        shell: bash
+        run: |
+          if grep -E 'bits\(|logp\(|log_likelihood|mixed_logps|G_identity|G_position|output_metrics|score_r1\(|H62P1' experiments/predictive-information/residual-gate/currier_edge_gate0.py; then
+            echo 'Predictive scoring reference found in score-free Gate0' >&2
+            exit 1
+          fi
+
+      - name: Compile and self-test
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/residual-gate/currier_edge_gate0.py
+          python experiments/predictive-information/residual-gate/currier_edge_gate0.py --self-test
+
+      - name: Run score-free edge support audit
+        shell: bash
+        run: |
+          python experiments/predictive-information/residual-gate/currier_edge_gate0.py --audit "$ZL3B" issue127_currier_edge_gate0.json
+          python -m json.tool issue127_currier_edge_gate0.json > /dev/null
+          sha256sum issue127_currier_edge_gate0.json | tee issue127_currier_edge_gate0.sha256
+
+      - name: Assert frozen Gate rule
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue127_currier_edge_gate0.json'))
+          assert x['gate_pass'] is True, x
+          assert x['gate_rule']=='PROCEED_TO_FROZEN_EDGE_TRANSPORT'
+          a=x['phase3a_currier_authority']
+          assert a['json_sha256']=='e970e83c8b6405fd224cef3c74f6c02ef430552fd1cd2b6aa969e89a475f258e'
+          assert a['json_sha256']==a['expected_json_sha256']
+          assert a['gate_pass'] is True
+          assert a['mixed_AB_leaves_excluded']==[]
+          assert x['all_cells_nonzero']=={'A':True,'B':True}
+          assert x['global_class_support']=={'A':True,'B':True}
+          assert all(v is False for v in x['firewall'].values())
+          for lab in ('A','B'):
+              assert x['global_edge_support'][lab]['n_previous_terminal_classes']>=2
+              assert x['global_edge_support'][lab]['n_current_initial_outcomes']>=2
+              for f in range(5):
+                  c=x['edge_support_by_currier_and_fold'][lab][str(f)]
+                  assert c['accepted_edge_targets']>0
+          print(json.dumps({
+              'gate_pass':x['gate_pass'],
+              'phase3a_currier_authority':a,
+              'edge_support_by_currier_and_fold':x['edge_support_by_currier_and_fold'],
+              'global_edge_support':x['global_edge_support'],
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload Gate authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue127-currier-edge-gate0
+          path: |
+            issue127_currier_edge_gate0.json
+            issue127_currier_edge_gate0.sha256
