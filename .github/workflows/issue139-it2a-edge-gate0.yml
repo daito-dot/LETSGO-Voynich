@@ -1,0 +1,112 @@
+name: Issue139 IT2a edge Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/independent-edge/ISSUE139_IT2A_EDGE_REPLICATION_PLAN.md'
+      - 'experiments/predictive-information/independent-edge/ISSUE139_GATE0_CODE_AUTHORITY.md'
+      - 'experiments/predictive-information/independent-edge/issue139_it2a_edge_gate0.py'
+      - '.github/workflows/issue139-it2a-edge-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  IT2A: external/IT2a-n.txt
+  OUT: issue139_it2a_edge_gate0.json
+
+jobs:
+  gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+
+      - name: Install score-free parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and self-test without target source
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/independent-edge/issue139_it2a_edge_gate0.py
+          python experiments/predictive-information/independent-edge/issue139_it2a_edge_gate0.py --self-test
+
+      - name: Run score-free source fold and support Gate0
+        shell: bash
+        run: |
+          python experiments/predictive-information/independent-edge/issue139_it2a_edge_gate0.py --run "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue139_it2a_edge_gate0.sha256
+
+      - name: Assert Gate0 firewall and frozen authority
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue139_it2a_edge_gate0.json', encoding='utf-8'))
+          assert x['schema'] == 'issue139-it2a-edge-gate0-v1'
+          assert x['issue'] == 139
+          assert x['gate_pass'] is True
+          assert x['gate_disposition'] == 'PASS — PROCEED TO SEPARATELY COMMITTED FROZEN IT2A EDGE SCORER'
+          assert x['scientific_edge_metrics_computed'] is False
+          assert x['source'] == {
+              'sha256':'7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5',
+              'git_blob_sha1':'4d6d3f2537b1f507a257529b49c94af7d6e03446',
+              'byte_size':342104,
+              'line_count':5444,
+              'header':'#=IVTFF EvaT 2.0 M 3',
+          }
+          p=x['population']
+          assert p['paragraphs'] == 772 and p['pages'] == 206 and p['physical_leaves'] == 99
+          assert p['clean_tokens'] == 34411 and p['accepted_tokens'] == 28280 and p['rejected_tokens'] == 6131
+          assert p['ambiguous_tokens_more_than_one_parse'] == 9492
+          assert p['tokens_where_minmax_parse_differ'] == 9492
+          assert p['fold_clean_tokens'] == [6102,6692,7528,7484,6605]
+          assert p['fold_accepted_tokens'] == [4976,5416,6261,6197,5430]
+          assert all(v >= 300 for v in p['fold_accepted_line_body_tokens'])
+          assert len(x['outer_training_support']) == 5
+          for r in x['outer_training_support']:
+              assert r['train_test_leaf_overlap'] == []
+              assert r['training_line_start_tokens'] > 0
+              assert r['training_line_body_tokens'] > 0
+              assert r['unique_previous_terminal_byte_contexts'] >= 2
+              assert r['unique_previous_terminal_to_initial_byte_pairs'] >= 2
+          forbidden={'POS2_probability','EDGE2_probability','log_likelihood','bits_per_token','G_identity_IT2a','scientific_classification','classification'}
+          def walk(v):
+              if isinstance(v,dict):
+                  assert forbidden.isdisjoint(v.keys()), f'forbidden scientific key present: {forbidden & set(v)}'
+                  for z in v.values(): walk(z)
+              elif isinstance(v,list):
+                  for z in v: walk(z)
+          walk(x)
+          assert x['firewall']['scientific_edge_metrics_computed'] is False
+          print(json.dumps({
+              'gate_disposition':x['gate_disposition'],
+              'fold_clean_tokens':p['fold_clean_tokens'],
+              'fold_accepted_tokens':p['fold_accepted_tokens'],
+              'fold_accepted_line_body_tokens':p['fold_accepted_line_body_tokens'],
+              'scientific_edge_metrics_computed':x['scientific_edge_metrics_computed'],
+          }, indent=2, sort_keys=True, ensure_ascii=False))
+          PY
+
+      - name: Upload Gate0 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue139-it2a-edge-gate0-${{ github.event.pull_request.head.sha }}
+          path: |
+            issue139_it2a_edge_gate0.json
+            issue139_it2a_edge_gate0.sha256
