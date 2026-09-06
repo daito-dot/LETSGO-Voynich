@@ -1,0 +1,112 @@
+name: Issue94 Phase2A order vs prefix
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/phase2a/**'
+      - '.github/workflows/issue94-phase2a-order-vs-prefix.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  attribution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce prediction-only / causal-prefix boundary
+        shell: bash
+        run: |
+          test -f experiments/predictive-information/phase2a/PLAN.md
+          test -f experiments/predictive-information/phase2a/AMENDMENT_A.md
+          test -f experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py
+          test -f experiments/predictive-information/phase2a/phase2a_amended.py
+          test -f experiments/predictive-information/phase2a/phase2a_amended_runner.py
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|evaluate_model\(|H62P1|target_exposed' experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py experiments/predictive-information/phase2a/phase2a_amended.py; then
+            echo 'Surface-target scorer found in Phase-2A executable' >&2
+            exit 1
+          fi
+
+      - name: Compile and synthetic intervention tests
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py
+          python -m py_compile experiments/predictive-information/phase2a/phase2a_amended.py
+          python -m py_compile experiments/predictive-information/phase2a/phase2a_amended_runner.py
+          python experiments/predictive-information/phase2a/phase2a_amended_runner.py --self-test
+
+      - name: Authoritative Phase-2A first reveal
+        shell: bash
+        run: |
+          python experiments/predictive-information/phase2a/phase2a_amended_runner.py --run "$ZL3B" phase2a_results.json
+          python -m json.tool phase2a_results.json > /dev/null
+          sha256sum phase2a_results.json
+
+      - name: Assert regressions/firewall and print attribution
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase2a_results.json'))
+          assert x['regression'] == {
+              'A0_phase1_reproduced_all_folds': True,
+              'A2_phase1_reproduced_all_folds': True,
+              'direct_ordered_equals_accumulator_all_folds': True,
+              'amended_direct_ordered_reproduced_all_folds': True,
+          }
+          assert x['firewall'] == {
+              'future_test_tokens_used': False,
+              'issue84_target_used': False,
+              'latent_state_fitted': False,
+              'semantic_or_image_context_used': False,
+              'surface_target_metrics_scored': False,
+          }
+          print(json.dumps({
+              'classification': x['classification'],
+              'mean_bits_per_token': x['summaries']['mean_bits_per_token'],
+              'G_prefix_cond': x['summaries']['G_prefix_cond'],
+              'G_order_hybrid': x['summaries']['G_order_hybrid'],
+              'G_order_random_cv': x['summaries']['G_order_random_cv'],
+              'original_diagnostics': {
+                  'G_prefix': x['summaries']['G_prefix'],
+                  'G_order_bag_fixed': x['summaries']['G_order_bag_fixed'],
+                  'G_order_random': x['summaries']['G_order_random'],
+              },
+              'decision_inputs': x['decision_inputs'],
+              'A5_rho': {f:r['A5']['selected_rho'] for f,r in x['amended_selection'].items()},
+              'A6_pi': {f:r['A6']['selected_pi'] for f,r in x['amended_selection'].items()},
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload authoritative result
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue94-phase2a-order-vs-prefix
+          path: phase2a_results.json
