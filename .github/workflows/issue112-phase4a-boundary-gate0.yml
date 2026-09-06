@@ -1,0 +1,106 @@
+name: Issue112 Phase4A raw boundary Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/phase4a/BOUNDARY_GATE0_PLAN.md'
+      - 'experiments/predictive-information/phase4a/phase4a_boundary_gate0.py'
+      - '.github/workflows/issue112-phase4a-boundary-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  raw-boundary-gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Enforce score-free Gate0 executable
+        shell: bash
+        run: |
+          test -f experiments/predictive-information/phase4a/BOUNDARY_GATE0_PLAN.md
+          test -f experiments/predictive-information/phase4a/phase4a_boundary_gate0.py
+          if grep -E 'math\.log|np\.log|log2\(|bits_per_token|cross_entropy|V2Model|score_outer|output_metrics|H62P1|metric_gates\(' experiments/predictive-information/phase4a/phase4a_boundary_gate0.py; then
+            echo 'Predictive/target scoring path found in Phase-4A Gate0 executable' >&2
+            exit 1
+          fi
+
+      - name: Compile and self-test
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/phase4a/phase4a_boundary_gate0.py
+          python experiments/predictive-information/phase4a/phase4a_boundary_gate0.py --self-test
+
+      - name: Run raw boundary support audit
+        shell: bash
+        run: |
+          python experiments/predictive-information/phase4a/phase4a_boundary_gate0.py --audit "$ZL3B" phase4a_boundary_gate0.json
+          python -m json.tool phase4a_boundary_gate0.json > /dev/null
+          sha256sum phase4a_boundary_gate0.json
+
+      - name: Assert authority, firewall and Gate
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase4a_boundary_gate0.json'))
+          assert x['schema'] == 'issue112-phase4a-gate0-v1'
+          assert x['source']['git_blob_sha1'] == '2a4533ab9bdfa85db9bad602d590978953055df1'
+          assert x['source']['sha256'] == 'bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc'
+          assert len(x['fold_authority']['identity']) == 5
+          assert all(len(v) > 0 for v in x['fold_authority']['identity'])
+          assert set(x['by_fold']) == {'0','1','2','3','4'}
+          assert x['representation']['primary_real_space'] == "literal IVTFF '.' certain word-space only"
+          assert x['representation']['connected_composites_longest_match'] == ['cfh','ckh','cph','cth','ch','sh']
+          assert x['firewall'] == {
+              'predictive_scores_computed': False,
+              'boundary_model_fitted': False,
+              'slotparser_used_for_event_eligibility': False,
+              'target_surface_metrics_used': False,
+              'issue84_target_used': False,
+              'semantic_or_image_context_used': False,
+              'latent_state_fitted': False,
+          }
+          assert x['gate_pass'] is True
+          print(json.dumps({
+              'gate_pass': x['gate_pass'],
+              'population': x['population'],
+              'by_fold': x['by_fold'],
+              'support': x['support'],
+              'fold_identity_sha256': x['fold_authority']['identity_sha256'],
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload Gate 0 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue112-phase4a-boundary-gate0
+          path: phase4a_boundary_gate0.json
