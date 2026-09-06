@@ -1,0 +1,333 @@
+{
+ "schema": "issue84-phaseC-v1",
+ "target_intervals": {
+  "MI1": [
+   0.05287300267140527,
+   0.11095606169252736
+  ],
+  "z1_2": [
+   2.7963710506633936,
+   8.455834173591136
+  ],
+  "z21_40": [
+   -0.7700738340053305,
+   3.434624139155326
+  ]
+ },
+ "preflight": {
+  "status": "PASS",
+  "target_score_calls": 0,
+  "c0_counts": {
+   "REC1_FormeOfCury": 11850,
+   "REC2_Harl279": 26210,
+   "REC2_Harl4016": 19334,
+   "MED1_Herbarium_OE": 25012,
+   "ACC1_Countess1265": 22109,
+   "ACC1_Executors1291": 9588,
+   "ACC1_Howard1462_69": 147864,
+   "ACC2_HouseholdBook1": 57203,
+   "ACC2_HouseholdBook2": 69847,
+   "LIT1_YorkManualProcessional": 41689
+  },
+  "capped_counts": {
+   "REC1_FormeOfCury": 11850,
+   "REC2_Harl279": 26210,
+   "REC2_Harl4016": 19334,
+   "MED1_Herbarium_OE": 25012,
+   "ACC1_Countess1265": 22109,
+   "ACC1_Executors1291": 9588,
+   "ACC1_Howard1462_69": 32570,
+   "ACC2_HouseholdBook1": 32570,
+   "ACC2_HouseholdBook2": 32570,
+   "LIT1_YorkManualProcessional": 32570
+  },
+  "excluded_source": "C-HERB-1 Macer",
+  "source_hashes_verified": true
+ },
+ "sources": {
+  "REC1_FormeOfCury": {
+   "source_tokens_before_cap": 11850,
+   "tokens_scored": 11850,
+   "primary": {
+    "MI1": 1.1372810745919968,
+    "z1_2": -11.767058617638689,
+    "z21_40": 5.909223824343758
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT",
+   "signed_distance": {
+    "MI1": 1.0263250128994694,
+    "z1_2": -14.563429668302083,
+    "z21_40": 2.4745996851884318
+   }
+  },
+  "REC2_Harl279": {
+   "source_tokens_before_cap": 26210,
+   "tokens_scored": 26210,
+   "primary": {
+    "MI1": 1.197815900040478,
+    "z1_2": -13.079439377985128,
+    "z21_40": 21.40520466806008
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT",
+   "signed_distance": {
+    "MI1": 1.0868598383479506,
+    "z1_2": -15.875810428648522,
+    "z21_40": 17.970580528904755
+   }
+  },
+  "REC2_Harl4016": {
+   "source_tokens_before_cap": 19334,
+   "tokens_scored": 19334,
+   "primary": {
+    "MI1": 1.136025996053267,
+    "z1_2": -26.763262144230115,
+    "z21_40": 18.787838534456327
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT",
+   "signed_distance": {
+    "MI1": 1.0250699343607397,
+    "z1_2": -29.559633194893507,
+    "z21_40": 15.353214395301002
+   }
+  },
+  "MED1_Herbarium_OE": {
+   "source_tokens_before_cap": 25012,
+   "tokens_scored": 25012,
+   "primary": {
+    "MI1": 0.7246780029308075,
+    "z1_2": -1.485517659243913,
+    "z21_40": 25.66502117963807
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT",
+   "signed_distance": {
+    "MI1": 0.6137219412382802,
+    "z1_2": -4.281888709907307,
+    "z21_40": 22.230397040482746
+   }
+  },
+  "ACC1_Countess1265": {
+   "source_tokens_before_cap": 22109,
+   "tokens_scored": 22109,
+   "primary": {
+    "MI1": 1.679107062082636,
+    "z1_2": -24.534049455066178,
+    "z21_40": 11.132637466356147
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT",
+   "signed_distance": {
+    "MI1": 1.5681510003901087,
+    "z1_2": -27.33042050572957,
+    "z21_40": 7.6980133272008215
+   }
+  },
+  "ACC1_Executors1291": {
+   "source_tokens_before_cap": 9588,
+   "tokens_scored": 9588,
+   "primary": {
+    "MI1": 1.2712859577993818,
+    "z1_2": -13.085845331803018,
+    "z21_40": 20.99577274850349
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT",
+   "signed_distance": {
+    "MI1": 1.1603298961068544,
+    "z1_2": -15.882216382466412,
+    "z21_40": 17.561148609348166
+   }
+  },
+  "ACC1_Howard1462_69": {
+   "source_tokens_before_cap": 147864,
+   "tokens_scored": 32570,
+   "primary": {
+    "MI1": 1.663418785276673,
+    "z1_2": -24.765774891088796,
+    "z21_40": 71.85524611977044
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT",
+   "signed_distance": {
+    "MI1": 1.5524627235841457,
+    "z1_2": -27.56214594175219,
+    "z21_40": 68.42062198061511
+   }
+  },
+  "ACC2_HouseholdBook1": {
+   "source_tokens_before_cap": 57203,
+   "tokens_scored": 32570,
+   "primary": {
+    "MI1": 1.6209331170050931,
+    "z1_2": -21.991907410389018,
+    "z21_40": 37.65571532290362
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT",
+   "signed_distance": {
+    "MI1": 1.5099770553125658,
+    "z1_2": -24.78827846105241,
+    "z21_40": 34.22109118374829
+   }
+  },
+  "ACC2_HouseholdBook2": {
+   "source_tokens_before_cap": 69847,
+   "tokens_scored": 32570,
+   "primary": {
+    "MI1": 1.9240914049693214,
+    "z1_2": -31.992488342955753,
+    "z21_40": 54.72920468876624
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT",
+   "signed_distance": {
+    "MI1": 1.813135343276794,
+    "z1_2": -34.78885939361915,
+    "z21_40": 51.29458054961091
+   }
+  },
+  "LIT1_YorkManualProcessional": {
+   "source_tokens_before_cap": 41689,
+   "tokens_scored": 32570,
+   "primary": {
+    "MI1": 0.5425679272997721,
+    "z1_2": 0.469650175850629,
+    "z21_40": 72.34802543385963
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT",
+   "signed_distance": {
+    "MI1": 0.43161186560724474,
+    "z1_2": -2.326720874812765,
+    "z21_40": 68.9134012947043
+   }
+  }
+ },
+ "genre_aggregates": {
+  "GENRE_RECIPE": {
+   "documents": [
+    "REC1_FormeOfCury",
+    "REC2_Harl279",
+    "REC2_Harl4016"
+   ],
+   "descriptive_only": true,
+   "primary": {
+    "MI1": 1.2022527110178087,
+    "z1_2": -28.822387563083605,
+    "z21_40": 25.4402300068126
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT"
+  },
+  "GENRE_MEDICAL": {
+   "documents": [
+    "MED1_Herbarium_OE"
+   ],
+   "descriptive_only": true,
+   "primary": {
+    "MI1": 0.7272645626514311,
+    "z1_2": -1.6639736164550882,
+    "z21_40": 27.088286978142005
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT"
+  },
+  "GENRE_ACCOUNT": {
+   "documents": [
+    "ACC1_Countess1265",
+    "ACC1_Executors1291",
+    "ACC1_Howard1462_69",
+    "ACC2_HouseholdBook1",
+    "ACC2_HouseholdBook2"
+   ],
+   "descriptive_only": true,
+   "primary": {
+    "MI1": 1.7853278406681259,
+    "z1_2": -45.84502806618565,
+    "z21_40": 94.3419155336877
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT"
+  },
+  "GENRE_LITURGY": {
+   "documents": [
+    "LIT1_YorkManualProcessional"
+   ],
+   "descriptive_only": true,
+   "primary": {
+    "MI1": 0.5407520961349146,
+    "z1_2": 0.5009794318463469,
+    "z21_40": 60.67671738088255
+   },
+   "responsibilities": {
+    "R_MI": false,
+    "R_SHORT": false,
+    "R_MID": false
+   },
+   "classification": "NO SOURCE HIT"
+  }
+ },
+ "panel": {
+  "n_sources": 10,
+  "full_hits": [],
+  "partial_2_of_3": [],
+  "partial_1_of_3": [],
+  "classification": "NO FROZEN HISTORICAL SOURCE IN FULL VOYNICH REGIME"
+ },
+ "claim_limit": "Historical source-genre control only. A hit is an existence result for a frozen source organization, not a Voynich plaintext/genre identification; a miss does not reject all medieval genres."
+}
