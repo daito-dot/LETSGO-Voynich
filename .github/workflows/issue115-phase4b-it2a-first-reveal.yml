@@ -1,0 +1,116 @@
+name: Issue115 Phase4B IT2a first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/phase4b/IT2A_FIRST_REVEAL_PLAN.md'
+      - 'experiments/predictive-information/phase4b/phase4b_it2a_first_reveal.py'
+      - '.github/workflows/issue115-phase4b-it2a-first-reveal.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+
+jobs:
+  it2a-first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources and merged Gate contract
+        shell: bash
+        run: |
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test -f experiments/predictive-information/phase4b/IT2A_GATE0_PROVENANCE.md
+          test -f experiments/predictive-information/phase4b/IT2A_FIRST_REVEAL_PLAN.md
+          test -f experiments/predictive-information/phase4a/phase4a_boundary_first_reveal.py
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy
+
+      - name: Compile and self-test before IT2a target reveal
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/phase4b/phase4b_it2a_first_reveal.py
+          python experiments/predictive-information/phase4b/phase4b_it2a_first_reveal.py --self-test
+
+      - name: Run frozen IT2a P1-P2 first reveal
+        shell: bash
+        run: |
+          python experiments/predictive-information/phase4b/phase4b_it2a_first_reveal.py --run "$IT2A" "$ZL3B" phase4b_it2a_first_reveal.json
+          python -m json.tool phase4b_it2a_first_reveal.json > /dev/null
+          sha256sum phase4b_it2a_first_reveal.json
+
+      - name: Assert authority and frozen classification logic
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('phase4b_it2a_first_reveal.json'))
+          assert x['schema'] == 'issue115-phase4b-it2a-first-reveal-v1'
+          a=x['authority']
+          assert a['gate_reproduced'] is True
+          assert a['source_sha256'] == '7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5'
+          assert a['source_git_blob_sha1'] == '4d6d3f2537b1f507a257529b49c94af7d6e03446'
+          assert a['fold_identity_sha256'] == 'cf2df8edcf2b25c2f6388c4a9e2c1ee58a24ae05a9cf489ff9a43d2d28f0b64b'
+          assert a['event_hashes'] == {
+            'real_space_sha256':'465c93d24b7b96e5d48d7e31d524f700beff849c9fae49a302a7f4ba0d62f675',
+            'mid_token_sha256':'c8c75745d4878f9695868e3797cd23c82ed6eb1aa047dd49194482778c53ad75',
+            'p2_real_space_sha256':'5a74abbbedc46b7dca38e5afbec5707e72a1c67f9becbb4843e7be0ee52c7505',
+          }
+          assert a['counts'] == {'real_space':27436,'mid_token':24239,'p2_real_space':23379}
+          assert len(x['folds']) == 5
+          p1=x['primary']['P1']; p2=x['primary']['P2']
+          assert p1['pooled_n_real'] == 27436 and p1['pooled_n_mid'] == 24239 and p2['pooled_n'] == 23379
+          for v in [p1['pooled_D_RESET'],*p1['D_RESET_by_fold'],p2['pooled_mean_observed_minus_shift_left'],p2['pooled_mean_observed_minus_shift_right'],*p2['left_by_fold'],*p2['right_by_fold']]: assert math.isfinite(v)
+          expected_p1=(p1['pooled_D_RESET'] > 0 and sum(v > 0 for v in p1['D_RESET_by_fold']) >= 4)
+          expected_l=(p2['pooled_mean_observed_minus_shift_left'] < 0 and sum(v < 0 for v in p2['left_by_fold']) >= 4)
+          expected_r=(p2['pooled_mean_observed_minus_shift_right'] < 0 and sum(v < 0 for v in p2['right_by_fold']) >= 4)
+          assert p1['pass'] is expected_p1
+          assert p2['left_pass'] is expected_l and p2['right_pass'] is expected_r and p2['pass'] is (expected_l and expected_r)
+          allowed={
+            'SPACE IS A REPRODUCIBLE PRODUCTION BOUNDARY',
+            'SPACE MARKS A RESET BUT EXACT CUT IS WEAK',
+            'SPACE POSITION IS LOCALLY PRIVILEGED WITHOUT RESET EVIDENCE',
+            'VISIBLE SPACE NOT SUPPORTED AS PRODUCTION BOUNDARY',
+          }
+          assert x['it2a_classification'] in allowed
+          labels={
+            'VISIBLE-SPACE PRODUCTION BOUNDARY REPLICATES ACROSS ZL3b/IT2a',
+            'PARTIAL CROSS-TRANSCRIPTION BOUNDARY REPLICATION',
+            'CROSS-TRANSCRIPTION BOUNDARY REPLICATION FAILS',
+          }
+          assert x['cross_transcription_replication'] in labels
+          print(json.dumps({'it2a_classification':x['it2a_classification'],'cross_transcription_replication':x['cross_transcription_replication'],'P1':p1,'P2':p2},indent=2,sort_keys=True))
+          PY
+
+      - name: Upload IT2a first-reveal authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue115-phase4b-it2a-first-reveal
+          path: phase4b_it2a_first_reveal.json
