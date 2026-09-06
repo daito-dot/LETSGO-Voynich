@@ -72,7 +72,10 @@ jobs:
           python - <<'PY'
           import json
           x=json.load(open('phase2c_results.json'))
-          assert all(x['regression'].values())
+          assert x['regression']['corrected_LOCAL40_mean'] is True
+          assert x['regression']['corrected_ALL_PREV_alpha_all_folds'] is True
+          assert x['regression']['corrected_ALL_PREV_mean'] is True
+          assert x['regression']['fold_membership_changed'] is False
           assert x['order_authority']['numeric_paragraph_order_valid'] is True
           assert x['order_authority']['source_document_order_valid'] is True
           assert x['firewall'] == {
