@@ -1,0 +1,122 @@
+name: Issue139 IT2a edge first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/independent-edge/issue139_it2a_edge_first_reveal.py'
+      - '.github/workflows/issue139-it2a-edge-first-reveal.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  IT2A: external/IT2a-n.txt
+  OUT: issue139_it2a_edge_first_reveal.json
+  SCORER: experiments/predictive-information/independent-edge/issue139_it2a_edge_first_reveal.py
+
+jobs:
+  first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Assert merged Gate ancestry and frozen scorer blob
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 12b2b79de65ab1ac510cb3b8aad5386dcb180249 HEAD
+          test "$(git hash-object "$SCORER")" = "6e8cdeb4ffeed4d75a0b8ac5f0e67ab0cf836c79"
+          test "$(git hash-object experiments/predictive-information/independent-edge/issue139_it2a_edge_gate0.py)" = "e5571c92ad8c4ef437b73dac7a246eec3cf2a887"
+          test "$(git hash-object experiments/predictive-information/independent-edge/ISSUE139_GATE0_PROVENANCE.md)" = "47af1106f55effa2adb309ec085d3101334680d8"
+          test "$(git hash-object experiments/predictive-information/residual-gate/explicit_edge_l3.py)" = "5b4bead22ed301cba88300af97cef654610648ab"
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and synthetic self-test before target reveal
+        shell: bash
+        run: |
+          python -m py_compile "$SCORER"
+          python "$SCORER" --self-test
+
+      - name: Run frozen independent first reveal
+        shell: bash
+        run: |
+          python "$SCORER" --run "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue139_it2a_edge_first_reveal.sha256
+
+      - name: Assert frozen classification logic and support
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue139_it2a_edge_first_reveal.json', encoding='utf-8'))
+          assert x['schema'] == 'issue139-it2a-edge-first-reveal-v1'
+          assert x['issue'] == 139 and x['scored'] is True
+          assert x['authority']['gate0_reproduced'] is True
+          assert x['authority']['gate0_result_sha256'] == 'b97fe44633b088a97e86d5e08a74e9688647b8bb5eeeb7a44a43c98887b80fea'
+          assert x['authority']['source_sha256'] == '7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5'
+          assert x['authority']['source_git_blob_sha1'] == '4d6d3f2537b1f507a257529b49c94af7d6e03446'
+          assert x['authority']['issue125_architecture_blob'] == '5b4bead22ed301cba88300af97cef654610648ab'
+          assert len(x['outer']) == 5
+          expected_clean=[6102,6692,7528,7484,6605]
+          expected_scored=[4976,5416,6261,6197,5430]
+          expected_body=[4393,4824,5545,5517,4832]
+          gains=[]
+          for f,r in enumerate(x['outer']):
+              assert r['fold'] == f
+              assert r['n_visible_clean_tokens'] == expected_clean[f]
+              assert r['n_scored_primary_targets'] == expected_scored[f]
+              assert r['n_scored_line_body_targets'] == expected_body[f]
+              assert math.isfinite(r['bits_POS2']) and math.isfinite(r['bits_EDGE2'])
+              assert r['EDGE2_LINECONT2_max_abs_token_logp'] <= 1e-12
+              g=r['bits_POS2']-r['bits_EDGE2']
+              assert math.isclose(g,r['G_identity_IT2a'],rel_tol=0.0,abs_tol=1e-12)
+              gains.append(r['G_identity_IT2a'])
+          p=x['primary']
+          assert p['G_identity_IT2a_by_fold'] == gains
+          mean=sum(gains)/5
+          pos=sum(g>0.0 for g in gains)
+          expected_pass=(mean>0.0 and pos>=4)
+          assert math.isclose(mean,p['mean_G_identity_IT2a'],rel_tol=0.0,abs_tol=1e-15)
+          assert pos == p['positive_folds'] and p['required_positive_folds'] == 4
+          assert p['pass'] is expected_pass
+          expected_class='INDEPENDENT EDGE REPLICATION PASSES' if expected_pass else 'INDEPENDENT EDGE REPLICATION FAILS'
+          assert x['classification'] == expected_class
+          assert x['classification'] in {
+              'INDEPENDENT EDGE REPLICATION PASSES',
+              'INDEPENDENT EDGE REPLICATION FAILS',
+          }
+          print(json.dumps({
+              'classification':x['classification'],
+              'G_identity_IT2a_by_fold':gains,
+              'mean_G_identity_IT2a':p['mean_G_identity_IT2a'],
+              'positive_folds':p['positive_folds'],
+              'mean_bits_POS2':p['mean_bits_POS2'],
+              'mean_bits_EDGE2':p['mean_bits_EDGE2'],
+              'EDGE2_LINECONT2_max_abs_token_logp':p['EDGE2_LINECONT2_max_abs_token_logp'],
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload first-reveal authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue139-it2a-edge-first-reveal-${{ github.event.pull_request.head.sha }}
+          path: |
+            issue139_it2a_edge_first_reveal.json
+            issue139_it2a_edge_first_reveal.sha256
