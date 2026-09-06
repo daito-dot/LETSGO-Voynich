@@ -1,8 +1,10 @@
 # Next research frontier — prospectively constrained reversible / inverse mechanism tournament
 
-## CURRENT FRONTIER — after Issue #84 Phase A
+## CURRENT FRONTIER — after Issue #84 Phase B
 
-The OGH synthesis has passed its first control-tested challenge (`experiments/cross-linguistic-baselines/REPORT_A.md`): no natural language among 101, in any of seven transcription lineages, reaches the Voynich regime of adjacent-token dependence. Two questions remain open and are the next plan-first steps: (1) **which cipher families applied to Latin reach the Voynich regime** (Issue #84 Phase B: substitution, homophonic, nomenclator, nulls, transposition, verbose/Naibbe) — this decides whether "encrypted language" survives at all and, if so, in which redundancy class; (2) **whether enumerative genres do** (Phase C). In parallel Issue #81 continues to the soft near-family memory. Bins 1–2 and 21–40 of the repeat statistic, not the far bins, are the discriminating components.
+Issue #84 Phase B (`experiments/cross-linguistic-baselines/REPORT_B.md`) has now tested the frozen common cipher-operation representatives on CREMMA Latin. There were **0 full three-component hits**. Homophonic ×4 and a four-way top-256 nomenclator reproduce only the Voynich-scale adjacent MI; line-local transposition reproduces only the positive distance-1–2 exact-repeat excess; published Naibbe reproduces only the suppressed distance-21–40 recurrence. Therefore the next move is **not** a post-hoc composition of these partial mechanisms.
+
+The highest-information plan-first question is Issue #84 **Phase C**: do enumerative, recipe, herbal, calendar, liturgical or account-like source genres already possess the unusual immediate-positive / mid-range-suppressed recurrence geometry that ordinary prose lacks? Use the Phase-A/Phase-B scorer and the exact seven-reading intervals without changing the primary responsibilities. If no credible genre enters or approaches the regime, ordinary meaningful-text-plus-common-transform explanations become substantially narrower. If a genre does, only then license a separately preregistered source×transform composition. In parallel, Issue #81's soft near-family / recency-kernel memory remains an independent generative lane selected by held-out likelihood only.
 
 ## Frontier after OGH-C: the smallest cross-token memory
 
