@@ -6,6 +6,7 @@ on:
     paths:
       - 'experiments/cross-linguistic-baselines/PLAN_B.md'
       - 'experiments/cross-linguistic-baselines/AMENDMENT_B0.md'
+      - 'experiments/cross-linguistic-baselines/AMENDMENT_B1.md'
       - 'experiments/cross-linguistic-baselines/phase84b.py'
       - '.github/workflows/issue84-phase-b-preflight.yml'
   workflow_dispatch:
