@@ -1,0 +1,128 @@
+name: Issue84 Phase B cipher-family first reveal
+
+on:
+  push:
+    branches: [research/issue84-phase-b-cipher-map]
+    paths:
+      - '.github/workflows/issue84-phase-b-first-reveal.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+concurrency:
+  group: issue84-phase-b-first-reveal
+  cancel-in-progress: false
+
+jobs:
+  first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout frozen scientific head
+        uses: actions/checkout@v4
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout exact published Naibbe source
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify frozen authorities
+        shell: bash
+        run: |
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+          test "$(git -C external/naibbe hash-object README.md)" = "486782221285186c0f78dd9474b676e067cd4bea"
+          test "$(sha256sum experiments/cross-linguistic-baselines/first-reveal/phase84a_results.json | cut -d' ' -f1)" = "86d18560b5999836b7c0d22fa9c3d8dbfd9f11ba246613fd0c2527d5ed5ffe1c"
+
+      - name: Install frozen runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Compile frozen executable
+        run: python -m py_compile experiments/cross-linguistic-baselines/phase84b.py
+
+      - name: Execute authoritative first reveal
+        shell: bash
+        run: |
+          mkdir -p out
+          python experiments/cross-linguistic-baselines/phase84b.py \
+            "$(pwd)/external/cremma" \
+            "$(pwd)/external/naibbe" \
+            "$(pwd)/out/phase84b_results.json" \
+            > >(tee out/phase84b_stdout.json) \
+            2> >(tee out/phase84b_stderr.log >&2)
+
+      - name: Write compact frozen summary and provenance
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('out/phase84b_results.json')
+          x=json.loads(p.read_text())
+          compact={
+              'schema':x['schema'],
+              'target_intervals':x['target_authority']['intervals_exact_from_phaseA'],
+              'preflight':x['preflight'],
+              'candidates':{
+                  k:{
+                      'center':v['summary']['primary_center_componentwise_median'],
+                      'responsibilities':v['summary']['responsibilities'],
+                      'classification':v['summary']['classification'],
+                      'n_realizations':v['summary']['n_realizations'],
+                      'signed_distance':v['summary']['signed_distance_to_target_interval'],
+                  }
+                  for k,v in x['candidates'].items()
+              },
+              'across_candidates':x['across_candidates'],
+              'claim_limit':x['claim_limit'],
+          }
+          Path('out/phase84b_summary.json').write_text(json.dumps(compact,ensure_ascii=False,indent=1)+'\n')
+          PY
+          cat > out/PROVENANCE.md <<EOF
+          # Issue #84 Phase B first reveal provenance
+
+          - workflow run: ${GITHUB_RUN_ID}
+          - scientific head: ${GITHUB_SHA}
+          - branch: ${GITHUB_REF_NAME}
+          - plan: experiments/cross-linguistic-baselines/PLAN_B.md
+          - plan freeze commit: b991b948f8bb4d5041ed2e6d348eef4d91feca84
+          - notation amendment B0 commit: fa10b35cadaefd972be93311d41a8bd843a1bef7
+          - prereveal interface amendment B1 commit: 02189503bf377c480a15e33ff56d7d3219152e3f
+          - B1 exact code correction commit: 51033c8ca5fe34acdab0e7f542c6b2c6b4c93700
+          - full-generation score-free preflight run: 34011756256
+          - full-generation preflight head: dba354675defb5e2cd3f0fa99c8392d38fd992ea
+          - CREMMA: HTR-United/CREMMA-Medieval-LAT@292525969ad98380b398e6606a9c2a36d51913ae
+          - Naibbe: greshko/naibbe-cipher@f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          - Phase-A result SHA-256: 86d18560b5999836b7c0d22fa9c3d8dbfd9f11ba246613fd0c2527d5ed5ffe1c
+          - PYTHONHASHSEED: 0
+          EOF
+          sha256sum \
+            out/phase84b_results.json \
+            out/phase84b_summary.json \
+            out/phase84b_stdout.json \
+            out/phase84b_stderr.log \
+            out/PROVENANCE.md \
+            > out/SHA256SUMS
+
+      - name: Upload immutable first-reveal bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue84-phaseb-first-reveal
+          path: out/
+          retention-days: 90
+          if-no-files-found: error
