@@ -1,0 +1,13 @@
+# Issue #81 implementation freeze A
+
+This note resolves implementation details in `PLAN_A.md` before any target run.
+
+1. The X2 training vocabulary contains only literal training-token surfaces whose frozen `SlotParser(min)` parse exists. A recent token need not itself be in that vocabulary: its exact edit-distance-1 neighbors are queried against the training vocabulary. The query index is regression-checked against Phase62 `build_neighbors` for every in-vocabulary token.
+2. X1's observed previous-token state is available only when the immediately preceding observed training/evaluation token has a min parse. A contextual X1 count is not added after an unparseable predecessor, and evaluation falls back to global V2 for that token. No `UNKNOWN` state is introduced. Generated X1 tokens are reparsed before updating the state.
+3. X1/X3 contextual transition distributions use `BACKOFF=1.0` exactly as frozen V2: `(context_count + BACKOFF * global_V2_probability)/(context_total + BACKOFF)`. Unseen contextual states/transition contexts are exactly global V2.
+4. Held-out likelihood for model selection is a literal surface-token likelihood. `P_V2(token)` is the sum of the probabilities of all legal unit sequences that emit the literal token surface under the fitted V2 model. `Q_edit1` is the exact probability that the X2 memory branch emits that literal token. This makes the mixture a normalized token-surface distribution. For continuity with OGH-C, the old min-parse code length is also reported separately and is not used to select `pi`.
+5. The raw H62 magnitude gate compares the candidate's realization-aggregated `abs_excess_sum` with the arithmetic mean of the five frozen held-out Voynich `abs_excess_sum` values. Per-fold target ratios are also reported. No H62 value is used in fitting or selecting `pi`.
+6. R1 is computed on the literal generated surfaces after reparsing with `SlotParser(min)`. Parsed tokens retain their physical leaf's frozen fold id. Within a line, reparsed tokens are compacted only if a parse failure occurs; parser coverage is reported and must be at least 0.60 before the frozen Issue #68 R1 gate can pass. The generation hash is checked between the cross-token and R1 jobs.
+7. The X4 licensing decision is made from the X2/X3 aggregate cross-token result before any X4 generation. The frozen X2 `pi` values are reused unchanged.
+
+These choices are part of the prereveal protocol and must not be changed in response to S1/S2/H62/R1 outcomes.
