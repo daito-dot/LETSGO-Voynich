@@ -1,6 +1,12 @@
 # Research roadmap
 
-## Active roadmap — post Issue #72 / Issue #75 A–F0 / OGH-A/B/C
+## Active roadmap — post Issue #84 Phase A
+
+- Issue #84 A: 101-language / 7-reading baseline — Voynich adjacent MI `0.05–0.11` vs languages `0.17–1.58`; positive immediate repetition vs language avoidance; no mid-range burstiness. Synthesis control-tested and sharpened.
+- Issue #81: S1 and near-family recurrence are separate small memories (X3 `0.72×` S1; X2 `0.79×` S2, `2.1×` raw H62). Next rung: soft reweighting / recency kernel selected by likelihood, then composition.
+- Issue #84 B/C: cipher-family map (which families reach the Voynich regime), genre controls (enumerative Latin). Use distance bins 1–2 and 21–40 as the discriminating Q2 components.
+
+## Roadmap — post Issue #72 / Issue #75 A–F0 / OGH-A/B/C
 
 ### Completed: Naibbe R1 decomposition and the minimal occupancy-generator ladder
 
