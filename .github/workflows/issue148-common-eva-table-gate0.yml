@@ -1,0 +1,126 @@
+name: Issue148 common-EVA table Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/common-eva-edge/ISSUE148_COMMON_EVA_TABLE_TRANSPORT_PLAN.md'
+      - 'experiments/predictive-information/common-eva-edge/issue148_common_eva_table_gate0.py'
+      - '.github/workflows/issue148-common-eva-table-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue148_common_eva_table_gate0.json
+
+jobs:
+  gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install score-free parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce score-free Gate0 executable
+        shell: bash
+        run: |
+          GATE=experiments/predictive-information/common-eva-edge/issue148_common_eva_table_gate0.py
+          test -f "$GATE"
+          if grep -E 'math\.log|np\.log|log2\(|bits_POS|bits_XEDGE|G_transport|retention_ratio|token_logp|categorical_logp|scientific_classification' "$GATE"; then
+            echo 'Predictive target scoring path found in Issue148 Gate0 executable' >&2
+            exit 1
+          fi
+
+      - name: Compile and target-free self-test
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/common-eva-edge/issue148_common_eva_table_gate0.py
+          python experiments/predictive-information/common-eva-edge/issue148_common_eva_table_gate0.py --self-test
+
+      - name: Run score-free directional support Gate0
+        shell: bash
+        run: |
+          python experiments/predictive-information/common-eva-edge/issue148_common_eva_table_gate0.py --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue148_common_eva_table_gate0.sha256
+
+      - name: Assert authority support and firewall
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue148_common_eva_table_gate0.json',encoding='utf-8'))
+          assert x['schema']=='issue148-common-eva-table-gate0-v1'
+          assert x['issue']==148 and x['gate_pass'] is True
+          assert x['scientific_transport_metrics_computed'] is False
+          assert x['gate_disposition']=='PASS — PROCEED TO SEPARATELY COMMITTED CROSS-READING TABLE SCORER'
+          a=x['issue145_authority']
+          assert a['gate0_result_sha256']=='563573e81c931133aaa9877bcf79a57a40ebb3e2a946183cac3f6e922d65eb48'
+          assert a['scientific_scorer_blob']=='ce8a167c607fbcf2807f567439ab6837471f4f07'
+          assert a['first_reveal_result_sha256']=='663f4b4f9f48992036c2517109f5b8efde459cbdd35d034b567233edbd2efdf2'
+          assert a['fold_identity_sha256']=='cf2df8edcf2b25c2f6388c4a9e2c1ee58a24ae05a9cf489ff9a43d2d28f0b64b'
+          for key in ('ZL3b_to_IT2a','IT2a_to_ZL3b'):
+              d=x['directions'][key]
+              assert len(d['outer'])==5
+              for row in d['outer']:
+                  assert row['source_training_target_test_leaf_overlap']==[]
+                  src=row['source_training']; tgt=row['target_test']
+                  assert src['training_clean_tokens']>0
+                  assert src['training_run_body_tokens']>0
+                  assert src['n_previous_terminal_contexts']>=2
+                  assert src['n_previous_terminal_to_initial_pairs']>=2
+                  assert tgt['target_primary_run_body_targets']>=300
+                  assert tgt['source_context_supported_primary_run_body_targets']>=300
+                  assert tgt['source_context_supported_primary_run_body_targets']+tgt['source_context_unsupported_primary_run_body_targets']==tgt['target_primary_run_body_targets']
+                  assert 0.0 <= tgt['source_context_coverage_fraction'] <= 1.0
+          fw=x['firewall']
+          assert fw['scientific_transport_metrics_computed'] is False
+          assert fw['cross_table_target_score_computed'] is False
+          assert fw['target_current_first_atom_used_for_support_selection'] is False
+          assert fw['target_selected_support_matching'] is False
+          print(json.dumps({
+              'gate_disposition':x['gate_disposition'],
+              'directions':x['directions'],
+              'scientific_transport_metrics_computed':x['scientific_transport_metrics_computed'],
+          },indent=2,sort_keys=True,ensure_ascii=False))
+          PY
+
+      - name: Upload Gate0 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue148-common-eva-table-gate0-${{ github.event.pull_request.head.sha }}
+          path: |
+            issue148_common_eva_table_gate0.json
+            issue148_common_eva_table_gate0.sha256
