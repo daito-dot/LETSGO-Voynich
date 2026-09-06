@@ -1,0 +1,118 @@
+name: Issue118 residual corrected-core Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/residual-gate/CORE_GATE0_PLAN.md'
+      - 'experiments/predictive-information/residual-gate/CORE_GATE0_AMENDMENT_A.md'
+      - '.github/workflows/issue118-residual-core-gate0.yml'
+      - 'experiments/predictive-information/order-correction/rerun_phase1_source_order.py'
+      - 'experiments/predictive-information/source_order_authority.py'
+      - 'experiments/predictive-information/phase1/phase1_predictive_budget.py'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  corrected-core-gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Reproduce corrected Phase1 authority
+        shell: bash
+        run: |
+          python experiments/predictive-information/order-correction/rerun_phase1_source_order.py --self-test
+          python experiments/predictive-information/order-correction/rerun_phase1_source_order.py --run "$ZL3B" issue118_core_gate0.json
+          sha256sum issue118_core_gate0.json | tee issue118_core_gate0.raw.sha256
+
+      - name: Assert exact corrected core and byte support
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue118_core_gate0.json'))
+          exp_means={'B0':9.708906101685841,'B1':9.594367012730386,'B2':9.546169179582169,'B3':9.517268842963203}
+          for k,v in exp_means.items(): assert abs(x['summaries']['mean_bits_per_token'][k]-v)<1e-12,(k,x['summaries']['mean_bits_per_token'][k],v)
+          exp_b3=[9.673387360496681,9.58290664304585,9.353632787765441,9.38964928066337,9.58676814284467]
+          exp_n=[4430,4810,5516,5447,4868]
+          exp_fam=['ENTRY_BODY','LINE4','LINE4','ENTRY_BODY','LINE4']
+          exp_reset_k=[3,3,2,2,2]
+          exp_b1_pi=[.21,.21,.21,.21,.22]
+          for f,r in enumerate(x['outer']):
+              assert r['fold']==f
+              assert r['n_scored']==exp_n[f]
+              assert abs(r['B3']['bits_per_token']-exp_b3[f])<1e-12
+              assert r['B1']['selected']['H']==40 and abs(r['B1']['selected']['tau']-32.0)<1e-12 and abs(r['B1']['selected']['pi']-exp_b1_pi[f])<1e-12
+              assert r['B2']['selected']['H']=='ALL' and abs(r['B2']['selected']['tau']-128.0)<1e-12 and abs(r['B2']['selected']['pi']-.30)<1e-12
+              assert r['B3']['selected']['family']==exp_fam[f]
+              assert abs(r['B3']['selected']['lambda']-.5)<1e-12
+              assert r['B4']['CONTINUOUS']['selected']['k']==2
+              assert abs(r['B4']['CONTINUOUS']['selected']['alpha']-.01)<1e-12
+              assert r['B4']['RESET']['selected']['k']==exp_reset_k[f]
+              assert abs(r['B4']['RESET']['selected']['alpha']-.01)<1e-12
+              for name in ('RESET','CONTINUOUS'):
+                  assert r['B4'][name]['n_accepted']==r['n_scored']
+                  assert r['B4'][name]['n_all']==r['n_visible']
+          assert x['firewall']['S1_scored'] is False
+          assert x['firewall']['S2_scored'] is False
+          assert x['firewall']['H62_scored'] is False
+          assert x['firewall']['R1_scored'] is False
+          print(json.dumps({'status':'SCIENTIFIC_FIELDS_MATCH','mean_bits':x['summaries']['mean_bits_per_token'],'B3':[r['B3']['bits_per_token'] for r in x['outer']]},indent=2))
+          PY
+
+      - name: Apply frozen one-cell floating-point normalization and verify original full authority
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          src='issue118_core_gate0.json'
+          out='issue118_core_gate0.normalized.json'
+          expected='0d7f311dac17f5736f8191b8ea38cf5f2eac9b7391150a986204772da181ae27'
+          original=-131278.47048215955
+          x=json.load(open(src))
+          row=x['recency_selection']['3']['candidate_table'][88]
+          assert row['H']==40 and row['tau']==64 and abs(row['pi']-.26)<1e-15, row
+          observed=float(row['total_log_likelihood'])
+          assert abs(observed-original)<=1e-9, (observed,original)
+          row['total_log_likelihood']=original
+          text=json.dumps(x,indent=2,sort_keys=True,allow_nan=False)+'\n'
+          open(out,'w',encoding='utf-8').write(text)
+          got=hashlib.sha256(text.encode('utf-8')).hexdigest()
+          assert got==expected,(got,expected)
+          print(json.dumps({'status':'PASS','normalized_path':'recency_selection.3.candidate_table[88].total_log_likelihood','raw_value':observed,'authority_value':original,'normalized_sha256':got},indent=2))
+          PY
+          sha256sum issue118_core_gate0.normalized.json | tee issue118_core_gate0.normalized.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue118-residual-core-gate0-authority
+          path: |
+            issue118_core_gate0.json
+            issue118_core_gate0.raw.sha256
+            issue118_core_gate0.normalized.json
+            issue118_core_gate0.normalized.sha256
