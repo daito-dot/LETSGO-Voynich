@@ -1,0 +1,93 @@
+name: Sync research docs after Issue84 Phase C
+
+on:
+  push:
+    branches: [research/issue84-phase-c-genre-controls]
+    paths:
+      - '.github/workflows/issue84-phase-c-docsync.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/issue84-phase-c-genre-controls
+
+      - name: Update current research entry points
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # STATUS.md
+          p=Path('research/STATUS.md')
+          s=p.read_text()
+          s=s.replace(
+            '## Current research state — after Issue #72, #75 A–F0, OGH-A/B/C, Issue #81, Issue #84 Phase B (2026-09-06)',
+            '## Current research state — after Issue #72, #75 A–F0, OGH-A/B/C, Issue #81, Issue #84 Phase C (2026-09-06)',
+            1,
+          )
+          phasec='''\n\n**Issue #84 Phase C (historical genre controls):** `NO FROZEN HISTORICAL SOURCE IN FULL VOYNICH REGIME`. Ten preregistered recipe/enumerative, Old English Herbarium, household/account and York liturgical source documents were isolated by source-only C0 layout rules before target scoring. All ten are **0/3**, with zero partial hits. More strongly, every work misses in the same direction: adjacent `MI1` is above the seven-reading Voynich interval, immediate exact-repeat `z1_2` is below it, and 21–40-token recurrence `z21_40` is above it. The closest work still misses each relevant boundary (York for MI/immediate repeat; *Forme of Cury* for 21–40 recurrence). Result JSON is archived under `experiments/cross-linguistic-baselines/first-reveal-c/`, SHA-256 `e5d688b15538288b435cfdf17ed582d0de13c6d6209f93e67d3096199e84e58b`. Together with Phases A/B, the control-tested description survives ordinary-language, transcription, common-cipher and historical-list/formulaic falsification panels. This is structural evidence only; it does not establish absence of meaning or exclude all ciphers/genres.\n'''
+          marker='**Issue #84 Phase C (historical genre controls):**'
+          anchor='**Issue #84 Phase B (cipher-family map on frozen CREMMA Latin):**'
+          if marker not in s:
+              i=s.index(anchor)
+              s=s[:i]+phasec+s[i:]
+          old='**Active frontier:** Issue #84 Phase C genre controls are now the highest-information next discriminator: test whether enumerative / recipe / herbal / calendar / liturgical / account-like source texts already move the exact-repeat 1–2 and 21–40 responsibilities away from ordinary prose before any target-tuned transform is introduced. Do not post-hoc compose the Phase-B partial mechanisms. In parallel, Issue #81 may continue its independently preregistered soft near-family / recency-kernel memory under training-only selection. Frozen G4/G7A/V2 remain emission-stage comparators; do not reopen R1 rungs or repair Naibbe from the Phase-B reveal.'
+          new='**Active frontier:** return the main lane to Issue #81. Phase A–C of Issue #84 have survived the intended control program, and Issue #84 Phase D is explicitly blocked until #81 lands a sufficient cross-token memory. Test the soft near-family / recency-kernel memory with model choice by training/held-out likelihood only; it must reduce the X2 raw-H62 overshoot while retaining S2 and R1. Only a prospectively sufficient near-family component may then be composed with the already-supported paragraph ENTRY/BODY X3 state. Do not tune #81 against the Phase-C genre results, reopen R1 rungs, or post-hoc combine the Phase-B partial cipher mechanisms.'
+          if old in s:
+              s=s.replace(old,new,1)
+          elif new not in s:
+              raise SystemExit('STATUS active frontier not found')
+          p.write_text(s)
+
+          # NEXT_RESEARCH_FRONTIER.md
+          p=Path('research/NEXT_RESEARCH_FRONTIER.md')
+          f=p.read_text()
+          oldh='## CURRENT FRONTIER — after Issue #84 Phase B'
+          newh='## CURRENT FRONTIER — after Issue #84 Phase C'
+          if oldh in f:
+              f=f.replace(oldh,newh,1)
+          elif newh not in f:
+              raise SystemExit('NEXT current heading not found')
+          start=f.index(newh)+len(newh)
+          end=f.index('## Frontier after OGH-C: the smallest cross-token memory', start)
+          current='''\n\nIssue #84 Phases A–C have completed the intended control program. Phase A found no ordinary natural-language sample in the transcription-robust Voynich inter-token regime. Phase B found no frozen common reversible-operation representative that generates the full three-component regime from CREMMA Latin. Phase C then tested ten preregistered historical recipe, Herbarium, account and liturgical source documents and found **0 full hits and 0 partial hits**: every source has too much adjacent dependence, too little immediate exact-token reuse, and too much 21–40-token recurrence relative to all seven Voynich readings. See `experiments/cross-linguistic-baselines/REPORT_C.md` and `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE84.md`.\n\nThe next highest-information plan-first question is therefore Issue #81's unresolved generative responsibility:\n\n> **Can a soft near-family / recency-kernel cross-token memory, selected only by training/held-out likelihood, recover S2 and the H62 short-range geometry without the preregistered X2 raw-recurrence overshoot, while preserving the frozen R1 emission grammar?**\n\nIf and only if that component becomes sufficient, prospectively compose it with the already-supported paragraph ENTRY/BODY X3 state and test the joint S1/S2/H62 responsibilities. Issue #84 Phase D (scribe-conditioned memory parameters / external anchors) remains blocked on that sufficient-memory result. Do not use the Phase-B or Phase-C near-misses to tune the memory architecture.\n\n'''
+          f=f[:start]+current+f[end:]
+          p.write_text(f)
+
+          # CHECKPOINT_JA.md
+          p=Path('research/CHECKPOINT_JA.md')
+          j=p.read_text()
+          j=j.replace('最終更新: 2026-09-01（Issue #72 / Issue #75 A–F0 / OGH-A 後）','最終更新: 2026-09-06（Issue #84 Phase C 後）',1)
+          j=j.replace('## いま一番強く言えること（2026-09-01）','## いま一番強く言えること（2026-09-06）',1)
+          j=j.replace('自然言語は直後の語の反復を避ける（96/101 で負）','自然言語は直後の語の反復を避ける（95/101 で負）',1)
+          issue81='- Issue #81（PR #82、別エージェント）: 入口/本文テーブルで S1 0.72×、10% の近縁再利用で S2 0.79×・生 H62 2.1×。予測利得は 0.06 bit/語のみ。'
+          additions='''- Issue #84 Phase B（2026-09-06）: CREMMA Latin に単純置換、homophonic ×2/4/8、nomenclator、null 10/20/30%、行内転置、verbose、公開 Naibbe を事前登録して適用。**完全 HIT は 0**。H4/N256-4 は隣接 MI だけ、行内転置は直近反復だけ、Naibbe は 21–40 語の抑制だけを再現し、三つを同時には作れなかった。\n- Issue #84 Phase C（2026-09-06）: 料理書3、Old English Herbarium 1、家計・会計5、York典礼1の計10資料を、Voynich統計を見ない C0 版面監査で本文固定してから採点。**10/10 が 0/3、部分 HIT も 0**。全資料が同じ方向に外れ、Voynich より隣接依存が強く、直近の同一token再利用が弱く、21–40語の再出現が強い。したがって「普通の文章ではなく、レシピ・薬草書・帳簿・典礼だから特殊に見える」という説明は、この凍結パネルでは成立しない。\n'''
+          if 'Issue #84 Phase C（2026-09-06）' not in j:
+              if issue81 not in j:
+                  raise SystemExit('CHECKPOINT issue81 anchor not found')
+              j=j.replace(issue81, additions+issue81,1)
+          h='## 次の一手'
+          e='以下は Phase64B 時点の旧チェックポイント（歴史的記録）。'
+          a=j.index(h)+len(h)
+          b=j.index(e,a)
+          nextja='''\n\n1. Issue #84 A–C の対照プログラムは完了。通常言語、転写差、代表的な可逆変換、歴史的なリスト／定型ジャンルのどれも、凍結した三つの token 間責務を同時に再現しなかった。\n2. **主レーンを Issue #81 に戻す。** X2 の「直前10 token 内 edit-1 再利用」は S2 を約0.79倍まで戻したが、生 H62 を約2.1倍へ過剰生成した。次は hard 10% activation をいじるのではなく、soft near-family reweighting / recency kernel を候補として、選択は訓練側 held-out 尤度だけで行う。\n3. その局所記憶が S2/H62 を十分に通過した場合に限り、段落入口を説明する X3 ENTRY/BODY 状態と**事前登録して**合成し、S1/S2/H62/R1 を共同採点する。Phase B/C の結果を見て後付けで機構を足さない。\n4. 十分な記憶が成立した後に、Issue #84 Phase D の scribe-conditioned memory / external anchors へ進む。\n\n'''
+          j=j[:a]+nextja+j[b:]
+          p.write_text(j)
+          PY
+
+          rm -f .github/workflows/issue84-phase-c-docsync.yml
+
+      - name: Commit documentation sync
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add research/STATUS.md research/NEXT_RESEARCH_FRONTIER.md research/CHECKPOINT_JA.md .github/workflows
+          git commit -m 'Update research frontier after Issue #84 Phase C'
+          git push origin HEAD:research/issue84-phase-c-genre-controls
