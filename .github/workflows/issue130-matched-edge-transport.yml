@@ -1,0 +1,165 @@
+name: Issue130 support-matched edge transport first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/residual-gate/L4B_MATCHED_TRANSPORT_PLAN.md'
+      - 'experiments/predictive-information/residual-gate/matched_edge_transport.py'
+      - '.github/workflows/issue130-matched-edge-transport.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  matched-edge-transport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source and merged matched Gate
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test -f experiments/predictive-information/residual-gate/L4B_MATCHED_SUPPORT_GATE0_PROVENANCE.md
+          test -f experiments/predictive-information/residual-gate/L4B_MATCHED_TRANSPORT_PLAN.md
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce interpretation firewall
+        shell: bash
+        run: |
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|H62P1|target_exposed' experiments/predictive-information/residual-gate/matched_edge_transport.py; then
+            echo 'Forbidden surface-target scorer reference found' >&2
+            exit 1
+          fi
+
+      - name: Compile and self-test before target reveal
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/residual-gate/matched_edge_transport.py
+          python experiments/predictive-information/residual-gate/matched_edge_transport.py --self-test
+
+      - name: Run frozen matched transport first reveal
+        shell: bash
+        run: |
+          python experiments/predictive-information/residual-gate/matched_edge_transport.py --run "$ZL3B" issue130_matched_transport.json
+          python -m json.tool issue130_matched_transport.json > /dev/null
+          sha256sum issue130_matched_transport.json | tee issue130_matched_transport.sha256
+
+      - name: Assert Gate identity, support and frozen classification
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue130_matched_transport.json'))
+          assert x['scored'] is True, x
+          assert x['gate_authority']['json_sha256']=='a0f48878506369aa9dff60e06b60be13d41d36dd1ceef3a40c4fc63825db66f5'
+          assert x['gate_authority']['json_sha256']==x['gate_authority']['expected_json_sha256']
+          assert x['gate_authority']['gate_pass'] is True
+          assert x['gate_authority']['matched_total_per_regime_per_seed']==8728
+          assert x['gate_authority']['n_shared_previous_terminal_classes']==20
+          assert x['parent_gate_authority']['json_sha256']=='31c96135ec8e265781fe295888e52d896d47122bfa9d2bbf6f7e36c001827bdb'
+          assert x['parent_gate_authority']['gate_pass'] is True
+          assert len(x['fixed']['seeds'])==5
+          assert all(v is False for v in x['firewall'].values())
+          passes={}
+          for key in ('A_to_B','B_to_A'):
+              d=x['directions'][key]
+              assert len(d['seeds'])==5
+              all_g=[]
+              seed_passes=0
+              for seed in x['fixed']['seeds']:
+                  rec=d['seeds'][seed]
+                  src=rec['source_table']
+                  assert src['selected_total']==8728
+                  assert len(src['selection_digest_sha256'])==64
+                  assert src['table_diagnostics']['selected_events']==8728
+                  assert src['table_diagnostics']['previous_terminal_contexts']==20
+                  assert len(rec['outer'])==5
+                  vals=[]
+                  for f,row in enumerate(rec['outer']):
+                      assert row['fold']==f
+                      assert row['n_accepted']>0 and row['n_visible_edges']>=row['n_accepted']
+                      assert 0.0 <= row['target_inner_rho'] <= 1.0
+                      assert 0.0 <= row['source_context_fallback_rate'] <= 1.0
+                      assert math.isfinite(row['POS2_bits_per_token'])
+                      assert math.isfinite(row['MATCHED_SOURCE_TABLE_bits_per_token'])
+                      assert math.isfinite(row['G_matched'])
+                      vals.append(row['G_matched'])
+                  mean=sum(vals)/5
+                  pos=sum(v>0 for v in vals)
+                  passed=(mean>0 and pos>=4)
+                  s=rec['stability']
+                  assert abs(s['mean']-mean)<1e-12
+                  assert s['positive_folds']==pos
+                  assert s['pass'] is passed
+                  all_g.extend(vals)
+                  seed_passes += int(passed)
+              grand=sum(all_g)/25
+              overall=(seed_passes>=4 and grand>0)
+              s=d['summary']
+              assert s['seed_passes']==seed_passes
+              assert s['n_seeds']==5 and s['n_gains']==25
+              assert abs(s['grand_mean']-grand)<1e-12
+              assert s['overall_pass'] is overall
+              passes[key]=overall
+          if passes['A_to_B'] and passes['B_to_A']:
+              expected='BIDIRECTIONAL'
+          elif passes['A_to_B']:
+              expected='A→B ONLY'
+          elif passes['B_to_A']:
+              expected='B→A ONLY'
+          else:
+              expected='NONE'
+          assert x['classification']==expected,(x['classification'],expected)
+          print(json.dumps({
+              'classification':x['classification'],
+              'gate_authority':x['gate_authority'],
+              'directions':{
+                  key:{
+                      'summary':x['directions'][key]['summary'],
+                      'seeds':{
+                          seed:{
+                              'stability':x['directions'][key]['seeds'][seed]['stability'],
+                              'mean_bits_per_token':x['directions'][key]['seeds'][seed]['mean_bits_per_token'],
+                              'fallback':x['directions'][key]['seeds'][seed]['fallback'],
+                              'outer_rhos':[
+                                  {'fold':r['fold'],'rho':r['target_inner_rho']}
+                                  for r in x['directions'][key]['seeds'][seed]['outer']
+                              ],
+                              'source_table':x['directions'][key]['seeds'][seed]['source_table'],
+                          }
+                          for seed in x['fixed']['seeds']
+                      },
+                  }
+                  for key in ('A_to_B','B_to_A')
+              },
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload matched transport authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue130-matched-edge-transport-first-reveal
+          path: |
+            issue130_matched_transport.json
+            issue130_matched_transport.sha256
