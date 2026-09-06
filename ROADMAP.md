@@ -1,259 +1,198 @@
 # Research roadmap
 
-## Active roadmap — post Issue #84 Phase A
+Last consolidated: 2026-09-06
 
-- Issue #84 A: 101-language / 7-reading baseline — Voynich adjacent MI `0.05–0.11` vs languages `0.17–1.58`; positive immediate repetition vs language avoidance; no mid-range burstiness. Synthesis control-tested and sharpened.
-- Issue #81: S1 and near-family recurrence are separate small memories (X3 `0.72×` S1; X2 `0.79×` S2, `2.1×` raw H62). Next rung: soft reweighting / recency kernel selected by likelihood, then composition.
-- Issue #84 B/C: cipher-family map (which families reach the Voynich regime), genre controls (enumerative Latin). Use distance bins 1–2 and 21–40 as the discriminating Q2 components.
+This file controls **current sequencing**, not historical exact methods. Frozen plans, first-reveal artifacts and phase reports remain authoritative for historical tests and numbers.
 
-## Roadmap — post Issue #72 / Issue #75 A–F0 / OGH-A/B/C
+Program authority: Issue #88 and `research/PREDICTIVE_INFORMATION_PROGRAM.md`.
 
-### Completed: Naibbe R1 decomposition and the minimal occupancy-generator ladder
+## Current frontier — close the residual against an augmented observable core
 
-- #72: Naibbe R1 lives in the parsed 12-slot occupancy-signature inventory (C1 supported; PT and FI refuted).
-- #75 A–F0 (branch): M0/M1 fail; M2 `0.29` → M3 `0.59` → M4 `0.62` → M5 `0.73` insufficient vs M+ `0.965`; F0 selects K/R/S-gated two-mode chain (M6) for the next target test.
-- OGH-A: independent-harness replication of the Phase-A fork on both skeletons; pairwise maxent control shows R1 is second-order sufficient to within `≈0.01`; a 78-parameter last-occupied-slot successor grammar passes the Issue #68 R1 gate (`r 0.91–0.93`, both readings, both skeletons). Frozen class `COMPACT CONSTRUCTION GRAMMAR SUFFICIENT`.
-- OGH-B: target-blind selected second-order successor grammar (298 params) reaches median `T 0.948 / 0.962`, within `0.0165 / 0.0079` of the empirical ceiling. Frozen decision `SUCCESSOR GRAMMAR NEAR-SUFFICIENT`; **R1 generation lane closed**.
-- OGH-C: per-token information budget `7.0` bits shape / `9.7` bits shape+values; the complete memoryless token grammar leaves S1/S2/S3 at ≈ `0.03×` Voynich and ≈ 1/10 of the raw H62 excess (`MEMORYLESS TOKEN GRAMMAR PARTIAL`; cross-token structure is not token-internal). **Token-internal chapter closed.**
+The previous flexible residual has now been localized enough that a rich latent-state search would be premature.
 
-### Current frontier: the smallest cross-token memory
+The immediate question is:
 
-1. **Memory-augmented token generator (plan first).** Keep the frozen memoryless V2 as emission stage and add one minimal cross-token state at a time: (a) previous token's parsed shape; (b) presence of a near-family form in the previous ten tokens; (c) paragraph-entry flag. Select by training-only held-out likelihood; report added bits per token.
-2. **Frozen cross-token scoring with a magnitude gate.** Phase64B pipeline unchanged, plus a preregistered raw H62 excess gate (candidate `abs_excess_sum ≥ 0.5×` held-out Voynich) before any profile-shape comparison. Responsibilities: S1 sign and size, S2, S3, H62 raw excess and profile, R1 retained.
-3. **Joint tournament re-entry.** G4/G7A/V2 are the emission-stage comparators and memoryless nulls; A1-R1 is the memory comparator.
+> **After corrected B3 is augmented with the explicit observable same-line terminal→initial edge, does any reproducible held-out sequence information remain?**
 
-Token-internal work is closed: no further occupancy-only or value-only rungs.
+This is the next decision gate.
 
-Last consolidated: 2026-09-02 (OGH-C)
+## Completed foundation
 
-## Previous roadmap — post Issue #68
+### 1. Token-internal construction — CLOSED
 
+Issue #75 + OGH-A/B/C:
 
-### Completed: replicated token-construction constraint and first joint tournament
+- residual R1 topology replicates across ZL3b and independent IT2a;
+- a target-blind second-order occupied-slot successor grammar with 298 counted conditional probabilities is near the empirical-inventory ceiling;
+- memoryless V2 is `9.7089061 bits/token`, with about 7.0 bits shape + 2.7 bits values;
+- memoryless token generation does not reproduce the major cross-token responsibilities.
 
-- #58A: broad signed occupancy grammar.
-- #58B: raw stratum similarity inconclusive under line-local null.
-- #58C: non-null residual complete-66 construction graph with stratum modulation.
-- #58D: independent-reading replication, ZL3b↔IT2a `r=.98845`, `65/66` signs.
-- #68: first preregistered joint-constraint tournament.
-  - Naibbe **R1 PASS** but R2/R3/R4 FAIL → `NOT COMPETITIVE`.
-  - A1 common direct R1 representation gate FAIL, historical R2/R3 PASS → `PARTIAL STRUCTURAL MODEL`.
-  - global `NO TESTED FAMILY JOINT-CONSTRAINT COMPETITIVE`.
+No new occupancy-only R1 rung is currently licensed.
 
-### Current frontier: codebook/process decomposition of Naibbe R1
+### 2. Predictive-information budget — COMPLETE THROUGH B3
 
-Objective: determine whether the R1 complete residual topology is generated by the **cipher process** or largely embedded in the **Voynich-target-aware emitted codebook/inventory**.
+After the source-order correction:
 
-Required next design characteristics:
+- B0 V2 `9.7089061`;
+- B1 local `9.5943670`;
+- B2 longer history `9.5461692`;
+- B3 + observable line/paragraph state `9.5172688 bits/token`.
 
-- preregister counterfactual families before any new complete-graph scoring;
-- preserve the published Naibbe architecture where the hypothesis requires it;
-- use full 66-edge R1, candidate-owned null calibration and both frozen ZL3b/IT2a references;
-- include codebook-association neutralization and inventory-only controls sufficient to distinguish codebook grammar from process dynamics;
-- no selected-edge analysis may promote;
-- retain R2/R3/R4 as separate hard responsibilities; the decomposition is about interpreting R1, not rescuing Naibbe.
+Cross-token information is real but small relative to token-internal information.
 
-### Decision after decomposition
+### 3. Long-history source attribution — COMPLETE FOR CURRENT FAMILIES
 
-- If R1 survives codebook/inventory neutralization, downgrade R1 primarily to an **output-inventory grammar constraint** and prioritize unseen boundary/dynamic/inverse constraints.
-- If R1 collapses when codebook association/inventory structure is neutralized, treat the published Naibbe architecture/codebook interaction as materially specific and design a separately preregistered reversible-family follow-up.
-- In neither case should a new candidate be called decipherment without unseen prediction and exact inverse/content validation.
+The dominant longer-history increment is not literal long ordered memory. It is mostly causal-prefix / prior-paragraph inventory, with a smaller actual-order residual.
 
-Last consolidated: 2026-09-01
+Phase 2C shows both same-side and cross-side prior history remain predictive. The useful slow inventory spans multiple paragraphs.
 
-This file controls current sequencing. Exact historical methods and results remain controlled by phase/issue-specific frozen plans and reports.
+### 4. Transport/localization of existing mechanisms — COMPLETE FOR CURRENT QUESTIONS
 
-## Program objective
+- LOCAL40 transports bidirectionally across Currier A/B;
+- PREV_PARAS useful strength differs by Currier regime;
+- matched pure-Herbal controls do not remove that strength asymmetry;
+- writing hand is too confounded with Currier to support a clean causal attribution.
 
-The project is not optimizing for the number of falsified hypotheses. The objective is to move from reproducible Voynich structure toward a constrained generative/transform account that can eventually be inverted and tested on unseen material.
+### 5. Visible-space boundary validity — COMPLETE FOR ZL3b + IT2a
 
-For the token-construction lane, read `research/TOKEN_CONSTRUCTION_PROGRAM.md` before interpreting the statistical milestones below.
+Certain visible spaces behave as reproducible construction/production cuts. The exact cut beats nearby shifted cuts in both independent readings.
 
-## Completed milestones relevant to the current frontier
+This validates the tested production boundary, not a natural-language word interpretation.
 
-- **M1–M5:** paragraph-entry/local-recurrence mechanism program established A1/A1-R1 as the leading tested structural mechanism, with prospective H62 support, training-vocabulary robustness and independent-reading replication.
-- **M6:** inventory-autonomy stress test was mixed; full autonomy failed on canonical ZL S3 while H62 remained strong.
-- **M7:** published Naibbe provided a stronger C-family comparator but remained partial and did not rival A1 on sealed recurrence geometry.
-- **M8:** localized content-anchor feasibility was established; Phase66–68 object-local morphology↔text tests were negative under frozen representations.
-- **M9:** Phase69/70 demonstrated compatibility between strong local recurrence and exactly recoverable meaningful plaintext; recurrence alone cannot imply semantic absence.
-- **M10:** Phase71 Alberti paragraph-boundary signal/reset failed in the opposite S1 direction.
-- **M11:** Issue #26 bounded direct-music program closed with no supported tested direct-musical interpretation.
-- **M12:** Issue #55A found cross-leaf slot3×slot5 dependence; Issue #55B reduced it to binary occupancy exclusion.
-- **M13 / #58A:** all 66 binary slot pairs were audited. Frozen class: `BROAD OCCUPANCY GRAMMAR; SLOT3xSLOT5 NOT UNIQUE`.
-- **M14 / #58B:** raw signed graph stability was inconclusive because the line-local marginal-preserving null itself generated similarly high whole-graph correlations.
-- **M15 / #58C:** independent edge-wise null calibration established a strong residual token-construction graph beyond lower-order occupancy prevalence. Frozen class: `RESIDUAL GRAPH EXISTS WITH STRATUM MODULATION`.
-- **M16 / #58D:** independent Takeshi Takahashi / IT2a reading replicated residual existence and the complete 66-edge topology. Frozen class: `INDEPENDENT TRANSCRIPTION REPLICATES RESIDUAL TOKEN-CONSTRUCTION CORE`.
-- **Decipherment threshold:** not reached.
+### 6. Flexible residual gate — PASSED, THEN LOCALIZED
 
-## Current scientific object
+Issue #118:
 
-The token-construction lane concerns **space-delimited token internal construction**, not whole-sentence grammar.
+- `G_context = +0.0178533 bit/token`, positive 5/5;
+- frozen class: `ROBUST FLEXIBLE SEQUENCE RESIDUAL EXISTS — LOCALIZATION REQUIRED`.
 
-Visible spaces are treated only as observed delimiters; they are not assumed proven linguistic word boundaries.
+Issue #121 same-order control:
 
-After #58D, the principal token-internal constraint is no longer merely a ZL3b result.
+- boundary-edge residual survives, mean `+0.0106322`, positive 5/5;
+- descriptive gain is overwhelmingly inside source lines.
 
-Within a common EVA/IVTFF framework, the complete residual topology is strongly reproducible across independent ZL3b and Takahashi/IT2a readings.
+Issue #123 reset-scope control:
 
-## Completed #58C/#58D portability result
+- same-line continuation helps: `+0.0291614`, 5/5;
+- carrying the same context beyond the line is harmful: `-0.0185292`, 0/5.
 
-### #58C — lower-order occupancy controlled
+Issue #125 explicit decomposition:
 
-> `RESIDUAL GRAPH EXISTS WITH STRATUM MODULATION`
+- generic line-position/onset: `+0.00889185`, 5/5;
+- previous-terminal identity: `+0.02026956`, 5/5;
+- EDGE2 and the former flexible LINECONT2 expert are token-logp identical under fixed `k=2`.
 
-ZL3b:
+The former flexible line-local residual therefore collapses, under this representation, to a compact observable adjacency mechanism rather than an unexplained longer local sequence state.
 
-- E `3.23155`;
-- independent test-null max `1.28318`;
-- p `1/1001`;
-- W `0.94471`.
+### 7. Currier transport of the explicit edge — COMPLETE
 
-### #58D — independent reading-lineage replication
+Issue #127:
 
-> **`INDEPENDENT TRANSCRIPTION REPLICATES RESIDUAL TOKEN-CONSTRUCTION CORE`**
+- native edge useful in A and B;
+- scalar strength compatible bidirectionally when the target table is supplied;
+- literal table transport is B→A only;
+- exact table+strength transport is none.
 
-IT2a:
+Issue #130 support-matched follow-up:
 
-- E `3.21363`;
-- independent test-null max `1.25891`;
-- p `1/1001`;
-- W `0.95377`.
+- 20 shared previous-terminal contexts;
+- exactly 8,728 selected source edge events per Currier regime per seed;
+- five outcome-blind matched selections;
+- A→B seed passes `0/5`, grand mean `+0.00693954`;
+- B→A seed passes `5/5`, grand mean `+0.02697082`;
+- frozen classification **`B→A ONLY`**.
 
-Direct ZL3b↔IT2a complete-graph replication:
+The table asymmetry survives removal of the major A/B source-support imbalance.
 
-- pooled Pearson `0.98845`;
-- pooled sign agreement `65/66`;
-- both maxT p-values `1/1001`;
-- every one of eight planned groups strongly replicates;
-- group Pearson range `0.97031–0.99548`;
-- group sign agreement `64/66–66/66`.
+## Active gate — augmented observable core
 
-Independent test-null maxima:
+Open a new plan-first issue from current `main`.
 
-- cross-reading correlation `0.43199`;
-- sign agreement `47/66`.
+### Core responsibility
 
-Within IT2a, the broad #58C modulation geometry reappears:
+Construct the strongest currently justified **observable, non-latent** core. It must include:
 
-- `REGISTER/SECTION RESIDUAL MODULATION`;
-- `LINE-POSITION RESIDUAL MODULATION`;
-- all 7/7 contrasts stable or related/modulated;
-- no materially different contrast.
+1. corrected B3 exactly as authorized;
+2. the generic line-position/onset component from L3;
+3. the immediately previous visible unit's terminal-symbol → current-initial-symbol edge;
+4. a Currier table policy frozen before target scoring;
+5. a fixed fallback for non-A/B or unsupported contexts;
+6. the original physical-leaf outer-fold firewall.
 
-Secondary fine-ordering test did not pass (`p_Delta=.08791`). Therefore portability is strong at the complete-graph/core level without claiming identical fine ranking of all contrast strengths.
+Because Issue #130 rejects one bidirectionally universal literal A/B table under the tested transport criterion, knowingly forcing a single manuscript-wide table would underfit the strongest observable authority. Conversely, hand-conditioned tables are not licensed because hand is inadequately crossed with Currier.
 
-## Current frontier — joint-constraint mechanism tournament
+### Selection firewall
 
-The project now has enough structural evidence to change research mode.
+Before any residual reveal, freeze:
 
-The next frontier is **not another local token-graph test**.
+- exact target population and source order;
+- edge representation and smoothing;
+- Currier A/B and unknown/other handling;
+- all mixture/strength grids;
+- inner-fold selection rule;
+- the flexible challenger family;
+- residual pass/fail rule;
+- finite-probability and support checks.
 
-The next plan-first question is:
+No S1/S2/H62/R1 target may tune this gate.
 
-> **Can any bounded reversible/generative mechanism jointly reproduce the strongest established Voynich constraints on held-out material without target-aware repair?**
+### Primary comparison
 
-### Required hard responsibilities
+The new test should ask whether a separately frozen flexible sequence challenger improves held-out likelihood **after** the explicit observable edge is already in the core.
 
-The next tournament must freeze an exact common scorecard before candidate outcomes are known.
+Do not interpret a flexible challenger as an entropy bound. It is only an empirical model-class residual test.
 
-At minimum:
+## Decision fork
 
-1. **Cross-reading token-construction responsibility** — reproduce the replicated #58C/#58D residual signature, using the complete graph or a frozen prior-derived summary rather than selected edges.
-2. **H62 recurrence responsibility** — reproduce accepted short-range near-family recurrence geometry.
-3. **S1 paragraph-entry responsibility** — reproduce the difficult signed entry specialization; wrong-sign S1 cannot be hidden by easy metrics.
-4. **Reversibility responsibility** — any decoder/encoding family claiming reversibility must demonstrate exact held-out decode/re-encode closure.
-5. **Complexity responsibility** — explicitly charge state size, fitted tables/parameters, target-layout access, empirical vocabulary dependence and paragraph/section-specific rules.
+### A. No robust residual beyond augmented core
 
-### Candidate-family discipline
+Consequence:
 
-Freeze a small set of architecturally distinct families before target scoring.
+- latent-state work remains **not licensed**;
+- consolidate the current compact multiscale observable description;
+- prioritize replication, reversibility/inverse constraints, and external/content tests rather than adding hidden sequence capacity.
 
-Retain interpretable baselines where replayable:
+### B. Robust residual survives augmented core
 
-- source-native/N0-type control;
-- bounded reversible C0-type control;
-- strongest fair prior C-family comparator;
-- A1/A1-R1 as a structural-generation comparator, with its empirical dependencies and non-decoder status explicitly charged.
+Consequence:
 
-New families require independent historical/mathematical motivation and a pre-result specification.
+- do not immediately assign semantics to a latent state;
+- first localize remaining support, representation, Currier/domain and longer observable-history effects;
+- only then freeze a latent architecture/state-count selection rule using training-only likelihood/complexity criteria.
 
-Do not create A2 merely as a repair pass for whichever joint metric fails.
+### C. Core/support regression
 
-### Train/test discipline
+Consequence:
 
-- Prefer the stable physical-leaf folds where scientifically compatible.
-- Fit model parameters only on training material.
-- Evaluate the common responsibility battery on held-out material.
-- If external plaintext is transformed, select source corpora independently of Voynich target fit.
-- Do not reveal held-out failure and then alter the same confirmatory family.
+- stop;
+- audit source order, target population, fold authority, finite support and reproduction of Issue #125/#130 components before any new model is scored.
 
-### Decision classes to freeze numerically in the next issue
+## High-value follow-ups after residual closure
 
-At minimum distinguish:
+These are downstream, not substitutes for the active gate:
 
-- `JOINT-CONSTRAINT COMPETITIVE`;
-- `PARTIAL STRUCTURAL MODEL`;
-- `OVERFIT / EXCESS-COMPLEXITY`;
-- `NOT COMPETITIVE`.
+1. **Independent IT2a replication of the explicit terminal→initial edge**, with representation frozen before scoring.
+2. **Issue #84 Phase D** only where it addresses a question not already superseded by Issue #88 and uses identifiable metadata.
+3. **Reversible/inverse mechanism tournaments** that must satisfy the now-constrained surface-production responsibilities without target-aware repair.
+4. **Localized external/content tests** where the external mapping is fixed independently of Voynichese similarity.
 
-A single weighted score should not let one easy responsibility compensate for S1 sign failure or failure of replicated token construction.
+## Parked / historical lanes
 
-## Why this frontier matters to decipherment
+- generic finite-memory/copy-mutate exploration (#24): useful theory background, but current predictive questions are governed by Issue #88;
+- music-motif/self-similarity methods (#25): exploratory and separate; no direct-musical interpretation is supported;
+- older R1 generator ladders (#58/#75): completed scientific history, not current implementation frontier.
 
-#58D makes the token-construction signature a credible manuscript-level surface constraint rather than a one-transcription curiosity.
+## Research boundary
 
-That means the project can now reject model families prospectively for failing a known signature.
+Nothing on this roadmap currently establishes:
 
-This materially narrows the inverse problem:
+- plaintext or a natural language;
+- semantic absence;
+- a cipher family/key;
+- natural-language word boundaries;
+- author/scribe causation;
+- hoax/artificial origin;
+- a historical production algorithm;
+- decipherment.
 
-- a reversible model that jointly survives token construction + H62 + S1 becomes a serious decoder candidate;
-- a non-reversible generator that survives can inform production architecture but is not decipherment;
-- systematic family failures reveal which architectural responsibility is missing.
-
-## Secondary robustness lane — GC2a/v101
-
-IT2a provides independent reading-lineage replication under a common EVA/IVTFF framework, not complete alphabet/pipeline independence.
-
-GC2a/v101 remains a useful future challenge, but any cross-alphabet representation must be frozen independently. Do not tune a v101→EVA mapping to maximize the already observed residual graph.
-
-After the strong #58D result, this is a secondary robustness lane rather than the highest-information immediate frontier.
-
-## Parallel source lane — real historical ciphertext
-
-The Phase72 source-development branch is not accepted current science and should not be merged wholesale into main. Genuine message/document boundaries must be externally fixed before historical-cipher S1 comparison.
-
-## Deferred / bounded lanes
-
-### Content
-
-Phase66–68 morphology-correlated object-local work is stopped for current populations/representations. Reopen only with a materially new independently grounded content variable.
-
-### Direct music
-
-Issue #26 remains closed. Reopen music-specific interpretation only with a genuinely new independently fixed historical/manuscript-local constraint before target scoring.
-
-### A1 extension
-
-Do not add A2 merely to repair known S1/S3/profile residuals. New mechanism terms require independent motivation and a new frozen test.
-
-## Repository-maintenance rules
-
-Before starting new science:
-
-1. current `main` is the descriptive source of truth;
-2. check current PRs/issues/branches;
-3. permanently archive completed first reveals before relying on expiring Actions artifacts;
-4. ensure `research/STATUS.md`, `ROADMAP.md`, `RESUME.md`, `research/NEXT_RESEARCH_FRONTIER.md` and `research/TOKEN_CONSTRUCTION_PROGRAM.md` agree on object/frontier;
-5. preserve negative/inconclusive and positive first-reveal hashes alike;
-6. never relabel a post-reveal redesign as the same confirmatory hypothesis;
-7. close completed research issues only after authoritative integration reaches main.
-
-## Immediate repository sequence
-
-1. finish #58D integration and post-merge main verification;
-2. close Issue #66 completed;
-3. create the next joint-constraint mechanism-tournament Issue from post-#58D main;
-4. freeze the constraint battery and candidate-family eligibility before implementation;
-5. audit exact replayability of reused baselines;
-6. freeze complexity accounting and held-out outcome gates;
-7. only then run the first tournament reveal.
+The current job is narrower: determine whether the remaining measured predictive structure can be closed by explicit observable rules before adding hidden state.
