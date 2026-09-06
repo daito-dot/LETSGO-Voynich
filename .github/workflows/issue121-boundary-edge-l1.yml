@@ -1,0 +1,109 @@
+name: Issue121 boundary-edge same-order L1 first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/residual-gate/boundary_edge_l1.py'
+      - '.github/workflows/issue121-boundary-edge-l1.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  boundary-edge-l1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source and parent authorities
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test -f experiments/predictive-information/residual-gate/CORE_GATE0_AMENDMENT_A.md
+          test -f experiments/predictive-information/residual-gate/FIRST_REVEAL_PROVENANCE.md
+          test -f experiments/predictive-information/residual-gate/residual_first_reveal.py
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce localization firewall
+        shell: bash
+        run: |
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|H62P1|target_exposed' experiments/predictive-information/residual-gate/boundary_edge_l1.py; then
+            echo 'Forbidden target scorecard reference found' >&2
+            exit 1
+          fi
+
+      - name: Compile and self-test before target reveal
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/residual-gate/boundary_edge_l1.py
+          python experiments/predictive-information/residual-gate/boundary_edge_l1.py --self-test
+
+      - name: Run frozen L1 first reveal
+        shell: bash
+        run: |
+          python experiments/predictive-information/residual-gate/boundary_edge_l1.py --run "$ZL3B" issue121_l1_first_reveal.json
+          python -m json.tool issue121_l1_first_reveal.json > /dev/null
+          sha256sum issue121_l1_first_reveal.json | tee issue121_l1_first_reveal.sha256
+
+      - name: Assert frozen class and diagnostics
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue121_l1_first_reveal.json'))
+          assert x['scored'] is True, x
+          assert x['fixed_byte_expert']=={'alpha':0.01,'k':2}
+          assert x['core_authority']['valid'] is True
+          assert x['core_authority']['normalized_sha256']=='0d7f311dac17f5736f8191b8ea38cf5f2eac9b7391150a986204772da181ae27'
+          assert len(x['outer'])==5
+          g=[]
+          for f,r in enumerate(x['outer']):
+              assert r['fold']==f
+              g.append(r['G_edge'])
+              for fam in ('RESET2','CONT2'):
+                  q=r[fam]
+                  assert q['selected']['k']==2 and q['selected']['alpha']==0.01
+                  assert 0.0 <= q['selected']['w'] <= 1.0
+                  assert q['n_accepted']==r['n_scored'] and q['n_visible']==r['n_visible']
+                  assert math.isfinite(q['mix_bits_per_token'])
+              for table in ('transition_relation','paragraph_state','line_state'):
+                  assert sum(v['n'] for v in r['diagnostics'][table].values())==r['n_scored']
+          mean=sum(g)/5
+          pos=sum(v>0 for v in g)
+          passed=(mean>0 and pos>=4)
+          expected=('BOUNDARY-EDGE RESIDUAL SURVIVES SAME-ORDER CONTROL' if passed else 'ISSUE118 RESIDUAL DEPENDS ON MODEL-ORDER ASYMMETRY')
+          assert x['classification']==expected,(x['classification'],expected,g)
+          assert abs(x['summaries']['G_edge']['mean']-mean)<1e-12
+          assert x['summaries']['G_edge']['positive_folds']==pos
+          assert x['summaries']['G_edge']['pass'] is passed
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({'classification':x['classification'],'G_edge':x['summaries']['G_edge'],'mean_bits':x['summaries']['mean_bits_per_token'],'weights':{str(r['fold']):{'RESET2':r['RESET2']['selected'],'CONT2':r['CONT2']['selected']} for r in x['outer']},'pooled_diagnostics':x['pooled_diagnostics']},indent=2,sort_keys=True))
+          PY
+
+      - name: Upload L1 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue121-boundary-edge-l1-first-reveal
+          path: |
+            issue121_l1_first_reveal.json
+            issue121_l1_first_reveal.sha256
