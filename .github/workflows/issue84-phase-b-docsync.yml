@@ -1,0 +1,74 @@
+name: Sync research docs after Issue84 Phase B
+
+on:
+  push:
+    branches: [research/issue84-phase-b-cipher-map]
+    paths:
+      - '.github/workflows/issue84-phase-b-docsync.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/issue84-phase-b-cipher-map
+
+      - name: Patch current-status entry points
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          status=Path('research/STATUS.md')
+          s=status.read_text()
+          old_head='## Current research state — after Issue #72, #75 A–F0, OGH-A/B/C, Issue #81, Issue #84 Phase A (2026-09-02)'
+          new_head='## Current research state — after Issue #72, #75 A–F0, OGH-A/B/C, Issue #81, Issue #84 Phase B (2026-09-06)'
+          if old_head in s:
+              s=s.replace(old_head,new_head,1)
+          elif new_head not in s:
+              raise SystemExit('STATUS current-state heading not found')
+
+          phaseb='''\n\n**Issue #84 Phase B (cipher-family map on frozen CREMMA Latin):** `NO TESTED CIPHER REPRESENTATIVE IN FULL VOYNICH INTER-TOKEN REGIME`. The preregistered three-component target was the exact seven-reading range for adjacent corrected MI, exact-repeat excess at distance 1–2, and exact-repeat excess at distance 21–40. Across monoalphabetic substitution, homophony ×2/×4/×8, top-256 nomenclators, 10/20/30% null insertion, line-local transposition, minimal verbose recoding and exact published Naibbe, there were **0 full hits** and **0 target-independent in-house hits**. Partial responsibilities separate cleanly: H4 and N256-4 enter the Voynich MI interval only; TRANS-LINE enters the positive short-repeat interval only; published Naibbe enters the suppressed 21–40 interval only. The complete first-reveal JSON is archived under `experiments/cross-linguistic-baselines/first-reveal-b/`; result SHA-256 `de8ac6882f52000139e3989c1672b86d41946e238ad56ae8053516f754d7a431`. This rejects the frozen representatives as standalone transforms of this Latin prose source, not all ciphers or all meaningful plaintext sources.\n'''
+          marker='**Issue #84 Phase B (cipher-family map on frozen CREMMA Latin):**'
+          if marker not in s:
+              pos=s.index(new_head)+len(new_head)
+              s=s[:pos]+phaseb+s[pos:]
+          s=s.replace('Natural prose avoids immediate repetition (96/101 negative at distance 1–2)', 'Natural prose avoids immediate repetition (95/101 negative at distance 1–2)', 1)
+          old_active='**Active frontier:** the smallest cross-token memory that recovers S1, S2 and the raw H62 excess on top of the frozen memoryless token grammar V2 (previous-token shape, previous-10 near-family activation, paragraph-entry state), scored under the frozen Phase64B pipeline with a preregistered raw-excess H62 magnitude gate. Frozen G4/G7A/V2 are the emission-stage comparators and the memoryless null. Do not add R1 rungs; do not repair Naibbe; do not use individual edges.'
+          new_active='**Active frontier:** Issue #84 Phase C genre controls are now the highest-information next discriminator: test whether enumerative / recipe / herbal / calendar / liturgical / account-like source texts already move the exact-repeat 1–2 and 21–40 responsibilities away from ordinary prose before any target-tuned transform is introduced. Do not post-hoc compose the Phase-B partial mechanisms. In parallel, Issue #81 may continue its independently preregistered soft near-family / recency-kernel memory under training-only selection. Frozen G4/G7A/V2 remain emission-stage comparators; do not reopen R1 rungs or repair Naibbe from the Phase-B reveal.'
+          if old_active in s:
+              s=s.replace(old_active,new_active,1)
+          elif new_active not in s:
+              raise SystemExit('STATUS active-frontier paragraph not found')
+          status.write_text(s)
+
+          frontier=Path('research/NEXT_RESEARCH_FRONTIER.md')
+          f=frontier.read_text()
+          old='## CURRENT FRONTIER — after Issue #84 Phase A'
+          new='## CURRENT FRONTIER — after Issue #84 Phase B'
+          if old in f:
+              f=f.replace(old,new,1)
+          elif new not in f:
+              raise SystemExit('NEXT frontier heading not found')
+          start=f.index(new)+len(new)
+          next_head='## Frontier after OGH-C: the smallest cross-token memory'
+          end=f.index(next_head,start)
+          current='''\n\nIssue #84 Phase B (`experiments/cross-linguistic-baselines/REPORT_B.md`) has now tested the frozen common cipher-operation representatives on CREMMA Latin. There were **0 full three-component hits**. Homophonic ×4 and a four-way top-256 nomenclator reproduce only the Voynich-scale adjacent MI; line-local transposition reproduces only the positive distance-1–2 exact-repeat excess; published Naibbe reproduces only the suppressed distance-21–40 recurrence. Therefore the next move is **not** a post-hoc composition of these partial mechanisms.\n\nThe highest-information plan-first question is Issue #84 **Phase C**: do enumerative, recipe, herbal, calendar, liturgical or account-like source genres already possess the unusual immediate-positive / mid-range-suppressed recurrence geometry that ordinary prose lacks? Use the Phase-A/Phase-B scorer and the exact seven-reading intervals without changing the primary responsibilities. If no credible genre enters or approaches the regime, ordinary meaningful-text-plus-common-transform explanations become substantially narrower. If a genre does, only then license a separately preregistered source×transform composition. In parallel, Issue #81's soft near-family / recency-kernel memory remains an independent generative lane selected by held-out likelihood only.\n\n'''
+          f=f[:start]+current+f[end:]
+          frontier.write_text(f)
+          PY
+
+          rm -f .github/workflows/issue84-phase-b-docsync.yml
+
+      - name: Commit documentation sync
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add research/STATUS.md research/NEXT_RESEARCH_FRONTIER.md .github/workflows
+          git commit -m 'Update research frontier after Issue #84 Phase B'
+          git push origin HEAD:research/issue84-phase-b-cipher-map
