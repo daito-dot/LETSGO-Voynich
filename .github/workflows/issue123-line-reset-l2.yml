@@ -1,0 +1,127 @@
+name: Issue123 source-line reset L2 first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/residual-gate/L2_LINE_RESET_PLAN.md'
+      - 'experiments/predictive-information/residual-gate/line_reset_l2.py'
+      - '.github/workflows/issue123-line-reset-l2.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  line-reset-l2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source and parent authorities
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test -f experiments/predictive-information/residual-gate/CORE_GATE0_AMENDMENT_A.md
+          test -f experiments/predictive-information/residual-gate/L1_FIRST_REVEAL_PROVENANCE.md
+          test -f experiments/predictive-information/residual-gate/L2_LINE_RESET_PLAN.md
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce localization firewall
+        shell: bash
+        run: |
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|H62P1|target_exposed' experiments/predictive-information/residual-gate/line_reset_l2.py; then
+            echo 'Forbidden target scorecard reference found' >&2
+            exit 1
+          fi
+
+      - name: Compile and self-test before target reveal
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/residual-gate/line_reset_l2.py
+          python experiments/predictive-information/residual-gate/line_reset_l2.py --self-test
+
+      - name: Run frozen L2 first reveal
+        shell: bash
+        run: |
+          python experiments/predictive-information/residual-gate/line_reset_l2.py --run "$ZL3B" issue123_l2_first_reveal.json
+          python -m json.tool issue123_l2_first_reveal.json > /dev/null
+          sha256sum issue123_l2_first_reveal.json | tee issue123_l2_first_reveal.sha256
+
+      - name: Assert authority, parent regression and frozen classes
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue123_l2_first_reveal.json'))
+          assert x['scored'] is True, x
+          assert x['fixed_byte_expert']=={'alpha':0.01,'k':2}
+          assert x['core_authority']['valid'] is True
+          assert x['core_authority']['normalized_sha256']=='0d7f311dac17f5736f8191b8ea38cf5f2eac9b7391150a986204772da181ae27'
+          assert x['parent_issue121_regression']['valid'] is True
+          assert len(x['outer'])==5
+          gl=[]; gb=[]
+          for f,r in enumerate(x['outer']):
+              assert r['fold']==f
+              gl.append(r['G_line']); gb.append(r['G_beyond_line'])
+              for p in ('RESET2','LINECONT2','LEAFCONT2'):
+                  q=r[p]
+                  assert q['selected']['k']==2 and q['selected']['alpha']==0.01
+                  assert 0.0 <= q['selected']['w'] <= 1.0
+                  assert q['n_accepted']==r['n_scored'] and q['n_visible']==r['n_visible']
+                  assert math.isfinite(q['mix_bits_per_token'])
+              for comp in ('RESET2_TO_LINECONT2','LINECONT2_TO_LEAFCONT2'):
+                  for table in ('paragraph_state','line_state'):
+                      assert sum(v['n'] for v in r['diagnostics'][comp][table].values())==r['n_scored']
+          ml=sum(gl)/5; pl=sum(v>0 for v in gl); pass_l=(ml>0 and pl>=4)
+          mb=sum(gb)/5; pb=sum(v>0 for v in gb); pass_b=(mb>0 and pb>=4)
+          if not pass_l:
+              expected='LINE-LOCAL CONTEXT FAILS TO REPRODUCE'
+          elif pass_b:
+              expected='ROBUST BEYOND-LINE CONTEXT REMAINS'
+          else:
+              expected='LINE-LOCAL CONTEXT CAPTURES RESIDUAL; NO ROBUST BEYOND-LINE GAIN'
+          assert x['classification']==expected,(x['classification'],expected,gl,gb)
+          assert abs(x['summaries']['G_line']['mean']-ml)<1e-12
+          assert x['summaries']['G_line']['positive_folds']==pl
+          assert x['summaries']['G_line']['pass'] is pass_l
+          assert abs(x['summaries']['G_beyond_line']['mean']-mb)<1e-12
+          assert x['summaries']['G_beyond_line']['positive_folds']==pb
+          assert x['summaries']['G_beyond_line']['pass'] is pass_b
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({
+              'classification':x['classification'],
+              'G_line':x['summaries']['G_line'],
+              'G_beyond_line':x['summaries']['G_beyond_line'],
+              'mean_bits':x['summaries']['mean_bits_per_token'],
+              'weights':{str(r['fold']):{p:r[p]['selected'] for p in ('RESET2','LINECONT2','LEAFCONT2')} for r in x['outer']},
+              'pooled_diagnostics':x['pooled_diagnostics'],
+              'parent_issue121_regression':x['parent_issue121_regression'],
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload L2 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue123-line-reset-l2-first-reveal
+          path: |
+            issue123_l2_first_reveal.json
+            issue123_l2_first_reveal.sha256
