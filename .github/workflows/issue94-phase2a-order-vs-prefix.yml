@@ -45,8 +45,10 @@ jobs:
         shell: bash
         run: |
           test -f experiments/predictive-information/phase2a/PLAN.md
+          test -f experiments/predictive-information/phase2a/AMENDMENT_A.md
           test -f experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py
-          if grep -E 'output_metrics|score_r1\(|metric_gates\(|evaluate_model\(|H62P1|target_exposed' experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py; then
+          test -f experiments/predictive-information/phase2a/phase2a_amended.py
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|evaluate_model\(|H62P1|target_exposed' experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py experiments/predictive-information/phase2a/phase2a_amended.py; then
             echo 'Surface-target scorer found in Phase-2A executable' >&2
             exit 1
           fi
@@ -55,12 +57,13 @@ jobs:
         shell: bash
         run: |
           python -m py_compile experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py
-          python experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py --self-test
+          python -m py_compile experiments/predictive-information/phase2a/phase2a_amended.py
+          python experiments/predictive-information/phase2a/phase2a_amended.py --self-test
 
       - name: Authoritative Phase-2A first reveal
         shell: bash
         run: |
-          python experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py --run "$ZL3B" phase2a_results.json
+          python experiments/predictive-information/phase2a/phase2a_amended.py --run "$ZL3B" phase2a_results.json
           python -m json.tool phase2a_results.json > /dev/null
           sha256sum phase2a_results.json
 
@@ -74,6 +77,7 @@ jobs:
               'A0_phase1_reproduced_all_folds': True,
               'A2_phase1_reproduced_all_folds': True,
               'direct_ordered_equals_accumulator_all_folds': True,
+              'amended_direct_ordered_reproduced_all_folds': True,
           }
           assert x['firewall'] == {
               'future_test_tokens_used': False,
@@ -85,12 +89,17 @@ jobs:
           print(json.dumps({
               'classification': x['classification'],
               'mean_bits_per_token': x['summaries']['mean_bits_per_token'],
-              'G_prefix': x['summaries']['G_prefix'],
-              'G_order_bag_fixed': x['summaries']['G_order_bag_fixed'],
-              'G_order_random': x['summaries']['G_order_random'],
+              'G_prefix_cond': x['summaries']['G_prefix_cond'],
+              'G_order_hybrid': x['summaries']['G_order_hybrid'],
+              'G_order_random_cv': x['summaries']['G_order_random_cv'],
+              'original_diagnostics': {
+                  'G_prefix': x['summaries']['G_prefix'],
+                  'G_order_bag_fixed': x['summaries']['G_order_bag_fixed'],
+                  'G_order_random': x['summaries']['G_order_random'],
+              },
               'decision_inputs': x['decision_inputs'],
-              'prefix_pi': {f:r['selected_pi'] for f,r in x['prefix_selection'].items()},
-              'mean_share_prefix': x['summaries']['mean_share_prefix'],
+              'A5_rho': {f:r['A5']['selected_rho'] for f,r in x['amended_selection'].items()},
+              'A6_pi': {f:r['A6']['selected_pi'] for f,r in x['amended_selection'].items()},
           }, indent=2, sort_keys=True))
           PY
 
