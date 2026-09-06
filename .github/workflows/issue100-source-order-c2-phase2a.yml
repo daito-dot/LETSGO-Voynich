@@ -1,0 +1,91 @@
+name: Issue100 source-order C2 Phase2A rerun
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/source_order_authority.py'
+      - 'experiments/predictive-information/order-correction/**'
+      - '.github/workflows/issue100-source-order-c2-phase2a.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  c2-phase2a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and prediction-only self-test
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/order-correction/rerun_phase2a_source_order.py
+          python experiments/predictive-information/order-correction/rerun_phase2a_source_order.py --self-test
+
+      - name: Authoritative corrected Phase-2A rerun
+        shell: bash
+        run: |
+          python experiments/predictive-information/order-correction/rerun_phase2a_source_order.py --run "$ZL3B" issue100_c2_phase2a.json
+          python -m json.tool issue100_c2_phase2a.json > /dev/null
+          sha256sum issue100_c2_phase2a.json
+
+      - name: Assert correction firewall and print attribution
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue100_c2_phase2a.json'))
+          assert x['order_authority']['numeric_paragraph_order_valid'] is True
+          assert x['order_authority']['source_document_order_valid'] is True
+          assert x['c1_reference']['same_long_architecture_as_legacy'] is True
+          assert x['correction_firewall'] == {
+              'C1_frozen_before_C2': True,
+              'candidate_or_grid_extended': False,
+              'future_test_tokens_used': False,
+              'old_outer_results_used_for_selection': False,
+              'source_order_fixed_before_C2_selection': True,
+              'surface_target_metrics_scored': False,
+          }
+          print(json.dumps({
+              'classification':x['classification'],
+              'mean_bits_per_token':x['summaries']['mean_bits_per_token'],
+              'G_prefix_cond':x['summaries']['G_prefix_cond'],
+              'G_order_hybrid':x['summaries']['G_order_hybrid'],
+              'G_order_random_cv':x['summaries']['G_order_random_cv'],
+              'A5_rho':{f:r['A5']['selected_rho'] for f,r in x['amended_selection'].items()},
+              'A6_pi':{f:r['A6']['selected_pi'] for f,r in x['amended_selection'].items()},
+              'legacy_comparison':x['legacy_comparison'],
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload corrected Phase-2A authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue100-c2-phase2a-source-order
+          path: issue100_c2_phase2a.json
