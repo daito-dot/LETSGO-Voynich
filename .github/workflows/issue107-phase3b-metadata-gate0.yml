@@ -1,0 +1,103 @@
+name: Issue107 Phase3B metadata Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/phase3b/**'
+      - '.github/workflows/issue107-phase3b-metadata-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  metadata-gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce score-free metadata audit
+        shell: bash
+        run: |
+          test -f experiments/predictive-information/phase3b/GATE0_PLAN.md
+          test -f experiments/predictive-information/phase3b/metadata_gate0_audit.py
+          if grep -E 'bits_per_token|log_likelihood|score_outer|output_metrics|score_r1\(|metric_gates\(|H62P1|target_exposed' experiments/predictive-information/phase3b/metadata_gate0_audit.py; then
+            echo 'Predictive/target scorer found in Phase-3B Gate0 executable' >&2
+            exit 1
+          fi
+
+      - name: Compile and self-test
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/phase3b/metadata_gate0_audit.py
+          python experiments/predictive-information/phase3b/metadata_gate0_audit.py --self-test
+
+      - name: Run score-free metadata/confounding audit
+        shell: bash
+        run: |
+          python experiments/predictive-information/phase3b/metadata_gate0_audit.py --audit "$ZL3B" phase3b_metadata_gate0.json
+          python -m json.tool phase3b_metadata_gate0.json > /dev/null
+          sha256sum phase3b_metadata_gate0.json
+
+      - name: Assert firewall and print gate
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase3b_metadata_gate0.json'))
+          assert x['firewall'] == {
+              'predictive_scores_computed': False,
+              'model_fitted': False,
+              'surface_target_metrics_scored': False,
+              'issue84_target_used': False,
+              'image_context_used': False,
+              'semantic_or_plaintext_used': False,
+              'latent_state_fitted': False,
+              'factor_selected_from_support_only': True,
+          }
+          assert x['population_mapping']['mapping_valid'] is True
+          assert x['order_authority']['numeric_paragraph_order_valid'] is True
+          assert x['order_authority']['source_document_order_valid'] is True
+          print(json.dumps({
+              'audit_valid':x['audit_valid'],
+              'classification':x['classification'],
+              'licensed_factor':x['licensed_factor'],
+              'raw_header_distribution':x['raw_header_distribution'],
+              'tag_audit':x['tag_audit'],
+              'identifiability':x['identifiability'],
+              'resolved_level_stats':x['resolved_level_stats'],
+              'accepted_fold_support':x['accepted_fold_support'],
+              'leaf_mixing':x['leaf_mixing'],
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload Gate 0 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue107-phase3b-metadata-gate0
+          path: phase3b_metadata_gate0.json
