@@ -1,0 +1,106 @@
+name: Issue98 Phase2C previous paragraph decomposition
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/phase2c/**'
+      - 'experiments/predictive-information/source_order_authority.py'
+      - '.github/workflows/issue98-phase2c-decomposition.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  decomposition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce prediction-only corrected-order boundary
+        shell: bash
+        run: |
+          test -f experiments/predictive-information/phase2c/AMENDMENT_AFTER_ORDER_CORRECTION.md
+          test -f experiments/predictive-information/phase2c/phase2c_previous_paragraph_decomposition.py
+          test -f experiments/predictive-information/source_order_authority.py
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|H62P1|target_exposed' experiments/predictive-information/phase2c/phase2c_previous_paragraph_decomposition.py; then
+            echo 'Surface-target scorer found in Phase-2C executable' >&2
+            exit 1
+          fi
+
+      - name: Compile and synthetic tests
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/phase2c/phase2c_previous_paragraph_decomposition.py
+          python experiments/predictive-information/phase2c/phase2c_previous_paragraph_decomposition.py --self-test
+
+      - name: Authoritative corrected Phase-2C first reveal
+        shell: bash
+        run: |
+          python experiments/predictive-information/phase2c/phase2c_previous_paragraph_decomposition.py --run "$ZL3B" phase2c_results.json
+          python -m json.tool phase2c_results.json > /dev/null
+          sha256sum phase2c_results.json
+
+      - name: Assert regressions/firewall and print decomposition
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase2c_results.json'))
+          assert all(x['regression'].values())
+          assert x['order_authority']['numeric_paragraph_order_valid'] is True
+          assert x['order_authority']['source_document_order_valid'] is True
+          assert x['firewall'] == {
+              'H_tau_window_reselected': False,
+              'corrected_source_order_used': True,
+              'currier_section_scribe_used': False,
+              'future_test_tokens_used': False,
+              'issue84_target_used': False,
+              'latent_state_fitted': False,
+              'post_reveal_pool_or_grid_added': False,
+              'semantic_or_image_context_used': False,
+              'surface_target_metrics_scored': False,
+          }
+          print(json.dumps({
+              'classification':x['classification'],
+              'mean_bits_per_token':x['summary']['mean_bits_per_token'],
+              'primary_contrasts':{k:x['summary']['contrasts'][k] for k in [
+                  'G_prev1_cond','G_older_cond','G_same_side_cond','G_cross_side_cond']},
+              'order_diagnostics':{k:x['summary']['contrasts'][k] for k in [
+                  'G_order_PREV1','G_order_OLDER','G_order_SAME_SIDE_PREV','G_order_CROSS_SIDE_PREV']},
+              'decision_inputs':x['summary']['decision_inputs'],
+              'selected':{str(r['fold']):r['selected'] for r in x['outer']},
+              'cross_side_diagnostics':x['summary']['restricted_cross_side_diagnostics'],
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload authoritative result
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue98-phase2c-decomposition
+          path: phase2c_results.json
