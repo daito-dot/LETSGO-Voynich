@@ -11,7 +11,9 @@ import hashlib
 import importlib.util
 import json
 import math
+import subprocess
 import sys
+import tempfile
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Sequence
@@ -57,6 +59,34 @@ def canonical_json(x: dict) -> str:
 
 def json_sha256(x: dict) -> str:
     return hashlib.sha256(canonical_json(x).encode("utf-8")).hexdigest()
+
+
+def verify_gate_authority_isolated(zl_path: Path) -> tuple[dict, str]:
+    """Replay merged Gate0 in a fresh interpreter to avoid import-state coupling."""
+    with tempfile.TemporaryDirectory(prefix="issue134-gate0-") as td:
+        out_path = Path(td) / "gate0.json"
+        proc = subprocess.run(
+            [sys.executable, str(GATE_PATH), "--audit", str(zl_path), str(out_path)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=False,
+        )
+        if proc.returncode != 0:
+            raise RuntimeError(
+                "isolated Issue134 Gate0 replay failed: "
+                + (proc.stderr.strip() or proc.stdout.strip() or f"exit={proc.returncode}")
+            )
+        raw = out_path.read_bytes()
+        gate_sha = hashlib.sha256(raw).hexdigest()
+        gate = json.loads(raw.decode("utf-8"))
+        if gate_sha != EXPECTED_GATE_SHA:
+            raise RuntimeError(
+                f"Issue134 Gate0 SHA mismatch: {gate_sha} != {EXPECTED_GATE_SHA}"
+            )
+        if not gate.get("gate_pass"):
+            raise RuntimeError("Issue134 Gate0 no longer passes")
+        return gate, gate_sha
 
 
 def bits_from_logs(logp: np.ndarray) -> float:
@@ -428,12 +458,7 @@ def score_outer(vitems, folds, parsed, outer_f: int, parser, core: dict, by_doc:
 
 def run(zl_path: Path) -> dict:
     try:
-        gate = GATE.audit(zl_path)
-        gate_sha = json_sha256(gate)
-        if gate_sha != EXPECTED_GATE_SHA:
-            raise RuntimeError(f"Issue134 Gate0 SHA mismatch: {gate_sha} != {EXPECTED_GATE_SHA}")
-        if not gate["gate_pass"]:
-            raise RuntimeError("Issue134 Gate0 no longer passes")
+        gate, gate_sha = verify_gate_authority_isolated(zl_path)
 
         core = R.C1.run(zl_path)
         core_authority = R.verify_core_authority(core)
