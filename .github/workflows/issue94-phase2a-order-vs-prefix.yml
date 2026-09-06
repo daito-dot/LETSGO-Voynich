@@ -48,6 +48,7 @@ jobs:
           test -f experiments/predictive-information/phase2a/AMENDMENT_A.md
           test -f experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py
           test -f experiments/predictive-information/phase2a/phase2a_amended.py
+          test -f experiments/predictive-information/phase2a/phase2a_amended_runner.py
           if grep -E 'output_metrics|score_r1\(|metric_gates\(|evaluate_model\(|H62P1|target_exposed' experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py experiments/predictive-information/phase2a/phase2a_amended.py; then
             echo 'Surface-target scorer found in Phase-2A executable' >&2
             exit 1
@@ -58,12 +59,13 @@ jobs:
         run: |
           python -m py_compile experiments/predictive-information/phase2a/phase2a_order_vs_prefix.py
           python -m py_compile experiments/predictive-information/phase2a/phase2a_amended.py
-          python experiments/predictive-information/phase2a/phase2a_amended.py --self-test
+          python -m py_compile experiments/predictive-information/phase2a/phase2a_amended_runner.py
+          python experiments/predictive-information/phase2a/phase2a_amended_runner.py --self-test
 
       - name: Authoritative Phase-2A first reveal
         shell: bash
         run: |
-          python experiments/predictive-information/phase2a/phase2a_amended.py --run "$ZL3B" phase2a_results.json
+          python experiments/predictive-information/phase2a/phase2a_amended_runner.py --run "$ZL3B" phase2a_results.json
           python -m json.tool phase2a_results.json > /dev/null
           sha256sum phase2a_results.json
 
