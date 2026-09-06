@@ -1,0 +1,131 @@
+name: Issue125 explicit edge L3 first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/residual-gate/L3_EXPLICIT_EDGE_PLAN.md'
+      - 'experiments/predictive-information/residual-gate/explicit_edge_l3.py'
+      - '.github/workflows/issue125-explicit-edge-l3.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  explicit-edge-l3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source and parent authorities
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test -f experiments/predictive-information/residual-gate/L2_FIRST_REVEAL_PROVENANCE.md
+          test -f experiments/predictive-information/residual-gate/L3_EXPLICIT_EDGE_PLAN.md
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce interpretation firewall
+        shell: bash
+        run: |
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|H62P1|target_exposed' experiments/predictive-information/residual-gate/explicit_edge_l3.py; then
+            echo 'Forbidden target scorecard reference found' >&2
+            exit 1
+          fi
+
+      - name: Compile and self-test before target reveal
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/residual-gate/explicit_edge_l3.py
+          python experiments/predictive-information/residual-gate/explicit_edge_l3.py --self-test
+
+      - name: Run frozen L3 first reveal
+        shell: bash
+        run: |
+          python experiments/predictive-information/residual-gate/explicit_edge_l3.py --run "$ZL3B" issue125_l3_first_reveal.json
+          python -m json.tool issue125_l3_first_reveal.json > /dev/null
+          sha256sum issue125_l3_first_reveal.json | tee issue125_l3_first_reveal.sha256
+
+      - name: Assert equivalence, parent regression and frozen class
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue125_l3_first_reveal.json'))
+          assert x['scored'] is True, x
+          assert x['fixed_expert']=={'alpha':0.01,'byte_v':257,'k':2}
+          assert x['core_authority']['valid'] is True
+          assert x['core_authority']['normalized_sha256']=='0d7f311dac17f5736f8191b8ea38cf5f2eac9b7391150a986204772da181ae27'
+          assert x['parent_issue123_regression']['valid'] is True
+          assert x['parent_issue123_regression']['max_outer_equivalence_abs_logp'] <= 1e-12
+          assert x['parent_issue123_regression']['max_inner_equivalence_abs_logp'] <= 1e-12
+          gp=[]; gi=[]
+          for f,r in enumerate(x['outer']):
+              assert r['fold']==f
+              gp.append(r['G_position']); gi.append(r['G_identity'])
+              assert r['equivalence_max_abs_logp'] <= 1e-12
+              assert abs(r['G_position']+r['G_identity']-r['G_parent_RESET2_vs_EDGE2']) < 1e-12
+              for name in ('RESET2','POS2','EDGE2'):
+                  q=r[name]
+                  assert q['selected']['k']==2 and q['selected']['alpha']==0.01
+                  assert 0 <= q['selected']['w'] <= 1
+                  assert q['n_accepted']==r['n_scored'] and q['n_visible']==r['n_visible']
+                  assert math.isfinite(q['raw_bits_per_token']) and math.isfinite(q['mix_bits_per_token'])
+              for comp in ('RESET2_TO_POS2','POS2_TO_EDGE2'):
+                  for table in ('paragraph_state','line_state'):
+                      assert sum(v['n'] for v in r['diagnostics'][comp][table].values())==r['n_scored']
+              for row in r['inner']:
+                  assert row['equivalence_max_abs_logp'] <= 1e-12
+          mp=sum(gp)/5; pp=sum(v>0 for v in gp); pass_p=(mp>0 and pp>=4)
+          mi=sum(gi)/5; pi=sum(v>0 for v in gi); pass_i=(mi>0 and pi>=4)
+          if pass_i:
+              expected='TERMINAL→INITIAL IDENTITY ADDS ROBUST LINE-LOCAL INFORMATION'
+          elif pass_p:
+              expected='LINE-POSITION ONSET EXPLAINS LINECONT2 ADVANTAGE'
+          else:
+              expected='NEITHER COMPACT ONSET COMPONENT ROBUSTLY EXPLAINS L2'
+          assert x['classification']==expected,(x['classification'],expected,gp,gi)
+          assert abs(x['summaries']['G_position']['mean']-mp)<1e-12
+          assert x['summaries']['G_position']['positive_folds']==pp
+          assert x['summaries']['G_position']['pass'] is pass_p
+          assert abs(x['summaries']['G_identity']['mean']-mi)<1e-12
+          assert x['summaries']['G_identity']['positive_folds']==pi
+          assert x['summaries']['G_identity']['pass'] is pass_i
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({
+              'classification':x['classification'],
+              'G_position':x['summaries']['G_position'],
+              'G_identity':x['summaries']['G_identity'],
+              'mean_bits':x['summaries']['mean_bits_per_token'],
+              'weights':{str(r['fold']):{n:r[n]['selected'] for n in ('RESET2','POS2','EDGE2')} for r in x['outer']},
+              'parent':x['parent_issue123_regression'],
+              'pooled_diagnostics':x['pooled_diagnostics'],
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload L3 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue125-explicit-edge-l3-first-reveal
+          path: |
+            issue125_l3_first_reveal.json
+            issue125_l3_first_reveal.sha256
