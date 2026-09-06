@@ -34,20 +34,25 @@ EXPECTED_GATE_PROVENANCE_BLOB = "7f97b9731a6e72e2456ede436e837a3735f265fd"
 EXPECTED_GATE_MERGE = "2bbaf46f4c420ae87169cacb39e5dc0dc9cd6425"
 EXPECTED_ISSUE145_SCORER_BLOB = "ce8a167c607fbcf2807f567439ab6837471f4f07"
 
+# Exact fold gains from the frozen Issue #145 result artifact
+# (artifact 9997826217, result SHA-256
+# 663f4b4f9f48992036c2517109f5b8efde459cbdd35d034b567233edbd2efdf2).
+# These are authority-reproduction constants only; they do not enter the
+# Issue #148 transport probabilities or classification rule.
 EXPECTED_NATIVE_GAINS = {
     "ZL3b": [
-        0.1401857711919683,
-        0.11070803603537804,
-        0.1382227782379093,
-        0.14814594342085297,
-        0.13085394875126655,
+        0.14018577117719566,
+        0.11070803603214441,
+        0.13822277819933482,
+        0.1481459433840746,
+        0.13085394871093636,
     ],
     "IT2a": [
-        0.16849676412590786,
-        0.13944957565891447,
-        0.16568837105957224,
-        0.18034394028423262,
-        0.15527126584680998,
+        0.16849676408952696,
+        0.13944957564829674,
+        0.16568837103531342,
+        0.18034394031427348,
+        0.15527126588802687,
     ],
 }
 
