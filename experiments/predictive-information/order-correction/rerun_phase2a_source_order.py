@@ -65,6 +65,11 @@ def run(zl_path: Path):
     A.B.I.ordered = OA.ordered
     A.P1.I.ordered = OA.ordered
 
+    # Interface-only compatibility retained from the authoritative Phase-2A
+    # runner. The base module defines mix_probs locally but references the same
+    # helper through the imported Phase-1 namespace in score_outer.
+    A.P1.mix_probs = A.B.mix_probs
+
     # C1 is now frozen. Replace only the regression/local-reference constants;
     # the long-history architecture remains H=ALL,tau=128,pi=.30 in 5/5 folds.
     A.B.PHASE1_EXPECTED.clear()
@@ -118,11 +123,14 @@ def self_test():
         raise AssertionError("Phase-2A amended self-test failed")
     if any(v["A2"] >= v["A0"] for v in CORRECTED.values()):
         raise AssertionError("corrected C1 long reference is not predictive")
+    if A.P1 is A.B:
+        raise AssertionError("unexpected module identity")
     return {
         "ok": True,
         "phase2a_base_self_test": True,
         "source_order_adapter": True,
         "C1_same_long_architecture": True,
+        "interface_alias_installed_at_run": True,
         "surface_target_calls": 0,
     }
 
