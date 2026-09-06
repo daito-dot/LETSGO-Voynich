@@ -1,0 +1,107 @@
+name: Issue98 corrected Phase1 replay
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/phase2c/ORDER_CORRECTION_PROTOCOL.md'
+      - 'experiments/predictive-information/phase2c/order_correction.py'
+      - 'experiments/predictive-information/phase2c/phase1_corrected_order_replay.py'
+      - '.github/workflows/issue98-corrected-phase1-replay.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  corrected-phase1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce correction firewall
+        shell: bash
+        run: |
+          test -f experiments/predictive-information/phase2c/ORDER_CORRECTION_PROTOCOL.md
+          test -f experiments/predictive-information/phase2c/order_correction.py
+          test -f experiments/predictive-information/phase2c/phase1_corrected_order_replay.py
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|evaluate_model\(|H62P1|target_exposed' \
+            experiments/predictive-information/phase2c/order_correction.py \
+            experiments/predictive-information/phase2c/phase1_corrected_order_replay.py; then
+            echo 'Surface-target scorer found in corrected replay' >&2
+            exit 1
+          fi
+
+      - name: Compile and self-test
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/phase2c/order_correction.py
+          python -m py_compile experiments/predictive-information/phase2c/phase1_corrected_order_replay.py
+          python experiments/predictive-information/phase1/phase1_predictive_budget.py --self-test
+          python experiments/predictive-information/phase2c/phase1_corrected_order_replay.py --self-test
+
+      - name: Corrected Phase 1 replay
+        shell: bash
+        run: |
+          python experiments/predictive-information/phase2c/phase1_corrected_order_replay.py --run "$ZL3B" phase1_corrected_results.json
+          python -m json.tool phase1_corrected_results.json > /dev/null
+          sha256sum phase1_corrected_results.json
+
+      - name: Assert invariants and print result
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase1_corrected_results.json'))
+          assert x['regression']['pass'] is True
+          assert x['order_correction']['validation']['pass'] is True
+          assert x['order_correction']['fold_identity_unchanged'] is True
+          assert x['order_correction']['B0_invariance_gate_pass'] is True
+          assert x['B4_support_comparable'] is True
+          assert x['firewall']['ordering_only_correction'] is True
+          for k in ['S1_scored','S2_scored','H62_scored','R1_scored','issue84_target_used','semantic_or_image_context_used']:
+              assert x['firewall'][k] is False
+          print(json.dumps({
+              'classification': x['classification'],
+              'mean_bits_per_token': x['summaries']['mean_bits_per_token'],
+              'G_local': x['summaries']['G_local'],
+              'Delta_long': x['summaries']['Delta_long'],
+              'Delta_state': x['summaries']['Delta_state'],
+              'Delta_flex': x['summaries']['Delta_flex'],
+              'Delta_flex_over_local': x['summaries']['Delta_flex_over_local'],
+              'decision_inputs': x['decision_inputs'],
+              'recency_selections': {f:{'B1':r['B1'],'B2':r['B2']} for f,r in x['recency_selection'].items()},
+              'order_correction': x['order_correction'],
+              'historical_B1_delta': x['regression']['historical_B1_delta_bits_per_token'],
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload corrected replay
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue98-corrected-phase1-replay
+          path: phase1_corrected_results.json
