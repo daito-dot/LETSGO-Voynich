@@ -58,14 +58,12 @@ def parse_source_headers(path: Path):
         seen.add(doc)
         fields = {x.group("key"): x.group("value") for x in FIELD_RE.finditer(m.group("meta"))}
         label_raw = fields.get("L")
-        label = label_raw if label_raw in ("A", "B") else "UNKNOWN_OTHER"
         comments = []
         j = i + 1
         while j < len(lines) and not PAGE_HEADER_RE.match(lines[j]):
             s = lines[j]
             if s.startswith("#"):
                 comments.append(s[1:].strip())
-            # First line/token record begins; later comments cannot be the page summary.
             if s.startswith("<"):
                 break
             j += 1
@@ -74,6 +72,16 @@ def parse_source_headers(path: Path):
             cm = CURRIER_COMMENT_RE.search(c)
             if cm:
                 comment_labels.append(cm.group(1).upper())
+        unique_comments = sorted(set(comment_labels))
+        if label_raw in ("A", "B"):
+            label = label_raw
+            label_source = "HEADER_L"
+        elif label_raw is None and len(unique_comments) == 1:
+            label = unique_comments[0]
+            label_source = "COMMENT_FALLBACK_MISSING_L"
+        else:
+            label = "UNKNOWN_OTHER"
+            label_source = "UNKNOWN_OTHER"
         lm = LEAF_RE.match(doc)
         if not lm:
             raise RuntimeError(f"cannot parse numeric leaf from source document {doc}")
@@ -83,6 +91,7 @@ def parse_source_headers(path: Path):
             "fields": fields,
             "L_raw": label_raw,
             "label": label,
+            "label_source": label_source,
             "comment_labels": comment_labels,
             "source_line": i + 1,
         })
@@ -104,16 +113,42 @@ def audit(zl_path: Path):
     headers = parse_source_headers(zl_path)
     by_doc = {r["document"]: r for r in headers}
     label_header_counts = Counter(r["label"] for r in headers)
+    label_source_counts = Counter(r["label_source"] for r in headers)
     raw_L_counts = Counter("<MISSING>" if r["L_raw"] is None else r["L_raw"] for r in headers)
 
     comment_checks = 0
     comment_mismatches = []
+    fallback_records = []
     for r in headers:
+        if r["label_source"] == "COMMENT_FALLBACK_MISSING_L":
+            fallback_records.append({
+                "document": r["document"],
+                "label": r["label"],
+                "comment_labels": r["comment_labels"],
+                "source_line": r["source_line"],
+            })
+        unique_comments = sorted(set(r["comment_labels"]))
+        if len(unique_comments) > 1:
+            comment_mismatches.append({
+                "document": r["document"],
+                "reason": "MULTIPLE_CONFLICTING_CURRIER_COMMENTS",
+                "L_raw": r["L_raw"],
+                "comment_labels": unique_comments,
+            })
         for c in r["comment_labels"]:
             comment_checks += 1
-            if r["label"] not in ("A", "B") or c != r["label"]:
+            if r["L_raw"] in ("A", "B") and c != r["L_raw"]:
                 comment_mismatches.append({
                     "document": r["document"],
+                    "reason": "HEADER_COMMENT_CONFLICT",
+                    "L_raw": r["L_raw"],
+                    "parsed_label": r["label"],
+                    "comment_label": c,
+                })
+            elif r["L_raw"] not in (None, "A", "B"):
+                comment_mismatches.append({
+                    "document": r["document"],
+                    "reason": "NON_AB_HEADER_WITH_CURRIER_COMMENT",
                     "L_raw": r["L_raw"],
                     "parsed_label": r["label"],
                     "comment_label": c,
@@ -205,7 +240,7 @@ def audit(zl_path: Path):
             if isinstance(v, set):
                 out[k] = sorted(v)
             else:
-                out[k] = int(v) if isinstance(v, bool) is False and isinstance(v, int) else v
+                out[k] = v
         return out
 
     eligible_fold_json = {
@@ -235,7 +270,7 @@ def audit(zl_path: Path):
     )
 
     return {
-        "schema": "issue104-phase3a-currier-gate0-v1",
+        "schema": "issue104-phase3a-currier-gate0-v2-amendment-a",
         "phase": "ISSUE104_PHASE3A_GATE0",
         "gate_pass": gate_pass,
         "gate_rule": "PROCEED_TO_FROZEN_CURRIER_TRANSPORT" if gate_pass else "STOP_BEFORE_PREDICTIVE_SCORING",
@@ -247,8 +282,11 @@ def audit(zl_path: Path):
         "header_metadata": {
             "raw_L_distribution": dict(sorted(raw_L_counts.items())),
             "phase3a_label_distribution": dict(sorted(label_header_counts.items())),
+            "label_source_distribution": dict(sorted(label_source_counts.items())),
+            "comment_fallback_records": fallback_records,
             "currier_comment_checks": int(comment_checks),
             "currier_comment_mismatches": comment_mismatches,
+            "amendment_A_applied": True,
         },
         "parsed_population_by_label": dict(sorted(item_stats_json.items())),
         "leaf_classes": leaf_classes,
@@ -270,19 +308,22 @@ def audit(zl_path: Path):
 
 
 def self_test():
-    sample = "<f1r> <! $Q=A $L=A $H=1>\n# Currier's Language A, hand 1\n<f1r.1,@P0> <%>abc\n<f2v> <! $Q=B $L=B $H=2>\n# Currier's language B, hand 2\n"
+    sample = "<f1r> <! $Q=A $L=A $H=1>\n# Currier's Language A, hand 1\n<f1r.1,@P0> <%>abc\n<f2v> <! $Q=B $H=2>\n# Currier's language B, hand 2\n"
     import tempfile
     with tempfile.TemporaryDirectory() as td:
         p = Path(td) / "x.txt"
         p.write_text(sample, encoding="utf-8")
         rows = parse_source_headers(p)
     assert [r["label"] for r in rows] == ["A", "B"]
+    assert rows[0]["label_source"] == "HEADER_L"
+    assert rows[1]["label_source"] == "COMMENT_FALLBACK_MISSING_L"
     assert rows[0]["comment_labels"] == ["A"]
     assert rows[1]["comment_labels"] == ["B"]
     return {
         "ok": True,
         "score_free": True,
         "header_L_parser": True,
+        "missing_L_comment_fallback": True,
         "comment_consistency_parser": True,
         "predictive_scores_computed": False,
     }
