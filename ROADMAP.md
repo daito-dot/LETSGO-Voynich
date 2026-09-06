@@ -6,6 +6,8 @@ This file controls **current sequencing**, not historical exact methods. Frozen 
 
 Program authority: Issue #88 and `research/PREDICTIVE_INFORMATION_PROGRAM.md`.
 
+Active executable issue: **#134 — residual closure with an augmented observable core before latent-state work**.
+
 ## Current frontier — close the residual against an augmented observable core
 
 The previous flexible residual has now been localized enough that a rich latent-state search would be premature.
@@ -14,7 +16,7 @@ The immediate question is:
 
 > **After corrected B3 is augmented with the explicit observable same-line terminal→initial edge, does any reproducible held-out sequence information remain?**
 
-This is the next decision gate.
+Issue #134 owns this decision gate. Its first deliverable is a score-free design contract; predictive scoring must not begin until that contract freezes the exact core composition, Currier policy, challenger and pass rule.
 
 ## Completed foundation
 
@@ -104,9 +106,7 @@ Issue #130 support-matched follow-up:
 
 The table asymmetry survives removal of the major A/B source-support imbalance.
 
-## Active gate — augmented observable core
-
-Open a new plan-first issue from current `main`.
+## Active gate — Issue #134 augmented observable core
 
 ### Core responsibility
 
@@ -123,7 +123,7 @@ Because Issue #130 rejects one bidirectionally universal literal A/B table under
 
 ### Selection firewall
 
-Before any residual reveal, freeze:
+Before any residual reveal, Issue #134 must freeze:
 
 - exact target population and source order;
 - edge representation and smoothing;
@@ -169,7 +169,7 @@ Consequence:
 
 ## High-value follow-ups after residual closure
 
-These are downstream, not substitutes for the active gate:
+These are downstream, not substitutes for Issue #134:
 
 1. **Independent IT2a replication of the explicit terminal→initial edge**, with representation frozen before scoring.
 2. **Issue #84 Phase D** only where it addresses a question not already superseded by Issue #88 and uses identifiable metadata.
@@ -178,7 +178,7 @@ These are downstream, not substitutes for the active gate:
 
 ## Parked / historical lanes
 
-- generic finite-memory/copy-mutate exploration (#24): useful theory background, but current predictive questions are governed by Issue #88;
+- generic finite-memory/copy-mutate exploration (#24): useful theory background, but current predictive questions are governed by Issue #88/#134;
 - music-motif/self-similarity methods (#25): exploratory and separate; no direct-musical interpretation is supported;
 - older R1 generator ladders (#58/#75): completed scientific history, not current implementation frontier.
 
