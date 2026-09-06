@@ -1,0 +1,119 @@
+name: Issue130 support-matched edge Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/residual-gate/L4B_MATCHED_SUPPORT_GATE0_PLAN.md'
+      - 'experiments/predictive-information/residual-gate/matched_edge_gate0.py'
+      - '.github/workflows/issue130-matched-edge-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  matched-edge-gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source and parent Gate
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test -f experiments/predictive-information/residual-gate/L4_CURRIER_GATE0_PROVENANCE.md
+          test -f experiments/predictive-information/residual-gate/L4B_MATCHED_SUPPORT_GATE0_PLAN.md
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce score-free boundary
+        shell: bash
+        run: |
+          if grep -E 'currier_edge_transport|explicit_edge_l3|mixed_logps\(|select_rho\(|log_likelihood|bits_per_token|G_table|G_full|G_identity|G_position|output_metrics|score_r1\(|H62P1' experiments/predictive-information/residual-gate/matched_edge_gate0.py; then
+            echo 'Predictive scoring reference found in score-free matched-support Gate0' >&2
+            exit 1
+          fi
+
+      - name: Compile and self-test
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/residual-gate/matched_edge_gate0.py
+          python experiments/predictive-information/residual-gate/matched_edge_gate0.py --self-test
+
+      - name: Run score-free matched-support audit
+        shell: bash
+        run: |
+          python experiments/predictive-information/residual-gate/matched_edge_gate0.py --audit "$ZL3B" issue130_matched_edge_gate0.json
+          python -m json.tool issue130_matched_edge_gate0.json > /dev/null
+          sha256sum issue130_matched_edge_gate0.json | tee issue130_matched_edge_gate0.sha256
+
+      - name: Assert frozen Gate rule
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue130_matched_edge_gate0.json'))
+          assert x['gate_pass'] is True, x
+          assert x['gate_rule']=='PROCEED_TO_MATCHED_TABLE_TRANSPORT'
+          p=x['parent_gate']
+          assert p['json_sha256']=='31c96135ec8e265781fe295888e52d896d47122bfa9d2bbf6f7e36c001827bdb'
+          assert p['json_sha256']==p['expected_json_sha256']
+          assert p['gate_pass'] is True
+          assert x['n_shared_previous_terminal_classes']>=2
+          assert x['matched_total_per_regime_per_seed']>0
+          assert x['equal_context_counts'] is True
+          assert x['equal_totals'] is True
+          assert x['deterministic_repeat_ok'] is True
+          assert len(x['seeds'])==5
+          total=x['matched_total_per_regime_per_seed']
+          for seed in x['seeds']:
+              s=x['selections'][seed]
+              assert s['A']['selected_total']==total
+              assert s['B']['selected_total']==total
+              assert len(s['A']['selection_digest_sha256'])==64
+              assert len(s['B']['selection_digest_sha256'])==64
+              assert sum(s['A']['selected_by_context'].values())==total
+              assert sum(s['B']['selected_by_context'].values())==total
+              for c,v in x['context_match_counts'].items():
+                  assert s['A']['selected_by_context'][c]==v['matched']
+                  assert s['B']['selected_by_context'][c]==v['matched']
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({
+              'gate_pass':x['gate_pass'],
+              'parent_gate':p,
+              'shared_previous_terminal_classes':x['shared_previous_terminal_classes'],
+              'A_only_previous_terminal_classes':x['A_only_previous_terminal_classes'],
+              'B_only_previous_terminal_classes':x['B_only_previous_terminal_classes'],
+              'original_visible_edge_events':x['original_visible_edge_events'],
+              'matched_total_per_regime_per_seed':total,
+              'context_match_counts':x['context_match_counts'],
+              'selections':x['selections'],
+              'firewall':x['firewall'],
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload Gate authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue130-matched-edge-gate0
+          path: |
+            issue130_matched_edge_gate0.json
+            issue130_matched_edge_gate0.sha256
