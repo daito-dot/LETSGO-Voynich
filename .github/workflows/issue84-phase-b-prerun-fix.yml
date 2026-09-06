@@ -1,0 +1,49 @@
+name: Issue84 Phase B frozen pre-run fix
+
+on:
+  push:
+    branches: [research/issue84-phase-b-cipher-map]
+    paths:
+      - 'experiments/cross-linguistic-baselines/AMENDMENT_B1.md'
+      - '.github/workflows/issue84-phase-b-prerun-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-frozen-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/issue84-phase-b-cipher-map
+
+      - name: Apply exact preregistered compatibility correction
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('experiments/cross-linguistic-baselines/phase84b.py')
+          s=p.read_text()
+          old='if len(original_map) != 6 * 3 * 26:'
+          new='if len(original_map) != len(module.TABLES) * len(module.STATES) * len(nb.EFFECTIVE_LETTERS):'
+          if old not in s:
+              if new in s:
+                  print('frozen correction already applied')
+                  raise SystemExit(0)
+              raise SystemExit('expected prereveal interface assertion not found')
+          p.write_text(s.replace(old,new,1))
+          PY
+
+      - name: Commit exact correction
+        shell: bash
+        run: |
+          if git diff --quiet -- experiments/cross-linguistic-baselines/phase84b.py; then
+            echo 'No correction required'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/cross-linguistic-baselines/phase84b.py
+          git commit -m 'Fix prereveal Naibbe mapping-size preflight'
+          git push origin HEAD:research/issue84-phase-b-cipher-map
