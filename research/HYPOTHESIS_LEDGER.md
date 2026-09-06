@@ -55,20 +55,20 @@ Older detailed ledgers/addenda remain historical records. Where an older entry c
 | PREV_PARAS uses one universal scalar strength across Currier A/B | REJECTED | exact scalar transfer A→B only; B target prefers roughly twice A strength |
 | Broad illustration/domain composition explains Currier PREV-strength asymmetry | REJECTED as sufficient explanation | matched pure-Herbal Phase 3C retains approximately twofold A/B alpha difference and A→B-only PREV scalar transport |
 | Writing hand explains Currier PREV-strength asymmetry | UNRESOLVED / NOT IDENTIFIABLE WITH CURRENT METADATA | `$H` and Currier are inadequately crossed; no clean causal test licensed |
-| Visible spaces are arbitrary transcription cuts with no production-boundary status | REJECTED under tested representations | ZL3b and IT2a strongly support reset and the exact observed cut over ±1-atom shifted cuts |
+| Visible spaces are arbitrary transcription cuts with no production-boundary status | REJECTED under tested representations | ZL3b and IT2a strongly support reset and exact observed cut over ±1-atom shifted cuts |
 | Visible certain spaces are reproducible construction/production boundaries | SUPPORTED ACROSS ZL3b/IT2a | ZL3b `D_RESET +8.8119`; IT2a `+8.0926`; exact cut wins 5/5 in both readings |
 | Visible construction unit is therefore a natural-language word | NOT ESTABLISHED | production-boundary evidence does not distinguish word, cipher group, formal notation unit, procedural emission unit, etc. |
 | Ordinary natural-language controls occupy the same inter-unit relation regime | REJECTED for frozen 101-language panel | Voynich has much lower adjacent corrected MI, strong immediate repeat excess and weak midrange recurrence relative to controls |
 | Frozen common reversible-operation representatives reproduce the full Voynich regime | REJECTED for tested representatives | 0 full hits in Phase 84B; different transforms recover different partial components only |
 | Frozen historical formulaic genres reproduce the full Voynich regime | REJECTED for tested 10-source panel | 0 full/partial hits; all miss in the same direction on MI/immediate/midrange recurrence |
-| A flexible sequence challenger adds any complement beyond corrected B3 | SUPPORTED | Issue #118 `G_any = +0.0306054 bit/token`, positive 5/5 |
-| Cross-boundary context adds information beyond a matched byte-level emission complement | SUPPORTED — SMALL ROBUST RESIDUAL | Issue #118 `G_context = +0.0178533 bit/token`, positive 5/5 |
+| A flexible sequence challenger adds any complement beyond corrected B3 | SUPPORTED AT B3 STAGE | Issue #118 `G_any = +0.0306054 bit/token`, positive 5/5; later superseded for current-core licensing by Issue #134 |
+| Cross-boundary context adds information beyond a matched byte-level emission complement | SUPPORTED AT B3 STAGE — SMALL | Issue #118 `G_context = +0.0178533 bit/token`, positive 5/5; this residual triggered localization |
 | The Issue #118 residual implies a large hidden information channel | NOT SUPPORTED | ~0.018 bit/token is only ~0.19% of B3 code length |
 | The residual is an artifact of comparing different byte-model orders | REJECTED | Issue #121 forces both arms to `k=2, alpha=.01`; boundary-edge gain remains `+0.0106322`, positive 5/5 |
 | Useful short raw context extends materially beyond source-line boundaries | REJECTED under fixed k=2 | Issue #123 `G_beyond_line = -0.0185292`, positive 0/5; carrying context through a line break is harmful |
 | Useful short raw context is localized within source lines | SUPPORTED | Issue #123 RESET2→LINECONT2 `+0.0291614 bit/token`, positive 5/5 |
 | Generic line position/onset alone explains the line-local gain | REJECTED as sufficient | Issue #125 position contributes `+0.00889185`, but terminal identity adds `+0.02026956`, both 5/5 |
-| Immediate previous terminal identity predicts the next visible unit onset | SUPPORTED — ROBUST OBSERVABLE EDGE | Issue #125 terminal→initial identity gain `+0.02026956 bit/token`, positive 5/5 |
+| Immediate previous terminal identity predicts the next visible unit onset | SUPPORTED — ROBUST OBSERVABLE EDGE IN ZL3b | Issue #125 terminal→initial identity gain `+0.02026956 bit/token`, positive 5/5; independent IT2a architecture replication is Issue #139 |
 | The fixed-k2 flexible line-local expert contains additional token-likelihood information beyond position + terminal identity | REJECTED for tested representation | EDGE2 vs LINECONT2 maximum inner/outer token-logp difference `0.0` |
 | The explicit terminal→initial edge architecture is unique to one Currier regime | REJECTED | Issue #127 target-native edge passes in both Currier A and B |
 | One scalar edge strength cannot transport across Currier A/B | REJECTED under target-native tables | source strength is bidirectionally compatible when target identity mapping is supplied |
@@ -77,15 +77,19 @@ Older detailed ledgers/addenda remain historical records. Where an older entry c
 | Support-matched A→B table transport is robust | REJECTED by frozen stability rule | 0/5 seed passes despite positive grand mean `+0.00693954`; every seed only 3/5 positive folds |
 | Support-matched B→A table transport is robust | SUPPORTED | 5/5 seed passes; grand mean `+0.02697082`; every seed 4/5 positive folds |
 | Currier table asymmetry proves a historical direction or that one regime contains the other | NOT ESTABLISHED | predictive transport direction is not a historical derivation/nestedness test |
-| Rich latent-state modeling is currently licensed for interpretation | NOT YET — AUGMENTED-CORE CLOSURE REQUIRED | Issue #118 licensed localization; Issues #121–#130 explain a major residual component with observable rules. The next gate must re-test residual capacity after those rules enter the core |
+| Prospectively adding the observable edge to corrected B3 improves held-out prediction | SUPPORTED | Issue #134 augmented core mean `9.4519005855` vs B3 `9.5172688430`; mean gain `+0.0653682575 bit/token`, positive 5/5; `rho=0.19–0.22` |
+| A separately frozen flexible sequence challenger adds robust information beyond the augmented observable core | REJECTED by Issue #134 | RESET and LINE each select final `w=0` in all five outer folds; `G_residual=[0,0,0,0,0]`, positive 0/5 |
+| The Issue #118 residual still licenses rich latent-state work after the observable edge enters the core | REJECTED / NOT LICENSED | Issue #134 frozen classification `NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE`; no current residual-based license for latent-state escalation |
+| Absence of Issue #134 residual proves that no hidden state exists in Voynichese | NOT ESTABLISHED | #134 is a predictive model-class closure test; hidden states may exist but are not justified by this residual |
+| The terminal→initial edge is transcription-lineage independent | OPEN — ISSUE #139 | ZL3b support is strong; independent IT2a/Takahashi architecture replication must be frozen before target scoring |
 
 ## C. Current working hypothesis
 
 The most economical live structural hypothesis is:
 
-> Certain visible spaces delimit bounded production episodes. Inside each episode, a compact second-order construction grammar generates most token-internal topology. Across episodes, prediction is carried by a small number of observable processes operating at different scales: short edit-near recurrence/cache, an immediate **same-line terminal→initial edge** that resets at line breaks, and slower causal-prefix/prior-paragraph family inventory. Some strengths and literal conditional mappings vary by observable Currier regime.
+> Certain visible spaces delimit bounded production episodes. Inside each episode, a compact second-order construction grammar generates most token-internal topology. Across episodes, held-out prediction is carried by a small set of observable processes at different scales: short edit-near recurrence/cache, an immediate **same-line terminal→initial edge** that resets at line breaks, and slower causal-prefix/prior-paragraph family inventory. Some strengths and literal conditional mappings vary by observable Currier regime. Once the explicit same-line edge is incorporated into corrected B3 under the Issue #134 frozen policy, the separately tested flexible RESET/LINE residual receives no selected predictive weight.
 
-The former flexible line-local residual has therefore been substantially reduced to a compact observable mechanism. The next falsification target is whether any reproducible sequence residual remains after that edge is explicitly incorporated into the predictive core.
+The next falsification target is not a richer hidden sequence state. It is whether the explicit edge architecture survives an independent Takahashi/IT2a transcription-lineage replication under Issue #139.
 
 This is a surface-production model to test, not a semantic, historical or decipherment claim.
 

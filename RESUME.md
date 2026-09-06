@@ -2,32 +2,38 @@
 
 Last consolidated: 2026-09-06
 
-## Resume here — Issue #134 is active
+## Resume here — Issue #134 is closed; Issue #139 is next
 
 Do not reconstruct the project from old chat when GitHub contains a newer state.
 
-The latest completed scientific line is Issue #88 residual localization through Issue #130. PR #132 was merged after the first-reveal provenance was frozen. The scientific reveal is anchored to head `1604c2f36d106e918c55a24f7bea6b7e08622cff`; the post-reveal provenance commit did not alter the scorer or decision rule.
+Issue #134 has completed the residual-closure gate. The frozen first reveal is:
 
-Repository navigation was consolidated in PR #133. The current executable child of Issue #88 is **Issue #134 — augmented observable core before latent-state work**.
+> **NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE**
+
+The preregistered residual vector was exactly `[0, 0, 0, 0, 0] bits/token`. Nested inner validation selected final challenger weight `w=0` for both RESET and LINE families in every outer fold. The augmented observable core itself improves corrected B3 by mean `0.0653682575 bits/token`, positive in all five folds.
+
+This means the specific residual that previously licensed localization no longer licenses escalation to a rich latent-state model after the explicit observable same-line edge is put into the core.
+
+The manuscript is not deciphered. Visible spaces are treated as supported construction/production boundaries under the tested representations, not as proven natural-language words.
 
 ### First sentence a future agent should be able to say
 
-> We have reduced the previously flexible cross-token residual to a compact observable rule: **within a source line, the terminal raw symbol of one visible production unit helps predict the initial raw symbol of the next; the useful short context resets at line breaks.** The edge architecture exists in both Currier A and B, but the literal terminal→initial table is regime-dependent under the frozen transport tests.
-
-The manuscript is not deciphered. Visible spaces are not assumed to be natural-language word boundaries.
+> The predictive program has closed the tested short sequence residual with a compact observable model: corrected B3 plus a same-line onset layer in which the previous visible unit's terminal raw symbol helps predict the next unit's initial raw symbol, with Currier-dependent literal tables and hard reset at source-line breaks. No additional flexible RESET/LINE challenger contribution survives nested selection after that augmentation.
 
 ## Read in this order
 
 1. `README.md`
 2. `research/STATUS.md`
 3. `ROADMAP.md`
-4. Issue #134
+4. Issue #139
 5. `research/PREDICTIVE_INFORMATION_PROGRAM.md`
 6. `research/HYPOTHESIS_LEDGER.md`
 7. `research/RESEARCH_PROTOCOL.md`
-8. latest phase-specific plan/provenance under `experiments/predictive-information/`
+8. `experiments/predictive-information/residual-gate/ISSUE134_AUGMENTED_CORE_PLAN.md`
+9. `experiments/predictive-information/residual-gate/ISSUE134_GATE0_PROVENANCE.md`
+10. `experiments/predictive-information/residual-gate/ISSUE134_FIRST_REVEAL_PROVENANCE.md`
 
-For exact historical numbers or methods, open the relevant frozen plan, report and first-reveal provenance. Superseded navigation/current-state snapshots are in `research/archive/`.
+For exact historical numbers or methods, open the relevant frozen plan, report and first-reveal provenance. Superseded current-state snapshots are historical only.
 
 ## Authority hierarchy
 
@@ -35,9 +41,9 @@ For exact historical numbers or methods, open the relevant frozen plan, report a
 2. `research/STATUS.md` controls the current accepted high-level interpretation;
 3. `research/PREDICTIVE_INFORMATION_PROGRAM.md` controls the Issue #88 program and latent-state licensing rule;
 4. `research/HYPOTHESIS_LEDGER.md` controls current hypothesis status/history;
-5. `research/RESEARCH_PROTOCOL.md` controls evidential discipline for new decision criteria;
+5. `research/RESEARCH_PROTOCOL.md` controls evidential discipline;
 6. `ROADMAP.md` controls current sequencing;
-7. old chats, old RESUME/ROADMAP snapshots and archived addenda are non-authoritative where later repository evidence conflicts.
+7. old chats and archived snapshots are non-authoritative where later repository evidence conflicts.
 
 ## Current accepted state
 
@@ -46,122 +52,83 @@ For exact historical numbers or methods, open the relevant frozen plan, report a
 Issue #75 + OGH-A/B/C close the token-internal R1 generation lane.
 
 - target-blind second-order occupied-slot successor grammar: 298 counted conditional probabilities;
-- median topology agreement `T≈0.948` on the ZL3b arm and `0.962` on the IT2a arm;
+- median topology agreement `T≈0.948` on ZL3b and `0.962` on IT2a;
 - memoryless V2 code length `9.7089061 bits/token`;
-- approximate information split: shape `~7.0 bits/token`, values add `~2.7 bits/token`.
+- approximate information split: shape `~7.0`, values add `~2.7 bits/token`.
 
-Do not open another occupancy-only R1 rung unless a later result invalidates this authority.
+Do not reopen an occupancy-only R1 ladder without a new falsification reason.
 
-### 2. Certain visible spaces are production boundaries
+### 2. Certain visible spaces are production/construction boundaries
 
-Phase 4 independently supports exact visible cuts as statistical construction/production boundaries:
+Independent ZL3b and IT2a tests support exact visible cuts over nearby shifted cuts. This validates the tested production boundary, not a linguistic word interpretation.
 
-- ZL3b `D_RESET = +8.811905 bits/event`, 5/5;
-- IT2a `D_RESET = +8.092615`, 5/5;
-- exact observed cuts beat one-atom left/right shifts in both readings.
-
-This does not establish linguistic words.
-
-### 3. Corrected non-latent predictive ladder
+### 3. Corrected observable predictive ladder
 
 After the source-order correction:
 
-- B0 V2 `9.7089061 bits/token`;
+- B0 V2 `9.7089061`;
 - B1 local `9.5943670`;
 - B2 longer causal history `9.5461692`;
-- B3 + observable line/paragraph state `9.5172688`.
+- B3 + observable line/paragraph state `9.5172688 bits/token`.
 
-Most longer-history gain is causal-prefix / prior-paragraph inventory rather than detailed long ordered memory. A smaller actual-order component survives.
+Longer-history gain is dominated by causal-prefix / prior-paragraph inventory rather than detailed long ordered memory.
 
-### 4. The Issue #118 residual exists but is small
+### 4. The old flexible residual was real but small
 
-The matched RESET/CONT byte-family test found:
+Issue #118 found `G_context = +0.0178533 bit/token`, positive 5/5. Issues #121/#123 localized it to within-source-line short context. Issue #125 then exactly factorized the fixed-`k=2` line-local expert into generic line-position/onset support plus immediate previous-terminal → current-initial identity.
 
-- `G_context = +0.0178533 bit/token`, positive 5/5;
-- `G_any = +0.0306054 bit/token`, positive 5/5.
+### 5. The explicit edge is observable and regime-sensitive
 
-The residual is only about 0.19% of B3 code length. It licenses localization, not semantic or rich latent-state interpretation.
+Issue #125 terminal→initial identity gain was `+0.02026956 bit/token`, positive 5/5. Issue #127 found the architecture useful natively in Currier A and B. Issue #130 matched source support and still found literal table transport `B→A ONLY` under the frozen criterion.
 
-### 5. L1–L3 localize the residual to an explicit same-line edge
+Do not turn that predictive direction into a historical derivation claim.
 
-Issue #121 same-order control:
+### 6. Issue #134 closes the tested residual after augmentation
 
-- `G_edge = +0.0106322 bit/token`, positive 5/5.
+Issue #134 prospectively added the explicit observable edge to corrected B3, with Currier A/B table handling and fallback frozen before reveal.
 
-Issue #123 line-reset scope:
+First reveal:
 
-- RESET2 → LINECONT2: `G_line = +0.0291614`, positive 5/5;
-- LINECONT2 → LEAFCONT2: `G_beyond_line = -0.0185292`, positive 0/5.
+- classification: **`NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE`**;
+- `G_residual = [0,0,0,0,0] bits/token`;
+- positive folds `0/5`;
+- mean B3 `9.517268842963203 bits/token`;
+- mean augmented core `9.451900585480233`;
+- mean gain over B3 `0.06536825748296984`, positive 5/5;
+- selected edge mixture `rho = [0.19, 0.22, 0.20, 0.19, 0.21]`;
+- both RESET and LINE challengers selected final `w=0` in all folds.
 
-Carrying the same short raw context across a line break is predictively harmful.
+Authority:
 
-Issue #125 exact decomposition under fixed `k=2`:
+- Gate0 PR #136, merged before scorer creation;
+- Gate result SHA-256 `3e11615c731654854b6ad982007d5f340b47d3a0c088cd09ab2af08080489db1`;
+- first-reveal scorer commit `dbd787a457659b7d833dc06c3931f937031172b8`;
+- workflow run `34035108074`;
+- artifact `9990011421`;
+- result JSON SHA-256 `6779c2ea135e63f0c9c5be3e6200e564c18225fb95bb344f5349f946d73b9698`;
+- PR #137 merged as `4c9b7ec44bae9633b80bebf272670ced75756d19`.
 
-- generic line-position/onset component `+0.00889185 bit/token`, positive 5/5;
-- previous-terminal identity component `+0.02026956`, positive 5/5;
-- EDGE2 and the formerly flexible LINECONT2 expert have maximum inner/outer token-logp difference `0.0`.
+No post-reveal tuning changed Currier policy, fallback, smoothing, grids, tie rules, challenger topology or decision threshold.
 
-Thus the tested flexible line-local predictor does not hide an additional longer-context effect under this representation: it factorizes into observable line position plus immediate terminal→initial identity.
+## Next scientific move — Issue #139
 
-### 6. Currier transport separates shared architecture from regime-specific mapping
+Issue #139 is the next executable gate: independent Takahashi/IT2a replication of the fixed same-line terminal→initial edge architecture.
 
-Issue #127 established:
+Its first deliverable must be score-free. Freeze the exact IT2a source/version/hash, physical-leaf and source-line mapping, uncertainty handling, target population, symbol representation, folds, smoothing, support checks and primary stability rule before any IT2a edge gain is inspected.
 
-- native explicit edge useful in Currier A and B;
-- scalar edge strength compatible bidirectionally when the target identity table is supplied;
-- literal source terminal→initial table transports only B→A under target-calibrated strength;
-- exact source table + source strength transports neither direction.
+Primary question:
 
-Issue #130 removed the obvious support imbalance. For every one of five outcome-blind selections, A and B source tables were trained from exactly `8,728` visible edge events with identical selected counts inside each of 20 shared previous-terminal classes.
+> Does `G_identity_IT2a = bits(POS2) - bits(EDGE2)` survive held-out physical-leaf evaluation when the Issue #125 architecture is carried over without target-driven repair?
 
-Frozen matched result:
-
-- A→B: seed passes `0/5`, grand mean `+0.00693954 bit/token` — FAIL;
-- B→A: seed passes `5/5`, grand mean `+0.02697082 bit/token` — PASS;
-- classification: **`B→A ONLY`**.
-
-The direction therefore cannot be explained merely by B having more source examples. Do not convert this into a historical A→B/B→A derivation claim or a statement that one Currier regime “contains” the other.
-
-## Latest first-reveal authority
-
-Issue #130 L4b:
-
-- scientific head: `1604c2f36d106e918c55a24f7bea6b7e08622cff`;
-- workflow run: `34029536188` — SUCCESS;
-- artifact: `9988168421`;
-- artifact ZIP digest: `sha256:90a6d658d72dda1e02ad96775822002e96c94858a99cbe15f9b08f95dd3a9707`;
-- result JSON SHA-256: `d2ae55675fb7613b4f5000ab81558099f2821ff245acacdcb5a6697e06f7249e`;
-- matched Gate JSON SHA-256: `a0f48878506369aa9dff60e06b60be13d41d36dd1ceef3a40c4fc63825db66f5`;
-- provenance: `experiments/predictive-information/residual-gate/L4B_MATCHED_TRANSPORT_PROVENANCE.md`.
-
-## Next scientific move — Issue #134
-
-Issue #134 is the active executable gate. Its first deliverable is a **score-free design contract** for an augmented observable core residual test.
-
-The core should incorporate, without target-outer leakage:
-
-1. corrected B3;
-2. generic line-position/onset support;
-3. explicit immediately previous terminal → current initial edge;
-4. a prospectively frozen Currier A/B table policy, because Issue #130 rejects a single universally transportable literal table under the tested setup;
-5. a predeclared fallback for unknown/other Currier support.
-
-Then compare that augmented non-latent core against a separately frozen flexible residual challenger on the original physical-leaf outer folds.
-
-Decision:
-
-- if robust residual disappears/fails the frozen stability rule, **do not license latent-state work**; consolidate the compact observable multiscale description;
-- if a robust residual remains, localize remaining observable/support/representation effects before fitting or interpreting a latent state.
-
-A later independent IT2a/Takahashi replication of the explicit terminal→initial edge is high-value, but should not be used to tune the ZL3b edge representation after seeing target outcomes.
+This replication tests whether the architecture survives an independent transcription lineage. Literal ZL3b↔IT2a conditional-table equality is not the primary target.
 
 ## Do not
 
-- reopen token-internal R1 model ladders without a new falsification reason;
-- treat visible spaces as proven linguistic words;
-- use residual signs to choose Currier/domain/hand strata after reveal;
-- condition on writing hand as a causal explanation while hand and Currier remain inadequately crossed;
-- use target outer folds to select edge tables, strengths, fallback or residual hyperparameters;
+- open a rich latent-state ladder after #134; the frozen licensing condition failed;
+- tune IT2a normalization, exclusions or symbol mapping after target reveal;
+- reopen token-internal R1 ladders without a new falsification reason;
+- treat visible spaces as proven natural-language words;
+- condition on writing hand as a causal explanation while hand/Currier remain inadequately crossed;
 - infer plaintext, language, semantics, cipher identity, author, hoax/artificial origin or historical production mechanism from predictive fit;
 - call a non-reversible surface generator a decipherment;
-- append another “current resume” beneath this file. Replace this file and archive the superseded snapshot instead.
+- append another current resume beneath this file; replace it and archive the superseded snapshot instead.
