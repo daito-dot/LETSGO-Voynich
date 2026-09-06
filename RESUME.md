@@ -2,11 +2,13 @@
 
 Last consolidated: 2026-09-06
 
-## Resume here — after Issue #130 L4b / PR #132
+## Resume here — Issue #134 is active
 
 Do not reconstruct the project from old chat when GitHub contains a newer state.
 
 The latest completed scientific line is Issue #88 residual localization through Issue #130. PR #132 was merged after the first-reveal provenance was frozen. The scientific reveal is anchored to head `1604c2f36d106e918c55a24f7bea6b7e08622cff`; the post-reveal provenance commit did not alter the scorer or decision rule.
+
+Repository navigation was consolidated in PR #133. The current executable child of Issue #88 is **Issue #134 — augmented observable core before latent-state work**.
 
 ### First sentence a future agent should be able to say
 
@@ -19,10 +21,11 @@ The manuscript is not deciphered. Visible spaces are not assumed to be natural-l
 1. `README.md`
 2. `research/STATUS.md`
 3. `ROADMAP.md`
-4. `research/PREDICTIVE_INFORMATION_PROGRAM.md`
-5. `research/HYPOTHESIS_LEDGER.md`
-6. `research/RESEARCH_PROTOCOL.md`
-7. latest phase-specific plan/provenance under `experiments/predictive-information/`
+4. Issue #134
+5. `research/PREDICTIVE_INFORMATION_PROGRAM.md`
+6. `research/HYPOTHESIS_LEDGER.md`
+7. `research/RESEARCH_PROTOCOL.md`
+8. latest phase-specific plan/provenance under `experiments/predictive-information/`
 
 For exact historical numbers or methods, open the relevant frozen plan, report and first-reveal provenance. Superseded navigation/current-state snapshots are in `research/archive/`.
 
@@ -131,9 +134,9 @@ Issue #130 L4b:
 - matched Gate JSON SHA-256: `a0f48878506369aa9dff60e06b60be13d41d36dd1ceef3a40c4fc63825db66f5`;
 - provenance: `experiments/predictive-information/residual-gate/L4B_MATCHED_TRANSPORT_PROVENANCE.md`.
 
-## Next scientific move
+## Next scientific move — Issue #134
 
-Open a fresh plan-first issue from current `main` for an **augmented observable core residual gate**.
+Issue #134 is the active executable gate. Its first deliverable is a **score-free design contract** for an augmented observable core residual test.
 
 The core should incorporate, without target-outer leakage:
 
