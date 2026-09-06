@@ -39,6 +39,9 @@ jobs:
           test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
           test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
 
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
       - name: Enforce score-free boundary
         shell: bash
         run: |
