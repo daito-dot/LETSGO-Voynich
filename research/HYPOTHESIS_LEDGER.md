@@ -77,7 +77,12 @@ Older detailed ledgers/addenda remain historical records. Where an older entry c
 | Support-matched A→B table transport is robust | REJECTED by frozen stability rule | 0/5 seed passes despite positive grand mean `+0.00693954`; every seed only 3/5 positive folds |
 | Support-matched B→A table transport is robust | SUPPORTED | 5/5 seed passes; grand mean `+0.02697082`; every seed 4/5 positive folds |
 | Currier table asymmetry proves a historical direction or that one regime contains the other | NOT ESTABLISHED | predictive transport direction is not a historical derivation/nestedness test |
-| Rich latent-state modeling is currently licensed for interpretation | NOT YET — AUGMENTED-CORE CLOSURE REQUIRED | Issue #118 licensed localization; Issues #121–#130 explain a major residual component with observable rules. The next gate must re-test residual capacity after those rules enter the core |
+| Adding the explicit observable edge to corrected B3 leaves a robust flexible sequence residual | REJECTED by Issue #134 | frozen `G_residual=[0,0,0,0,0]`; mean 0; 0/5 positive; both RESET and LINE challengers selected final `w=0` in every outer fold |
+| The augmented observable edge materially complements corrected B3 | SUPPORTED | Issue #134 augmented core improves B3 by mean `+0.0653682575 bit/token`, positive 5/5; selected `rho=[.19,.22,.20,.19,.21]` |
+| A flexible RESET or source-line LINE byte challenger adds held-out information after the augmented observable core | REJECTED for frozen Issue #134 family | nested inner validation selects `w=0` for both families in all five outer folds |
+| Issue #134 proves the manuscript has no hidden state | NOT ESTABLISHED | the test only removes predictive licensing from this residual/model-class comparison |
+| Rich latent-state modeling is currently licensed for interpretation | REJECTED / NOT LICENSED BY CURRENT RESIDUAL PROGRAM | Issue #134 closes the preregistered residual beyond the augmented observable core; next work is independent replication and stronger mechanistic/external tests rather than adding hidden sequence capacity |
+| The explicit terminal→initial edge is transcription-independent | OPEN — ISSUE #139 | independent Takahashi/IT2a architecture replication is now the active falsification test; representation and decision rule must be frozen before target scoring |
 
 ## C. Current working hypothesis
 
@@ -85,7 +90,7 @@ The most economical live structural hypothesis is:
 
 > Certain visible spaces delimit bounded production episodes. Inside each episode, a compact second-order construction grammar generates most token-internal topology. Across episodes, prediction is carried by a small number of observable processes operating at different scales: short edit-near recurrence/cache, an immediate **same-line terminal→initial edge** that resets at line breaks, and slower causal-prefix/prior-paragraph family inventory. Some strengths and literal conditional mappings vary by observable Currier regime.
 
-The former flexible line-local residual has therefore been substantially reduced to a compact observable mechanism. The next falsification target is whether any reproducible sequence residual remains after that edge is explicitly incorporated into the predictive core.
+Issue #134 shows that, for the prospectively frozen flexible challenger family, adding the explicit observable edge to corrected B3 absorbs the previously measured residual: both residual challengers receive zero selected weight on every outer fold. The next falsification target is whether the edge architecture itself survives independent Takahashi/IT2a transcription.
 
 This is a surface-production model to test, not a semantic, historical or decipherment claim.
 
