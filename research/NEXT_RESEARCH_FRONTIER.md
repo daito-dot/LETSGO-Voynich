@@ -1,10 +1,14 @@
 # Next research frontier — prospectively constrained reversible / inverse mechanism tournament
 
-## CURRENT FRONTIER — after Issue #84 Phase B
+## CURRENT FRONTIER — after Issue #84 Phase C
 
-Issue #84 Phase B (`experiments/cross-linguistic-baselines/REPORT_B.md`) has now tested the frozen common cipher-operation representatives on CREMMA Latin. There were **0 full three-component hits**. Homophonic ×4 and a four-way top-256 nomenclator reproduce only the Voynich-scale adjacent MI; line-local transposition reproduces only the positive distance-1–2 exact-repeat excess; published Naibbe reproduces only the suppressed distance-21–40 recurrence. Therefore the next move is **not** a post-hoc composition of these partial mechanisms.
+Issue #84 Phases A–C have completed the intended control program. Phase A found no ordinary natural-language sample in the transcription-robust Voynich inter-token regime. Phase B found no frozen common reversible-operation representative that generates the full three-component regime from CREMMA Latin. Phase C then tested ten preregistered historical recipe, Herbarium, account and liturgical source documents and found **0 full hits and 0 partial hits**: every source has too much adjacent dependence, too little immediate exact-token reuse, and too much 21–40-token recurrence relative to all seven Voynich readings. See `experiments/cross-linguistic-baselines/REPORT_C.md` and `research/HYPOTHESIS_LEDGER_ADDENDUM_ISSUE84.md`.
 
-The highest-information plan-first question is Issue #84 **Phase C**: do enumerative, recipe, herbal, calendar, liturgical or account-like source genres already possess the unusual immediate-positive / mid-range-suppressed recurrence geometry that ordinary prose lacks? Use the Phase-A/Phase-B scorer and the exact seven-reading intervals without changing the primary responsibilities. If no credible genre enters or approaches the regime, ordinary meaningful-text-plus-common-transform explanations become substantially narrower. If a genre does, only then license a separately preregistered source×transform composition. In parallel, Issue #81's soft near-family / recency-kernel memory remains an independent generative lane selected by held-out likelihood only.
+The next highest-information plan-first question is therefore Issue #81's unresolved generative responsibility:
+
+> **Can a soft near-family / recency-kernel cross-token memory, selected only by training/held-out likelihood, recover S2 and the H62 short-range geometry without the preregistered X2 raw-recurrence overshoot, while preserving the frozen R1 emission grammar?**
+
+If and only if that component becomes sufficient, prospectively compose it with the already-supported paragraph ENTRY/BODY X3 state and test the joint S1/S2/H62 responsibilities. Issue #84 Phase D (scribe-conditioned memory parameters / external anchors) remains blocked on that sufficient-memory result. Do not use the Phase-B or Phase-C near-misses to tune the memory architecture.
 
 ## Frontier after OGH-C: the smallest cross-token memory
 
