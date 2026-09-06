@@ -1,0 +1,116 @@
+name: Issue104 Phase3A Currier transport
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/phase3a/TRANSPORT_PLAN.md'
+      - 'experiments/predictive-information/phase3a/currier_transport.py'
+      - '.github/workflows/issue104-phase3a-currier-transport.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  transport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce prediction-only frozen transport boundary
+        shell: bash
+        run: |
+          test -f experiments/predictive-information/phase3a/GATE0_PROVENANCE.md
+          test -f experiments/predictive-information/phase3a/TRANSPORT_PLAN.md
+          test -f experiments/predictive-information/phase3a/currier_transport.py
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|evaluate_model\(|H62P1|target_exposed' experiments/predictive-information/phase3a/currier_transport.py; then
+            echo 'Surface-target scorer found in Phase-3A transport executable' >&2
+            exit 1
+          fi
+
+      - name: Compile and self-test
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/phase3a/currier_transport.py
+          python experiments/predictive-information/phase3a/currier_transport.py --self-test
+
+      - name: Authoritative Currier A-B transport reveal
+        shell: bash
+        run: |
+          python experiments/predictive-information/phase3a/currier_transport.py --run "$ZL3B" phase3a_transport.json
+          python -m json.tool phase3a_transport.json > /dev/null
+          sha256sum phase3a_transport.json
+
+      - name: Assert authority firewall and print result
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase3a_transport.json'))
+          assert x['authority']['gate0_json_sha256'] == 'e970e83c8b6405fd224cef3c74f6c02ef430552fd1cd2b6aa969e89a475f258e'
+          assert x['authority']['order']['numeric_paragraph_order_valid'] is True
+          assert x['authority']['order']['source_document_order_valid'] is True
+          assert x['population']['mixed_AB_leaves'] == []
+          assert x['firewall'] == {
+              'prediction_only': True,
+              'target_support_used_for_primary_emission_and_edit_index': True,
+              'source_target_tokens_used_for_source_parameter_selection': False,
+              'H_tau_window_reselected': False,
+              'edit_relation_changed': False,
+              'history_pool_changed': False,
+              'surface_target_metrics_scored': False,
+              'issue84_target_used': False,
+              'hand_section_scribe_used': False,
+              'semantic_or_image_context_used': False,
+              'latent_state_fitted': False,
+              'future_test_tokens_used': False,
+          }
+          for direction in ('A_to_B','B_to_A'):
+              assert len(x['directions'][direction]['outer']) == 5
+              assert all(r['n_scored'] > 0 for r in x['directions'][direction]['outer'])
+          print(json.dumps({
+              'classification': x['classification'],
+              'source_parameters': {
+                  k:{'pi_LOCAL':v['pi_LOCAL'],'alpha_ALL_PREV':v['alpha_ALL_PREV']}
+                  for k,v in x['source_parameters'].items()
+              },
+              'directions': {
+                  k:{
+                      'summary':v['summary'],
+                      'oracle_params':[r['oracle'] for r in v['outer']],
+                      'full_support_classification':v['full_support_diagnostic']['classification'],
+                  } for k,v in x['directions'].items()
+              },
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload authoritative result
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue104-phase3a-currier-transport
+          path: phase3a_transport.json
