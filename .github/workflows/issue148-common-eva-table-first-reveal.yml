@@ -1,0 +1,173 @@
+name: Issue148 common-EVA table first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/common-eva-edge/issue148_common_eva_table_first_reveal.py'
+      - '.github/workflows/issue148-common-eva-table-first-reveal.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue148_common_eva_table_first_reveal.json
+  SCORER: experiments/predictive-information/common-eva-edge/issue148_common_eva_table_first_reveal.py
+
+jobs:
+  first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head with Gate ancestry
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert merged Gate ancestry and frozen scientific blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 2bbaf46f4c420ae87169cacb39e5dc0dc9cd6425 HEAD
+          test "$(git hash-object "$SCORER")" = "8f98466139c1e4f13d761fcebc9f5ce118afe4bd"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/issue148_common_eva_table_gate0.py)" = "a8029aac50ccc6e09ec975b7b86a1bde44415f9f"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/ISSUE148_GATE0_PROVENANCE.md)" = "7f97b9731a6e72e2456ede436e837a3735f265fd"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/issue145_common_eva_first_reveal.py)" = "ce8a167c607fbcf2807f567439ab6837471f4f07"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and target-free synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile "$SCORER"
+          python "$SCORER" --self-test
+
+      - name: Run frozen bidirectional table first reveal
+        shell: bash
+        run: |
+          python "$SCORER" --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue148_common_eva_table_first_reveal.sha256
+
+      - name: Assert frozen support classification and native reproduction
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue148_common_eva_table_first_reveal.json',encoding='utf-8'))
+          assert x['schema']=='issue148-common-eva-table-first-reveal-v1'
+          assert x['issue']==148 and x['scored'] is True
+          assert x['authority']['gate0_reproduced'] is True
+          assert x['authority']['gate0_result_sha256']=='f324264b814ef02d8de70b804754750ec579f8a9e0d8dffb0f1575439867d1bf'
+          assert x['authority']['gate0_script_blob']=='a8029aac50ccc6e09ec975b7b86a1bde44415f9f'
+          assert x['authority']['gate0_provenance_blob']=='7f97b9731a6e72e2456ede436e837a3735f265fd'
+          assert x['authority']['gate0_merge']=='2bbaf46f4c420ae87169cacb39e5dc0dc9cd6425'
+          assert x['authority']['issue145_scorer_blob']=='ce8a167c607fbcf2807f567439ab6837471f4f07'
+          assert x['frozen_transport']['k']==2
+          assert x['frozen_transport']['alpha']==0.01
+          assert x['frozen_transport']['outcome_vocabulary_size']==32
+          assert x['frozen_transport']['target_native_fallback'] is False
+          assert x['frozen_transport']['scalar_temperature_mixture_calibration'] is False
+
+          expected_native={
+            'ZL3b':[0.1401857711919683,0.11070803603537804,0.1382227782379093,0.14814594342085297,0.13085394875126655],
+            'IT2a':[0.16849676412590786,0.13944957565891447,0.16568837105957224,0.18034394028423262,0.15527126584680998],
+          }
+          expected_support={
+            'ZL3b_to_IT2a':{
+              'target':'IT2a',
+              'body':[4031,4483,5220,5093,4649],
+              'supported':[4031,4483,5218,5092,4646],
+              'unsupported':[0,0,2,1,3],
+            },
+            'IT2a_to_ZL3b':{
+              'target':'ZL3b',
+              'body':[3122,3478,4073,3976,3605],
+              'supported':[3121,3474,4071,3973,3604],
+              'unsupported':[1,4,2,3,1],
+            },
+          }
+          passes={}
+          for key in ('ZL3b_to_IT2a','IT2a_to_ZL3b'):
+              d=x['directions'][key]
+              spec=expected_support[key]
+              assert len(d['outer'])==5
+              gains=[]
+              for f,row in enumerate(d['outer']):
+                  assert row['fold']==f
+                  assert row['n_scored_run_body_targets']==spec['body'][f]
+                  assert row['source_context_supported_body_targets']==spec['supported'][f]
+                  assert row['source_context_unsupported_body_targets']==spec['unsupported'][f]
+                  assert math.isclose(row['source_context_coverage_fraction'],spec['supported'][f]/spec['body'][f],rel_tol=0.0,abs_tol=1e-15)
+                  assert math.isfinite(row['bits_POS2_TARGET'])
+                  assert math.isfinite(row['bits_EDGE2_TARGET'])
+                  assert math.isfinite(row['bits_XEDGE2_SOURCE_TO_TARGET'])
+                  native=row['bits_POS2_TARGET']-row['bits_EDGE2_TARGET']
+                  assert math.isclose(native,row['G_common_target_native'],rel_tol=0.0,abs_tol=1e-12)
+                  assert math.isclose(native,expected_native[spec['target']][f],rel_tol=0.0,abs_tol=1e-12)
+                  g=row['bits_POS2_TARGET']-row['bits_XEDGE2_SOURCE_TO_TARGET']
+                  assert math.isclose(g,row['G_transport'],rel_tol=0.0,abs_tol=1e-12)
+                  gains.append(row['G_transport'])
+              p=d['primary']
+              assert p['G_transport_by_fold']==gains
+              mean=sum(gains)/5
+              positive=sum(g>0.0 for g in gains)
+              expected_pass=(mean>0.0 and positive>=4)
+              assert math.isclose(mean,p['mean_G_transport'],rel_tol=0.0,abs_tol=1e-15)
+              assert positive==p['positive_folds']
+              assert p['required_positive_folds']==4
+              assert p['pass'] is expected_pass
+              passes[key]=expected_pass
+
+          if passes['ZL3b_to_IT2a'] and passes['IT2a_to_ZL3b']:
+              expected_class='COMMON-EVA LITERAL EDGE TABLE TRANSPORTS BOTH DIRECTIONS'
+          elif passes['ZL3b_to_IT2a']:
+              expected_class='COMMON-EVA LITERAL EDGE TABLE TRANSPORTS ZL3B→IT2A ONLY'
+          elif passes['IT2a_to_ZL3b']:
+              expected_class='COMMON-EVA LITERAL EDGE TABLE TRANSPORTS IT2A→ZL3B ONLY'
+          else:
+              expected_class='COMMON-EVA LITERAL EDGE TABLE TRANSPORTS NEITHER DIRECTION'
+          assert x['classification']==expected_class
+          assert x['primary_joint']['classification']==expected_class
+          print(json.dumps({
+              'classification':x['classification'],
+              'ZL3b_to_IT2a':x['directions']['ZL3b_to_IT2a']['primary'],
+              'IT2a_to_ZL3b':x['directions']['IT2a_to_ZL3b']['primary'],
+              'secondary_non_promoting':x['secondary_non_promoting'],
+          },indent=2,sort_keys=True,ensure_ascii=False))
+          PY
+
+      - name: Upload first-reveal authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue148-common-eva-table-first-reveal-${{ github.event.pull_request.head.sha }}
+          path: |
+            issue148_common_eva_table_first_reveal.json
+            issue148_common_eva_table_first_reveal.sha256
