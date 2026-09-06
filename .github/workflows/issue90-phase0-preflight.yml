@@ -46,9 +46,12 @@ jobs:
         run: |
           test -f experiments/predictive-information/phase0/PLAN.md
           test -f experiments/predictive-information/phase0/AMENDMENT_A.md
+          test -f experiments/predictive-information/phase0/AMENDMENT_B.md
+          test -f experiments/predictive-information/phase0/PREFLIGHT_A_PROVENANCE.md
           test -f experiments/predictive-information/phase0/IMPLEMENTATION_PREFLIGHT.md
           test -f experiments/predictive-information/phase0/phase0_preflight.py
-          if grep -E 'output_metrics|score_r1\(|metric_gates\(|evaluate_model\(' experiments/predictive-information/phase0/phase0_preflight.py; then
+          test -f experiments/predictive-information/phase0/phase0_preflight_b.py
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|evaluate_model\(' experiments/predictive-information/phase0/phase0_preflight.py experiments/predictive-information/phase0/phase0_preflight_b.py; then
             echo 'Target-scoring call found in score-free preflight executable' >&2
             exit 1
           fi
@@ -57,21 +60,23 @@ jobs:
         shell: bash
         run: |
           python -m py_compile experiments/predictive-information/phase0/phase0_preflight.py
-          python experiments/predictive-information/phase0/phase0_preflight.py --self-test
+          python -m py_compile experiments/predictive-information/phase0/phase0_preflight_b.py
+          python experiments/predictive-information/phase0/phase0_preflight_b.py --self-test
 
-      - name: Run score-free preflight
+      - name: Run authoritative Amendment-B score-free preflight
         shell: bash
         run: |
-          python experiments/predictive-information/phase0/phase0_preflight.py --preflight "$ZL3B" phase0_preflight.json
-          python -m json.tool phase0_preflight.json > /dev/null
-          sha256sum phase0_preflight.json
+          python experiments/predictive-information/phase0/phase0_preflight_b.py --preflight "$ZL3B" phase0_preflight_b.json
+          python -m json.tool phase0_preflight_b.json > /dev/null
+          sha256sum phase0_preflight_b.json
 
       - name: Assert firewall and print predictive-only summary
         shell: bash
         run: |
           python - <<'PY'
           import json
-          x=json.load(open('phase0_preflight.json'))
+          x=json.load(open('phase0_preflight_b.json'))
+          assert x['schema'] == 'issue90-phase0-preflight-b-v1'
           assert x['target_score_calls'] == 0
           assert x['firewall'] == {
               'H62_scored': False,
@@ -82,6 +87,7 @@ jobs:
           }
           assert x['deterministic_selection'] is True
           assert x['deterministic_generation'] is True
+          assert x['amendment_B']['further_phase0_tau_or_window_extension_licensed'] is False
           print(json.dumps({
               'selection': {f:r['selected'] for f,r in x['selections'].items()},
               'predictive': x['outer_heldout_predictive']['summary'],
@@ -91,8 +97,8 @@ jobs:
           }, indent=2, sort_keys=True))
           PY
 
-      - name: Upload score-free authority
+      - name: Upload authoritative score-free authority
         uses: actions/upload-artifact@v4
         with:
-          name: issue90-phase0-preflight
-          path: phase0_preflight.json
+          name: issue90-phase0-preflight-b
+          path: phase0_preflight_b.json
