@@ -40,7 +40,7 @@ jobs:
           test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
 
       - name: Install runtime
-        run: python -m pip install --disable-pip-version-check numpy
+        run: python -m pip install --disable-pip-version-check numpy scipy
 
       - name: Reproduce corrected Phase1 authority
         shell: bash
