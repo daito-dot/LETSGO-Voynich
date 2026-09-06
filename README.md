@@ -1,101 +1,93 @@
 # LETSGO-Voynich
 
-Open research repository for testing hypotheses about the Voynich Manuscript.
+Open research repository for testing falsifiable hypotheses about the Voynich Manuscript.
 
 **日本語での参加も歓迎します。**
 
-This repository is not built around a claim that the manuscript has already been deciphered. The goal is to make proposed explanations testable, comparable, falsifiable, and reproducible.
+The manuscript is **not deciphered**. This repository separates reproducible surface structure, predictive mechanisms, historical mechanisms, content relations, and decipherment claims rather than treating them as interchangeable.
 
-> **Continuing the existing research? Start with [`RESUME.md`](RESUME.md).** It defines the reading order, source-of-truth hierarchy, current frontier, and rules that prevent exposed targets from being accidentally reused as prospective validation.
->
-> **Want the current progress map? See [`ROADMAP.md`](ROADMAP.md).** It shows completed stages, the active decision gate, parallel research tracks, dependencies, and milestone completion criteria.
+## Start here
 
-## What we are looking for
+If you are continuing the research, read these files in order:
 
-Contributions are welcome for:
+1. [`RESUME.md`](RESUME.md) — deterministic restart point and exact next move;
+2. [`research/STATUS.md`](research/STATUS.md) — current accepted scientific interpretation;
+3. [`ROADMAP.md`](ROADMAP.md) — active decision gate and downstream forks;
+4. [`research/PREDICTIVE_INFORMATION_PROGRAM.md`](research/PREDICTIVE_INFORMATION_PROGRAM.md) — governing Issue #88 program;
+5. [`research/HYPOTHESIS_LEDGER.md`](research/HYPOTHESIS_LEDGER.md) — current hypothesis status, including negative results;
+6. [`research/RESEARCH_PROTOCOL.md`](research/RESEARCH_PROTOCOL.md) — normative evidential discipline.
 
-- decipherment and cipher hypotheses
-- candidate natural languages
-- deliberately deceptive / adversarial encodings
-- formal or generative models
-- scribal-production hypotheses
-- structural claims about tokens, lines, paragraphs, folios, sections, labels, diagrams, or illustrations
-- negative results that eliminate plausible explanations
-- better control corpora, null models, or evaluation methods
+Historical restart points and superseded navigation documents live under [`research/archive/`](research/archive/). Phase/Issue-specific frozen plans, first-reveal artifacts, hashes and reports remain authoritative for their exact historical methods and numbers.
 
-A useful hypothesis should state what evidence would make us reject or weaken it. A mechanism that can explain every possible outcome is not yet a strong decipherment hypothesis.
+## Current structural picture
 
-## Current competing explanation families
+The strongest current evidence supports a compact, multiscale **surface-production** description:
 
-We currently keep several families open rather than assuming one answer:
+- certain visible spaces behave as reproducible construction/production boundaries in both ZL3b and independent Takahashi/IT2a;
+- token-internal topology is nearly reproduced by a small second-order occupied-slot successor grammar;
+- short edit-near recurrence/cache effects and slower prior-paragraph inventory carry measurable cross-token predictive information;
+- the remaining flexible sequence residual beyond corrected B3 was localized to adjacent visible units **within the same source line**;
+- under fixed `k=2`, generic line-position onset plus the immediately previous unit's terminal raw symbol exactly reproduces the previously flexible line-local expert at token-logp level;
+- the terminal→initial edge architecture is useful in both Currier A and B, while the literal conditional mapping is not bidirectionally transportable: the support-matched test remains **B→A only**.
 
-1. meaningful natural-language text
-2. encoded or deliberately obscured meaningful text
-3. constrained formal / generative text
-4. mixed mechanisms involving section, paragraph, line, scribal, or cipher state
+This does **not** establish natural-language word boundaries, plaintext, semantics, a cipher family, an author, hoax/artificial origin, or a historical production algorithm.
 
-The current research has found strong token-internal structure, line-position effects, document/section effects, local token-family organization, and paragraph-boundary effects. Some promising interpretations have failed stronger controls; those failures are retained rather than erased.
+## Current frontier
 
-## How to propose a hypothesis
+The next high-information gate is not another token-internal grammar or an unconstrained latent-state search.
 
-Open an Issue or submit a pull request. Please include, where applicable:
+The project should first build an **augmented observable predictive core** by adding the explicit line-position + terminal→initial edge to corrected B3, with the Currier mapping policy frozen before scoring. A separately frozen residual-capacity test then asks whether any reproducible sequence information remains beyond that stronger non-latent core.
 
-1. **Claim** — exactly what is proposed?
-2. **Scope** — which folios, sections, labels, or transcription system?
-3. **Prediction** — what should we observe if it is true?
-4. **Falsification condition** — what result would weaken or reject it?
-5. **Data selection rule** — was the evaluation material selected before or after seeing the result?
-6. **Baseline / control** — what simpler explanation does it outperform?
-7. **Reproduction** — code, data provenance, parameters, seeds, and commands where possible.
+Only a robust residual surviving that gate can license a latent-state challenger under Issue #88.
 
-Readable output alone is not enough. If a proposed decipherment uses unconstrained substitutions, anagrams, null characters, homophones, exceptions, or context-dependent rules, please make those degrees of freedom explicit so they can be compared with simpler alternatives.
+See [`ROADMAP.md`](ROADMAP.md).
 
-## Research records
+## Repository layout
 
-- `RESUME.md` — deterministic restart/handoff entry point
-- `ROADMAP.md` — progress map, active gate, parallel tracks and completion criteria
-- `RESEARCH_PROTOCOL.md` — methodological and evidence contract
-- `research/STATUS.md` — current accepted state and research frontier
-- `research/hypothesis-ledger.md` — hypotheses including negative results
-- `research/CHECKPOINT_JA.md` — Japanese handoff/checkpoint
-- `experiments/` — analysis archive and result files
-- `data/README.md` — transcription provenance and setup
+- `research/` — current scientific authority, program documents, ledgers and audits;
+- `research/archive/` — superseded navigation/current-state snapshots retained for provenance;
+- `experiments/` — frozen plans, code, reports, result JSON and first-reveal provenance;
+- `data/` — source/transcription provenance and fetch/setup tooling;
+- `.github/workflows/` — replay and first-reveal workflows;
+- `hypotheses/` — hypothesis-specific material where retained.
 
-## Evidence labels
+`research/README.md` documents which research files are current authority and which names are historical records.
 
-We distinguish:
+## Evidence discipline
 
-- **Exploratory** — discovered after inspecting the target data.
-- **Mechanism demonstration** — shows that a mechanism can reproduce a feature, not that the manuscript used it.
-- **Held-out / prospective** — rules fixed before evaluating the held-out material.
-- **External replication** — reproduced using genuinely independent data or transcription where applicable.
+A useful hypothesis states:
 
-Negative results stay in the repository because they constrain the search space.
+1. the claim and scope;
+2. a prediction;
+3. a falsification condition;
+4. the data-selection rule;
+5. the baseline/control;
+6. the exact reproduction path where practical.
+
+Target outcomes must not be used to choose the architecture, threshold, stratum, transformation or hyperparameter later presented as prospective evidence. Negative results stay in the repository because they constrain the search space.
+
+Visible spaces may be used as empirically validated production boundaries under the tested representations; they must not be silently relabeled as natural-language words.
+
+## Contribution scope
+
+Contributions are welcome for natural-language, cipher, deliberately deceptive, formal/generative, scribal-production and mixed-mechanism hypotheses, as well as stronger controls and null models. A readable output is not sufficient for a decipherment claim if the mapping has uncontrolled substitutions, anagrams, nulls, homophones, exceptions or context-dependent degrees of freedom.
 
 ## Data policy
 
-The current analyses use ZL3b / EVA-derived transcription material. Third-party transcription text is not automatically redistributed here. `data/README.md` documents provenance, expected file identity, and local setup. Contributions of external corpora should include their source and license.
+Current analyses use ZL3b / EVA-derived material and independently maintained readings where phase-specific source authority permits. Third-party transcription text is not automatically redistributed. [`data/README.md`](data/README.md) documents provenance, expected identity and local setup.
 
 ## License and reuse
 
-This repository is public and intentionally reusable, but different material has different licensing status.
+- **Software and code** — MIT License; see [`LICENSE-CODE`](LICENSE-CODE).
+- **Original research text, reports, documentation, figures, tables and project-generated result files** — CC BY 4.0; see [`LICENSE-CONTENT`](LICENSE-CONTENT).
+- **Third-party transcriptions, manuscript images, corpora and quotations** — remain under their original rights and terms.
 
-- **Software and code** — MIT License. See [`LICENSE-CODE`](LICENSE-CODE).
-- **Original research text, reports, documentation, figures, tables, and project-generated result files** — Creative Commons Attribution 4.0 International (CC BY 4.0). See [`LICENSE-CONTENT`](LICENSE-CONTENT).
-- **Third-party transcriptions, manuscript images, external corpora, quotations, and other third-party material** — not relicensed here; the original rights and terms continue to apply.
-
-The root [`LICENSE`](LICENSE) file defines the repository-wide licensing policy and scope. In particular, hashes, references, derived measurements, or analysis code do not grant redistribution rights to third-party source material.
+See [`LICENSE`](LICENSE) for repository-wide scope.
 
 ## Citation
 
-If this repository, its code, or its research results contribute to your work, please cite the repository and identify the relevant release, commit, or phase-specific result where practical. Machine-readable citation metadata is provided in [`CITATION.cff`](CITATION.cff).
-
-For research claims, citing the exact phase result or frozen plan is preferable to citing only the moving `main` branch because later phases may revise earlier interpretations.
-
-## Language
-
-Issues, discussions, research notes, and pull requests are welcome in English or Japanese.
+Machine-readable metadata is in [`CITATION.cff`](CITATION.cff). For scientific claims, cite the exact phase result or frozen first-reveal authority rather than only moving `main`.
 
 ## Status
 
-Active research. The current executable frontier is Phase 61C; see `ROADMAP.md` for progress and decision gates.
+Active research under Issue #88. The current executable frontier is **observable-core augmentation followed by residual closure**; see [`RESUME.md`](RESUME.md) and [`ROADMAP.md`](ROADMAP.md).
