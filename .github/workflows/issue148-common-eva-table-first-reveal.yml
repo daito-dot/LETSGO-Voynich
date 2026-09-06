@@ -33,7 +33,7 @@ jobs:
         shell: bash
         run: |
           git merge-base --is-ancestor 2bbaf46f4c420ae87169cacb39e5dc0dc9cd6425 HEAD
-          test "$(git hash-object "$SCORER")" = "8f98466139c1e4f13d761fcebc9f5ce118afe4bd"
+          test "$(git hash-object "$SCORER")" = "312408cf00a1fc621b1f5066368112b926126b2e"
           test "$(git hash-object experiments/predictive-information/common-eva-edge/issue148_common_eva_table_gate0.py)" = "a8029aac50ccc6e09ec975b7b86a1bde44415f9f"
           test "$(git hash-object experiments/predictive-information/common-eva-edge/ISSUE148_GATE0_PROVENANCE.md)" = "7f97b9731a6e72e2456ede436e837a3735f265fd"
           test "$(git hash-object experiments/predictive-information/common-eva-edge/issue145_common_eva_first_reveal.py)" = "ce8a167c607fbcf2807f567439ab6837471f4f07"
