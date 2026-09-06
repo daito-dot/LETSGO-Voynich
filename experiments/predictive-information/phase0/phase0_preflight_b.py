@@ -22,6 +22,16 @@ import phase0_preflight as P  # noqa: E402
 P.TAU_GRID = (1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, math.inf)
 
 
+def normalize_tau_record(rec: dict):
+    if rec.get("family") != "DECAY40" or "tau" not in rec:
+        return
+    value = rec["tau"]
+    if value == "INF":
+        return
+    if math.isinf(float(value)):
+        rec["tau"] = "INF"
+
+
 def run(zl_path: Path):
     out = P.run_preflight(zl_path)
     out["schema"] = "issue90-phase0-preflight-b-v1"
@@ -36,21 +46,19 @@ def run(zl_path: Path):
     out["authority_hashes"]["PREFLIGHT_A_PROVENANCE.md"] = P.sha256_file(HERE.parent / "PREFLIGHT_A_PROVENANCE.md")
     out["authority_hashes"]["phase0_preflight_A_code.py"] = P.sha256_file(HERE.parent / "phase0_preflight.py")
     out["authority_hashes"]["phase0_preflight_B_wrapper.py"] = P.sha256_file(HERE)
+
     # Convert non-finite tau values to the explicit scientific label before JSON serialization.
+    # Several diagnostics share the same selected dict object, so this helper is idempotent.
     for row in out["selections"].values():
-        if math.isinf(float(row["selected"].get("tau", 0.0))):
-            row["selected"]["tau"] = "INF"
+        normalize_tau_record(row["selected"])
         for rec in row["candidate_table"]:
-            if rec["family"] == "DECAY40" and math.isinf(float(rec["tau"])):
-                rec["tau"] = "INF"
+            normalize_tau_record(rec)
     for row in out["outer_heldout_predictive"]["folds"]:
-        if row["selected"]["family"] == "DECAY40" and math.isinf(float(row["selected"].get("tau", 0.0))):
-            row["selected"]["tau"] = "INF"
+        normalize_tau_record(row["selected"])
     for rep in out["score_free_generation"].values():
         for diag in rep["fold_diagnostics"].values():
-            sel = diag["selected"]
-            if sel["family"] == "DECAY40" and math.isinf(float(sel.get("tau", 0.0))):
-                sel["tau"] = "INF"
+            normalize_tau_record(diag["selected"])
+
     # Recompute selection hash on the serialized authority representation.
     out["selection_sha256"] = P.I.sha256_obj(out["selections"])
     return out
