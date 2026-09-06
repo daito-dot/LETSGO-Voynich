@@ -1,0 +1,204 @@
+name: Issue84 Phase C0 source audit
+
+on:
+  push:
+    branches: [research/issue84-phase-c-genre-controls]
+    paths:
+      - 'experiments/cross-linguistic-baselines/PLAN_C0_SOURCE_AUDIT.md'
+      - '.github/workflows/issue84-phase-c0-source-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch frozen public editions and inspect source structure only
+        shell: bash
+        run: |
+          mkdir -p out/raw
+          python - <<'PY'
+          from __future__ import annotations
+          import hashlib, json, re, urllib.request
+          from pathlib import Path
+
+          OUT=Path('out')
+          RAW=OUT/'raw'
+          UA={'User-Agent':'LETSGO-Voynich-Issue84-C0-source-audit/1.0'}
+
+          sources=[
+            {
+              'id':'C-REC-1','kind':'url','genre':'recipe',
+              'url':'https://www.gutenberg.org/cache/epub/8102/pg8102.txt',
+              'expected_title':'The Forme of Cury',
+              'markers':['THE FORME OF CURY','FINIS','GLOSSARY'],
+            },
+            {
+              'id':'C-REC-2','kind':'ia','genre':'recipe','ia':'twofifteenthcent00aust',
+              'expected_title':'Two fifteenth-century cookery-books',
+              'markers':['HARLEIAN MS. 279','HARL. MS. 279','HARLEIAN MS. 4016','HARL. MS. 4016','GLOSSARY'],
+            },
+            {
+              'id':'C-HERB-1','kind':'ia','genre':'herbal','ia':'deviribusherbaru00mace',
+              'expected_title':'De viribus herbarum',
+              'markers':['DE VIRIBUS HERBARUM','MACER FLORIDUS','HORTULUS','INDEX'],
+            },
+            {
+              'id':'C-MED-1','kind':'ia','genre':'medical','ia':'leechdomswortcun01cock',
+              'expected_title':'Leechdoms, wortcunning, and starcraft of early England',
+              'markers':['HERBARIUM','LEECHBOOK','LEECH BOOK','GLOSSARY','PREFACE'],
+            },
+            {
+              'id':'C-ACC-1','kind':'ia','genre':'account','ia':'cu31924027939820',
+              'expected_title':'Manners and household expenses of England',
+              'markers':['HOUSEHOLD ROLL','COUNTESS OF LEICESTER','EXECUTORS','SIR JOHN HOWARD','CONTENTS','INDEX'],
+            },
+            {
+              'id':'C-ACC-2','kind':'ia','genre':'account','ia':'cu31924027939861',
+              'expected_title':'Household books of John duke of Norfolk',
+              'markers':['HOUSEHOLD BOOKS','DAILY PARCEL','DAYLY PARCELL','1481','1490','INDEX'],
+            },
+            {
+              'id':'C-LIT-1','kind':'ia','genre':'liturgy','ia':'manualeetp00cath',
+              'expected_title':'Manuale et processionale ad usum insignis ecclesiae Eboracensis',
+              'markers':['MANUALE','PROCESSIONALE','APPENDIX','PREFACE','LITANIA','LITANY'],
+            },
+          ]
+
+          def fetch(url:str)->bytes:
+              req=urllib.request.Request(url,headers=UA)
+              with urllib.request.urlopen(req,timeout=90) as r:
+                  if getattr(r,'status',200) != 200:
+                      raise RuntimeError(f'HTTP {r.status}: {url}')
+                  return r.read()
+
+          def sha(b:bytes)->str:
+              return hashlib.sha256(b).hexdigest()
+
+          def decode(b:bytes):
+              for enc in ('utf-8-sig','utf-8','latin-1'):
+                  try:
+                      return b.decode(enc),enc
+                  except UnicodeDecodeError:
+                      pass
+              raise RuntimeError('undecodable text')
+
+          def wordish(text:str):
+              return re.findall(r"[^\W\d_]+(?:['’][^\W\d_]+)?",text,flags=re.UNICODE)
+
+          def marker_hits(text:str, markers):
+              up=text.upper()
+              hits={}
+              for marker in markers:
+                  m=marker.upper()
+                  pos=[]; start=0
+                  while len(pos)<20:
+                      i=up.find(m,start)
+                      if i<0: break
+                      pos.append(i); start=i+len(m)
+                  if pos: hits[marker]=pos
+              return hits
+
+          def contexts(text:str,hits):
+              out={}
+              for marker,positions in hits.items():
+                  rows=[]
+                  for p in positions[:8]:
+                      lo=max(0,p-180); hi=min(len(text),p+len(marker)+300)
+                      s=re.sub(r'\s+',' ',text[lo:hi]).strip()
+                      rows.append({'char':p,'context':s[:650]})
+                  out[marker]=rows
+              return out
+
+          report={
+            'schema':'issue84-phaseC0-source-audit-v1',
+            'plan':'experiments/cross-linguistic-baselines/PLAN_C0_SOURCE_AUDIT.md',
+            'target_scoring_prohibited':True,
+            'sources':{},
+          }
+
+          for spec in sources:
+              sid=spec['id']
+              row={'genre':spec['genre'],'status':'FAIL','reason':None}
+              try:
+                  if spec['kind']=='url':
+                      url=spec['url']; meta=None; fname=url.rsplit('/',1)[-1]
+                  else:
+                      meta_url=f"https://archive.org/metadata/{spec['ia']}"
+                      meta=json.loads(fetch(meta_url).decode('utf-8'))
+                      files=meta.get('files',[])
+                      names=[f.get('name','') for f in files]
+                      prefs=[n for n in names if n.endswith('_djvu.txt')]
+                      if not prefs:
+                          prefs=[n for n in names if n.lower().endswith('.txt') and 'meta' not in n.lower()]
+                      if not prefs:
+                          raise RuntimeError('no machine-readable IA text file')
+                      fname=sorted(prefs,key=lambda n:(0 if n.endswith('_djvu.txt') else 1,len(n),n))[0]
+                      url=f"https://archive.org/download/{spec['ia']}/{fname}"
+                  raw=fetch(url)
+                  text,enc=decode(raw)
+                  path=RAW/f'{sid}.txt'; path.write_bytes(raw)
+                  words=wordish(text)
+                  hits=marker_hits(text,spec['markers'])
+                  md=(meta or {}).get('metadata',{}) if meta else {}
+                  title=md.get('title') if isinstance(md,dict) else None
+                  date=md.get('date') if isinstance(md,dict) else None
+                  row.update({
+                    'status':'NEEDS-BOUNDARY',
+                    'fetch_url':url,
+                    'download_file':fname,
+                    'sha256':sha(raw),
+                    'bytes':len(raw),
+                    'encoding':enc,
+                    'raw_lines':text.count('\n')+1,
+                    'simple_wordish_tokens':len(words),
+                    'metadata_title':title,
+                    'metadata_date':date,
+                    'expected_title':spec['expected_title'],
+                    'marker_hits':hits,
+                    'marker_contexts':contexts(text,hits),
+                    'scale_floor_2000_pass':len(words)>=2000,
+                    'reason':'fetch/scale pass; deterministic primary-text boundaries require frozen review',
+                  })
+                  if len(words)<2000:
+                      row['status']='FAIL'; row['reason']='raw machine-readable representation below 2,000 word-like tokens'
+              except Exception as e:
+                  row['reason']=f'{type(e).__name__}: {e}'
+              report['sources'][sid]=row
+              print(sid,row['status'],row.get('bytes'),row.get('simple_wordish_tokens'),row.get('sha256'),flush=True)
+
+          (OUT/'phase84c0_source_audit.json').write_text(json.dumps(report,ensure_ascii=False,indent=1)+'\n',encoding='utf-8')
+          summary={sid:{k:v.get(k) for k in ('status','reason','fetch_url','download_file','sha256','bytes','simple_wordish_tokens','metadata_title','metadata_date','marker_hits','scale_floor_2000_pass')} for sid,v in report['sources'].items()}
+          (OUT/'phase84c0_source_summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=1)+'\n',encoding='utf-8')
+          print('TARGET_SCORE_CALLS=0')
+          PY
+
+      - name: Freeze audit hashes and provenance
+        shell: bash
+        run: |
+          cat > out/PROVENANCE.md <<EOF
+          # Issue #84 Phase C0 source-audit provenance
+
+          - workflow run: ${GITHUB_RUN_ID}
+          - scientific head: ${GITHUB_SHA}
+          - branch: ${GITHUB_REF_NAME}
+          - plan: experiments/cross-linguistic-baselines/PLAN_C0_SOURCE_AUDIT.md
+          - target statistic calls: 0
+          EOF
+          sha256sum out/phase84c0_source_audit.json out/phase84c0_source_summary.json out/PROVENANCE.md > out/SHA256SUMS
+
+      - name: Upload source-audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue84-phasec0-source-audit
+          path: out/
+          retention-days: 90
+          if-no-files-found: error
