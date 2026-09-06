@@ -47,7 +47,7 @@ jobs:
         run: |
           python experiments/predictive-information/order-correction/rerun_phase1_source_order.py --self-test
           python experiments/predictive-information/order-correction/rerun_phase1_source_order.py --run "$ZL3B" issue118_core_gate0.json
-          test "$(sha256sum issue118_core_gate0.json | awk '{print $1}')" = "0d7f311dac17f5736f8191b8ea38cf5f2eac9b7391150a986204772da181ae27"
+          sha256sum issue118_core_gate0.json | tee issue118_core_gate0.sha256
 
       - name: Assert exact corrected core and byte support
         shell: bash
@@ -78,10 +78,18 @@ jobs:
           assert x['firewall']['S2_scored'] is False
           assert x['firewall']['H62_scored'] is False
           assert x['firewall']['R1_scored'] is False
-          print(json.dumps({'status':'PASS','mean_bits':x['summaries']['mean_bits_per_token'],'B3':[r['B3']['bits_per_token'] for r in x['outer']]},indent=2))
+          print(json.dumps({'status':'SCIENTIFIC_FIELDS_MATCH','mean_bits':x['summaries']['mean_bits_per_token'],'B3':[r['B3']['bits_per_token'] for r in x['outer']]},indent=2))
           PY
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: issue118-residual-core-gate0
-          path: issue118_core_gate0.json
+          name: issue118-residual-core-gate0-diagnostic
+          path: |
+            issue118_core_gate0.json
+            issue118_core_gate0.sha256
+
+      - name: Enforce exact corrected authority JSON hash
+        shell: bash
+        run: |
+          test "$(sha256sum issue118_core_gate0.json | awk '{print $1}')" = "0d7f311dac17f5736f8191b8ea38cf5f2eac9b7391150a986204772da181ae27"
