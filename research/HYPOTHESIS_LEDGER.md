@@ -44,7 +44,7 @@ This ledger records tested hypotheses and keeps failed hypotheses visible. `SUPP
 | Program question | Status | Key evidence / consequence |
 |---|---|---|
 | Residual token-internal topology requires a rich latent construction state | NOT SUPPORTED / CURRENTLY UNNECESSARY | second-order occupied-slot successor grammar reaches within ~1–2% of empirical-inventory ceiling across ZL3b/IT2a; 298 conditional probabilities suffice |
-| Token-internal grammar alone explains cross-token structure | REJECTED | complete memoryless V2 generator leaves major S1/S2/S3/H62 structure; held-out cross-token models improve prediction |
+| Token-internal grammar alone explains cross-token structure | REJECTED | complete memoryless V2 generator leaves major cross-token structure; held-out context models improve prediction |
 | Cross-token structure is only a conspicuous but negligible local repeat effect | REJECTED | corrected Phase 1 B3 gains ~0.19164 bit/token over V2; longer history and observable state add reproducible gain after LOCAL40 |
 | Apparent long history primarily requires literal long ordered memory | REJECTED as primary explanation | corrected Phase 2A/B: dominant increment is causal-prefix / previous-paragraph inventory; actual-order residual is much smaller but nonzero |
 | Slow predictive information is only the immediately previous paragraph | REJECTED | Phase 2C OLDER inventory +0.0367964 bit/token vs PREV1 +0.0070407; both 5/5 |
@@ -59,13 +59,17 @@ This ledger records tested hypotheses and keeps failed hypotheses visible. `SUPP
 | Ordinary natural-language controls occupy the same inter-unit relation regime | REJECTED for frozen 101-language panel | Voynich has much lower adjacent corrected MI, strong immediate repeat excess and weak midrange recurrence relative to controls |
 | Frozen common reversible-operation representatives reproduce the full Voynich regime | REJECTED for tested representatives | 0 full hits in Phase 84B; different transforms recover different partial components only |
 | Frozen historical formulaic genres reproduce the full Voynich regime | REJECTED for tested 10-source panel | 0 full/partial hits; all miss in the same direction on MI/immediate/midrange recurrence |
-| Rich latent-state modeling is currently licensed | NOT YET | Issue #88 requires a prospectively demonstrated residual beyond the strongest non-latent/simple/observable-history core before latent-state search |
-| A flexible sequence challenger adds robust held-out information beyond the corrected non-latent core | OPEN — NEXT GATE | must be measured conditionally against a frozen corrected core; no target-stat tuning or semantic interpretation |
+| A flexible sequence challenger adds any complement beyond corrected B3 | SUPPORTED | Issue #118 `G_any = +0.0306054 bit/token`, positive 5/5; MIX_CONT beats B3 in every outer fold |
+| Cross-boundary context adds information beyond a matched byte-level token-emission complement | SUPPORTED — SMALL ROBUST RESIDUAL | Issue #118 `G_context = +0.0178533 bit/token`, positive 5/5; RESET/CONT use the same frozen byte family and independently selected mixture weights |
+| Corrected B3 has exhausted all reproducible cross-boundary surface predictability | REJECTED | matched RESET/CONT residual remains positive in all five outer folds |
+| The surviving residual is large enough to imply a rich hidden information channel | NOT SUPPORTED | residual is only ~0.018 bit/token, ~0.19% of B3 code length; no large latent information rate follows |
+| Rich latent-state modeling is currently licensed for direct interpretation | NOT YET — LOCALIZATION REQUIRED | Issue #118 passes the residual-capacity gate but Issue #88 still requires localization against observable regime/state/support effects before a latent challenger receives interpretation |
+| Currier/observable-state/support effects explain the new Issue #118 residual | OPEN — NEXT GATE | freeze localization before any latent-state model; residual sign cannot be used to choose strata or architecture |
 
 ## Current working hypothesis
 
 The most economical live structural hypothesis is:
 
-> Each visible certain-space unit is a bounded construction episode produced by a compact internal grammar. Nearby units are weakly coupled by an edit-near recurrence/cache process, while slower paragraph/prefix inventory modulates which families are active. Some mechanism strength varies by observable manuscript regime. The semantic or cryptographic interpretation of those bounded episodes is unknown.
+> Each visible certain-space unit is a bounded construction episode produced by a compact internal grammar. Nearby units are weakly coupled by an edit-near recurrence/cache process, while slower paragraph/prefix inventory modulates which families are active. Some mechanism strength varies by observable manuscript regime. A further very small cross-boundary surface-context residual survives the strongest current non-latent summary, but its source has not yet been localized.
 
 This is a working model to falsify, not a decipherment claim.
