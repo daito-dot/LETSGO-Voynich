@@ -26,6 +26,7 @@ import issue145_common_eva_first_reveal as C145  # noqa: E402
 import issue148_common_eva_table_gate0 as G148  # noqa: E402
 
 GATE_PROVENANCE_PATH = COMMON_DIR / "ISSUE148_GATE0_PROVENANCE.md"
+ISSUE145_SCORER_PATH = COMMON_DIR / "issue145_common_eva_first_reveal.py"
 
 EXPECTED_GATE_RESULT_SHA256 = "f324264b814ef02d8de70b804754750ec579f8a9e0d8dffb0f1575439867d1bf"
 EXPECTED_GATE_SCRIPT_BLOB = "a8029aac50ccc6e09ec975b7b86a1bde44415f9f"
@@ -72,7 +73,7 @@ def verify_post_gate_authority(zl_path: Path, it_path: Path) -> tuple[dict, str]
         raise RuntimeError("merged Issue148 Gate script blob changed")
     if G148.G145.git_blob_sha1(GATE_PROVENANCE_PATH.read_bytes()) != EXPECTED_GATE_PROVENANCE_BLOB:
         raise RuntimeError("merged Issue148 Gate provenance blob changed")
-    if G148.G145.git_blob_sha1(C145.HERE.read_bytes()) != EXPECTED_ISSUE145_SCORER_BLOB:
+    if G148.G145.git_blob_sha1(ISSUE145_SCORER_PATH.read_bytes()) != EXPECTED_ISSUE145_SCORER_BLOB:
         raise RuntimeError("Issue145 common-EVA scorer blob changed")
 
     gate = G148.run_gate(zl_path, it_path)
