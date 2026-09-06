@@ -63,9 +63,11 @@ jobs:
           p=Path('experiments/cross-linguistic-baselines').resolve()
           sys.path.insert(0, str(p))
           import phase84b as x
-          raw={name: x.b.parse_latin_manuscript(Path('external/cremma'), name, rel) for name, rel in x.b.PRIMARY_MANUSCRIPTS.items()}
+          cremma=Path('external/cremma').resolve()
+          naibbe=Path('external/naibbe').resolve()
+          raw={name: x.b.parse_latin_manuscript(cremma, name, rel) for name, rel in x.b.PRIMARY_MANUSCRIPTS.items()}
           src=x.source_items(raw)
-          mod=x.nb.load_naibbe(Path('external/naibbe'))
+          mod=x.nb.load_naibbe(naibbe)
           cells=len(mod.placeholder_to_glyph)
           effective_expected=len(mod.TABLES)*len(mod.STATES)*len(x.nb.EFFECTIVE_LETTERS)
           print({'source_items':len(src),'source_tokens':len(x.all_tokens(src)),'source_units':len(x.all_units(src)),'naibbe_mapping_cells':cells,'effective_expected_cells':effective_expected})
