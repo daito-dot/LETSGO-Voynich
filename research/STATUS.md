@@ -1,284 +1,221 @@
 # Current research status
 
-## Current research state — after Issue #72, #75 A–F0, OGH-A/B/C, Issue #81, Issue #84 Phase C (2026-09-06)
-
-
-
-**Issue #84 Phase C (historical genre controls):** `NO FROZEN HISTORICAL SOURCE IN FULL VOYNICH REGIME`. Ten preregistered recipe/enumerative, Old English Herbarium, household/account and York liturgical source documents were isolated by source-only C0 layout rules before target scoring. All ten are **0/3**, with zero partial hits. More strongly, every work misses in the same direction: adjacent `MI1` is above the seven-reading Voynich interval, immediate exact-repeat `z1_2` is below it, and 21–40-token recurrence `z21_40` is above it. The closest work still misses each relevant boundary (York for MI/immediate repeat; *Forme of Cury* for 21–40 recurrence). Result JSON is archived under `experiments/cross-linguistic-baselines/first-reveal-c/`, SHA-256 `e5d688b15538288b435cfdf17ed582d0de13c6d6209f93e67d3096199e84e58b`. Together with Phases A/B, the control-tested description survives ordinary-language, transcription, common-cipher and historical-list/formulaic falsification panels. This is structural evidence only; it does not establish absence of meaning or exclude all ciphers/genres.
-**Issue #84 Phase B (cipher-family map on frozen CREMMA Latin):** `NO TESTED CIPHER REPRESENTATIVE IN FULL VOYNICH INTER-TOKEN REGIME`. The preregistered three-component target was the exact seven-reading range for adjacent corrected MI, exact-repeat excess at distance 1–2, and exact-repeat excess at distance 21–40. Across monoalphabetic substitution, homophony ×2/×4/×8, top-256 nomenclators, 10/20/30% null insertion, line-local transposition, minimal verbose recoding and exact published Naibbe, there were **0 full hits** and **0 target-independent in-house hits**. Partial responsibilities separate cleanly: H4 and N256-4 enter the Voynich MI interval only; TRANS-LINE enters the positive short-repeat interval only; published Naibbe enters the suppressed 21–40 interval only. The complete first-reveal JSON is archived under `experiments/cross-linguistic-baselines/first-reveal-b/`; result SHA-256 `de8ac6882f52000139e3989c1672b86d41946e238ad56ae8053516f754d7a431`. This rejects the frozen representatives as standalone transforms of this Latin prose source, not all ciphers or all meaningful plaintext sources.
-
-
-**Issue #84 Phase A (cross-linguistic baseline, 101 languages × 7 Voynich readings):** `NO NATURAL LANGUAGE IN VOYNICH REGIME`, `VOYNICH REGIME TRANSCRIPTION-ROBUST`. Adjacent-token mutual information: Voynich `0.05–0.11` bits in all seven readings (EVA family, v101, Currier, FSG) vs `0.17–1.58` (median `0.82`) across 101 languages. Natural prose avoids immediate repetition (95/101 negative at distance 1–2) and shows mid-range burstiness (101/101 at 21–40); Voynich shows the reverse. Vocabulary size and per-character density are within the language range — the difference is in how tokens relate to their neighbours, not in how much a token carries. **Issue #81 (PR #82):** minimal memories decompose cleanly — entry/body tables give S1 `0.72×` (correct sign); a 10% edit-1 reuse gives S2 `0.79×` and raw H62 `2.1×` with `|ΔC_short|` `0.126` vs A1-R1 `0.118`; the predictive gain of that memory is only `0.06` bit/token.
-
-## Research state after OGH-C (2026-09-02)
-
-**Token-construction lane:** OGH-A `COMPACT CONSTRUCTION GRAMMAR SUFFICIENT` (Issue #68 gate, both skeletons); OGH-B `SUCCESSOR GRAMMAR NEAR-SUFFICIENT` — **the R1 generation lane is closed.** OGH-C: a parsed token carries **≈ 9.7 bits** under the best memoryless grammar (7.0 bits shape, ≈ 2.7 bits values); a complete memoryless token generator leaves S1, S2, S3 at ≈ 0.03× Voynich and produces only ≈ 1/10 of Voynich's raw H62 recurrence excess (frozen label `MEMORYLESS TOKEN GRAMMAR PARTIAL`, scientific reading: cross-token structure is not token-internal). **The token-internal chapter is closed; the content-bearing signal is cross-token memory.**
-
-OGH-B (`REPORT_B.md`): the target-blind selected second-order successor grammar (G7A, 298 counted probabilities; next occupied slot conditioned on the two most recent occupied slots) reaches median `T = 0.948` (ZL3b skeleton) and `0.962` (IT2a skeleton), within `0.0165` and `0.0079` of the empirical-inventory ceiling (Issue #75 tolerance `0.0098`); Issue #68 gate 6/6; on the IT2a arm it exceeds the pairwise maxent control. K-gating of the successor table (G7B) added nothing in held-out likelihood.
-
-What is now established about the replicated 66-edge residual token-construction topology (R1):
-
-- Issue #72: for published Naibbe, R1 lives in the corpus inventory of parsed 12-slot occupancy signatures (state-dependent emission matters; exact plaintext order and final token placement do not).
-- Issue #75 Phases A–F0 (merged to `main`): slot marginals (M0) and marginals + occupied-slot count (M1) fail; K/R/S shape descriptors (M2, `T≈0.29`), nearest-neighbour chains (M3, `0.59`), generic distance coupling (M4, `0.62`) and two latent chain modes (M5, `0.73`) are insufficient against the empirical-signature ceiling (`M+ ≈ 0.965`); F0 selected a K/R/S-gated two-mode chain (M6) for the next target test.
-- OGH-A (`experiments/occupancy-generation-hierarchy/`): with an independent harness the same low-order failures and the same `0.965` ceiling replicate on both skeletons. Two new results:
-  - the topology is **second-order sufficient to within ≈0.01**: a full pairwise maxent control reaches `r = 0.948–0.969` (median gap to the empirical ceiling `−0.001` on the ZL3b arm, `−0.012` on the IT2a arm);
-  - a **78-parameter left-to-right successor grammar** (probability of occupying a slot depends only on the last occupied slot) passes the Issue #68 R1 gate on both readings and both skeletons: `r = 0.917 / 0.933` (ZL3b arm), `0.908 / 0.933` (IT2a arm), `62–63/66` signs, `W ≈ 0.97`, `p = 1/1001`; better than published Naibbe (`0.883 / 0.900`) and every Issue #75 model so far, though still `≈0.06` below the empirical ceiling under the Issue #75 equivalence criterion.
-
-**Interpretation revision:** R1 is a compact second-order construction constraint over which slot subsets co-occur inside a token. It is generated well by a sequential successor rule and does not require latent construction states or higher-order configuration rules. Parser admissibility (4,077/4,095 signatures admissible) contributes nothing.
-
-**Active frontier:** return the main lane to Issue #81. Phase A–C of Issue #84 have survived the intended control program, and Issue #84 Phase D is explicitly blocked until #81 lands a sufficient cross-token memory. Test the soft near-family / recency-kernel memory with model choice by training/held-out likelihood only; it must reduce the X2 raw-H62 overshoot while retaining S2 and R1. Only a prospectively sufficient near-family component may then be composed with the already-supported paragraph ENTRY/BODY X3 state. Do not tune #81 against the Phase-C genre results, reopen R1 rungs, or post-hoc combine the Phase-B partial cipher mechanisms.
-
 Last consolidated: 2026-09-06
+Authority for the current program: Issue #88 and `research/PREDICTIVE_INFORMATION_PROGRAM.md`.
 
-## Previous research state — Issue #68 first joint-constraint tournament (2026-09-01)
-
-**Current frozen global classification:** `NO TESTED FAMILY JOINT-CONSTRAINT COMPETITIVE`.
-
-Issue #68 changes how the token-construction result should be used:
-
-- #58C/#58D remain accepted: the manuscript has a strong residual 12-slot token-construction graph, replicated across ZL3b and independent Takahashi/IT2a reading.
-- published Naibbe C1-E0 **passes R1** against both readings under its own 1,000-reference + independent-1,000-test null calibration:
-  - residual energy `E=3.1784043855`, reliability `W=0.9547265391`, `p_exist=1/1001`;
-  - ZL3b topology `r=0.8830282501`, signs `60/66`, both maxT `p=1/1001`;
-  - IT2a topology `r=0.9000974100`, signs `61/66`, both maxT `p=1/1001`.
-- Naibbe still fails the joint model because R2 H62, R3 signed S1 and R4 exact normalized-stream decoder closure fail.
-- A1 was **not** given a real R1 graph because direct common-parser coverage was only `0.388394 < 0.60`; its historical R2/R3 passes remain valid. This is a common-representation gate failure, not a retrospective claim that A1 has no native internal grammar.
-- permanent Issue #68 scientific JSON SHA-256: `5cef35e9df56149fb1db5edff8d52fad9291208476b0d4ac64bd9c8782faa471`.
-
-**Interpretation revision:** R1 is now treated as a strong constraint on admissible output construction, **not** as a standalone discriminator against reversible cipher families. A target-aware Voynich-like codebook can reproduce R1 extremely well.
-
-**Active frontier:** decompose Naibbe's R1 success into **codebook/inventory effect versus encryption-process effect** under a new preregistered complete-graph counterfactual program. Do not return to selected-edge discovery and do not repair Naibbe R2/R3/R4 after seeing #68.
-
-Last consolidated: 2026-09-01
-
-This file controls the current accepted high-level interpretation. Phase-specific frozen plans, first-reveal results and reports remain authoritative for exact methods and numbers.
+This file is the current accepted high-level interpretation. Exact methods, hashes, first-reveal artifacts and frozen classifications remain authoritative in the phase-specific plans/reports/provenance files.
 
 ## Bottom line
 
 The Voynich Manuscript is **not deciphered**.
 
-The project has nevertheless established several reproducible manuscript-level structural constraints and eliminated many attractive semantic, historical-cipher and direct-music interpretations under controlled tests.
+The strongest current structural picture is now multiscale and unusually constrained:
 
-The research objective is constructive: use reproducible constraints to narrow viable generation/transformation mechanisms and then attack the inverse/decoding problem. Falsification is the discipline, not the objective.
+1. a visible-space-delimited unit has a compact internal construction grammar;
+2. visible certain spaces themselves behave as sharp construction/context resets and this replicates across ZL3b and independent Takahashi/IT2a readings;
+3. between those bounded units, a short edit-distance-1 near-family recurrence mechanism is manuscript-wide and transfers cleanly across Currier A/B;
+4. a slower previous-paragraph / causal-prefix inventory component is also predictive, but its useful strength differs by regime, especially Currier A versus B;
+5. ordinary-language, frozen common-transform and selected historical-formulaic controls do not jointly reproduce the observed inter-unit relation geometry.
 
-## Read the current token-construction lane correctly
+These are structural and predictive results. They do **not** establish plaintext, language, semantics, a cipher family, an author, a hoax/artificial origin, or the historical production mechanism.
 
-The token-construction program concerns **how one space-delimited Voynich token is internally assembled** under an established 12-slot representation.
+## 1. The visible unit is now validated as a construction boundary
 
-It is **not** sentence-level grammar, and visible spaces are not assumed to be proven natural-language word boundaries.
+Phase 4A/B closed the main construct-validity threat in the predictive-information program: the space-delimited unit is no longer being used merely because the transcription happened to contain spaces.
 
-Normative orientation: `research/TOKEN_CONSTRUCTION_PROGRAM.md`.
+### ZL3b — Issue #112, PRs #113–#114
 
-The lane has now moved beyond asking whether tokens merely “look structured.” It has established a cross-reading replicated token-internal surface signature strong enough to be used prospectively to reject later reversible/generative/inverse models that cannot reproduce it.
+A score-free Gate froze a raw-EVA representation independent of the 12-slot SlotParser:
 
-## Other strongest structural state
+- primary REAL_SPACE = literal IVTFF `.` certain space only;
+- common connected EVA composites atomized by a fixed longest-match rule;
+- uncertain/exceptional local readings excluded as complete events;
+- deterministic within-token midpoint pseudo-boundaries;
+- original five physical-leaf folds;
+- no target-guided boundary search.
 
-### Paragraph-entry and local recurrence
+Frozen first-reveal classification:
 
-Phase62–64 established frozen A1/A1-R1 as the leading tested model for short-range near-family recurrence geometry. It received prospective H62 support, survived training-vocabulary restriction, and transferred to an independent EvaT reading without retuning.
+> **SPACE IS A REPRODUCIBLE PRODUCTION BOUNDARY**
 
-This does not identify A1 as the historical production algorithm.
+Held-out results:
 
-Phase69/70 demonstrated that strong A1-like local recurrence can coexist with exactly recoverable meaningful plaintext. Therefore:
+- P1 real-space versus within-token reset contrast: `D_RESET = +8.811905 bits/event`, positive in `5/5` folds;
+- P2 observed cut minus one-atom-left shift: `-8.501803 bits/event`, observed cut wins `5/5`;
+- P2 observed cut minus one-atom-right shift: `-5.476602 bits/event`, observed cut wins `5/5`.
 
-> **Short-range recurrence is a formal surface constraint, not evidence by itself that the text lacks semantics or plaintext.**
+### Independent Takahashi/IT2a — Issue #115, PRs #116–#117
 
-The signed paragraph-entry effect S1 remains harder to reproduce. Phase71's tested Alberti initial-signal/reset mechanism failed in the opposite S1 direction.
+The same atomization logic, cut rules, model order, smoothing and sign gates were frozen before the IT2a reveal. The canonical IT2a source reproduced the earlier independent-transcription byte authority exactly.
 
-## Token-internal construction program — #55 → #58A → #58B → #58C → #58D
+Frozen IT2a classification:
 
-### Issue #55
+> **SPACE IS A REPRODUCIBLE PRODUCTION BOUNDARY**
 
-#55A found cross-leaf slot3×slot5 dependence. #55B showed that essentially all of it reduces to binary occupancy exclusion.
+Frozen cross-transcription classification:
 
-> `DEPENDENCE REDUCES TO BINARY OCCUPANCY EXCLUSION`
+> **VISIBLE-SPACE PRODUCTION BOUNDARY REPLICATES ACROSS ZL3b/IT2a**
 
-### Issue #58A
+IT2a results:
 
-The selection-aware complete 66-edge audit removed selection bias around slot3×slot5.
+- P1 `D_RESET = +8.092615 bits/event`, positive `5/5`;
+- P2 left shift `-7.968269 bits/event`, negative `5/5`;
+- P2 right shift `-5.279450 bits/event`, negative `5/5`.
 
-- 22/66 edges survived the frozen family-wise primary rule;
-- selected `(3,5)` ranked only 22/66;
-- strong positive co-construction and negative exclusion coexist;
-- all 66/66 canonical pair co-occupancies are parser-admissible.
+Magnitude agreement was not a pass criterion, but IT2a effects are descriptively about 92–96% of the corresponding ZL3b effects.
 
-> `BROAD OCCUPANCY GRAMMAR; SLOT3xSLOT5 NOT UNIQUE`
+### Interpretation
 
-### Issue #58B / #62
+Literal certain spaces can now be treated as **transcription-lineage-robust construction/production boundaries under the tested EVA/IVTFF representations**.
 
-Raw complete-graph similarities across Currier/section/line-position strata were high, but the line-local marginal-preserving null itself generated correlations near the same range (`median maxT ≈ 0.949`).
+This does **not** make them proven natural-language words. A natural-language word, cipher group, formal-notation unit, procedural output unit or another bounded historical unit could all create a reset of this kind.
 
-> `CURRIER/SECTION GRAPH STABILITY INCONCLUSIVE`
+## 2. Token-internal construction is compact
 
-> `LINE-POSITION GRAPH STABILITY INCONCLUSIVE`
+Issue #75 plus OGH-A/B/C established that the residual token-construction topology is much smaller than initially expected.
 
-Scientific consequence: raw whole-graph resemblance is substantially contaminated by lower-order line-local slot prevalence / occupancy architecture.
+The strongest compact model is a second-order occupied-slot successor grammar: the next occupied slot depends only on the previous two occupied slots. It uses 298 counted conditional probabilities and reaches the empirical-inventory ceiling to within roughly 1–2%.
 
-### Issue #58C / #64 — residual graph beyond line-local prevalence
+A complete memoryless V2 token grammar carries approximately:
 
-#58C prospectively calibrated every one of the 66 conditional edges against its own line-local null distribution, using 1,000 reference nulls to define residuals and an independent 1,000 test nulls for validation.
+- `~7.0 bits/token` in shape;
+- `~2.7 bits/token` additional value information;
+- `~9.7 bits/token` total.
 
-Frozen classification:
+No rich latent token-construction state or higher-order configuration rule is currently required by the evidence.
 
-> **`RESIDUAL GRAPH EXISTS WITH STRATUM MODULATION`**
+The memoryless token generator does **not** reproduce the major cross-token recurrence/paragraph effects, so those structures are genuinely above the token-internal grammar.
 
-Pooled ZL3b result:
+## 3. Cross-token predictive information is real but information-light
 
-- `E_ALL = 3.23155`;
-- test-null maximum `1.28318`;
-- `p_exist_ALL = 1/1001`;
-- `W_ALL = 0.94471`.
+Corrected source-order reruns supersede the original order-sensitive Phase-1/2 numbers.
 
-All seven planned strata passed residual existence. Stable residual relations were the three Currier-B section comparisons and interior-vs-final; Currier A/B within Herbal and line-initial comparisons were related but modulated. No planned contrast met the multiple/different-grammar gate.
+Corrected Phase 1:
 
-### Issue #58D / #66 — independent Takahashi/IT2a reading replication
+- B0 V2: `9.7089061 bits/token`;
+- B1 local history: `9.5943670`;
+- B2 longer history: `9.5461692`;
+- B3 + observable position/state: `9.5172688`.
 
-#58D tested whether #58C was merely a ZL3b reading artifact.
+Thus the best tested non-latent Phase-1 ladder reduces the V2 code length by about `0.19164 bit/token`, only about 2% of the ~9.71-bit token code.
 
-A source/population-only Stage A froze IT2a before target scoring:
+This is enough to be reproducible and scientifically important, but it is not evidence for several hidden bits of sentence-level syntax.
 
-- Takeshi Takahashi / `EvaT`;
-- exact SHA-256 `7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5`;
-- 99/99 #58C physical leaves overlap;
-- 34,411 clean tokens;
-- 28,280 directly accepted by the unchanged 12-slot parser;
-- coverage `82.18%`.
+## 4. The long-history effect is mostly slow inventory, not literal long memory
 
-No pair/residual target metric was computed during source selection.
+Corrected Phase 2A/B/C localizes the apparent long-history gain.
 
-IT2a then received its **own** 1,000-reference + independent 1,000-test line-local null calibration.
+The dominant component is an order-free causal-prefix / previous-paragraph inventory of already activated edit-near token families. A much smaller actual order/lag residual survives after that inventory is represented.
 
-Frozen overall classification:
+Phase 2C further shows:
 
-> **`INDEPENDENT TRANSCRIPTION REPLICATES RESIDUAL TOKEN-CONSTRUCTION CORE`**
+- PREV1 conditional gain `+0.0070407 bit/token`, positive `5/5`;
+- OLDER accumulated paragraph inventory `+0.0367964`, positive `5/5`;
+- same-side prior history `+0.0205711`, positive `5/5`;
+- cross-side prior history `+0.0237448`, positive `5/5`.
 
-#### Independent residual existence
+The slow signal therefore spans multiple prior paragraphs and survives across facing/page-side topology. It is not adequately described as “copy the immediately previous paragraph.”
 
-- `E_IT_ALL = 3.21363`;
-- IT test-null median `0.99252`;
-- IT test-null maximum `1.25891`;
-- `p_exist_IT = 1/1001`;
-- `W_IT_ALL = 0.95377`.
+## 5. Short local recurrence transports; slow strength is regime-dependent
 
-All seven planned IT2a strata separately passed family-wise residual existence at `1/1001`.
+### Phase 3A — Currier A/B
 
-#### Direct complete-graph reading-to-reading replication
+The fixed LOCAL40 edit-near mechanism transports bidirectionally with nearly unchanged strength:
 
-The confirmatory comparison retained **all 66 edges**.
+- Currier A source `pi_LOCAL=.14`;
+- Currier B source `pi_LOCAL=.16`.
 
-Pooled ZL3b↔IT2a:
+The slower PREV_PARAS architecture is useful in both regimes, but exact scalar strength is asymmetric:
 
-- Pearson correlation: **`0.98845`**;
-- residual sign agreement: **`65/66`**;
-- correlation maxT p: `1/1001`;
-- sign-agreement maxT p: `1/1001`.
+- A `alpha_ALL_PREV=.09`;
+- B `alpha_ALL_PREV=.19`.
 
-All eight planned groups (`ALL`, four Currier/section groups, three line-position groups) independently meet the frozen strong cross-reading replication class:
+Exact PREV scalar transfer passes A→B and fails B→A, while the full CORE remains bidirectionally transportable.
 
-- Pearson range `0.97031–0.99548`;
-- sign agreement `64/66–66/66`;
-- every group has both maxT p-values `1/1001`.
+This is best read as a shared slow mechanism with regime-dependent strength, not evidence for different mechanism families.
 
-The 1,000 independent IT2a test nulls never exceeded:
+### Phase 3B/C — metadata and matched Herbal
 
-- cross-reading correlation maxT `0.43199`;
-- sign-agreement maxT `47/66`.
+The score-free metadata audit found writing hand `$H` and legacy Currier hand `$C` too confounded with Currier A/B for causal attribution. The only broadly crossed illustration/domain level was Herbal.
 
-This materially reduces the explanation that the #58C topology is peculiar to the ZL3b reading.
+Matched pure-Herbal Phase 3C retained:
 
-#### Broad modulation geometry
+- A-H `pi=.10`, `alpha=.04`;
+- B-H `pi=.11`, `alpha=.08`;
+- LOCAL40 bidirectional transport;
+- PREV_PARAS A→B only;
+- CORE bidirectional transport.
 
-Within IT2a, the same family-level classifications reappear:
+Frozen interpretation:
 
-> `REGISTER/SECTION RESIDUAL MODULATION`
+> **CURRIER PREV ASYMMETRY PERSISTS WITHIN HERBAL**
 
-> `LINE-POSITION RESIDUAL MODULATION`
+Broad illustration/domain composition is therefore not sufficient to explain the slow-strength asymmetry. Hand remains unresolved because the metadata are not adequately crossed.
 
-All seven contrasts are stable or related/modulated; none is materially different.
+## 6. Cross-linguistic / cipher / historical controls
 
-The secondary finer ordering test did **not** pass:
+Issue #84 established a distinctive inter-unit relation regime across seven Voynich readings.
 
-- `G_core = 0.83696`;
-- `G_mod = 0.68217`;
-- `Delta = 0.15479`;
-- `p_Delta = 0.08791`.
+Across 101 natural-language controls:
 
-Therefore the broad shared-core-plus-modulation geometry is supported, but do not claim that every fine ordering of “stable” versus “modulated” contrasts is identical across readings.
+- Voynich adjacent corrected MI is roughly `0.053–0.111 bits`;
+- language controls range about `0.173–1.584`, median `~0.820`;
+- Voynich shows immediate exact-repeat excess;
+- ordinary language usually suppresses immediate repeats;
+- ordinary language shows strong 21–40-token recurrence/burstiness, while Voynich is weak there.
 
-### Accepted token-construction interpretation after #58D
+Frozen common reversible-operation representatives and ten historical recipe/herbal/account/liturgical controls also produced zero full hits under their preregistered joint criteria.
 
-The strongest supported description is now:
+This narrows easy explanations. It does **not** reject all meaningful natural language, all historical genres or all cipher systems.
 
-> **Within a common EVA/IVTFF representational framework, Voynich space-delimited tokens exhibit a manuscript-level internal construction signature that survives independent ZL3b and Takahashi/IT2a readings. A broad residual core is shared across manuscript strata with measurable modulation rather than an exactly uniform token grammar.**
+## 7. Current integrated structural picture
 
-This cross-reading replicated signature is now strong enough to serve as a **prospective surface-generation constraint** on later mechanism/inverse-model tests.
+The experimentally separated scales are now:
 
-It is still not a semantic interpretation or decipherment.
+### Inside a construction unit
 
-Exact #58D report: `experiments/occupancy-graph-independent-transcription/REPORT_A.md`.
+A compact second-order slot-successor grammar explains most token-internal topology.
 
-#58D first-reveal raw SHA-256:
+### Between nearby construction units
 
-`f26db8123f8f2b7a4148495fdeebe81c8c042a23606eb7c22e1c0687faaf86a6`
+A short edit-distance-1 near-family recurrence/cache effect is predictive and transports across Currier A/B with nearly stable strength.
 
-## Current frontier — constrained reversible/inverse mechanism discrimination
+### Across paragraphs / slower document history
 
-The immediate high-information question is no longer another local occupancy discovery or another ZL/IT replication.
+Accumulated prior token-family inventory adds smaller but reproducible predictive information. Its useful strength varies by Currier regime and the difference survives matching the common Herbal domain.
 
-Next question:
+### Boundary itself
 
-> **Can a bounded reversible/generative/inverse mechanism jointly reproduce the already established manuscript-level constraints on unseen material without post-hoc repair?**
+The visible certain space is a sharp reset in local raw-shape construction and its exact location replicates across ZL3b and IT2a.
 
-At minimum the next plan-first tournament should jointly enforce:
+This combination is compatible with several historical mechanisms. It is not yet an identification of one.
 
-1. the cross-reading replicated residual token-construction constraints from #58C/#58D;
-2. accepted A1/H62 short-range near-family recurrence geometry;
-3. the difficult signed S1 paragraph-entry specialization;
-4. prospectively selected additional manuscript-level constraints;
-5. explicit complexity / degrees-of-freedom accounting.
+## 8. Active frontier — residual predictive-information gate before latent state
 
-Candidate mechanisms should now be rejected for failing the established constraints rather than allowed to invent new explanations after seeing each mismatch.
+Issue #88 remains open because its latent-state licensing rule is not yet satisfied.
 
-A GC2a/v101 alphabet-level robustness lane remains scientifically useful, but after the strong IT2a reading-lineage replication it is a secondary robustness lane rather than the highest-information immediate frontier.
+The next high-value question is:
 
-## Content-relation program
+> **After the strongest corrected non-latent predictive core is frozen, does a separately defined flexible sequence challenger add reproducible held-out predictive information?**
 
-Phase65–68 externally grounded object-local image↔text tests were negative under frozen representations. These results do not establish semantic absence, plant-name absence, or cipher absence.
+The corrected B3 ladder is the current natural anchor because it already combines V2 emission, long causal history and observable line/paragraph state without latent variables. Phase 2/3 provide the mechanism interpretation and transport constraints around that predictive core.
 
-## Direct-music program — Issue #26
+The next experiment should therefore quantify a **conditional residual**, not simply fit a more realistic-looking generator. A flexible challenger may be used only as an empirical model-class ceiling. If it cannot improve the frozen core robustly, rich latent-state work is not licensed. If it does improve the core reproducibly, the residual must then be localized against additional observable/history controls before any latent state receives interpretation.
 
-The bounded direct-music program A–E17 is complete.
+Do not reopen arbitrary tokenization search: Phase 4 has validated the current construction boundary under two transcription lineages.
 
-> **No tested, independently constrained direct-musical or music-cipher model provides held-out evidence that Voynich running text encodes music or readable plaintext through a musical state system.**
+## Interpretation firewall
 
-## Historical real-cipher control lane
+Current evidence does not license claims of:
 
-The Phase72 source-audit branch remains source-development work, not accepted current science. No Phase72 Voynich target score is authorized until source population and genuine message-entry boundary semantics are frozen prospectively.
+- decipherment or recovered plaintext;
+- language identification;
+- semantic interpretation of tokens or states;
+- absence of meaning;
+- hoax/artificial-text origin;
+- a specific cipher key or historical cipher family;
+- a historical copy/mutate algorithm;
+- latent semantic states;
+- visible spaces as proven natural-language word boundaries.
 
-## Interpretation limits
-
-Do not infer:
-
-- that spaces are true linguistic word boundaries;
-- sentence-level grammar from token-construction structure;
-- that any slot has semantic meaning;
-- that the residual graph is a plaintext alphabet or cipher table;
-- that #58C/#58D identifies a historical generator;
-- that exact token grammar is invariant across all strata;
-- that IT2a gives complete alphabet/publication-pipeline independence from ZL3b;
-- that recurrence or token construction proves semantic presence or absence;
-- that the manuscript uses or does not use a cipher in general;
-- that negative morphology tests falsify all plant-related content;
-- that the manuscript is deciphered.
-
-## Reproducibility / repository state
-
-First-reveal provenance is preserved beyond Actions retention for #55, #58A, #58B, #58C and #58D.
-
-#58D is archived directly under `experiments/occupancy-graph-independent-transcription/first-reveal/` with raw-result SHA-256:
-
-`f26db8123f8f2b7a4148495fdeebe81c8c042a23606eb7c22e1c0687faaf86a6`
-
-During #58D preflight, a single corrupted text-transport chunk in the later repository copy of #58C was discovered. The original #58C Actions artifact remained intact; only the transport copy was repaired from that verified original. #58C scientific bytes and classification did not change. See `experiments/occupancy-graph-residual/first-reveal/ARCHIVE_REPAIR_20260901.md`.
-
-Historical reproducibility debts remain documented in `research/REPRODUCIBILITY_AUDIT.md` and phase-specific reports.
+The research objective remains inverse: progressively narrow viable production/transformation mechanisms using prospective, held-out and transportable constraints, then attack decoding only when the evidence licenses it.
