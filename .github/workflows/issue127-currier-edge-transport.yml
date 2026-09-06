@@ -1,0 +1,149 @@
+name: Issue127 Currier edge transport first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/residual-gate/L4_CURRIER_TRANSPORT_PLAN.md'
+      - 'experiments/predictive-information/residual-gate/currier_edge_transport.py'
+      - '.github/workflows/issue127-currier-edge-transport.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  currier-edge-transport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source and merged Gate
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test -f experiments/predictive-information/residual-gate/L4_CURRIER_GATE0_PROVENANCE.md
+          test -f experiments/predictive-information/residual-gate/L4_CURRIER_TRANSPORT_PLAN.md
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce interpretation firewall
+        shell: bash
+        run: |
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|H62P1|target_exposed' experiments/predictive-information/residual-gate/currier_edge_transport.py; then
+            echo 'Forbidden surface-target scorer reference found' >&2
+            exit 1
+          fi
+
+      - name: Compile and self-test before target reveal
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/residual-gate/currier_edge_transport.py
+          python experiments/predictive-information/residual-gate/currier_edge_transport.py --self-test
+
+      - name: Run frozen transport first reveal
+        shell: bash
+        run: |
+          python experiments/predictive-information/residual-gate/currier_edge_transport.py --run "$ZL3B" issue127_edge_transport.json
+          python -m json.tool issue127_edge_transport.json > /dev/null
+          sha256sum issue127_edge_transport.json | tee issue127_edge_transport.sha256
+
+      - name: Assert frozen authority and classification logic
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue127_edge_transport.json'))
+          assert x['scored'] is True, x
+          assert x['mechanism_only'] is True
+          assert x['fixed']['k']==2 and x['fixed']['alpha']==0.01
+          assert x['fixed']['source_context_fallback']=='TARGET_POS2_LINE_BODY_FIRST'
+          assert x['gate_authority']['json_sha256']=='31c96135ec8e265781fe295888e52d896d47122bfa9d2bbf6f7e36c001827bdb'
+          assert x['gate_authority']['json_sha256']==x['gate_authority']['expected_json_sha256']
+          assert x['gate_authority']['gate_pass'] is True
+          assert all(v is False for v in x['firewall'].values())
+          for lab in ('A','B'):
+              r=x['source_rho_cv'][lab]['selected']['rho']
+              assert 0.0 <= r <= 1.0
+          passes={}
+          for key in ('A_to_B','B_to_A'):
+              d=x['directions'][key]
+              assert len(d['outer'])==5
+              assert 0.0 <= d['fallback']['rate'] <= 1.0
+              passes[key]={}
+              for metric in ('G_full','G_table','G_strength','G_oracle'):
+                  vals=[]
+                  for f,row in enumerate(d['outer']):
+                      assert row['fold']==f
+                      assert row['n_accepted']>0 and row['n_visible_edges']>=row['n_accepted']
+                      assert 0 <= row['source_rho'] <= 1
+                      assert 0 <= row['source_table_target_rho'] <= 1
+                      assert 0 <= row['target_oracle_rho'] <= 1
+                      assert 0 <= row['source_context_fallback_rate'] <= 1
+                      for model,b in row['bits_per_token'].items(): assert math.isfinite(b),(key,f,model,b)
+                      vals.append(row[metric])
+                  mean=sum(vals)/5
+                  pos=sum(v>0 for v in vals)
+                  passed=(mean>0 and pos>=4)
+                  s=d['summaries'][metric]
+                  assert abs(s['mean']-mean)<1e-12
+                  assert s['positive_folds']==pos
+                  assert s['pass'] is passed
+                  passes[key][metric]=passed
+          def cls(a,b):
+              if a and b: return 'BIDIRECTIONAL'
+              if a: return 'A→B ONLY'
+              if b: return 'B→A ONLY'
+              return 'NONE'
+          c=x['classification']
+          assert c['TABLE_TRANSPORT']==cls(passes['A_to_B']['G_table'],passes['B_to_A']['G_table'])
+          assert c['EXACT_TRANSPORT']==cls(passes['A_to_B']['G_full'],passes['B_to_A']['G_full'])
+          assert c['SOURCE_STRENGTH_COMPATIBILITY']==cls(passes['A_to_B']['G_strength'],passes['B_to_A']['G_strength'])
+          assert c['TARGET_NATIVE_EDGE']=={
+              'A':passes['B_to_A']['G_oracle'],
+              'B':passes['A_to_B']['G_oracle'],
+          }
+          print(json.dumps({
+              'classification':c,
+              'source_rho':{lab:x['source_rho_cv'][lab]['selected'] for lab in ('A','B')},
+              'directions':{
+                  key:{
+                      'summaries':x['directions'][key]['summaries'],
+                      'fallback':x['directions'][key]['fallback'],
+                      'outer_rhos':[
+                          {
+                              'fold':r['fold'],
+                              'source_rho':r['source_rho'],
+                              'source_table_target_rho':r['source_table_target_rho'],
+                              'target_oracle_rho':r['target_oracle_rho'],
+                          } for r in x['directions'][key]['outer']
+                      ],
+                  } for key in ('A_to_B','B_to_A')
+              },
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload transport authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue127-currier-edge-transport-first-reveal
+          path: |
+            issue127_edge_transport.json
+            issue127_edge_transport.sha256
