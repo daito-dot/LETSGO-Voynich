@@ -10,19 +10,22 @@ This file controls the **current accepted high-level interpretation**. Exact his
 
 The Voynich Manuscript is **not deciphered**.
 
-The strongest current structural picture is unusually constrained and increasingly compact:
+The strongest current surface-production picture is compact and mostly observable under the tested representations:
 
 1. certain visible spaces are reproducible construction/production boundaries in both ZL3b and independent Takahashi/IT2a;
 2. each bounded unit has a compact token-internal construction grammar: a target-blind second-order occupied-slot successor model nearly reaches the empirical R1 ceiling;
 3. short edit-near recurrence/cache effects and slower causal-prefix / prior-paragraph inventory provide real but information-light cross-token prediction;
 4. corrected B3 reaches `9.5172688 bits/token` from a `9.7089061`-bit memoryless V2 baseline;
-5. Issue #118 found a further small flexible surface residual beyond B3 and matched token-emission control;
-6. Issues #121/#123 localize useful short raw context to **adjacent visible units within the same source line**; carrying the same context through a line break is predictively harmful;
-7. Issue #125 exactly decomposes the fixed-`k=2` line-local expert into generic line-position/onset support plus an explicit **previous terminal raw symbol → next initial raw symbol** edge;
-8. Issue #127 shows that edge architecture is useful in Currier A and B, while literal table transport is directionally asymmetric;
-9. Issue #130 removes the major source-support imbalance and the asymmetry persists: support-matched terminal→initial table transport is **B→A only**.
+5. Issue #118 found a small flexible residual beyond B3, then Issues #121/#123 localized its useful short raw context to adjacent visible units within the same source line;
+6. Issue #125 exactly decomposed the fixed-`k=2` line-local expert into generic onset/position support plus an explicit **previous terminal raw symbol → next initial raw symbol** edge;
+7. Issues #127/#130 showed the edge architecture in both Currier A/B, while the literal conditional table is not bidirectionally universal; support-matched table transport remains **B→A only**;
+8. Issue #134 put that observable edge directly into a prospectively frozen augmented core and reran the residual test. The augmented core improved B3 by `+0.0653682575 bit/token` mean, while both residual challengers selected final `w=0` in every outer fold. `G_residual=[0,0,0,0,0]`.
 
-The former “flexible sequence residual” is therefore no longer well described as generic hidden long sequence memory. Under the tested `k=2` representation, a large share of it has collapsed into a compact, directly observable same-line adjacency rule.
+Frozen Issue #134 classification:
+
+> **NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE**
+
+Under this residual program, rich latent-state escalation is therefore **not licensed**. This does not prove that hidden state is absent from the manuscript; it says the tested residual no longer supplies held-out predictive justification for adding it.
 
 None of this establishes plaintext, language, semantics, cipher identity, natural-language words, author/scribe causation, hoax/artificial origin, historical production mechanism or decipherment.
 
@@ -83,64 +86,40 @@ Phase 2C:
 - same-side prior history `+0.0205711`, 5/5;
 - cross-side prior history `+0.0237448`, 5/5.
 
-The slow signal therefore spans multiple prior paragraphs and is not confined to one page side/panel.
+The slow signal spans multiple prior paragraphs and is not confined to one page side/panel.
 
-## 5. Existing mechanism transport is mixed, not manuscript-universal in every parameter
+## 5. Existing mechanism transport is mixed
 
 Phase 3A:
 
 - LOCAL40 edit-near mechanism transports bidirectionally across Currier A/B with similar useful strength;
 - PREV_PARAS architecture is useful in both regimes but exact scalar strength does not transport symmetrically.
 
-Phase 3C matched pure-Herbal restriction retains the Currier PREV-strength asymmetry. Broad domain composition is therefore insufficient to explain it.
+Phase 3C matched pure-Herbal restriction retains the Currier PREV-strength asymmetry. Broad domain composition is insufficient to explain it.
 
 Writing hand is not cleanly identifiable as a cause because hand and Currier are inadequately crossed in the current metadata.
 
-## 6. A small flexible residual survives corrected B3
+## 6. The flexible residual was real, small, and line-local
 
-Issue #118 compared the same byte-model family under two boundary-history policies and mixed each independently with corrected B3.
-
-- RESET: byte context resets at every visible-space unit;
-- CONT: byte context carries across visible spaces until leaf boundary.
-
-Primary result:
+Issue #118 compared the same byte-model family under matched boundary-history policies and mixed each independently with corrected B3.
 
 - `G_context = bits(MIX_RESET) - bits(MIX_CONT)`;
 - folds `+0.0349457, +0.0232139, +0.0093004, +0.0108658, +0.0109406`;
-- mean `+0.0178533 bit/token`, positive 5/5.
-
-Any complement beyond B3:
-
+- mean `+0.0178533 bit/token`, positive 5/5;
 - `G_any = B3 - MIX_CONT = +0.0306054 bit/token`, positive 5/5.
 
-Frozen classification:
+Issue #121 forced RESET and CONT to the same `k=2, alpha=.01`; the edge gain remained `+0.0106322 bit/token`, positive 5/5.
 
-> **ROBUST FLEXIBLE SEQUENCE RESIDUAL EXISTS — LOCALIZATION REQUIRED**
+Issue #123 then separated reset scopes:
 
-The effect is only about 0.19% of B3 code length. It does not imply a large hidden information channel.
-
-## 7. Same-order and reset-scope controls localize the residual to within-line adjacency
-
-Issue #121 forced RESET and CONT experts to the same `k=2`, `alpha=.01` family.
-
-- `G_edge = RESET2 - CONT2` mean `+0.0106322 bit/token`, positive 5/5.
-
-Predeclared descriptive localization placed essentially all ordinary cross-token gain inside source lines rather than across line/item/document transitions.
-
-Issue #123 then compared reset scopes under the same fixed family:
-
-- `G_line = RESET2 - LINECONT2 = +0.0291614 bit/token`, positive 5/5;
+- `G_line = RESET2 - LINECONT2 = +0.0291614`, positive 5/5;
 - `G_beyond_line = LINECONT2 - LEAFCONT2 = -0.0185292`, positive 0/5.
 
-Supported statement:
+Useful immediate raw-surface context is therefore line-local under this representation; carrying the same short context through a source-line break is harmful.
 
-> **Useful immediate raw-surface context is line-local under this representation; carrying the same short context through a source-line break is harmful.**
+## 7. The line-local expert factorizes into an explicit observable edge
 
-A source line is not thereby a sentence or semantic clause.
-
-## 8. The line-local flexible expert factorizes into an explicit observable edge
-
-Issue #125 decomposed the fixed-`k=2` line-local expert into:
+Issue #125 decomposed fixed-`k=2` LINECONT2 into:
 
 - POS2: generic line-position/onset context;
 - EDGE2: POS2 plus immediately previous visible unit terminal raw symbol → current initial raw symbol.
@@ -155,9 +134,9 @@ Frozen classification:
 
 > **TERMINAL→INITIAL IDENTITY ADDS ROBUST LINE-LOCAL INFORMATION**
 
-Under the tested `k=2` construction, the formerly flexible line-local expert contains no additional token-likelihood information beyond generic line position plus this immediate observable identity edge.
+Under this tested construction, the formerly flexible line-local expert contains no additional token-likelihood information beyond generic line position plus this immediate observable identity edge.
 
-## 9. Currier A/B share the edge architecture but not one universally transportable literal table
+## 8. Currier A/B share the edge architecture but not one universal literal table
 
 Issue #127 separated native architecture, scalar strength and literal conditional-table transport.
 
@@ -166,52 +145,72 @@ Issue #127 separated native architecture, scalar strength and literal conditiona
 - target-calibrated source-table transport: B→A only;
 - exact source table + source strength: neither direction.
 
-This suggests a shared compact edge mechanism with regime-dependent mapping rather than one universal literal terminal→initial table.
-
-## 10. Support matching does not remove the directional table asymmetry
-
-Issue #130 prospectively matched source-table estimation support before attaching current-initial outcomes.
-
-For each of five outcome-blind selections:
+Issue #130 prospectively matched source-table estimation support before attaching current-initial outcomes. For each of five outcome-blind selections:
 
 - 20 shared previous-terminal classes;
 - A selected support `8,728` visible source edge events;
 - B selected support `8,728`;
-- exact A/B selected-count equality separately inside every retained terminal class.
+- exact A/B selected-count equality inside every retained terminal class.
 
 First reveal:
 
-### A→B
+- A→B: seed passes `0/5`; grand mean `+0.00693954 bit/token`; FAIL;
+- B→A: seed passes `5/5`; grand mean `+0.02697082`; PASS;
+- frozen classification **`MATCHED_TABLE_TRANSPORT: B→A ONLY`**.
 
-- seed passes `0/5`;
-- every seed has `3/5` positive target folds;
-- grand mean `+0.00693954 bit/token`;
-- overall FAIL.
+The directional result is not explained merely by B having more source edge observations. It does not establish historical derivation or nestedness between Currier regimes.
 
-### B→A
+## 9. Issue #134 closes the tested flexible residual after observable augmentation
 
-- seed passes `5/5`;
-- every seed has `4/5` positive target folds;
-- grand mean `+0.02697082 bit/token`;
-- overall PASS.
+Issue #134 prospectively froze an augmented core before target reveal:
+
+- corrected B3;
+- Issue #125 line-position/onset and terminal→initial representation with `k=2, alpha=.01`;
+- target-native Currier A/B previous-terminal table when supported;
+- pooled previous-terminal fallback, then pooled `LINE_BODY` onset;
+- original five physical-leaf outer folds;
+- augmented-core mixture `rho=0.00..1.00` by `.01`, inner-only selection;
+- matched flexible challengers RESET vs source-line-local LINE;
+- challenger `k∈{0..6}`, `alpha∈{.01,.10,1.0}` and final mixture `w=0.00..1.00`, all inner-only;
+- frozen residual rule: mean `G_residual>0` and positive in at least `4/5` outer folds.
+
+Gate0 passed before the predictive scorer existed. First successful reveal:
+
+- scorer commit `dbd787a457659b7d833dc06c3931f937031172b8`;
+- run `34035108074` — SUCCESS;
+- artifact `9990011421`;
+- artifact ZIP digest `sha256:c759783dd23b6390781168db83786b5f0cd19d103704adf92a2ac9d8a91a1853`;
+- result JSON SHA-256 `6779c2ea135e63f0c9c5be3e6200e564c18225fb95bb344f5349f946d73b9698`.
+
+Mean held-out code lengths:
+
+- B3 `9.517268842963203 bits/token`;
+- augmented observable core `9.451900585480233`;
+- MIX_RESET `9.451900585480233`;
+- MIX_LINE `9.451900585480233`.
+
+Augmented-core gain over B3:
+
+- mean `+0.06536825748296984 bit/token`;
+- positive in all five outer folds;
+- selected `rho=[0.19,0.22,0.20,0.19,0.21]`.
+
+Primary residual:
+
+- `G_residual=[0.0,0.0,0.0,0.0,0.0]`;
+- mean `0.0`;
+- positive folds `0/5`;
+- both RESET and LINE selected final `w=0.0` in every fold.
 
 Frozen classification:
 
-> **MATCHED_TABLE_TRANSPORT: B→A ONLY**
+> **NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE**
 
-The earlier directional result is therefore not explained merely by B having roughly twice as many source edge observations.
+The zero residual is not a claim that the raw RESET and LINE experts are identical. It means nested inner validation assigns neither challenger any weight once the common augmented observable core is present.
 
-This does **not** establish that one Currier regime historically derives from or contains the other.
+Exact provenance: `experiments/predictive-information/residual-gate/ISSUE134_FIRST_REVEAL_PROVENANCE.md`.
 
-Latest authority:
-
-- scientific head `1604c2f36d106e918c55a24f7bea6b7e08622cff`;
-- run `34029536188`;
-- artifact `9988168421`;
-- ZIP digest `sha256:90a6d658d72dda1e02ad96775822002e96c94858a99cbe15f9b08f95dd3a9707`;
-- result JSON SHA-256 `d2ae55675fb7613b4f5000ab81558099f2821ff245acacdcb5a6697e06f7249e`.
-
-## 11. Current compact working model
+## 10. Current compact working model
 
 The most economical live **surface-production** description is now:
 
@@ -223,15 +222,16 @@ The most economical live **surface-production** description is now:
 6. **slower history:** causal-prefix / prior-paragraph family inventory;
 7. **observable regimes:** some strengths and literal edge mappings vary with Currier A/B.
 
-This is a compact multiscale observable model, not a decipherment.
+For the frozen Issue #134 challenger family, this observable description absorbs the previously measured flexible residual. It remains a predictive/surface-production model, not a historical production algorithm or decipherment.
 
-## 12. Current frontier
+## 11. Current frontier
 
-The next gate is to build an **augmented observable core** containing corrected B3 plus the explicit line-position + terminal→initial edge, with Currier table handling frozen before scoring, and rerun a separately frozen residual-capacity test.
+Issue #134 is closed. The active next question is Issue #139:
 
-Decision rule at the program level:
+> **Does the same fixed same-line previous-terminal → next-initial architecture replicate on independent Takahashi/IT2a when source, line mapping, symbol treatment, folds, smoothing and decision rule are frozen before target scoring?**
 
-- if no robust residual remains, latent-state work is not licensed; consolidate the observable model and shift effort toward replication, reversibility/inverse constraints and independent external/content tests;
-- if a robust residual remains, localize remaining observable/support/representation effects before any latent architecture receives interpretation.
+This is the most direct test of whether the newly consolidated edge is manuscript-level structure rather than a ZL3b-lineage or representation-specific effect.
 
-See `ROADMAP.md` and `RESUME.md` for current sequencing.
+Issue #139 must begin with a score-free independent-transcription contract. Do not use IT2a outcomes to repair glyph normalization, exclusions, folds, smoothing, fallback or model family.
+
+If the edge replicates independently, the next high-value lanes are reversible/inverse mechanism constraints and externally anchored content tests. If it fails, downgrade the edge to transcription-lineage-specific or representation-sensitive structure before treating it as a manuscript-wide production responsibility.
