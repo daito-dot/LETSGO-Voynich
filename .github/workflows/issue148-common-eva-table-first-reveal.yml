@@ -70,13 +70,27 @@ jobs:
           python "$SCORER" --self-test
 
       - name: Run frozen bidirectional table first reveal
+        id: scorer
+        continue-on-error: true
         shell: bash
         run: |
           python "$SCORER" --run "$ZL3B" "$IT2A" "$OUT"
           python -m json.tool "$OUT" > /dev/null
           sha256sum "$OUT" | tee issue148_common_eva_table_first_reveal.sha256
 
+      - name: Preserve scorer output for chronology audit
+        if: always()
+        shell: bash
+        run: |
+          if test -f "$OUT"; then
+            cat "$OUT"
+            sha256sum "$OUT" | tee issue148_common_eva_table_first_reveal.sha256
+          else
+            echo "scorer produced no result JSON" >&2
+          fi
+
       - name: Assert frozen support classification and native reproduction
+        if: steps.scorer.outcome == 'success'
         shell: bash
         run: |
           python - <<'PY'
@@ -165,9 +179,16 @@ jobs:
           PY
 
       - name: Upload first-reveal authority
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: issue148-common-eva-table-first-reveal-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: warn
           path: |
             issue148_common_eva_table_first_reveal.json
             issue148_common_eva_table_first_reveal.sha256
+
+      - name: Preserve scorer failure status
+        if: steps.scorer.outcome == 'failure'
+        shell: bash
+        run: exit 1
