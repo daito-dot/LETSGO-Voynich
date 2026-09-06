@@ -1,0 +1,74 @@
+name: Issue84 Phase B cipher-map preflight
+
+on:
+  push:
+    branches: [research/issue84-phase-b-cipher-map]
+    paths:
+      - 'experiments/cross-linguistic-baselines/PLAN_B.md'
+      - 'experiments/cross-linguistic-baselines/AMENDMENT_B0.md'
+      - 'experiments/cross-linguistic-baselines/phase84b.py'
+      - '.github/workflows/issue84-phase-b-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout scientific head
+        uses: actions/checkout@v4
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout exact published Naibbe source
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify exact frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cremma rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C external/naibbe rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C external/naibbe hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C external/naibbe hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+          test "$(git -C external/naibbe hash-object README.md)" = "486782221285186c0f78dd9474b676e067cd4bea"
+          test "$(sha256sum experiments/cross-linguistic-baselines/first-reveal/phase84a_results.json | cut -d' ' -f1)" = "86d18560b5999836b7c0d22fa9c3d8dbfd9f11ba246613fd0c2527d5ed5ffe1c"
+
+      - name: Install frozen runtime dependencies
+        run: python -m pip install --disable-pip-version-check numpy pandas
+
+      - name: Compile Phase B executable
+        run: python -m py_compile experiments/cross-linguistic-baselines/phase84b.py
+
+      - name: Interface-only preflight, no candidate scoring
+        shell: bash
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          p=Path('experiments/cross-linguistic-baselines').resolve()
+          sys.path.insert(0, str(p))
+          import phase84b as x
+          raw={name: x.b.parse_latin_manuscript(Path('external/cremma'), name, rel) for name, rel in x.b.PRIMARY_MANUSCRIPTS.items()}
+          src=x.source_items(raw)
+          mod=x.nb.load_naibbe(Path('external/naibbe'))
+          cells=len(mod.placeholder_to_glyph)
+          effective_expected=len(mod.TABLES)*len(mod.STATES)*len(x.nb.EFFECTIVE_LETTERS)
+          print({'source_items':len(src),'source_tokens':len(x.all_tokens(src)),'source_units':len(x.all_units(src)),'naibbe_mapping_cells':cells,'effective_expected_cells':effective_expected})
+          if cells != effective_expected:
+              raise SystemExit(f'Naibbe mapping cell count mismatch: {cells} != {effective_expected}')
+          # Deliberately do not call phase84a.score() or phase84b.main().
+          PY
