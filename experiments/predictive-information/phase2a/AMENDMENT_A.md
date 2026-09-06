@@ -1,19 +1,21 @@
 # Phase 2A Amendment A — preserve local signal in the prefix control and calibrate randomized lag
 
 Date: 2026-09-06
-Status: **FROZEN BEFORE ANY PHASE-2A OUTER SCORE**
+Status: **FROZEN BEFORE ANY SUCCESSFUL PHASE-2A OUTER SCORE OR RESULT ARTIFACT**
 Applies to: `PLAN.md`
 
-## Trigger
+## Trigger and audit chronology
 
-The preregistered PLAN contains only the plan document; no Phase-2A executable or workflow exists and no A0-A4 outer result has been computed.
+The original `PLAN.md`, executable and workflow had already been committed when this amendment was made. The first workflow attempt (`34018808460`, head `2127eb3ecb0ea3476e1319dd0e30089e5278d372`) failed before producing the first outer Phase-2A probability result or any result artifact: `score_outer` reached its first A0 call and raised an interface `AttributeError` because the base scorer referenced a locally defined helper through the imported Phase-1 namespace.
 
-A construct-validity audit identified two asymmetries that could make the original order attribution too favorable to `ORDERED128-FIXED`:
+Thus no A0–A4 outer score, classification or result artifact existed when this amendment was frozen. The amendment was motivated by a construct-validity audit of the planned controls, not by a Phase-2A scientific outcome. The exact failed-run chronology is retained rather than claiming that no executable/workflow existed.
+
+The audit identified two asymmetries that could make the original order attribution too favorable to `ORDERED128-FIXED`:
 
 1. `PREFIX-BAG-CV` replaces the <=40 ordered-local predictor instead of adding order-free prefix inventory on top of it. It can therefore lose because it discards already-established local recency, even if long-prefix inventory contains genuine additional information.
 2. `RANDOM-LAG-FIXED` inherits `pi=.30`, which was selected for the ordered model. If randomized lag association is weaker, forcing the ordered model's mixture strength can penalize the control through calibration rather than through loss of order information.
 
-Neither issue is motivated by a Phase-2A outcome. This amendment strengthens the null/control side before reveal.
+Neither issue is motivated by a Phase-2A outer outcome. This amendment strengthens the null/control side before the first successful reveal.
 
 ## A5 — `LOCAL_PLUS_PREFIX-CV`
 
@@ -95,4 +97,4 @@ This is deliberately conservative: one favorable order control cannot license an
 - history never extends beyond the causal prefix of the current physical leaf;
 - no future token is allowed;
 - no S1/S2/H62/R1 or semantic information is available;
-- no grid or control may be extended after the first Phase-2A outer reveal.
+- no grid or control may be extended after the first successful Phase-2A outer reveal.
