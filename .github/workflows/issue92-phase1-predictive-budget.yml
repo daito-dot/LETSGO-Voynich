@@ -1,0 +1,102 @@
+name: Issue92 Phase1 predictive budget
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/phase1/**'
+      - '.github/workflows/issue92-phase1-predictive-budget.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+
+jobs:
+  predictive-budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Enforce prediction-only boundary
+        shell: bash
+        run: |
+          test -f experiments/predictive-information/phase1/PLAN.md
+          test -f experiments/predictive-information/phase1/phase1_predictive_budget.py
+          if grep -E 'output_metrics|score_r1\(|metric_gates\(|evaluate_model\(|H62P1|target_exposed' experiments/predictive-information/phase1/phase1_predictive_budget.py; then
+            echo 'Surface-target scoring call or target structure found in Phase-1 executable' >&2
+            exit 1
+          fi
+
+      - name: Compile and synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/phase1/phase1_predictive_budget.py
+          python experiments/predictive-information/phase1/phase1_predictive_budget.py --self-test
+
+      - name: Authoritative Phase-1 predictive reveal
+        shell: bash
+        run: |
+          python experiments/predictive-information/phase1/phase1_predictive_budget.py --run "$ZL3B" phase1_results.json
+          python -m json.tool phase1_results.json > /dev/null
+          sha256sum phase1_results.json
+
+      - name: Assert firewall and print decision
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase1_results.json'))
+          assert x['regression']['pass'] is True
+          assert x['B4_support_comparable'] is True
+          assert x['firewall'] == {
+              'H62_scored': False,
+              'R1_scored': False,
+              'S1_scored': False,
+              'S2_scored': False,
+              'issue84_target_used': False,
+              'semantic_or_image_context_used': False,
+          }
+          print(json.dumps({
+              'classification': x['classification'],
+              'mean_bits_per_token': x['summaries']['mean_bits_per_token'],
+              'G_local': x['summaries']['G_local'],
+              'Delta_long': x['summaries']['Delta_long'],
+              'Delta_state': x['summaries']['Delta_state'],
+              'Delta_flex': x['summaries']['Delta_flex'],
+              'Delta_flex_over_local': x['summaries']['Delta_flex_over_local'],
+              'decision_inputs': x['decision_inputs'],
+              'recency_selections': {f:{'B1':r['B1'],'B2':r['B2']} for f,r in x['recency_selection'].items()},
+              'state_selections': {f:r['selected'] for f,r in x['state_selection'].items()},
+              'byte_selections': {f:{'RESET':r['RESET'],'CONTINUOUS':r['CONTINUOUS']} for f,r in x['byte_selection'].items()},
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload authoritative result
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue92-phase1-predictive-budget
+          path: phase1_results.json
