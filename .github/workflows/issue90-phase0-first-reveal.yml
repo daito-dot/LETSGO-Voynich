@@ -1,0 +1,219 @@
+name: Issue90 Phase0 first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/phase0/phase0_first_reveal.py'
+      - 'experiments/predictive-information/phase0/PREFLIGHT_B_PROVENANCE.md'
+      - '.github/workflows/issue90-phase0-first-reveal.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  PREFLIGHT_ARTIFACT_ID: '9984254233'
+  PREFLIGHT_JSON_SHA256: 'e016e0da642277adc86b257851eba459e946e40015622d127cb13b85afed33d4'
+
+jobs:
+  stage1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Download immutable score-free Preflight B authority
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -L --fail --silent --show-error \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${PREFLIGHT_ARTIFACT_ID}/zip" \
+            -o frozen_preflight.zip
+          rm -rf frozen_preflight
+          mkdir frozen_preflight
+          unzip -q frozen_preflight.zip -d frozen_preflight
+          test -f frozen_preflight/phase0_preflight_b.json
+          echo "${PREFLIGHT_JSON_SHA256}  frozen_preflight/phase0_preflight_b.json" | sha256sum -c -
+
+      - name: Compile and self-test reveal implementation
+        shell: bash
+        run: |
+          python -m py_compile experiments/predictive-information/phase0/phase0_first_reveal.py
+          python experiments/predictive-information/phase0/phase0_first_reveal.py --self-test
+
+      - name: Authoritative Phase 0 surface first reveal
+        shell: bash
+        run: |
+          python experiments/predictive-information/phase0/phase0_first_reveal.py \
+            --stage1 "$ZL3B" frozen_preflight/phase0_preflight_b.json phase0_stage1.json
+          python -m json.tool phase0_stage1.json > /dev/null
+          sha256sum phase0_stage1.json
+
+      - name: Print surface-gate reveal
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('phase0_stage1.json'))
+          g=x['phase0_gates']
+          print(json.dumps({
+              'frozen_selections': x['frozen_selections'],
+              'predictive': g['predictive'],
+              'S2': g['S2'],
+              'H62_raw': g['H62_raw'],
+              'H62_profile': g['H62_profile'],
+              'local_surface_without_R1_pass': g['local_surface_without_R1_pass'],
+              'stochastic_diagnostics': g['stochastic_diagnostics'],
+              'generation_hashes': {k:v['items_sha256'] for k,v in x['generation'].items()},
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload frozen stage1 reveal
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue90-phase0-stage1
+          path: phase0_stage1.json
+
+  r1:
+    needs: stage1
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        rep: [0, 1, 2]
+    steps:
+      - name: Checkout exact first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Verify frozen source
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Download immutable score-free Preflight B authority
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -L --fail --silent --show-error \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${PREFLIGHT_ARTIFACT_ID}/zip" \
+            -o frozen_preflight.zip
+          rm -rf frozen_preflight
+          mkdir frozen_preflight
+          unzip -q frozen_preflight.zip -d frozen_preflight
+          echo "${PREFLIGHT_JSON_SHA256}  frozen_preflight/phase0_preflight_b.json" | sha256sum -c -
+
+      - name: Score frozen selected generation against R1
+        shell: bash
+        run: |
+          mkdir -p r1
+          python experiments/predictive-information/phase0/phase0_first_reveal.py \
+            --r1 "$ZL3B" frozen_preflight/phase0_preflight_b.json "${{ matrix.rep }}" \
+            "r1/selected_rep${{ matrix.rep }}.json"
+          python -m json.tool "r1/selected_rep${{ matrix.rep }}.json" > /dev/null
+          sha256sum "r1/selected_rep${{ matrix.rep }}.json"
+
+      - name: Upload R1 result
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue90-phase0-r1-${{ matrix.rep }}
+          path: r1/selected_rep${{ matrix.rep }}.json
+
+  aggregate:
+    needs: r1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Download stage1 reveal
+        uses: actions/download-artifact@v4
+        with:
+          name: issue90-phase0-stage1
+
+      - name: Download all R1 results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: issue90-phase0-r1-*
+          path: r1
+          merge-multiple: true
+
+      - name: Aggregate authoritative Phase 0 decision
+        shell: bash
+        run: |
+          python experiments/predictive-information/phase0/phase0_first_reveal.py \
+            --aggregate phase0_stage1.json r1 phase0_final.json
+          python -m json.tool phase0_final.json > /dev/null
+          sha256sum phase0_final.json
+          python - <<'PY'
+          import json
+          x=json.load(open('phase0_final.json'))
+          print(json.dumps({
+              'classification': x['classification'],
+              'all_responsibilities_pass': x['all_responsibilities_pass'],
+              'R1': {'all_three_pass': x['R1']['all_three_pass'], 'by_rep': x['R1']['by_rep']},
+              'predictive': x['phase0_gates']['predictive'],
+              'S2': x['phase0_gates']['S2'],
+              'H62_raw': x['phase0_gates']['H62_raw'],
+              'H62_profile': x['phase0_gates']['H62_profile'],
+              'next_program_step': x['next_program_step'],
+          }, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload authoritative first reveal
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue90-phase0-first-reveal
+          path: |
+            phase0_stage1.json
+            phase0_final.json
+            r1/*.json
