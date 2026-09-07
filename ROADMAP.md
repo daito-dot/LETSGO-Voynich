@@ -1,30 +1,29 @@
 # Research roadmap
 
-Last consolidated: 2026-09-06
+Last consolidated: 2026-09-07
 
 This file controls **current sequencing**, not historical exact methods. Frozen plans, first-reveal artifacts and phase reports remain authoritative for historical tests and numbers.
 
 Program authority: Issue #88 and `research/PREDICTIVE_INFORMATION_PROGRAM.md`.
 
-Active executable issue: **#139 — independent IT2a replication of the same-line terminal→initial edge**.
+Active executable issue: **#151 — shared common-EVA edge table vs reading-specific residual**.
 
-## Current frontier — independent replication before adding capacity
+## Current frontier — consolidate the replicated observable edge before adding anything else
 
-Issue #134 closed the tested ZL3b residual after the observable edge was incorporated into corrected B3.
+The predictive sequence program has now passed four successive narrowing gates:
 
-Frozen classification:
+1. Issue #125 factorized the line-local fixed-k2 expert into generic onset/position plus previous-terminal→next-initial identity;
+2. Issue #134 absorbed the previously flexible residual into corrected B3 + that observable edge, leaving no selected RESET/LINE challenger contribution;
+3. Issues #139/#145 independently replicated the edge on Takahashi/IT2a and made ZL3b/IT2a directly comparable under one common Basic-EVA representation;
+4. Issue #148 transported the **literal** common-EVA edge table in both reading directions, positive 5/5 each and retaining about 96–98% of target-native gain.
 
-> **NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE**
+Therefore the next question is not whether to add richer capacity. It is whether the current edge model can be simplified further.
 
-The primary residual was `[0,0,0,0,0] bits/token`. Nested validation selected final `w=0` for both flexible challenger families in all five outer folds. The augmented observable core improved B3 by mean `0.0653682575 bits/token`, positive 5/5.
+Issue #151 asks:
 
-Therefore the current program does not license a rich latent-state search. The next question is whether the compact observable edge is transcription-lineage robust.
+> **Does either reading retain reproducible held-out edge information beyond one frozen reading-balanced common-EVA table?**
 
-Issue #139 asks:
-
-> **Does the fixed same-line previous-terminal → next-initial edge replicate on independent Takahashi/IT2a data when the representation is frozen before target scoring?**
-
-Its first deliverable is score-free: source/version/hash, physical-leaf and source-line mapping, uncertainty policy, target population, representation, folds, smoothing, support diagnostics and the primary pass/fail rule must be fixed before any IT2a target gain is inspected.
+The first deliverable is score-free.
 
 ## Completed foundation
 
@@ -32,7 +31,7 @@ Its first deliverable is score-free: source/version/hash, physical-leaf and sour
 
 Issue #75 + OGH-A/B/C:
 
-- residual R1 topology replicates across ZL3b and independent IT2a;
+- residual R1 topology replicates across ZL3b and IT2a;
 - a target-blind second-order occupied-slot successor grammar with 298 counted conditional probabilities is near the empirical-inventory ceiling;
 - memoryless V2 is `9.7089061 bits/token`, with about 7.0 bits shape + 2.7 bits values.
 
@@ -40,7 +39,7 @@ No new occupancy-only R1 rung is currently licensed.
 
 ### 2. Boundary validity — COMPLETE FOR ZL3b + IT2a
 
-Certain visible spaces behave as reproducible construction/production cuts. The exact observed cut beats nearby shifted cuts in both transcription lineages.
+Certain visible spaces behave as reproducible construction/production cuts. The exact observed cut beats nearby shifted cuts in both reading lineages.
 
 This does not establish natural-language word boundaries.
 
@@ -57,20 +56,18 @@ Most longer-history gain is causal-prefix / prior-paragraph inventory rather tha
 
 ### 4. Flexible residual localization — COMPLETE
 
-Issue #118 found a small matched flexible residual beyond B3:
-
-- `G_context = +0.0178533 bit/token`, positive 5/5.
+Issue #118 found `G_context = +0.0178533 bit/token`, positive 5/5.
 
 Issues #121/#123 localized useful short context to adjacent visible units inside the same source line; carrying it through a line break is harmful.
 
 Issue #125 factorized the fixed-`k=2` line-local expert exactly into:
 
-- generic line-position/onset support;
-- immediate previous-terminal → current-initial identity.
+- generic line-position/onset support `+0.00889185`;
+- immediate previous-terminal → current-initial identity `+0.02026956`.
 
-Identity gain: `+0.02026956 bit/token`, positive 5/5. EDGE2 and LINECONT2 are token-logp identical under that frozen representation.
+Both are positive 5/5; EDGE2 and LINECONT2 are token-logp identical under the frozen representation.
 
-### 5. Currier transport of the explicit edge — COMPLETE FOR CURRENT QUESTION
+### 5. Currier transport of the explicit edge — COMPLETE FOR THE ORIGINAL REPRESENTATION
 
 Issue #127 established native usefulness in both Currier A and B while literal table transport was asymmetric.
 
@@ -80,15 +77,13 @@ Issue #130 removed the major source-support imbalance:
 - exactly 8,728 selected source edge events per Currier regime per seed;
 - A→B seed passes `0/5`;
 - B→A seed passes `5/5`;
-- frozen classification **`B→A ONLY`**.
+- frozen classification **`MATCHED_TABLE_TRANSPORT: B→A ONLY`**.
 
-This is predictive transport, not historical direction.
+This is predictive transport, not historical direction. Whether the asymmetry survives the later common-EVA stabilization is a future gate, not an inference from #130 or #148.
 
 ### 6. Augmented-core residual closure — COMPLETE
 
-Issue #134 preregistered corrected B3 plus the observable same-line edge, including Currier A/B handling and fallback, before any new residual reveal.
-
-First reveal:
+Issue #134:
 
 - B3 mean `9.517268842963203 bits/token`;
 - augmented observable core mean `9.451900585480233`;
@@ -98,59 +93,126 @@ First reveal:
 - `G_residual=[0,0,0,0,0]`;
 - classification **`NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE`**.
 
-Authority is archived in `experiments/predictive-information/residual-gate/ISSUE134_FIRST_REVEAL_PROVENANCE.md`.
+Authority: run `34035108074`, artifact `9990011421`, result SHA-256 `6779c2ea135e63f0c9c5be3e6200e564c18225fb95bb344f5349f946d73b9698`.
 
-## Active gate — Issue #139 independent IT2a replication
+A rich latent-state search is not licensed by this residual.
+
+### 7. Independent IT2a edge replication — COMPLETE
+
+Issue #139:
+
+- classification **`INDEPENDENT EDGE REPLICATION PASSES`**;
+- mean `G_identity_IT2a = +0.15211188542908544 bit/token`;
+- positive 5/5;
+- run `34061721332`, artifact `9997679250`, result SHA-256 `ec07a86d1acc12169be4f5073882877f3c86f4c8932f2fed2629d09518c18a4d`.
+
+The architecture is no longer plausibly treated as a ZL3b-only transcription artifact under the shared EVA/IVTFF framework.
+
+### 8. Common-representation dual-reading test — COMPLETE
+
+Issue #145:
+
+- classification **`COMMON-EVA EDGE ROBUST IN BOTH READINGS`**;
+- ZL3b mean `+0.1336232955274749`, positive 5/5;
+- IT2a mean `+0.16184998339508744`, positive 5/5;
+- exact common representation uses 31 Basic-EVA atoms + END (`V=32`), maximal clean-run reset, fixed `k=2`, `alpha=.01`;
+- EDGE2_COMMON equals full clean-run-contiguous k2 exactly at token-logp level;
+- run `34062199123`, artifact `9997826217`, result SHA-256 `663f4b4f9f48992036c2517109f5b8efde459cbdd35d034b567233edbd2efdf2`.
+
+### 9. Bidirectional literal table transport across readings — COMPLETE
+
+Issue #148:
+
+- classification **`COMMON-EVA LITERAL EDGE TABLE TRANSPORTS BOTH DIRECTIONS`**;
+- ZL3b→IT2a mean `+0.15554823663346334 bit/token`, positive 5/5, retention `0.9610642730420239`;
+- IT2a→ZL3b mean `+0.13039023868507016`, positive 5/5, retention `0.9758046916172639`;
+- minimum previous-terminal context coverage `0.99935469993547` / `0.9988499137435307`;
+- Gate0 result SHA-256 `f324264b814ef02d8de70b804754750ec579f8a9e0d8dffb0f1575439867d1bf`;
+- authoritative run `34073660425`;
+- artifact `10001309613`;
+- result JSON SHA-256 `305e6e4e6eb59dcc969f1d4075eb5b64b06621c7a0cac8077c4cdedd76874923`;
+- PR #150 merged as `b7e643a0d3075a9f09dbd9ec3a8f50149cb4a131`.
+
+The concrete mapping is therefore strongly shared across ZL3b/IT2a under the frozen common representation. This is not a claim of independent manuscripts or semantic identity.
+
+## Active gate — Issue #151 shared common-EVA table
 
 ### Primary responsibility
 
-Replicate the architecture, not literal ZL3b table values.
+Test whether separate reading-native edge tables are still predictively justified.
 
-Primary quantity:
+For each untouched physical-leaf fold, construct on the four training folds of **both** readings:
 
-`G_identity_IT2a = bits(POS2) - bits(EDGE2)`
+`C_SHARED = 0.5 * C_ZL3b + 0.5 * C_IT2a`.
 
-where POS2 retains generic line-position/onset responsibility and EDGE2 adds only immediately previous terminal identity to line-body first-symbol prediction.
+The equal half-weights are frozen before target scoring. They preserve approximately one-reading evidence scale and avoid artificially doubling confidence because the same physical manuscript has two transcriptions.
 
-### Score-free requirements
+`EDGE2_SHARED` is target-native in every non-edge factor. Only BODY `P(first_common_atom | previous_terminal_common_atom)` uses `C_SHARED`.
 
-Before target scoring, freeze:
+### Primary quantities
 
-1. exact IT2a/Takahashi source and hash;
-2. physical-leaf/source-line mapping;
-3. uncertainty/editorial-symbol treatment;
-4. visible certain-space policy;
-5. outer folds and target population;
-6. literal symbol representation;
-7. Issue #125 architecture carried over without outcome-driven repair;
-8. smoothing/fallback/support policy;
-9. stability rule and exactly three decision classes;
-10. leakage/firewall checks.
+For target reading `T`:
 
-### Decision fork
+`G_shared[T,f] = bits(POS2_TARGET) - bits(EDGE2_SHARED)`
 
-#### A. Independent edge replication passes
+`G_specific[T,f] = bits(EDGE2_SHARED) - bits(EDGE2_NATIVE_T)`
 
-The architecture is less plausibly a ZL3b-specific transcription artifact. Literal table equality across transcriptions remains a separate question.
+A reading-specific residual passes iff:
 
-#### B. Independent edge replication fails
+- mean `G_specific > 0`; and
+- positive in at least `4/5` untouched folds.
 
-Downgrade the edge from transcription-independent structure to ZL3b-lineage-specific or representation-sensitive structure. Audit the mismatch before treating the edge as manuscript-wide responsibility.
+A valid consolidation also requires the shared table itself to improve POS2 in both readings by the same mean-positive + 4/5 criterion.
 
-#### C. Independent replication invalid
+### Frozen classes
 
-Stop if source/fold/line/boundary/support authority or a faithful frozen representation cannot be established.
+1. `ONE SHARED COMMON-EVA EDGE TABLE SUFFICES`
+2. `ZL3B RETAINS READING-SPECIFIC EDGE INFORMATION`
+3. `IT2A RETAINS READING-SPECIFIC EDGE INFORMATION`
+4. `BOTH READINGS RETAIN READING-SPECIFIC EDGE INFORMATION`
+5. `INVALID SHARED EDGE CONSOLIDATION`
 
 No post-reveal rescue class.
 
-## High-value follow-ups after #139
+### Gate0 — mandatory first deliverable
 
-Ordering depends on the replication result, but the next families are already constrained:
+Before any `EDGE2_SHARED` target likelihood:
 
-1. **Compact observable-model consolidation** across transcription lineages if #139 passes.
-2. **Reversible/inverse mechanism tournaments** that must satisfy the established surface-production responsibilities without target-aware repair.
-3. **Externally anchored content tests** where mappings are fixed independently of Voynichese similarity.
-4. **Issue #84 Phase D** only where it answers an identifiable question not superseded by Issue #88.
+1. pin exact #145/#148 source, representation, fold, scorer/result authorities;
+2. prove held-out physical leaves are absent from both readings' shared-table training counts;
+3. reproduce target primary and run-body counts;
+4. audit per-reading training edge counts and 32×32 cell/context support;
+5. deterministically construct the `0.5/0.5` fractional count table on training data only;
+6. audit target BODY previous-terminal context support without inspecting current first-atom outcomes;
+7. run target-free synthetic tests of fractional-count smoothing;
+8. freeze the exact decision classes and thresholds;
+9. prove no held-out shared-table likelihood, `G_shared`, `G_specific` or classification was computed.
+
+If authority/support fails, classify INVALID. Do not alter weights, smoothing, representation, exclusions or fallback after reveal.
+
+## Decision fork after #151
+
+### A. One shared table suffices
+
+Promote the edge to one consolidated common-EVA observable table for compact-core work. Then test whether the Currier A/B literal-table asymmetry from #130 survives this stabilized common representation.
+
+### B. A reading-specific residual remains
+
+Retain the large shared component but preserve the justified reading-native correction. Characterize its source only after the primary result is frozen.
+
+### C. Invalid
+
+Stop without target interpretation.
+
+## High-value follow-ups
+
+After #151, and only as licensed by its result:
+
+1. **Common-EVA Currier A↔B table transport** — directly retest whether #130's B→A-only asymmetry survives representation stabilization.
+2. **Compact observable-core consolidation** — if one shared table suffices, replace reading-specific edge responsibility with the shared table in a future frozen core.
+3. **Reversible/inverse mechanism tournaments** — require candidate mechanisms to reproduce established surface responsibilities without target-aware repair.
+4. **Externally anchored content tests** — mappings fixed independently of Voynichese similarity.
+5. **Issue #84 Phase D** only where it answers an identifiable question not superseded by Issue #88.
 
 A rich latent-state model is not on the active path unless a new prospectively defined predictive residual independently reopens that license.
 
@@ -162,4 +224,4 @@ A rich latent-state model is not on the active path unless a new prospectively d
 
 ## Research boundary
 
-Nothing on this roadmap currently establishes plaintext, language, semantic absence, cipher identity/key, natural-language word boundaries, author/scribe causation, hoax/artificial origin, a historical production algorithm or decipherment.
+Nothing on this roadmap currently establishes plaintext, language, semantic absence, cipher identity/key, natural-language word boundaries, author/scribe causation, historical direction, hoax/artificial origin, a historical production algorithm or decipherment.
