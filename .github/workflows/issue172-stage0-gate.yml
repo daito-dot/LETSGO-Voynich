@@ -1,0 +1,61 @@
+name: Issue172 Stage0 authority gate
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/joint-mechanism-discrimination/STAGE0_AUTHORITY_PLAN.md'
+      - 'experiments/joint-mechanism-discrimination/authority_manifest_v1.json'
+      - 'experiments/joint-mechanism-discrimination/stage0_gate.py'
+      - '.github/workflows/issue172-stage0-gate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  stage0-authority:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Compile score-free checker
+        run: python -m py_compile experiments/joint-mechanism-discrimination/stage0_gate.py
+
+      - name: Run score-free Stage 0 gate
+        run: |
+          python experiments/joint-mechanism-discrimination/stage0_gate.py \
+            --manifest experiments/joint-mechanism-discrimination/authority_manifest_v1.json \
+            --output issue172_stage0_gate.json
+          python -m json.tool issue172_stage0_gate.json > /dev/null
+          sha256sum issue172_stage0_gate.json
+
+      - name: Verify gate declaration
+        run: |
+          python - <<'PY'
+          import json
+          x = json.load(open('issue172_stage0_gate.json'))
+          assert x['classification'] == 'STAGE0 AUTHORITY READY', x['classification']
+          assert x['score_free'] is True
+          assert x['candidate_target_scoring_performed'] is False
+          assert all(c['pass'] for c in x['checks'])
+          print(json.dumps({
+              'classification': x['classification'],
+              'score_free': x['score_free'],
+              'checks': len(x['checks']),
+              'manifest': x['manifest'],
+              'plan': x['plan'],
+          }, indent=2))
+          PY
+
+      - name: Upload Stage 0 authority artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue172-stage0-authority-${{ github.event.pull_request.head.sha }}
+          path: |
+            issue172_stage0_gate.json
+            experiments/joint-mechanism-discrimination/authority_manifest_v1.json
+            experiments/joint-mechanism-discrimination/STAGE0_AUTHORITY_PLAN.md
