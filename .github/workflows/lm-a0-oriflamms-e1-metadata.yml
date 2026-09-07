@@ -6,6 +6,7 @@ on:
       - '.github/workflows/lm-a0-oriflamms-e1-metadata.yml'
       - 'experiments/lm-a0-external-preflight/oriflamms_e1_metadata_inventory.py'
       - 'experiments/lm-a0-external-preflight/oriflamms_e1_metadata_synthetic.py'
+      - 'experiments/lm-a0-external-preflight/oriflamms_word_schema_probe.py'
   workflow_dispatch:
 
 permissions:
@@ -38,6 +39,9 @@ jobs:
           curl -L --fail --silent --show-error "$base/mss-dates.xml" -o /tmp/oriflamms/mss-dates.xml
           curl -L --fail --silent --show-error "$base/texts/mss-dates-w.xml" -o /tmp/oriflamms/texts/mss-dates-w.xml
           sha256sum /tmp/oriflamms/abbreviations.dtd /tmp/oriflamms/mss-dates.xml /tmp/oriflamms/texts/mss-dates-w.xml | tee oriflamms_e1_sources.sha256
+
+      - name: Score-free word TEI schema probe
+        run: python experiments/lm-a0-external-preflight/oriflamms_word_schema_probe.py /tmp/oriflamms/texts/mss-dates-w.xml
 
       - name: Run metadata-only inventory
         run: |
