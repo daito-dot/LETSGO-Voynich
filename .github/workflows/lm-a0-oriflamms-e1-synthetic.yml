@@ -1,0 +1,23 @@
+name: LM-A0 ORIFLAMMS E1 synthetic scorer preflight
+
+on:
+  push:
+    paths:
+      - '.github/workflows/lm-a0-oriflamms-e1-synthetic.yml'
+      - 'experiments/lm-a0-external-preflight/oriflamms_e1_scorer.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'lxml>=5,<6'
+      - name: Run target-free synthetic preflight
+        run: python experiments/lm-a0-external-preflight/oriflamms_e1_scorer.py --synthetic-preflight
