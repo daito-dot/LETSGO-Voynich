@@ -1,0 +1,73 @@
+name: LM-A0 ORIFLAMMS E1 frozen reveal
+
+on:
+  push:
+    paths:
+      - '.github/workflows/lm-a0-oriflamms-e1-reveal.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reveal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact pre-reveal frozen research commit
+        uses: actions/checkout@v4
+        with:
+          ref: 38851d89248161353322870c524624cf26b8d3e4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'lxml>=5,<6'
+      - name: Verify target-free synthetic preflight again
+        run: python experiments/lm-a0-external-preflight/oriflamms_e1_scorer.py --synthetic-preflight
+      - name: Fetch pinned ORIFLAMMS authority
+        run: |
+          mkdir -p /tmp/oriflamms/texts
+          base='https://raw.githubusercontent.com/oriflamms/Dated-and-Datable-Manuscripts_LIRIS/93de4af4a470aea3f3b23c2e8bafcfa2161c5438'
+          curl -L --fail --silent --show-error "$base/abbreviations.dtd" -o /tmp/oriflamms/abbreviations.dtd
+          curl -L --fail --silent --show-error "$base/texts/mss-dates-w.xml" -o /tmp/oriflamms/texts/mss-dates-w.xml
+          sha256sum /tmp/oriflamms/abbreviations.dtd /tmp/oriflamms/texts/mss-dates-w.xml | tee oriflamms_e1_reveal_sources.sha256
+          test "$(sha256sum /tmp/oriflamms/texts/mss-dates-w.xml | cut -d' ' -f1)" = 'd1ff8102e8c81f36d45a31143f9294cf5c061d55d879aed44244c858f65018e4'
+      - name: Execute single frozen E1 reveal
+        run: |
+          python experiments/lm-a0-external-preflight/oriflamms_e1_scorer.py \
+            /tmp/oriflamms/texts/mss-dates-w.xml \
+            experiments/lm-a0-external-preflight/oriflamms_e1_frozen_roster.json \
+            --out oriflamms_e1_result.json
+          sha256sum oriflamms_e1_result.json | tee oriflamms_e1_result.sha256
+          python - <<'PY'
+          import json
+          d=json.load(open('oriflamms_e1_result.json'))
+          print(json.dumps({
+            'classification': d['classification'],
+            'roster_count': d['roster_count'],
+            'FINAL1': {
+              'observed': d['primary_FINAL1']['observed'],
+              'expected': d['primary_FINAL1']['expected'],
+              'z': d['primary_FINAL1']['z'],
+              'p_one_sided_enrichment': d['primary_FINAL1']['p_one_sided_enrichment'],
+              'p_two_sided_doubled_tail': d['primary_FINAL1']['p_two_sided_doubled_tail'],
+              'informative_manuscripts': d['primary_FINAL1']['informative_manuscript_count'],
+              'positive_manuscripts': d['primary_FINAL1']['positive_direction_manuscript_count'],
+              'positive_fraction': d['primary_FINAL1']['positive_direction_fraction'],
+            },
+            'FINAL2': {
+              'observed': d['sensitivity_FINAL2']['observed'],
+              'expected': d['sensitivity_FINAL2']['expected'],
+              'z': d['sensitivity_FINAL2']['z'],
+              'p_one_sided_enrichment': d['sensitivity_FINAL2']['p_one_sided_enrichment'],
+            },
+          }, ensure_ascii=False, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lm-a0-oriflamms-e1-reveal
+          path: |
+            oriflamms_e1_result.json
+            oriflamms_e1_result.sha256
+            oriflamms_e1_reveal_sources.sha256
+          if-no-files-found: error
+          retention-days: 90
