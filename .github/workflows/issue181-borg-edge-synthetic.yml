@@ -1,0 +1,22 @@
+name: Issue181 Borg external edge synthetic preflight
+
+on:
+  push:
+    paths:
+      - '.github/workflows/issue181-borg-edge-synthetic.yml'
+      - 'experiments/issue181-real-cipher-edge/issue181_borg_edge_scorer.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run target-free synthetic scorer preflight
+        run: python experiments/issue181-real-cipher-edge/issue181_borg_edge_scorer.py --synthetic-preflight
