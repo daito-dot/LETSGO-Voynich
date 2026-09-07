@@ -1,0 +1,179 @@
+{
+  "experiment": "Issue #184 S0 reversible SlotParser-language capacity",
+  "role": "CONTROL / TARGET-AWARE UPPER BOUND",
+  "voynich_corpus_accessed": false,
+  "g7a_v2_probabilities_accessed": false,
+  "r1_r8_scientific_score_computed": false,
+  "adapter_authority": {
+    "file": "experiments/issue26-music/issue26e_core.py",
+    "slots": [
+      [
+        "q",
+        "s",
+        "d"
+      ],
+      [
+        "o",
+        "y"
+      ],
+      [
+        "l",
+        "r"
+      ],
+      [
+        "t",
+        "k",
+        "p",
+        "f"
+      ],
+      [
+        "ch",
+        "sh"
+      ],
+      [
+        "cth",
+        "ckh",
+        "cph",
+        "cfh"
+      ],
+      [
+        "e",
+        "ee",
+        "eee"
+      ],
+      [
+        "s",
+        "d"
+      ],
+      [
+        "o",
+        "a"
+      ],
+      [
+        "i",
+        "ii",
+        "iii"
+      ],
+      [
+        "d",
+        "l",
+        "r",
+        "m",
+        "n"
+      ],
+      [
+        "y"
+      ]
+    ],
+    "slot_cardinalities": [
+      3,
+      2,
+      2,
+      4,
+      2,
+      4,
+      3,
+      2,
+      2,
+      3,
+      5,
+      1
+    ],
+    "total_slot_values": 33,
+    "parser_policy_for_audit": "min"
+  },
+  "raw_structural_path_count": 4665599,
+  "distinct_literal_surface_count": 4643467,
+  "path_collision_excess": 22132,
+  "ambiguous_literal_surface_count": 21996,
+  "ambiguous_literal_surface_fraction": 0.0047369777797494845,
+  "support_capacity_floor_bits_per_token": 22,
+  "literal_codepoint_length_distribution": {
+    "1": 16,
+    "2": 178,
+    "3": 1237,
+    "4": 5464,
+    "5": 17302,
+    "6": 43745,
+    "7": 94491,
+    "8": 179191,
+    "9": 301007,
+    "10": 450614,
+    "11": 599466,
+    "12": 700116,
+    "13": 711096,
+    "14": 621912,
+    "15": 457984,
+    "16": 276096,
+    "17": 131456,
+    "18": 44416,
+    "19": 7680
+  },
+  "exhaustive_fixed_block_view": {
+    "width_bits": 16,
+    "codeword_count": 65536,
+    "codebook_sha256_newline_utf8": "2f7f4154508ba70226f6d4ad06b455e1ecd5de2f71d51869f37ef277e10b14c1",
+    "parser_accepted": 65536,
+    "roundtrip_exact": 65536,
+    "ambiguous_parser_codewords": 391,
+    "distinct_min_parse_signatures": 709,
+    "min_parse_slot_presence": {
+      "0": 50008,
+      "3": 33009,
+      "4": 39840,
+      "5": 55271,
+      "6": 49058,
+      "7": 43776,
+      "8": 43957,
+      "9": 49390,
+      "10": 54559,
+      "11": 32764
+    },
+    "first_20_codewords": [
+      "a",
+      "ad",
+      "ady",
+      "ai",
+      "aid",
+      "aidy",
+      "aii",
+      "aiid",
+      "aiidy",
+      "aiii",
+      "aiiid",
+      "aiiidy",
+      "aiiil",
+      "aiiily",
+      "aiiim",
+      "aiiimy",
+      "aiiin",
+      "aiiiny",
+      "aiiir",
+      "aiiiry"
+    ],
+    "last_20_codewords": [
+      "dkchctheaiiiny",
+      "dkchctheaiiir",
+      "dkchctheaiiiry",
+      "dkchctheaiiiy",
+      "dkchctheaiil",
+      "dkchctheaiily",
+      "dkchctheaiim",
+      "dkchctheaiimy",
+      "dkchctheaiin",
+      "dkchctheaiiny",
+      "dkchctheaiir",
+      "dkchctheaiiry",
+      "dkchctheaiiy",
+      "dkchctheail",
+      "dkchctheaily",
+      "dkchctheaim",
+      "dkchctheaimy",
+      "dkchctheain",
+      "dkchctheainy",
+      "dkchctheair"
+    ]
+  },
+  "classification": "S0_CAPACITY_16PLUS_EXACT",
+  "interpretation": "support-level exact reversibility only; not an R2 topology pass"
+}
