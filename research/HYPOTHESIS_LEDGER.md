@@ -1,6 +1,6 @@
 # Hypothesis ledger
 
-Last consolidated: 2026-09-06
+Last consolidated: 2026-09-07
 
 This is the **current hypothesis-status authority**. It records supported, rejected and unresolved claims without erasing negative results. `SUPPORTED` means supported under the stated frozen test; it does not imply historical or semantic identification.
 
@@ -68,30 +68,59 @@ Older detailed ledgers/addenda remain historical records. Where an older entry c
 | Useful short raw context extends materially beyond source-line boundaries | REJECTED under fixed k=2 | Issue #123 `G_beyond_line = -0.0185292`, positive 0/5; carrying context through a line break is harmful |
 | Useful short raw context is localized within source lines | SUPPORTED | Issue #123 RESET2→LINECONT2 `+0.0291614 bit/token`, positive 5/5 |
 | Generic line position/onset alone explains the line-local gain | REJECTED as sufficient | Issue #125 position contributes `+0.00889185`, but terminal identity adds `+0.02026956`, both 5/5 |
-| Immediate previous terminal identity predicts the next visible unit onset | SUPPORTED — ROBUST OBSERVABLE EDGE IN ZL3b | Issue #125 terminal→initial identity gain `+0.02026956 bit/token`, positive 5/5; independent IT2a architecture replication is Issue #139 |
+| Immediate previous terminal identity predicts the next visible unit onset | SUPPORTED — ROBUST OBSERVABLE EDGE | Issue #125 terminal→initial identity gain `+0.02026956 bit/token`, positive 5/5; #139 independently replicates the architecture on IT2a |
 | The fixed-k2 flexible line-local expert contains additional token-likelihood information beyond position + terminal identity | REJECTED for tested representation | EDGE2 vs LINECONT2 maximum inner/outer token-logp difference `0.0` |
 | The explicit terminal→initial edge architecture is unique to one Currier regime | REJECTED | Issue #127 target-native edge passes in both Currier A and B |
 | One scalar edge strength cannot transport across Currier A/B | REJECTED under target-native tables | source strength is bidirectionally compatible when target identity mapping is supplied |
-| One literal terminal→initial conditional table transports bidirectionally across Currier A/B | REJECTED | Issue #127 target-calibrated table transport is B→A only; exact table+strength transports neither way |
-| The B→A-only table result is explained by B having roughly twice as many source edge observations | REJECTED | Issue #130 matches A/B to 8,728 source edge events per seed with exact per-terminal counts; matched classification remains B→A only |
-| Support-matched A→B table transport is robust | REJECTED by frozen stability rule | 0/5 seed passes despite positive grand mean `+0.00693954`; every seed only 3/5 positive folds |
-| Support-matched B→A table transport is robust | SUPPORTED | 5/5 seed passes; grand mean `+0.02697082`; every seed 4/5 positive folds |
+| One literal terminal→initial conditional table transports bidirectionally across Currier A/B | REJECTED UNDER #127/#130 REPRESENTATION | #127 target-calibrated table transport B→A only; #130 support-matched result remains B→A only |
+| The B→A-only Currier table result is explained by B having roughly twice as many source edge observations | REJECTED | Issue #130 matches A/B to 8,728 source edge events per seed with exact per-terminal counts; matched classification remains B→A only |
+| Support-matched A→B Currier table transport is robust | REJECTED by frozen stability rule | 0/5 seed passes despite positive grand mean `+0.00693954`; every seed only 3/5 positive folds |
+| Support-matched B→A Currier table transport is robust | SUPPORTED | 5/5 seed passes; grand mean `+0.02697082`; every seed 4/5 positive folds |
 | Currier table asymmetry proves a historical direction or that one regime contains the other | NOT ESTABLISHED | predictive transport direction is not a historical derivation/nestedness test |
 | Prospectively adding the observable edge to corrected B3 improves held-out prediction | SUPPORTED | Issue #134 augmented core mean `9.4519005855` vs B3 `9.5172688430`; mean gain `+0.0653682575 bit/token`, positive 5/5; `rho=0.19–0.22` |
 | A separately frozen flexible sequence challenger adds robust information beyond the augmented observable core | REJECTED by Issue #134 | RESET and LINE each select final `w=0` in all five outer folds; `G_residual=[0,0,0,0,0]`, positive 0/5 |
-| The Issue #118 residual still licenses rich latent-state work after the observable edge enters the core | REJECTED / NOT LICENSED | Issue #134 frozen classification `NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE`; no current residual-based license for latent-state escalation |
+| The Issue #118 residual still licenses rich latent-state work after the observable edge enters the core | REJECTED / NOT LICENSED | Issue #134 classification `NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE`; no current residual-based license for latent-state escalation |
 | Absence of Issue #134 residual proves that no hidden state exists in Voynichese | NOT ESTABLISHED | #134 is a predictive model-class closure test; hidden states may exist but are not justified by this residual |
-| The terminal→initial edge is transcription-lineage independent | OPEN — ISSUE #139 | ZL3b support is strong; independent IT2a/Takahashi architecture replication must be frozen before target scoring |
+| The terminal→initial edge is a ZL3b-specific transcription artifact | REJECTED under independent-reading replication | Issue #139 IT2a `G_identity = +0.1521118854 bit/token`, positive 5/5; classification `INDEPENDENT EDGE REPLICATION PASSES` |
+| The large native ZL3b/IT2a edge-effect magnitude discrepancy proves different architecture | REJECTED as representation-comparable claim | Issue #145 freezes one common Basic-EVA representation and finds ZL3b `+0.1336232955`, IT2a `+0.1618499834`, both 5/5 |
+| The edge architecture survives one common target-blind representation in both readings | SUPPORTED | Issue #145 classification `COMMON-EVA EDGE ROBUST IN BOTH READINGS`; implementation-equivalence max token-logp difference `0.0` in all ten reading×fold cells |
+| The literal common-EVA previous-terminal→next-initial table is reading-lineage specific | REJECTED by Issue #148 | source-trained literal table transports ZL3b→IT2a `+0.1555482366` and IT2a→ZL3b `+0.1303902387`, both positive 5/5 |
+| Cross-reading literal-table transport preserves most target-native edge information | SUPPORTED | Issue #148 retention ratios `0.9610642730` and `0.9758046916`; minimum previous-terminal context coverage >0.9988 |
+| Bidirectional ZL3b/IT2a transport proves two independent manuscript realizations | REJECTED / CATEGORY ERROR | ZL3b and IT2a are independent reading/transcription lineages of the same physical manuscript; physical-leaf fold exclusion is the leakage firewall |
+| Bidirectional common-EVA cross-reading transport erases the Currier A/B asymmetry | NOT ESTABLISHED | #148 compares reading lineages, not Currier regimes; #130's B→A-only result remains accepted for its frozen representation until directly retested |
+| Separate ZL3b and IT2a common-EVA edge tables are still predictively necessary | OPEN — ISSUE #151 | #151 freezes a `0.5/0.5` reading-balanced training-fold consensus table and tests held-out `G_specific` for each reading |
+| One reading-balanced shared common-EVA edge table suffices | OPEN — ISSUE #151 | requires shared table itself useful in both readings and no robust native-over-shared residual under frozen 4/5 criterion |
 
 ## C. Current working hypothesis
 
 The most economical live structural hypothesis is:
 
-> Certain visible spaces delimit bounded production episodes. Inside each episode, a compact second-order construction grammar generates most token-internal topology. Across episodes, held-out prediction is carried by a small set of observable processes at different scales: short edit-near recurrence/cache, an immediate **same-line terminal→initial edge** that resets at line breaks, and slower causal-prefix/prior-paragraph family inventory. Some strengths and literal conditional mappings vary by observable Currier regime. Once the explicit same-line edge is incorporated into corrected B3 under the Issue #134 frozen policy, the separately tested flexible RESET/LINE residual receives no selected predictive weight.
+> Certain visible spaces delimit bounded production episodes. Inside each episode, a compact second-order construction grammar generates most token-internal topology. Across episodes, held-out prediction is carried by a small set of observable processes at different scales: short edit-near recurrence/cache, an immediate **same-line terminal→initial edge** that resets at line breaks, and slower causal-prefix/prior-paragraph family inventory. The immediate edge independently replicates across ZL3b/IT2a and, under one frozen common Basic-EVA representation, its literal conditional table transports in both directions while retaining roughly 96–98% of target-native gain. Some Currier-regime strengths/literal mappings remain asymmetric under earlier frozen tests. Once the explicit same-line edge is incorporated into corrected B3 under Issue #134, the separately tested flexible RESET/LINE residual receives no selected predictive weight.
 
-The next falsification target is not a richer hidden sequence state. It is whether the explicit edge architecture survives an independent Takahashi/IT2a transcription-lineage replication under Issue #139.
+The next falsification target is not a richer hidden sequence state. Issue #151 asks whether the two reading-native common-EVA edge tables can be collapsed into one fixed reading-balanced table without leaving a reproducible reading-specific predictive residual.
+
+If that consolidation passes, the next high-value transport test is whether the Currier A/B asymmetry from #130 survives the stabilized common representation.
 
 This is a surface-production model to test, not a semantic, historical or decipherment claim.
+
+## D. Current authority for the cross-reading edge
+
+Issue #145 common-representation authority:
+
+- run `34062199123`;
+- artifact `9997826217`;
+- result SHA-256 `663f4b4f9f48992036c2517109f5b8efde459cbdd35d034b567233edbd2efdf2`.
+
+Issue #148 literal-table authority:
+
+- Gate0 result SHA-256 `f324264b814ef02d8de70b804754750ec579f8a9e0d8dffb0f1575439867d1bf`;
+- corrected scorer blob `7847c0fea1dcfc4ace5752d0188d70e3739679d3`;
+- authoritative run `34073660425`;
+- artifact `10001309613`;
+- result JSON SHA-256 `305e6e4e6eb59dcc969f1d4075eb5b64b06621c7a0cac8077c4cdedd76874923`;
+- merge `b7e643a0d3075a9f09dbd9ec3a8f50149cb4a131`.
+
+The authority-repair chronology in PR #150 is part of the record and must not be simplified into a false claim that every pre-success run stopped before all predictive arithmetic. Only the successful frozen result above is promoted scientifically.
 
 ## Rule for adding hypotheses
 
