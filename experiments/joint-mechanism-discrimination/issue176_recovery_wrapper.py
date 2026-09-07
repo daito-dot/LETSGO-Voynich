@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Issue #176 runtime-recovery wrapper for the frozen Issue #172 scorer.
 
-This file does not reimplement scientific scoring.  It verifies and imports the
+This file does not reimplement scientific scoring. It verifies and imports the
 frozen v1 scorer, normalizes the historical Phase4A self-test return contract,
 and delegates score-free preflight or full scoring to the frozen implementation.
 
@@ -10,8 +10,10 @@ Scientific authority: ISSUE176_RECOVERY_EXECUTION_PLAN.md.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import importlib.util
+import io
 import json
 from collections.abc import Mapping
 from pathlib import Path
@@ -65,8 +67,15 @@ def install_r1_self_test_adapter(v1):
         raise RuntimeError("Issue176 R1 self-test adapter already installed")
 
     def normalized():
-        # The original historical self-test is invoked exactly once per adapter call.
-        return normalize_r1_return(original())
+        # Invoke the original exactly once, but contain its historical human stdout
+        # so wrapper/preflight machine output stays canonical JSON. Preserve that
+        # stdout in the score-free audit payload rather than discarding it.
+        captured = io.StringIO()
+        with contextlib.redirect_stdout(captured):
+            value = original()
+        out = normalize_r1_return(value)
+        out["upstream_stdout"] = captured.getvalue()
+        return out
 
     normalized._issue176_normalized = True
     normalized._issue176_original = original
