@@ -1,8 +1,9 @@
 # Current research status
 
-Last consolidated: 2026-09-07
+Last consolidated: 2026-09-08
 
-Current program authority: Issue #172.
+Current program authority: **Issue #172**.  
+Current sequencing authority: `ROADMAP.md` and `research/NEAR_TERM_RESEARCH_ROADMAP_20260908.md`.  
 Completed predecessor program: Issue #88 / `research/PREDICTIVE_INFORMATION_PROGRAM_CLOSEOUT_20260907.md`.
 
 This file controls the **current accepted high-level interpretation**. Exact historical methods, first-reveal artifacts, hashes and frozen classifications remain controlled by phase/Issue-specific plans, reports and provenance files.
@@ -11,182 +12,134 @@ This file controls the **current accepted high-level interpretation**. Exact his
 
 The Voynich Manuscript is **not deciphered**.
 
-The completed predictive-information program establishes a compact, multiscale surface-production constraint system. The active research question is no longer “what local predictive feature should be added next?” It is:
+The completed work establishes a compact multiscale surface-production constraint system. The project is no longer primarily asking which extra local statistic improves prediction. The current question is:
 
-> **What independently motivated bounded generative/reversible mechanism can jointly reproduce the accepted structural responsibilities without target-driven repair or excessive target access?**
+> **Which independently documented production/encoding mechanisms can jointly account for the accepted bounded-unit construction, signed paragraph entry, thin cross-unit information, line-local edge behavior, slow inventory memory and recoverability where claimed?**
 
-Issue #172 governs that mechanism-discrimination phase.
+## Accepted structural picture
 
-## Current accepted structural picture
+At the resolution of the frozen tests:
 
-1. Certain visible spaces behave as reproducible production/construction boundaries in ZL3b and Takahashi/IT2a.
-2. Bounded-unit internal topology is largely captured by a target-blind second-order occupied-slot construction grammar.
-3. Cross-unit predictive information is real but information-light relative to token-internal information.
-4. Short edit-near recurrence/cache contributes local history.
-5. Useful immediate raw context is localized to adjacent visible units inside the same source line.
-6. Source-line breaks reset that useful immediate raw context.
-7. Under the frozen representation, generic line-position/onset plus immediate previous-terminal → next-initial identity accounts for the tested line-local expert.
-8. The terminal→initial architecture independently replicates across ZL3b/IT2a under common Basic-EVA.
-9. One reading-balanced common-EVA base table suffices across those readings; no robust reading-specific table residual remains.
-10. Currier A/B contributes robust incremental next-initial information.
-11. Issue #161 shows no robust Currier×previous-terminal-specific residual after a context-invariant Currier next-initial outcome bias is included.
-12. Issue #167 shows the Currier outcome bias is moderately broad: K=16 is the first tested preregistered sparse support rung sufficient in all four reading×Currier cells.
-13. Slower predictive structure is dominated by causal-prefix / prior-paragraph inventory rather than detailed long ordered memory.
-14. After observable augmentation, Issue #134 finds no robust flexible residual that licenses richer latent-state modeling.
+1. certain visible spaces behave as reproducible production/construction boundaries in ZL3b and Takahashi/IT2a;
+2. bounded-unit internal topology is largely captured by a target-blind second-order occupied-slot construction grammar;
+3. the best compact memoryless grammar is about 9.7 bits/token, with roughly 7.0 bits in shape and 2.7 bits in values;
+4. cross-unit predictive information is real but small relative to token-internal information;
+5. short edit-near recurrence/cache contributes local history;
+6. useful immediate raw context is localized to adjacent visible units inside the same source line;
+7. source-line breaks reset that useful immediate context under the frozen Voynich tests;
+8. generic onset/position plus previous-terminal → next-initial identity accounts for the tested line-local expert;
+9. the edge architecture replicates across ZL3b/IT2a under common Basic-EVA;
+10. one reading-balanced common-EVA base edge table suffices across those readings;
+11. Currier A/B contributes robust next-initial information, but the accepted difference largely factorizes to a context-invariant next-initial bias;
+12. K=16 is the first tested preregistered sparse support rung sufficient for that Currier bias in all four reading×Currier cells;
+13. slower predictive structure is dominated by causal-prefix / prior-paragraph inventory rather than detailed long ordered memory;
+14. after observable augmentation, Issue #134 finds no robust flexible residual that licenses richer latent-state modeling.
 
 Compact shorthand:
 
-> **production boundary + compact within-unit grammar + local recurrence/cache + same-line terminal→initial edge with line-break reset + shared common-EVA base table + Currier-specific global next-initial bias + slower prior-paragraph inventory.**
+> **production boundary + compact within-unit grammar + local recurrence/cache + signed paragraph-entry specialization + same-line terminal→initial edge with line-break reset + shared common-EVA base edge + Currier-specific global next-initial bias + slower prior-paragraph inventory.**
 
 This is a predictive surface description, not a historical mechanism claim.
 
-## Issue #88 is complete
+## Important compatibility results
 
-The completed #88 program answered its stopping question: once validated observable mechanisms are added, no tested stronger flexible challenger retains a robust held-out residual that justifies richer latent-state escalation.
+### Reversible meaningful plaintext is not excluded by local recurrence
 
-Authoritative program closeout:
+Phase69–70 showed that exactly recoverable meaningful plaintext can coexist with strong A1-like short-range recurrence and substantial aggregate line-position structure. Local recurrence, low entropy or formal regularity therefore cannot by themselves support a semantic-absence claim.
 
-`research/PREDICTIVE_INFORMATION_PROGRAM_CLOSEOUT_20260907.md`
+The same constructions did **not** reproduce the Voynich signed paragraph-entry effect strongly enough. This keeps R4/S1 comparatively discriminating.
 
-Do not resume the old #161/#167 compression ladder as current work.
+### R5 is no longer a standalone anti-cipher discriminator
 
-## Issue #172 — current mechanism-discrimination program
+Issue #181 found `EXTERNAL LINE-LOCAL EDGE` in the solved Borg monoalphabetic ciphertext:
 
-Issue #172 keeps the structural responsibilities separate rather than collapsing them into one average score.
+- positive same-line edge gain in 5/5 folds;
+- non-positive/harmful cross-line continuation in 0/5 folds.
 
-### R1 — production-boundary responsibility
+Therefore a real historical ciphertext document can exhibit the same qualitative R5 topology. This does not show that substitution creates the topology; it may be inherited from plaintext, grouping, physical lineation or scribal practice.
 
-A candidate must reproduce the observed-cut reset/discontinuity and its specificity relative to nearby shifted cuts.
+Issue #182 attempted source attribution but found the benchmark plaintext transport destroys some physical line-split lexical information. On the compatible population, 260 cross-line events were independently reclassified as within-word splits. Full-corpus attribution remained `INDETERMINATE` and no Stage-1 edge score was revealed.
 
-### R2 — token-internal construction responsibility
+**Program consequence:** R5 remains a hard compatibility responsibility, but not the leading standalone anti-cipher falsifier.
 
-A candidate must account for the accepted complete66 / compact construction topology without receiving the target token vocabulary as an uncharged lookup table.
+## Historical-anchor calibration
 
-### R3 — local recurrence/profile responsibility
-
-A candidate must reproduce the accepted local near-family / recurrence package without passing merely by matching raw recurrence magnitude while violating other held-out structure.
-
-### R4 — signed paragraph-entry responsibility
-
-Wrong-sign paragraph-entry behavior remains a hard failure.
-
-### R5 — same-line edge and line-break reset
-
-A candidate must reproduce the useful same-line previous-terminal → next-initial responsibility while not continuing that dependency robustly across source-line breaks.
-
-### R6 — reading-stable common-EVA base edge
-
-A candidate must account for the edge across both ZL3b/IT2a without post-hoc reading-specific tuning.
-
-### R7 — Currier-conditioned global next-initial responsibility
-
-The accepted Currier form is one shared base edge plus a **context-invariant** Currier-specific next-initial bias. K=16 is the first tested preregistered sparse support rung that suffices.
-
-### R8 — slower prior-paragraph inventory responsibility
-
-A candidate must reproduce the accepted causal-prefix / prior-paragraph inventory gain in a way that cannot be reduced to merely increasing local Markov order.
-
-### R9 — reversibility/recoverability
-
-Required only for decoder/reversible-transform promotion. A surface generator can be structurally competitive without being a decoder.
-
-### R10 — target-information / complexity accounting
-
-A candidate must explicitly pay for trainable parameters, state, empirical vocabulary, target layout, metadata, codebooks, lookup tables, side information and repair rules.
-
-## Historical-anchor calibration — complete
-
-Issue #176 / PR #177 completed the first interpretable calibration of historical anchors under the frozen Issue #172 contract.
+Issue #176 / PR #177:
 
 ### A1 / A1-R1
 
-Role: `SURFACE GENERATOR ONLY`
-
+Role: `SURFACE GENERATOR ONLY`  
 Classification: **`PARTIAL STRUCTURAL MODEL`**
 
 - PASS: R1, R3, R4, R10
 - FAIL: R2, R5, R6, R7, R8
 - R9: N/A
 
-A1 retains the boundary, recurrence/profile and paragraph-entry layer, but misses complete66 representation compatibility, the accepted same-line common-EVA edge/reset, Currier structure and the clean slow prior-paragraph inventory signature.
-
 ### Naibbe C1-E0
 
-Role: `REVERSIBLE TRANSFORM / DECODER CANDIDATE`
-
+Role: `REVERSIBLE TRANSFORM / DECODER CANDIDATE`  
 Classification: **`PARTIAL STRUCTURAL MODEL`**
 
 - PASS: R1, R2, R8, R10
 - FAIL: R3, R4, R5, R6, R7, R9
 
-Naibbe retains the production-boundary, complete66 residual geometry and slow prior-paragraph inventory layer, but misses the recurrence/profile and paragraph-entry layer, the accepted same-line common-EVA edge/Currier structure, and exact recoverability.
+No historical anchor is joint-competitive and no decoder is promoted. Their complementary PASS sets do not license an A1+Naibbe composite.
 
-Frozen result authority:
+## Recent architecture-selection outcomes
 
-- calibration merge: `74d117e27e75e2594cebdf782ee506c77a1a762e`;
-- raw result SHA-256: `d6149607aa90530b02d440899d7abb23c28e44a51ff270205e919a3f00d17b35`;
-- detailed provenance: `experiments/joint-mechanism-discrimination/ISSUE176_RECOVERY_REVEAL_PROVENANCE.md`.
+### LM-A0 — not promoted
 
-No historical anchor is `JOINT-STRUCTURAL COMPETITIVE`. Naibbe does not receive decoder promotion.
+Issue #180 externally tested a line-managed scribal/allographic family. The preregistered ORIFLAMMS result was `E1_NO_REPLICATION` (`p=0.052517` on the primary one-sided gate, with no threshold relaxation). LM-A0 is not promoted and nearby rescue is not licensed.
 
-## Strongest current discriminating result
+### Borg external control — compatible, source unresolved
 
-R1 is not strongly discriminating between the two historical anchors: both pass it.
+Issue #181 weakened the interpretation of R5 as cipher-discriminating. Issue #182 could not cleanly assign the effect to plaintext versus physical/grouping structure. The correct response is a cleaner independent source-attribution corpus, not permissive repair of Borg transport.
 
-The strongest shared falsifier is **R5/R6**.
+### T1463 — historically real, encoder underdetermined
 
-Both A1 and Naibbe:
+Issue #183 classified the 1463 Milanese mixed-granularity family as `H0_ARCHITECTURE_PARTIAL`. The family is historically real, but the exact sign-count authority and, more importantly, the encoder choice policy for letters/digrams/doubles/nomenclator/homophones/nulls/spacing could not be recovered. Inventing those policies would create a modern mechanism and is prohibited.
 
-- produce non-positive same-line previous-terminal gain under the frozen calibration;
-- preserve an unwanted robust continuation across line breaks.
+### Issue #184 — mathematical control only
 
-That is the opposite localization from the accepted Voynich surface structure.
+Issue #184 is a target-aware constrained-code upper-bound/control lane. Its already-frozen S0/control calculations may finish and be archived. The proposed S1 distribution-matching extension is **not** an automatic next step under the current roadmap.
 
-This result means the next mechanism search cannot be satisfied by matching only token-internal grammar, boundary asymmetry, recurrence, or paragraph memory. It must also naturally express the line-local edge and its reset.
+## Current leading discriminator
 
-## Current interpretation of scale
+The current near-term priority is **R4 / signed paragraph-entry specialization (S1)**, not another refinement of R5.
 
-The accepted responsibilities live at several observable scopes:
+Reasons:
 
-- bounded-unit/token-internal construction;
-- adjacent-unit same-line dependence;
-- source-line reset;
-- paragraph-entry and prior-paragraph inventory;
-- Currier-level global outcome bias.
+- A1 reproduces R4 while Naibbe does not;
+- exactly reversible meaningful-plaintext Phase69/70 constructions reproduce local recurrence but leave S1 far below the Voynich regime;
+- the frozen Alberti paragraph-boundary mechanism produced the wrong S1 direction;
+- unlike R5, no real historical external control has yet shown that the correct signed S1 topology is common across unrelated mechanisms.
 
-This motivates asking whether the historical production process involved multiple operational timescales or nested state scopes. That is a **hypothesis-forming direction**, not an accepted historical conclusion.
+The next scientific move is therefore external **mechanism attribution for R4/S1** before another Voynich candidate reveal.
 
-## Current frontier
+## Fixed near-term sequencing
 
-The active frontier is **architecture-class elimination and independently motivated new-candidate selection**.
+The current order is:
 
-No new post-#176 candidate family is currently frozen.
+1. R4/S1 external mechanism attribution;
+2. productive/open-vocabulary audit, with a possible future R11 only after separate preregistration;
+3. clean R5 source attribution on an independent corpus preserving plaintext, cipher groups, physical lineation and key/alignment;
+4. select one independently documented historical mechanism whose ciphertext/output itself has multi-glyph construction and whose encoder/inverse is sufficiently specified;
+5. only then run a new Issue #172 joint tournament.
 
-The next phase must therefore remain pre-scoring while it:
+Parallel content lane: after an identifiability gate, test page/paragraph inventory composition against externally defined subject/illustration classes while controlling Currier/section/hand. Do not reopen the exhausted local pharmaceutical morphology↔token representation search.
 
-1. surveys broad architecture classes from independent mathematical/historical/procedural motivation;
-2. asks which classes can or cannot structurally express R1–R8 before target fitting;
-3. eliminates classes that require target-specific repairs or cannot generate the line-local/reset structure;
-4. selects one or a very small number of new candidate families;
-5. freezes role, target access, complexity budget, trainable/fixed components, inverse contract and falsification conditions;
-6. only then builds target-free preflight and a new scientific reveal.
+Full sequencing authority:
 
-Current handoff:
+`research/NEAR_TERM_RESEARCH_ROADMAP_20260908.md`
 
-`research/MECHANISM_DISCRIMINATION_FRONTIER_20260907.md`
+## Explicitly not licensed
 
-## Interpretation boundary
-
-Nothing currently establishes:
-
-- plaintext;
-- semantics;
-- natural-language wordhood;
-- a language family;
-- a cipher family;
-- authorship or scribe causation;
-- historical direction or historical production algorithm;
-- artificial/hoax origin;
-- decipherment.
-
-Structural fit is evidence about mechanism compatibility, not by itself evidence of semantic recovery.
+- patching or combining A1 and Naibbe;
+- LM-A0 threshold/subset/feature rescue;
+- invented T1463 encoder rules;
+- automatic Issue #184 S1 distribution matching;
+- Issue #179 target scoring without new independent external support;
+- rich latent-state escalation without a newly preregistered held-out residual;
+- further representation tweaking on the exhausted local pharmaceutical image↔text population;
+- treating production boundaries as proven natural-language words;
+- inferring plaintext, language, semantics, cipher identity, authorship, historical mechanism, hoax/artificial origin or decipherment from structural fit alone.
