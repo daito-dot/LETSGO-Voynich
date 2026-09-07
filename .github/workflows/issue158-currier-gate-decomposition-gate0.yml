@@ -34,8 +34,8 @@ jobs:
         shell: bash
         run: |
           git merge-base --is-ancestor 6bd7c6fadb8fc590052496299c13da24f88585a2 HEAD
-          test "$(git hash-object "$GATE")" = "7feb169377294144988aa1dcf8f1a40da9a5a924"
-          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE158_CURRIER_GATE_DECOMPOSITION_PLAN.md)" = "9ae737e4d5c6b5e0a3ad483fa815d5968b486183"
+          test "$(git hash-object "$GATE")" = "4dbc919f3e9ededa17d2e10f56de46c98456cdea"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE158_CURRIER_GATE_DECOMPOSITION_PLAN.md)" = "9ae7d7ea54aca4deea76f482b10010114cc1dac7"
           test "$(git hash-object experiments/predictive-information/common-eva-currier/issue155_common_eva_currier_gate0.py)" = "f5ab4fa31a92b3c303401da33611ffd5f77b402d"
           test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE155_GATE0_PROVENANCE.md)" = "ba2f443b24237ed5ee0dce127b1a43ad082481c4"
           test "$(git hash-object experiments/predictive-information/common-eva-currier/issue155_common_eva_currier_first_reveal.py)" = "0d57fdd32d298773b5ee38f97c9f104d29fa8377"
