@@ -1,0 +1,68 @@
+name: Issue188 R4 Casebooks Stage1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'research/ISSUE188_R4_CASEBOOKS_STAGE1_PLAN_20260908.md'
+      - 'experiments/issue188-r4-casebooks/issue188_casebooks_stage1.py'
+      - '.github/workflows/issue188-r4-casebooks-stage1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reveal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout pinned Casebooks authority
+        uses: actions/checkout@v4
+        with:
+          repository: CasebooksProject/casebooks-data
+          ref: 9d42295d72b5ba8889575a32d79311cc72bce73a
+          path: external/casebooks-data
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+      - name: Verify external authorities
+        run: |
+          test "$(git -C external/casebooks-data rev-parse HEAD)" = "9d42295d72b5ba8889575a32d79311cc72bce73a"
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+      - name: Install numerical dependency
+        run: python -m pip install --disable-pip-version-check numpy
+      - name: Run one-shot Casebooks S1 reveal
+        run: |
+          python experiments/issue188-r4-casebooks/issue188_casebooks_stage1.py \
+            --zl3b external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt \
+            --casebooks external/casebooks-data \
+            > issue188_casebooks_stage1_result.json
+      - name: Validate and summarize reveal
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue188_casebooks_stage1_result.json', encoding='utf-8'))
+          assert x['schema']=='issue188-r4-casebooks-stage1-v1'
+          assert x['classification'] in {'VOYNICH_DIRECTION_REPLICATED','WRONG_SIGN','MIXED_OR_UNSTABLE'}
+          assert x['support_identity']['eligible_paragraphs']==1082
+          assert x['primary_equal_volume']['n_volumes']==51
+          p=x['primary_equal_volume']
+          print('classification=', x['classification'])
+          print('magnitude=', x['magnitude_classification'])
+          print('equal_volume=', json.dumps(p, sort_keys=True))
+          print('forman=', json.dumps(x['practices']['forman'], sort_keys=True))
+          print('napier=', json.dumps(x['practices']['napier'], sort_keys=True))
+          print('sforman=', json.dumps(x['principal_hands']['#sforman'], sort_keys=True))
+          print('rnapier=', json.dumps(x['principal_hands']['#rnapier'], sort_keys=True))
+          print('pooled=', json.dumps(x['pooled_all_eligible'], sort_keys=True))
+          PY
+      - name: Upload one-shot reveal
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue188-r4-casebooks-stage1
+          path: issue188_casebooks_stage1_result.json
