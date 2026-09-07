@@ -1,0 +1,111 @@
+name: Issue182 Stage0-R1 official lexical restoration
+
+on:
+  push:
+    paths:
+      - '.github/workflows/issue182-stage0r1-official-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen Stage0-R1 implementation state
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Re-run score-free synthetic preflight
+        run: python experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1.py --synthetic-preflight
+
+      - name: Fetch exact pinned Borg benchmark authority
+        run: |
+          rm -rf /tmp/cipher_benchmark
+          git init -q /tmp/cipher_benchmark
+          git -C /tmp/cipher_benchmark remote add origin https://github.com/matthewdgreen/cipher_benchmark.git
+          git -C /tmp/cipher_benchmark config core.sparseCheckout true
+          cat > /tmp/cipher_benchmark/.git/info/sparse-checkout <<'EOF'
+          benchmark/sources/borg/transcriptions/
+          benchmark/sources/borg/plaintext/
+          benchmark/sources/borg/metadata/
+          EOF
+          git -C /tmp/cipher_benchmark fetch -q --depth 1 origin 729aad62d12483c549e64a2541d4f9255538c8cf
+          git -C /tmp/cipher_benchmark checkout -q FETCH_HEAD
+          test "$(git -C /tmp/cipher_benchmark rev-parse HEAD)" = '729aad62d12483c549e64a2541d4f9255538c8cf'
+
+      - name: Fetch official corrected-Latin authority
+        run: |
+          curl -L --fail --silent --show-error \
+            'https://www.su.se/download/18.6856063019d24ef3ecb111e/1774945344171/corrected-Latin-translation.txt' \
+            -o /tmp/borg_corrected_latin_translation.txt
+          sha256sum /tmp/borg_corrected_latin_translation.txt | tee issue182_stage0r1_official_source.sha256
+
+      - name: Run score-free Stage0-R1 restoration
+        run: |
+          python experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1.py \
+            /tmp/cipher_benchmark \
+            /tmp/borg_corrected_latin_translation.txt \
+            --out experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_full.json
+          sha256sum experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_full.json \
+            | tee experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_full.sha256
+          python - <<'PY'
+          import json, hashlib
+          src='experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_full.json'
+          d=json.load(open(src, encoding='utf-8'))
+          assert d['edge_gain_computed'] is False
+          summary={
+            'experiment': d['experiment'],
+            'classification': d['classification'],
+            'edge_gain_computed': d['edge_gain_computed'],
+            'official_source': d['official_source'],
+            'benchmark_authority': d['benchmark_authority'],
+            'source_compatibility': d['source_compatibility'],
+            'restored_alignment_totals': d['restored_alignment_totals'],
+            'old_stage0_boundary_totals_recomputed': d['old_stage0_boundary_totals_recomputed'],
+            'restored_boundary_totals': d['restored_boundary_totals'],
+            'changed_event_classes': d['changed_event_classes'],
+            'support_gate': d['support_gate'],
+            'full_result_sha256': hashlib.sha256(open(src,'rb').read()).hexdigest(),
+            'frozen_plan_commit': '2fbfd63ef19acf2b98cbd20d241f86b8b3e56bc8',
+            'auditor_commit': '43f9e8af91fd5c1fb32d17262032da6043da8dfb',
+          }
+          out='experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_summary.json'
+          open(out,'w',encoding='utf-8').write(json.dumps(summary,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(summary,ensure_ascii=False,indent=2))
+          PY
+          sha256sum experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_summary.json \
+            > experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_summary.sha256
+
+      - name: Commit Stage0-R1 derived authority before any Stage1 score
+        run: |
+          cp issue182_stage0r1_official_source.sha256 \
+            experiments/issue182-borg-source-attribution/issue182_stage0r1_official_source.sha256
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_full.json \
+                  experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_full.sha256 \
+                  experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_summary.json \
+                  experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_summary.sha256 \
+                  experiments/issue182-borg-source-attribution/issue182_stage0r1_official_source.sha256
+          git commit -m 'Issue #182: freeze restored lexical boundary authority'
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Enforce frozen Stage0-R1 validity gate
+        run: |
+          python - <<'PY'
+          import json
+          p='experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1_summary.json'
+          d=json.load(open(p, encoding='utf-8'))
+          assert d['classification'] == 'LEXICAL_RESTORATION_AUTHORITY_VALID', d['classification']
+          assert d['source_compatibility']['exact_reproduced_page_count'] == 397
+          assert d['support_gate']['cross_within_word_split_recovered_min_1'] is True
+          PY
