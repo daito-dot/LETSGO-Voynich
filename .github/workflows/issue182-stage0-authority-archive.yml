@@ -1,0 +1,61 @@
+name: Issue182 archive Stage0 full authority
+
+on:
+  push:
+    paths:
+      - '.github/workflows/issue182-stage0-authority-archive.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Re-run frozen synthetic alignment preflight
+        run: python experiments/issue182-borg-source-attribution/issue182_alignment_stage0.py --synthetic-preflight
+
+      - name: Fetch exact pinned Borg authority
+        run: |
+          rm -rf /tmp/cipher_benchmark
+          git init -q /tmp/cipher_benchmark
+          git -C /tmp/cipher_benchmark remote add origin https://github.com/matthewdgreen/cipher_benchmark.git
+          git -C /tmp/cipher_benchmark config core.sparseCheckout true
+          cat > /tmp/cipher_benchmark/.git/info/sparse-checkout <<'EOF'
+          benchmark/sources/borg/transcriptions/
+          benchmark/sources/borg/plaintext/
+          benchmark/sources/borg/metadata/
+          EOF
+          git -C /tmp/cipher_benchmark fetch -q --depth 1 origin 729aad62d12483c549e64a2541d4f9255538c8cf
+          git -C /tmp/cipher_benchmark checkout -q FETCH_HEAD
+          test "$(git -C /tmp/cipher_benchmark rev-parse HEAD)" = '729aad62d12483c549e64a2541d4f9255538c8cf'
+
+      - name: Reproduce and verify Stage0 authority
+        run: |
+          python experiments/issue182-borg-source-attribution/issue182_alignment_stage0.py \
+            /tmp/cipher_benchmark \
+            --out experiments/issue182-borg-source-attribution/issue182_alignment_stage0_full.json
+          actual="$(sha256sum experiments/issue182-borg-source-attribution/issue182_alignment_stage0_full.json | cut -d' ' -f1)"
+          test "$actual" = 'e3443bf753343eecea73dcd314bf6e78954b724945daa2a1d4eb8eb66704845e'
+          printf '%s  %s\n' "$actual" 'issue182_alignment_stage0_full.json' > experiments/issue182-borg-source-attribution/issue182_alignment_stage0_full.sha256
+
+      - name: Commit exact reproduced authority
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/issue182-borg-source-attribution/issue182_alignment_stage0_full.json \
+                  experiments/issue182-borg-source-attribution/issue182_alignment_stage0_full.sha256
+          git commit -m 'Issue #182: archive exact Stage0 alignment authority'
+          git pull --rebase origin main
+          git push origin HEAD:main
