@@ -35,12 +35,12 @@ jobs:
       - name: Assert frozen recovery chronology
         shell: bash
         run: |
-          test "$(git hash-object "$WRAPPER")" = "e1c352f407e8889717065ce32ff0d649aa8665da"
+          test "$(git hash-object "$WRAPPER")" = "cd79047d12244350fccc6130379fa2e5726bab76"
           test "$(git hash-object "$V1")" = "f90f194396acdc50599cf9713dbbeb3ab5b4bed3"
           test "$(git hash-object "$PLAN")" = "6b05aa0dbe9dc57e55527b2123806c8d2d6582b9"
           git merge-base --is-ancestor 54fb4f9a5122dfc64ae3fbf24633bb80380a5365 HEAD
-          git merge-base --is-ancestor 4c67a5b047609b631cf6eb583f2c1dd253ada478 HEAD
-          test "$(git diff --name-only 4c67a5b047609b631cf6eb583f2c1dd253ada478 HEAD)" = ".github/workflows/issue176-runtime-recovery-preflight.yml"
+          git merge-base --is-ancestor bb00b88f4173dca5adf1596f1094bb7c0beeff74 HEAD
+          test "$(git diff --name-only bb00b88f4173dca5adf1596f1094bb7c0beeff74 HEAD)" = ".github/workflows/issue176-runtime-recovery-preflight.yml"
 
       - name: Checkout frozen ZL3b mirror
         uses: actions/checkout@v4
@@ -109,6 +109,13 @@ jobs:
             echo "cremma_commit=$(git -C "$CREMMA" rev-parse HEAD)"
             echo "naibbe_commit=$(git -C "$NAIBBE" rev-parse HEAD)"
             echo "scientific_candidate_scores_computed=false"
+            echo "aborted_preflight_run_id=34114017601"
+            echo "aborted_preflight_job_id=101716510712"
+            echo "aborted_preflight_artifact_id=10015517856"
+            echo "aborted_preflight_artifact_digest=sha256:39a0b0fb52effc1eff5d73ddb6f3cac4cbbae6a81d4170fadfb460320dc4d83e"
+            echo "aborted_preflight_self_test_sha256=1e4259a4e199c2cd335520bda618f9d777b0f085b3cb1d47f177cb9fe90b162f"
+            echo "aborted_preflight_reason=historical_R1_success_stdout_contaminated_wrapper_machine_JSON"
+            echo "aborted_preflight_exact_source_preflight_executed=false"
           } > issue176_recovery_preflight_provenance.txt
 
       - name: Run score-free exact-source preflight
