@@ -1,0 +1,72 @@
+name: Issue181 Borg external edge frozen reveal
+
+on:
+  push:
+    paths:
+      - '.github/workflows/issue181-borg-edge-reveal.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reveal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact pre-reveal research state
+        uses: actions/checkout@v4
+        with:
+          ref: a4c81e28116351e817db99dbc673e858226c4ff0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Re-run target-free synthetic preflight
+        run: python experiments/issue181-real-cipher-edge/issue181_borg_edge_scorer.py --synthetic-preflight
+
+      - name: Fetch exact external Borg transcription authority
+        run: |
+          rm -rf /tmp/cipher_benchmark
+          git init -q /tmp/cipher_benchmark
+          git -C /tmp/cipher_benchmark remote add origin https://github.com/matthewdgreen/cipher_benchmark.git
+          git -C /tmp/cipher_benchmark config core.sparseCheckout true
+          printf 'benchmark/sources/borg/transcriptions/\n' > /tmp/cipher_benchmark/.git/info/sparse-checkout
+          git -C /tmp/cipher_benchmark fetch -q --depth 1 origin 729aad62d12483c549e64a2541d4f9255538c8cf
+          git -C /tmp/cipher_benchmark checkout -q FETCH_HEAD
+          test "$(git -C /tmp/cipher_benchmark rev-parse HEAD)" = '729aad62d12483c549e64a2541d4f9255538c8cf'
+
+      - name: Execute one frozen external reveal
+        run: |
+          python experiments/issue181-real-cipher-edge/issue181_borg_edge_scorer.py \
+            /tmp/cipher_benchmark/benchmark/sources/borg/transcriptions \
+            --out issue181_borg_edge_result.json
+          sha256sum issue181_borg_edge_result.json | tee issue181_borg_edge_result.sha256
+          python - <<'PY'
+          import json
+          d=json.load(open('issue181_borg_edge_result.json'))
+          p=d['primary']
+          print(json.dumps({
+            'classification': p['classification'],
+            'G_line_mean_bits': p['G_line_mean_bits'],
+            'G_line_positive_folds': p['G_line_positive_folds'],
+            'G_line_pass': p['G_line_pass'],
+            'G_line_fold_bits': p['G_line_fold_bits'],
+            'G_cross_mean_bits': p['G_cross_mean_bits'],
+            'G_cross_positive_folds': p['G_cross_positive_folds'],
+            'G_cross_pass': p['G_cross_pass'],
+            'G_cross_fold_bits': p['G_cross_fold_bits'],
+            'page_count': d['page_count'],
+            'vocabulary_size': d['vocabulary_size'],
+            'alpha': d['alpha'],
+          }, ensure_ascii=False, indent=2))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue181-borg-edge-reveal
+          path: |
+            issue181_borg_edge_result.json
+            issue181_borg_edge_result.sha256
+          if-no-files-found: error
+          retention-days: 90
