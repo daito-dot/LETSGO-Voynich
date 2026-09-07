@@ -1,0 +1,194 @@
+name: Issue161 outcome-only Currier factorization first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/common-eva-currier/issue161_outcome_factor_first_reveal.py'
+      - '.github/workflows/issue161-outcome-factor-first-reveal.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue161_outcome_factor_first_reveal.json
+  SCORER: experiments/predictive-information/common-eva-currier/issue161_outcome_factor_first_reveal.py
+
+jobs:
+  first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head with merged Gate ancestry
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert merged Gate ancestry and frozen blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 6192e5cbe0a5212d089f890ca26bb7d9a10eedbf HEAD
+          test "$(git hash-object "$SCORER")" = "d24149977770118505f2147c5aa2bb727631906f"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue161_outcome_factor_gate0.py)" = "00e5bddc0484b9472bb4fce9dadb89dd52bf578f"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE161_GATE0_PROVENANCE.md)" = "67e91ba26a76898f679a5182828ab3e9f512d49a"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE161_OUTCOME_ONLY_CURRIER_FACTORIZATION_PLAN.md)" = "68cb29a11cb147c8ecd9e70b3349a4102744e0ed"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and target-free synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile "$SCORER"
+          python "$SCORER" --self-test
+
+      - name: Run frozen outcome-factor first reveal
+        id: scorer
+        continue-on-error: true
+        shell: bash
+        run: |
+          python "$SCORER" --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue161_outcome_factor_first_reveal.sha256
+
+      - name: Preserve scorer output for chronology audit
+        if: always()
+        shell: bash
+        run: |
+          if test -f "$OUT"; then
+            cat "$OUT"
+            sha256sum "$OUT" | tee issue161_outcome_factor_first_reveal.sha256
+          else
+            echo "scorer produced no result JSON" >&2
+          fi
+
+      - name: Assert frozen outcome-factor classification contract
+        if: steps.scorer.outcome == 'success'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue161_outcome_factor_first_reveal.json',encoding='utf-8'))
+          assert x['schema']=='issue161-outcome-factor-first-reveal-v1'
+          assert x['issue']==161 and x['scored'] is True
+          a=x['authority']
+          assert a['gate0_reproduced'] is True
+          assert a['gate0_result_sha256']=='32af814ddec529d5e255ae5bede00e93e989aad5b36a70f9abe34ffed839bd94'
+          assert a['gate0_script_blob']=='00e5bddc0484b9472bb4fce9dadb89dd52bf578f'
+          assert a['gate0_provenance_blob']=='67e91ba26a76898f679a5182828ab3e9f512d49a'
+          assert a['plan_blob']=='68cb29a11cb147c8ecd9e70b3349a4102744e0ed'
+          assert a['gate0_merge']=='6192e5cbe0a5212d089f890ca26bb7d9a10eedbf'
+          assert a['issue158_G_Currier_reproduced_foldwise'] is True
+          assert a['fold_identity_sha256']=='cf2df8edcf2b25c2f6388c4a9e2c1ee58a24ae05a9cf489ff9a43d2d28f0b64b'
+          m=x['frozen_factorization']
+          assert len(m['outcome_vocabulary'])==32
+          assert m['V']==32 and m['alpha']==0.01
+          assert m['context_invariant_multiplier'] is True
+          assert m['currier_by_previous_terminal_interaction_in_EDGE_OUTCOME'] is False
+          assert m['target_native_fallback'] is False
+          assert m['temperature_interpolation_calibration_mixture'] is False
+
+          expected_currier={
+            'ZL3b':{
+              'A':[0.10646751913558283,-0.030322382464655462,0.05905242821935097,0.0882553911635231,0.09293071427940092],
+              'B':[0.14543917242315452,0.08923407706349806,0.12107682303940592,0.11870601716613827,0.03157455662404374],
+            },
+            'IT2a':{
+              'A':[0.11245835151272487,-0.04055238906849645,0.06170815954563302,0.06813721290478014,0.13737949599598132],
+              'B':[0.15010795690244905,0.0850797433871957,0.12577230082194646,0.12143040779973724,0.04045015206662228],
+            },
+          }
+          robust={}
+          for regime in ('A','B'):
+              passes=[]
+              for reading in ('ZL3b','IT2a'):
+                  c=x['cells'][reading][regime]
+                  assert len(c['outer'])==5
+                  gi=[]; go=[]; gc=[]
+                  for f,row in enumerate(c['outer']):
+                      assert row['fold']==f and row['reading']==reading and row['regime']==regime
+                      assert row['n_scored_run_body_targets']>=300
+                      assert row['matched_context_supported_body_targets']>=300
+                      assert row['matched_context_coverage_fraction']>0.99
+                      for key in ('bits_EDGE_POOL','bits_EDGE_OUTCOME','bits_EDGE_REGIME','G_outcome','G_interaction','G_Currier_reproduced'):
+                          assert math.isfinite(row[key])
+                      assert math.isclose(row['G_Currier_reproduced'],expected_currier[reading][regime][f],rel_tol=0.0,abs_tol=1e-12)
+                      assert math.isclose(row['G_outcome']+row['G_interaction'],row['G_Currier_reproduced'],rel_tol=0.0,abs_tol=1e-12)
+                      gi.append(row['G_interaction']); go.append(row['G_outcome']); gc.append(row['G_Currier_reproduced'])
+                  p=c['primary']
+                  assert p['G_interaction_by_fold']==gi
+                  assert p['G_outcome_by_fold']==go
+                  mean=sum(gi)/5
+                  positive=sum(v>0 for v in gi)
+                  expected_pass=(mean>0 and positive>=4)
+                  assert math.isclose(p['mean_G_interaction'],mean,rel_tol=0.0,abs_tol=1e-15)
+                  assert p['positive_G_interaction_folds']==positive
+                  assert p['required_positive_folds']==4
+                  assert p['pass_within_reading_regime'] is expected_pass
+                  assert c['secondary_non_promoting']['G_Currier_reproduced_by_fold']==gc
+                  passes.append(expected_pass)
+              robust[regime]=all(passes)
+
+          if robust['A'] and robust['B']:
+              expected='CURRIER EDGE CONTRAST REQUIRES CONTEXT-SPECIFIC INTERACTION IN BOTH A AND B'
+          elif robust['A']:
+              expected='CURRIER EDGE CONTRAST REQUIRES CONTEXT-SPECIFIC INTERACTION IN A ONLY'
+          elif robust['B']:
+              expected='CURRIER EDGE CONTRAST REQUIRES CONTEXT-SPECIFIC INTERACTION IN B ONLY'
+          else:
+              expected='NO ROBUST CONTEXT-SPECIFIC CURRIER EDGE RESIDUAL'
+          assert x['classification']==expected
+          assert x['primary_joint']['classification']==expected
+          assert x['primary_joint']['Currier_A_context_specific_in_both_readings'] is robust['A']
+          assert x['primary_joint']['Currier_B_context_specific_in_both_readings'] is robust['B']
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({
+              'classification':x['classification'],
+              'ZL3b_A':x['cells']['ZL3b']['A']['primary'],
+              'IT2a_A':x['cells']['IT2a']['A']['primary'],
+              'ZL3b_B':x['cells']['ZL3b']['B']['primary'],
+              'IT2a_B':x['cells']['IT2a']['B']['primary'],
+          },indent=2,sort_keys=True,ensure_ascii=False))
+          PY
+
+      - name: Upload first-reveal authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue161-outcome-factor-first-reveal-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: warn
+          path: |
+            issue161_outcome_factor_first_reveal.json
+            issue161_outcome_factor_first_reveal.sha256
+
+      - name: Preserve scorer failure status
+        if: steps.scorer.outcome == 'failure'
+        shell: bash
+        run: exit 1
