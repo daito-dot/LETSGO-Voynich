@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - '.github/workflows/lm-a0-external-e0.yml'
+      - 'experiments/lm-a0-external-preflight/lm_a0_external_e0.py'
+      - 'experiments/lm-a0-external-preflight/lm_a0_external_e0_recovery.py'
   workflow_dispatch:
 
 permissions:
@@ -24,8 +26,9 @@ jobs:
       - name: Install frozen runtime dependency
         run: python -m pip install 'lxml>=5,<6'
 
-      - name: Synthetic preflight
-        run: python experiments/lm-a0-external-preflight/lm_a0_external_e0.py --synthetic-preflight
+      - name: Synthetic preflight through parser recovery
+        working-directory: experiments/lm-a0-external-preflight
+        run: python lm_a0_external_e0_recovery.py --synthetic-preflight
 
       - name: Fetch pinned external E0 authority
         run: |
@@ -34,11 +37,13 @@ jobs:
             -o /tmp/bdd_bamberg_book07.xml
           sha256sum /tmp/bdd_bamberg_book07.xml | tee external_source.sha256
 
-      - name: Run frozen E0 reveal
+      - name: Run frozen E0 reveal through parser recovery
+        working-directory: experiments/lm-a0-external-preflight
         run: |
-          python experiments/lm-a0-external-preflight/lm_a0_external_e0.py \
+          python lm_a0_external_e0_recovery.py \
             /tmp/bdd_bamberg_book07.xml \
-            --out lm_a0_external_e0_result.json
+            --out ../../lm_a0_external_e0_result.json
+          cd ../..
           sha256sum lm_a0_external_e0_result.json | tee lm_a0_external_e0_result.sha256
           cat lm_a0_external_e0_result.json
 
