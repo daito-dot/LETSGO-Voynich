@@ -22,7 +22,7 @@ Frozen #158 authority:
 - Gate script blob `4dbc919f3e9ededa17d2e10f56de46c98456cdea`;
 - corrected Gate provenance blob `07595bf7314cfb71763eba1a810bfd3aaa01a239`;
 - scientific scorer blob `e7a70a10dd7b663f3482993b0adfa8f804816158`;
-- first-reveal provenance blob `684ed8c68d22f7ad3dfe72258f04d403b215f2b4`;
+- first-reveal provenance blob `0f3c14d2f592dea020c180669670cafca5ba1b05`;
 - first-reveal run `34076400927`;
 - artifact `10002205049`;
 - result JSON SHA-256 `eef6aee7cb202d73a7090c7aca0e9a0df404b46373589a8203da2b80ec1c3107`;
