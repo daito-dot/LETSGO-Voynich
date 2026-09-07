@@ -7,6 +7,7 @@ on:
       - 'experiments/lm-a0-external-preflight/oriflamms_e1_metadata_inventory.py'
       - 'experiments/lm-a0-external-preflight/oriflamms_e1_metadata_synthetic.py'
       - 'experiments/lm-a0-external-preflight/oriflamms_word_schema_probe.py'
+      - 'experiments/lm-a0-external-preflight/oriflamms_association_probe.py'
   workflow_dispatch:
 
 permissions:
@@ -42,6 +43,11 @@ jobs:
 
       - name: Score-free word TEI schema probe
         run: python experiments/lm-a0-external-preflight/oriflamms_word_schema_probe.py /tmp/oriflamms/texts/mss-dates-w.xml
+
+      - name: Score-free manuscript association probe
+        run: |
+          python experiments/lm-a0-external-preflight/oriflamms_association_probe.py \
+            /tmp/oriflamms/mss-dates.xml /tmp/oriflamms/texts/mss-dates-w.xml
 
       - name: Run metadata-only inventory
         run: |
