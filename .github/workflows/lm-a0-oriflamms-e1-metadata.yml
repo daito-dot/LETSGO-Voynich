@@ -1,0 +1,70 @@
+name: LM-A0 ORIFLAMMS E1 metadata inventory
+
+on:
+  push:
+    paths:
+      - '.github/workflows/lm-a0-oriflamms-e1-metadata.yml'
+      - 'experiments/lm-a0-external-preflight/oriflamms_e1_metadata_inventory.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout research repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install parser dependency
+        run: python -m pip install 'lxml>=5,<6'
+
+      - name: Synthetic metadata preflight
+        run: python experiments/lm-a0-external-preflight/oriflamms_e1_metadata_inventory.py --synthetic-preflight
+
+      - name: Fetch pinned ORIFLAMMS authority
+        run: |
+          mkdir -p /tmp/oriflamms/texts
+          base='https://raw.githubusercontent.com/oriflamms/Dated-and-Datable-Manuscripts_LIRIS/93de4af4a470aea3f3b23c2e8bafcfa2161c5438'
+          curl -L --fail --silent --show-error "$base/abbreviations.dtd" -o /tmp/oriflamms/abbreviations.dtd
+          curl -L --fail --silent --show-error "$base/mss-dates.xml" -o /tmp/oriflamms/mss-dates.xml
+          curl -L --fail --silent --show-error "$base/texts/mss-dates-w.xml" -o /tmp/oriflamms/texts/mss-dates-w.xml
+          sha256sum /tmp/oriflamms/abbreviations.dtd /tmp/oriflamms/mss-dates.xml /tmp/oriflamms/texts/mss-dates-w.xml | tee oriflamms_e1_sources.sha256
+
+      - name: Run metadata-only inventory
+        run: |
+          python experiments/lm-a0-external-preflight/oriflamms_e1_metadata_inventory.py \
+            /tmp/oriflamms/mss-dates.xml \
+            /tmp/oriflamms/texts/mss-dates-w.xml \
+            --out oriflamms_e1_metadata_inventory.json
+          sha256sum oriflamms_e1_metadata_inventory.json | tee oriflamms_e1_metadata_inventory.sha256
+          python - <<'PY'
+          import json
+          p='oriflamms_e1_metadata_inventory.json'
+          d=json.load(open(p, encoding='utf-8'))
+          assert d['effect_statistics_computed'] is False
+          print(json.dumps({
+              'metadata_text_count': d['metadata_text_count'],
+              'word_text_count': d['word_text_count'],
+              'eligible_manuscript_count': d['eligible_manuscript_count'],
+              'eligible_roster': d['eligible_roster'],
+              'effect_statistics_computed': d['effect_statistics_computed'],
+          }, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload metadata authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: lm-a0-oriflamms-e1-metadata
+          path: |
+            oriflamms_e1_sources.sha256
+            oriflamms_e1_metadata_inventory.json
+            oriflamms_e1_metadata_inventory.sha256
+          if-no-files-found: error
+          retention-days: 90
