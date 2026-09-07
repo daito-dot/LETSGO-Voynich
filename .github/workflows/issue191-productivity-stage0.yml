@@ -1,0 +1,49 @@
+name: issue191-productivity-stage0
+
+on:
+  pull_request:
+    paths:
+      - 'research/ISSUE191_PRODUCTIVITY_STAGE0_PLAN_20260908.md'
+      - 'experiments/issue191-productivity/issue191_stage0.py'
+      - '.github/workflows/issue191-productivity-stage0.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stage0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run score-free Stage0 audit
+        run: |
+          set -euo pipefail
+          python experiments/issue191-productivity/issue191_stage0.py > issue191_stage0_authority.json
+          cat issue191_stage0_authority.json
+      - name: Enforce admission and firewall
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('issue191_stage0_authority.json')
+          x = json.loads(p.read_text(encoding='utf-8'))
+          assert x['marker'] == 'NO ISSUE191 NEW PRODUCTIVITY SCIENTIFIC RESULT COMPUTED'
+          assert x['scientific_score_computed'] is False
+          assert x['new_productivity_score_computed'] is False
+          assert x['manuscript_transcription_opened'] is False
+          assert x['stage1_licensed'] is True
+          assert all(c['ok'] for c in x['checks'])
+          assert len(x['read_firewall']['paths_read']) == 10
+          print('ISSUE191_STAGE0_ADMISSION=PASS')
+          PY
+      - name: Upload Stage0 authority artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue191-productivity-stage0
+          path: issue191_stage0_authority.json
+          if-no-files-found: error
