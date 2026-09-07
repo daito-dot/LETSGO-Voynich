@@ -1,0 +1,46 @@
+{
+  "experiment": "Issue #181 Borg external R5-like edge reveal",
+  "classification": "EXTERNAL LINE-LOCAL EDGE",
+  "external_only": true,
+  "authority": {
+    "external_repository": "matthewdgreen/cipher_benchmark",
+    "external_commit": "729aad62d12483c549e64a2541d4f9255538c8cf",
+    "pre_reveal_research_commit": "a4c81e28116351e817db99dbc673e858226c4ff0",
+    "scorer_commit": "93aa21fbf97bd3f768ce00828f86f4157405a43d",
+    "scorer_blob": "d5a0a058466f002c82e3bb4f528b22dd0f707a34"
+  },
+  "reveal": {
+    "workflow_run": 34123034953,
+    "artifact_id": 10018952850,
+    "artifact_zip_sha256": "a933c729e84e4caa224ec826f687e94cf20ffc7eae90b0683374022658c50e7c",
+    "full_result_json_sha256": "d5642d108bdbbbbc3dd70d26d65a605a7a69a59ace0c8a92a250bc981a7b143d"
+  },
+  "fixed_contract": {
+    "page_count": 397,
+    "vocabulary_size": 77,
+    "alpha": 0.01,
+    "folds": 5,
+    "pass_rule": "five-fold mean > 0 and at least 4/5 fold means > 0"
+  },
+  "primary": {
+    "G_line_fold_bits": [0.020352747232956034, 0.051932183061304815, 0.07339488655680938, 0.0685062496988455, 0.04820475675711582],
+    "G_line_mean_bits": 0.05247816466140631,
+    "G_line_positive_folds": 5,
+    "G_line_pass": true,
+    "G_cross_fold_bits": [-0.03290799258458781, -0.13589078126176143, -0.05495547449956107, -0.0846607988069921, -0.07182519411294874],
+    "G_cross_mean_bits": -0.07604804825317023,
+    "G_cross_positive_folds": 0,
+    "G_cross_pass": false
+  },
+  "fold_detail": [
+    {"fold":0,"same_test_edges":3415,"same_train_edges":13891,"same_train_contexts":54,"same_pos_bits":4.366803183464042,"same_edge_bits":4.346450436231087,"cross_test_edges":1379,"cross_train_edges":5419,"cross_train_contexts":40,"cross_pos_bits":4.336516311536678,"cross_edge_bits":4.3694243041212655},
+    {"fold":1,"same_test_edges":3458,"same_train_edges":13848,"same_train_contexts":56,"same_pos_bits":4.338120732021067,"same_edge_bits":4.286188548959762,"cross_test_edges":1350,"cross_train_edges":5448,"cross_train_contexts":40,"cross_pos_bits":4.33581180161494,"cross_edge_bits":4.471702582876702},
+    {"fold":2,"same_test_edges":3427,"same_train_edges":13879,"same_train_contexts":55,"same_pos_bits":4.3978578452557695,"same_edge_bits":4.32446295869896,"cross_test_edges":1343,"cross_train_edges":5455,"cross_train_contexts":39,"cross_pos_bits":4.349507045449088,"cross_edge_bits":4.404462519948649},
+    {"fold":3,"same_test_edges":3493,"same_train_edges":13813,"same_train_contexts":56,"same_pos_bits":4.293655813554218,"same_edge_bits":4.225149563855372,"cross_test_edges":1361,"cross_train_edges":5437,"cross_train_contexts":42,"cross_pos_bits":4.335210841492467,"cross_edge_bits":4.4198716402994584},
+    {"fold":4,"same_test_edges":3513,"same_train_edges":13793,"same_train_contexts":54,"same_pos_bits":4.352261438088922,"same_edge_bits":4.304056681331806,"cross_test_edges":1365,"cross_train_edges":5433,"cross_train_contexts":39,"cross_pos_bits":4.328156256949101,"cross_edge_bits":4.399981451062049}
+  ],
+  "diagnostic": {
+    "page_same_line_positive_fraction": 0.6196473551637279
+  },
+  "interpretation_boundary": "A real historical monoalphabetic ciphertext document exhibits the same qualitative line-local versus cross-line edge topology under the frozen external test. This does not show that monoalphabetic substitution causes the topology; it may be inherited from plaintext, cipher-unit grouping, physical lineation, or scribal production."
+}
