@@ -42,6 +42,7 @@ The workflow must fail before scoring on any source mismatch.
 In addition to Stage-0 authorities, Stage 1 freezes:
 
 - `experiments/issue191-productivity/issue191_stage0.py` Git blob `3bb6361f721e9cb8069846a79549652596aa287f` for rarefaction, edit-distance, deterministic C2 assignment, seed, annotation, and quantile helper semantics;
+- `experiments/phase62/phase62b_n0.py` Git blob `e0ada366845c7a6c5a5dd75de91fe262b72a94b6` for the exact ZL3b paragraph/token parser transitively used by OGH-C;
 - `experiments/phase63/phase63b_common.py` Git blob `99cc6d49669c67432b4798b81c8250a17b3fbb38` for IT2a IVTFF W1 parsing;
 - `experiments/occupancy-graph-independent-transcription/source-audit/issue66_source_audit_support_complete.json` Git blob `5de44d197ec60129d3df0bdcc95354b3dd38ba42`, with Phase58D-pinned raw SHA-256 `35ea31eb5d0a1f0484623ee8a29058f1c5bc339117e378b594f26c7c23aee0dc`;
 - historical #115 Gate0 workflow Git blob `b715fced15212861618b03fbfe220030e5c5f8de` as source-acquisition precedent only.
@@ -148,6 +149,8 @@ For each reading, replicate index `r` combines the five independently seeded fol
 - edit1 share among all fold-novel distinct-type incidences.
 
 For each metric report the 100-realization mean, central 95% empirical interval using Stage-0 linear quantiles, and observed/V2-mean ratio when the denominator is nonzero. The observed structural shares use the same incidence denominator.
+
+If a combined V2 realization has zero fold-novel distinct incidences, its known-shape and edit1 shares are recorded as `null`; the strong nonzero gate fails and no structural-share MC interval or ratio is reported for that reading. This is a C3 model-compatibility failure, not a protocol `INVALID` by itself.
 
 The #191 criterion “V2 produces nonzero novelty in every fold” is fixed here as: **every one of the 100 deterministic realizations has at least one generated new-type token in each of the five folds for that reading**. This is intentionally stronger than “at least one realization succeeds.”
 
