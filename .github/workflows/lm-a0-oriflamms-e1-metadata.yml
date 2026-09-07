@@ -56,8 +56,8 @@ jobs:
           python oriflamms_e1_metadata_inventory_ordinal.py \
             /tmp/oriflamms/mss-dates.xml \
             /tmp/oriflamms/texts/mss-dates-w.xml \
-            --out ../../../oriflamms_e1_metadata_inventory.json
-          cd ../../..
+            --out ../../oriflamms_e1_metadata_inventory.json
+          cd ../..
           sha256sum oriflamms_e1_metadata_inventory.json | tee oriflamms_e1_metadata_inventory.sha256
           python - <<'PY'
           import json
