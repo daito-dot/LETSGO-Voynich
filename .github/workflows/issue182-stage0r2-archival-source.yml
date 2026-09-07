@@ -1,0 +1,132 @@
+name: Issue182 Stage0-R2 archival lexical authority
+
+on:
+  push:
+    paths:
+      - '.github/workflows/issue182-stage0r2-archival-source.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen Stage0-R2 state
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Re-run unchanged score-free synthetic preflight
+        run: python experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1.py --synthetic-preflight
+
+      - name: Fetch exact pinned Borg benchmark authority
+        run: |
+          rm -rf /tmp/cipher_benchmark
+          git init -q /tmp/cipher_benchmark
+          git -C /tmp/cipher_benchmark remote add origin https://github.com/matthewdgreen/cipher_benchmark.git
+          git -C /tmp/cipher_benchmark config core.sparseCheckout true
+          cat > /tmp/cipher_benchmark/.git/info/sparse-checkout <<'EOF'
+          benchmark/sources/borg/transcriptions/
+          benchmark/sources/borg/plaintext/
+          benchmark/sources/borg/metadata/
+          EOF
+          git -C /tmp/cipher_benchmark fetch -q --depth 1 origin 729aad62d12483c549e64a2541d4f9255538c8cf
+          git -C /tmp/cipher_benchmark checkout -q FETCH_HEAD
+          test "$(git -C /tmp/cipher_benchmark rev-parse HEAD)" = '729aad62d12483c549e64a2541d4f9255538c8cf'
+
+      - name: Fetch independently referenced 2024 archival corrected-Latin source
+        run: |
+          archive='https://web.archive.org/web/20240920225756/https://www.su.se/polopoly_fs/1.689014.1699461276!/menu/standard/file/corrected-Latin-translation.txt'
+          curl -L --fail --silent --show-error "$archive" -o /tmp/borg_corrected_latin_translation_20240920.txt
+          sha256sum /tmp/borg_corrected_latin_translation_20240920.txt | tee issue182_stage0r2_archival_source.sha256
+
+      - name: Run unchanged Stage0-R1 engine on archival transport
+        run: |
+          python experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1.py \
+            /tmp/cipher_benchmark \
+            /tmp/borg_corrected_latin_translation_20240920.txt \
+            --out /tmp/issue182_stage0r2_engine.json
+
+      - name: Freeze archival transport provenance and classification
+        run: |
+          python - <<'PY'
+          import json, hashlib
+          engine='/tmp/issue182_stage0r2_engine.json'
+          d=json.load(open(engine, encoding='utf-8'))
+          assert d['edge_gain_computed'] is False
+          archive='https://web.archive.org/web/20240920225756/https://www.su.se/polopoly_fs/1.689014.1699461276!/menu/standard/file/corrected-Latin-translation.txt'
+          d['experiment']='Issue #182 Borg Stage0-R2 archival lexical restoration'
+          d['transport_stage']='Stage0-R2'
+          d['official_source']['url']=archive
+          gate=d['support_gate']
+          valid=(
+              d['source_compatibility']['exact_reproduced_page_count']==397
+              and d['source_compatibility']['mismatch_count']==0
+              and gate['same_restored_lexical_boundary_min_100']
+              and gate['cross_restored_lexical_boundary_min_100']
+              and gate['cross_within_word_split_recovered_min_1']
+              and d['edge_gain_computed'] is False
+          )
+          d['classification']='LEXICAL_RESTORATION_ARCHIVAL_AUTHORITY_VALID' if valid else 'STAGE0R2_INVALID_ARCHIVAL_TRANSPORT'
+          full='experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r2_full.json'
+          open(full,'w',encoding='utf-8').write(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+          full_sha=hashlib.sha256(open(full,'rb').read()).hexdigest()
+          summary={
+              'experiment': d['experiment'],
+              'classification': d['classification'],
+              'edge_gain_computed': False,
+              'transport_stage': 'Stage0-R2',
+              'official_source': d['official_source'],
+              'benchmark_authority': d['benchmark_authority'],
+              'source_compatibility': d['source_compatibility'],
+              'restored_alignment_totals': d['restored_alignment_totals'],
+              'old_stage0_boundary_totals_recomputed': d['old_stage0_boundary_totals_recomputed'],
+              'restored_boundary_totals': d['restored_boundary_totals'],
+              'changed_event_classes': d['changed_event_classes'],
+              'support_gate': d['support_gate'],
+              'full_result_sha256': full_sha,
+              'frozen_transport_plan_commit': '026d567fea3b5c9c972abb86a16445c2ca192570',
+              'unchanged_restoration_auditor_commit': '43f9e8af91fd5c1fb32d17262032da6043da8dfb',
+          }
+          sp='experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r2_summary.json'
+          open(sp,'w',encoding='utf-8').write(json.dumps(summary,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(summary,ensure_ascii=False,indent=2))
+          PY
+          sha256sum experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r2_full.json \
+            > experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r2_full.sha256
+          sha256sum experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r2_summary.json \
+            > experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r2_summary.sha256
+
+      - name: Commit archival boundary authority before Stage1
+        run: |
+          cp issue182_stage0r2_archival_source.sha256 \
+            experiments/issue182-borg-source-attribution/issue182_stage0r2_archival_source.sha256
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r2_full.json \
+                  experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r2_full.sha256 \
+                  experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r2_summary.json \
+                  experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r2_summary.sha256 \
+                  experiments/issue182-borg-source-attribution/issue182_stage0r2_archival_source.sha256
+          git commit -m 'Issue #182: freeze archival restored lexical authority'
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Enforce frozen R2 gate after authority commit
+        run: |
+          python - <<'PY'
+          import json
+          p='experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r2_summary.json'
+          d=json.load(open(p, encoding='utf-8'))
+          assert d['classification']=='LEXICAL_RESTORATION_ARCHIVAL_AUTHORITY_VALID', d['classification']
+          assert d['source_compatibility']['exact_reproduced_page_count']==397
+          assert d['source_compatibility']['mismatch_count']==0
+          assert d['edge_gain_computed'] is False
+          PY
