@@ -1,0 +1,37 @@
+{
+  "experiment": "Issue #181 Borg external R5 Gate0",
+  "gate0_classification": "GATE0_VALID",
+  "edge_likelihood_computed": false,
+  "external_authority": {
+    "repository": "matthewdgreen/cipher_benchmark",
+    "commit": "729aad62d12483c549e64a2541d4f9255538c8cf",
+    "representation": "Borg canonical S### atoms; literal | cipher-unit boundaries; newline physical lines"
+  },
+  "workflow": {
+    "run_id": 34122654918,
+    "research_head": "56aaf44bb4a9b527e44927c50337fcb1c7708312",
+    "artifact_id": 10018805098,
+    "artifact_zip_sha256": "5b56023bd1c93a883b171851a8940fd1a6a4835dfcbfd28ba3d1e8ec6f91fe78",
+    "full_gate0_json_sha256": "dc042f32db4d38977e51831bb952cb8e10488fe4ee31da6ec3aa87e1981dc8c0"
+  },
+  "support": {
+    "canonical_file_count": 401,
+    "nonempty_page_count": 397,
+    "empty_page_count": 4,
+    "physical_nonempty_line_count": 7195,
+    "unit_count": 24501,
+    "atom_count": 120191,
+    "same_line_edge_count": 17306,
+    "cross_line_edge_count": 6798,
+    "atom_vocabulary_size": 77,
+    "malformed_count": 0
+  },
+  "folds": {
+    "0": {"page_count": 80, "physical_nonempty_lines": 1459, "unit_count": 4874, "same_line_edge_count": 3415, "cross_line_edge_count": 1379},
+    "1": {"page_count": 80, "physical_nonempty_lines": 1430, "unit_count": 4888, "same_line_edge_count": 3458, "cross_line_edge_count": 1350},
+    "2": {"page_count": 79, "physical_nonempty_lines": 1422, "unit_count": 4849, "same_line_edge_count": 3427, "cross_line_edge_count": 1343},
+    "3": {"page_count": 79, "physical_nonempty_lines": 1440, "unit_count": 4933, "same_line_edge_count": 3493, "cross_line_edge_count": 1361},
+    "4": {"page_count": 79, "physical_nonempty_lines": 1444, "unit_count": 4957, "same_line_edge_count": 3513, "cross_line_edge_count": 1365}
+  },
+  "firewall": "No POS/EDGE likelihood, per-edge gain, fold gain, or classification beyond Gate0 validity was computed in this run."
+}
