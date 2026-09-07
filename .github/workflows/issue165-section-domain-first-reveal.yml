@@ -1,0 +1,169 @@
+name: Issue165 section/domain source-attribution first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/source-attribution/issue165_section_domain_first_reveal.py'
+      - '.github/workflows/issue165-section-domain-first-reveal.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue165_section_domain_first_reveal.json
+  SCORER: experiments/predictive-information/source-attribution/issue165_section_domain_first_reveal.py
+
+jobs:
+  first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact PR head with merged Gate ancestry
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert merged Gate ancestry and frozen blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 389043ad2cc55eb15760ed3504fd03fc01253eb9 HEAD
+          test "$(git hash-object "$SCORER")" = "10f5d54e14700e758054b216fd487c25d23dda84"
+          test "$(git hash-object experiments/predictive-information/source-attribution/issue165_section_domain_gate0.py)" = "adaca5dc387d58542044089aac5faaedc8880ccf"
+          test "$(git hash-object experiments/predictive-information/source-attribution/issue165_section_domain_gate0_authorityfix.py)" = "8ad582bdea2351606e97e52c0ee733999c11820f"
+          test "$(git hash-object experiments/predictive-information/source-attribution/ISSUE165_GATE0_PROVENANCE.md)" = "15627264ce598c315810458a64482e8f60d9afeb"
+          test "$(git hash-object experiments/predictive-information/source-attribution/ISSUE165_SECTION_DOMAIN_TRANSPORT_PLAN.md)" = "d334092e6c7cd38f76deb48250fa09d8f9468064"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue161_outcome_factor_first_reveal.py)" = "d24149977770118505f2147c5aa2bb727631906f"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and target-free synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile "$SCORER"
+          python "$SCORER" --self-test
+
+      - name: Run frozen section/domain first reveal
+        id: scorer
+        continue-on-error: true
+        shell: bash
+        run: |
+          python "$SCORER" --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue165_section_domain_first_reveal.sha256
+
+      - name: Preserve scorer output for chronology audit
+        if: always()
+        shell: bash
+        run: |
+          if test -f "$OUT"; then
+            cat "$OUT"
+            sha256sum "$OUT" | tee issue165_section_domain_first_reveal.sha256
+          else
+            echo "scorer produced no result JSON" >&2
+          fi
+
+      - name: Assert frozen section/domain classification contract
+        if: steps.scorer.outcome == 'success'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue165_section_domain_first_reveal.json',encoding='utf-8'))
+          assert x['schema']=='issue165-section-domain-first-reveal-v1'
+          assert x['issue']==165 and x['scored'] is True
+          a=x['authority']
+          assert a['gate0_reproduced'] is True
+          assert a['gate0_result_sha256']=='3b6eededdfe197ed9152b9b0f756dffe34870eaf1a33b810d7e23f84d0d84f1a'
+          assert a['gate0_original_script_blob']=='adaca5dc387d58542044089aac5faaedc8880ccf'
+          assert a['gate0_authority_fix_blob']=='8ad582bdea2351606e97e52c0ee733999c11820f'
+          assert a['gate0_provenance_blob']=='15627264ce598c315810458a64482e8f60d9afeb'
+          assert a['plan_blob']=='d334092e6c7cd38f76deb48250fa09d8f9468064'
+          assert a['gate0_merge']=='389043ad2cc55eb15760ed3504fd03fc01253eb9'
+          assert a['issue161_scorer_blob']=='d24149977770118505f2147c5aa2bb727631906f'
+          assert a['issue161_declared_result_sha256']=='11e179abcc53e5507d188b46f335c38198ee6a9d36f31fee406650610cafd031'
+          assert a['pure_I_leaf_map_sha256']=='47ab536c6806eca5b037bc8cf81bae11069a153c92e4d17162c6381c92025eb1'
+          assert a['scribe_identifiability']=='SCRIBE_NOT_IDENTIFIABLE'
+          assert x['scorable_currier_regimes']==['B']
+          m=x['frozen_model']
+          assert m['alpha']==0.01 and m['V']==32
+          assert m['section_by_previous_terminal_interaction'] is False
+          assert m['target_native_fallback'] is False
+          for reading in ('ZL3b','IT2a'):
+              assert x['cells'][reading]['A']['status']=='UNSCORABLE_BY_FROZEN_SUPPORT'
+              b=x['cells'][reading]['B']
+              assert b['status']=='SCORED'
+              assert b['eligible_sections']==['B','S']
+              assert len(b['outer'])==5
+              gs=[]; gp=[]
+              for f,row in enumerate(b['outer']):
+                  assert row['fold']==f and row['reading']==reading and row['regime']=='B'
+                  assert row['n_scored_primary_run_body_targets']>0
+                  assert set(row['targets_by_section'])=={'B','S'}
+                  assert row['matched_context_coverage_fraction']>0.99
+                  for key in ('bits_EDGE_CURRIER','bits_EDGE_SECTION','bits_EDGE_SECTION_SHUFFLED','G_section','G_placebo'):
+                      assert math.isfinite(row[key])
+                  gs.append(row['G_section']); gp.append(row['G_placebo'])
+              p=b['primary']
+              assert p['G_section_by_fold']==gs and p['G_placebo_by_fold']==gp
+              expected=(sum(gs)/5>0 and sum(v>0 for v in gs)>=4 and sum(gp)/5>0 and sum(v>0 for v in gp)>=4)
+              assert p['pass_within_reading_regime'] is expected
+              assert p['positive_G_section_folds']==sum(v>0 for v in gs)
+              assert p['positive_G_placebo_folds']==sum(v>0 for v in gp)
+          robust_b=(x['cells']['ZL3b']['B']['primary']['pass_within_reading_regime'] and x['cells']['IT2a']['B']['primary']['pass_within_reading_regime'])
+          expected=('SECTION/DOMAIN ADDS ROBUST OUTCOME INFORMATION IN CURRIER B ONLY' if robust_b else 'NO ROBUST SECTION/DOMAIN OUTCOME INFORMATION')
+          assert x['classification']==expected
+          assert x['primary_joint']['classification']==expected
+          assert x['primary_joint']['Currier_A_robust_section_information'] is False
+          assert x['primary_joint']['Currier_B_robust_section_information'] is robust_b
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({
+              'classification':x['classification'],
+              'ZL3b_B':x['cells']['ZL3b']['B']['primary'],
+              'IT2a_B':x['cells']['IT2a']['B']['primary'],
+              'A_status':x['cells']['ZL3b']['A']['status'],
+          },indent=2,sort_keys=True,ensure_ascii=False))
+          PY
+
+      - name: Upload first-reveal authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue165-section-domain-first-reveal-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: warn
+          path: |
+            issue165_section_domain_first_reveal.json
+            issue165_section_domain_first_reveal.sha256
+
+      - name: Preserve scorer failure status
+        if: steps.scorer.outcome == 'failure'
+        shell: bash
+        run: exit 1
