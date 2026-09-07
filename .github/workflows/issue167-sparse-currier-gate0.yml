@@ -1,0 +1,178 @@
+name: Issue167 sparse Currier outcome Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/common-eva-currier/ISSUE167_SPARSE_CURRIER_OUTCOME_PLAN.md'
+      - 'experiments/predictive-information/common-eva-currier/issue167_sparse_currier_gate0.py'
+      - '.github/workflows/issue167-sparse-currier-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue167_sparse_currier_gate0.json
+  GATE: experiments/predictive-information/common-eva-currier/issue167_sparse_currier_gate0.py
+  PLAN: experiments/predictive-information/common-eva-currier/ISSUE167_SPARSE_CURRIER_OUTCOME_PLAN.md
+
+jobs:
+  gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert current-main ancestry and frozen blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 5545b2657d058abea7973df2386a095b805669ef HEAD
+          test "$(git hash-object "$PLAN")" = "d5b79c64ffc8297672f2de39f6478156ee3442b7"
+          test "$(git hash-object "$GATE")" = "5b3aac1a03ef087340f6e0ffd241a4909476c815"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue161_outcome_factor_gate0.py)" = "00e5bddc0484b9472bb4fce9dadb89dd52bf578f"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE161_GATE0_PROVENANCE.md)" = "67e91ba26a76898f679a5182828ab3e9f512d49a"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue161_outcome_factor_first_reveal.py)" = "d24149977770118505f2147c5aa2bb727631906f"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE161_FIRST_REVEAL_PROVENANCE.md)" = "73100548fef5dbc0d08a1951e3c0ca5b370cd6f4"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and target-free synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile "$GATE"
+          python "$GATE" --self-test
+
+      - name: Run score-free sparse Currier Gate0
+        id: gate
+        continue-on-error: true
+        shell: bash
+        run: |
+          python "$GATE" --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue167_sparse_currier_gate0.sha256
+
+      - name: Preserve Gate output for chronology audit
+        if: always()
+        shell: bash
+        run: |
+          if test -f "$OUT"; then
+            cat "$OUT"
+            sha256sum "$OUT" | tee issue167_sparse_currier_gate0.sha256
+          else
+            echo "Gate produced no result JSON" >&2
+          fi
+
+      - name: Assert score-free Gate contract
+        if: steps.gate.outcome == 'success'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from decimal import Decimal
+          x=json.load(open('issue167_sparse_currier_gate0.json',encoding='utf-8'))
+          assert x['schema']=='issue167-sparse-currier-outcome-gate0-v1'
+          assert x['issue']==167 and x['gate_pass'] is True
+          assert x['scientific_sparse_metrics_computed'] is False
+          a=x['entry_authority']
+          assert a['issue161_gate_reproduced'] is True
+          assert a['issue161_gate_result_sha256']=='32af814ddec529d5e255ae5bede00e93e989aad5b36a70f9abe34ffed839bd94'
+          assert a['issue161_gate_script_blob']=='00e5bddc0484b9472bb4fce9dadb89dd52bf578f'
+          assert a['issue161_gate_provenance_blob']=='67e91ba26a76898f679a5182828ab3e9f512d49a'
+          assert a['issue161_scorer_blob']=='d24149977770118505f2147c5aa2bb727631906f'
+          assert a['issue161_first_provenance_blob']=='73100548fef5dbc0d08a1951e3c0ca5b370cd6f4'
+          assert a['issue161_declared_first_reveal_result_sha256']=='11e179abcc53e5507d188b46f335c38198ee6a9d36f31fee406650610cafd031'
+          assert a['fold_identity_sha256']=='cf2df8edcf2b25c2f6388c4a9e2c1ee58a24ae05a9cf489ff9a43d2d28f0b64b'
+          assert a['issue167_plan_blob_sha1']=='d5b79c64ffc8297672f2de39f6478156ee3442b7'
+          m=x['frozen_sparse_family']
+          assert m['V']==32 and m['alpha']==[1,100]
+          assert m['K_ladder']==[1,2,4,8,16]
+          assert m['ranking_shared_across_readings_and_regimes_within_fold'] is True
+          assert m['context_invariant_multiplier'] is True
+          assert m['currier_by_previous_terminal_interaction'] is False
+          assert m['target_native_fallback'] is False
+          assert len(x['outer'])==5
+          for f,row in enumerate(x['outer']):
+              assert row['outer_fold']==f
+              assert row['training_union_heldout_overlap']==[]
+              rank=row['Jeffreys_ranking']
+              assert len(rank)==32 and len(set(rank))==32
+              assert row['ranking_audit']['all_J_nonnegative'] is True
+              vals={y:Decimal(v) for y,v in row['Jeffreys_contribution_by_outcome']}
+              assert all(vals[y] >= 0 for y in rank)
+              prev=set()
+              for k in (1,2,4,8,16):
+                  cell=row['topK'][str(k)]
+                  chosen=cell['selected_outcomes']
+                  assert chosen==rank[:k]
+                  assert len(chosen)==k and len(set(chosen))==k
+                  assert prev < set(chosen) if prev else True
+                  prev=set(chosen)
+                  for regime in ('A','B'):
+                      r=cell['regimes'][regime]
+                      assert r['conditional_audit']['all_contexts_exactly_normalized'] is True
+                      assert r['conditional_audit']['n_contexts']>0
+                      assert set(r['nonunit_multiplier_outcomes']).issubset(set(chosen))
+              for reading in ('ZL3b','IT2a'):
+                  for regime in ('A','B'):
+                      t=row['target_context_support'][reading][regime]
+                      assert t['target_primary_run_body_targets']>=300
+                      assert t['matched_context_supported_primary_run_body_targets']>=300
+                      assert t['heldout_current_first_atom_used_for_context_selection'] is False
+          s=x['synthetic_test']
+          assert s['ok'] is True and s['uses_real_target_data'] is False
+          assert s['selected_global_shift_represented'] is True
+          assert s['excluded_outcome_multiplier_fixed_to_one'] is True
+          assert s['previous_terminal_interaction_introduced'] is False
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({
+              'gate_disposition':x['gate_disposition'],
+              'ranking_sha256_by_fold':[r['Jeffreys_ranking_sha256'] for r in x['outer']],
+              'top16_by_fold':[r['topK']['16']['selected_outcomes'] for r in x['outer']],
+          },indent=2,sort_keys=True,ensure_ascii=False))
+          PY
+
+      - name: Upload Gate0 authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue167-sparse-currier-gate0-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: warn
+          path: |
+            issue167_sparse_currier_gate0.json
+            issue167_sparse_currier_gate0.sha256
+
+      - name: Preserve Gate failure status
+        if: steps.gate.outcome == 'failure'
+        shell: bash
+        run: exit 1
