@@ -1,0 +1,114 @@
+name: issue191-productivity-stage1-first-reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'research/ISSUE191_PRODUCTIVITY_STAGE1_PLAN_20260908.md'
+      - 'experiments/issue191-productivity/issue191_stage1.py'
+      - '.github/workflows/issue191-productivity-stage1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+
+jobs:
+  first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources before first reveal
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(wc -c < "$IT2A" | tr -d ' ')" = "342104"
+          test "$(wc -l < "$IT2A" | tr -d ' ')" = "5444"
+          test "$(head -1 "$IT2A")" = "#=IVTFF EvaT 2.0 M 3"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install frozen numerical runtime
+        run: python -m pip install --disable-pip-version-check numpy==2.4.6 scipy==1.17.1
+
+      - name: Compile and run synthetic self-test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/issue191-productivity/issue191_stage1.py
+          python experiments/issue191-productivity/issue191_stage1.py --self-test
+
+      - name: Run scientific first reveal
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/issue191-productivity/issue191_stage1.py --run "$ZL3B" "$IT2A" issue191_stage1_results.json
+          python -m json.tool issue191_stage1_results.json > /dev/null
+          sha256sum issue191_stage1_results.json
+
+      - name: Print compact first-reveal decision
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue191_stage1_results.json'))
+          assert x['schema'] == 'issue191-productivity-stage1-v1'
+          print('outcome_label =', x.get('outcome_label'))
+          print('label_resolution =', x.get('label_resolution'))
+          print('r11_promoted =', x.get('r11_promoted'))
+          if x.get('outcome_label') == 'INVALID':
+              print('invalid_reason =', x.get('invalid_reason'))
+          else:
+              print('promotion_gates =', json.dumps(x['promotion_gates'], sort_keys=True))
+              for r in ('ZL3b','IT2a'):
+                  y=x['readings'][r]
+                  compact={
+                      'support': y['support'],
+                      'observed': y['observed']['summary'],
+                      'c2_mean_oov_p': y['c2']['mean_oov_p_upper'],
+                      'c2_novel_incidence_p': y['c2']['novel_incidence_p_upper'],
+                      'c2_null_mean_oov': y['c2']['null_mean_oov_summary'],
+                      'c2_null_novel_incidence': y['c2']['null_novel_incidence_summary'],
+                      'c3_nonzero_every_rep_every_fold': y['c3']['nonzero_every_realization_every_fold'],
+                      'c3_comparison': y['c3']['comparison'],
+                  }
+                  print(r, '=', json.dumps(compact, sort_keys=True))
+          PY
+
+      - name: Upload first-reveal artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue191-productivity-stage1-first-reveal
+          path: issue191_stage1_results.json
+          if-no-files-found: warn
