@@ -1,0 +1,47 @@
+name: LM-A0 ORIFLAMMS E1 structure audit
+
+on:
+  push:
+    paths:
+      - '.github/workflows/lm-a0-oriflamms-e1-structure-audit.yml'
+      - 'experiments/lm-a0-external-preflight/oriflamms_e1_structure_audit.py'
+      - 'experiments/lm-a0-external-preflight/oriflamms_e1_frozen_roster.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'lxml>=5,<6'
+      - name: Fetch pinned ORIFLAMMS word authority
+        run: |
+          mkdir -p /tmp/oriflamms/texts
+          base='https://raw.githubusercontent.com/oriflamms/Dated-and-Datable-Manuscripts_LIRIS/93de4af4a470aea3f3b23c2e8bafcfa2161c5438'
+          curl -L --fail --silent --show-error "$base/abbreviations.dtd" -o /tmp/oriflamms/abbreviations.dtd
+          curl -L --fail --silent --show-error "$base/texts/mss-dates-w.xml" -o /tmp/oriflamms/texts/mss-dates-w.xml
+          sha256sum /tmp/oriflamms/abbreviations.dtd /tmp/oriflamms/texts/mss-dates-w.xml
+      - name: Run structure-only audit
+        run: |
+          python experiments/lm-a0-external-preflight/oriflamms_e1_structure_audit.py \
+            /tmp/oriflamms/texts/mss-dates-w.xml \
+            experiments/lm-a0-external-preflight/oriflamms_e1_frozen_roster.json \
+            | tee oriflamms_e1_structure_audit.json
+          python - <<'PY'
+          import json
+          d=json.load(open('oriflamms_e1_structure_audit.json'))
+          assert d['effect_statistic_computed'] is False
+          assert d['selected_document_count'] == 23
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lm-a0-oriflamms-e1-structure-audit
+          path: oriflamms_e1_structure_audit.json
+          if-no-files-found: error
+          retention-days: 90
