@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/lm-a0-oriflamms-e1-metadata.yml'
       - 'experiments/lm-a0-external-preflight/oriflamms_e1_metadata_inventory.py'
+      - 'experiments/lm-a0-external-preflight/oriflamms_e1_metadata_inventory_ordinal.py'
       - 'experiments/lm-a0-external-preflight/oriflamms_e1_metadata_synthetic.py'
       - 'experiments/lm-a0-external-preflight/oriflamms_word_schema_probe.py'
       - 'experiments/lm-a0-external-preflight/oriflamms_association_probe.py'
@@ -49,21 +50,23 @@ jobs:
           python experiments/lm-a0-external-preflight/oriflamms_association_probe.py \
             /tmp/oriflamms/mss-dates.xml /tmp/oriflamms/texts/mss-dates-w.xml
 
-      - name: Run metadata-only inventory
+      - name: Run frozen metadata-only ordinal inventory
+        working-directory: experiments/lm-a0-external-preflight
         run: |
-          python experiments/lm-a0-external-preflight/oriflamms_e1_metadata_inventory.py \
+          python oriflamms_e1_metadata_inventory_ordinal.py \
             /tmp/oriflamms/mss-dates.xml \
             /tmp/oriflamms/texts/mss-dates-w.xml \
-            --out oriflamms_e1_metadata_inventory.json
+            --out ../../../oriflamms_e1_metadata_inventory.json
+          cd ../../..
           sha256sum oriflamms_e1_metadata_inventory.json | tee oriflamms_e1_metadata_inventory.sha256
           python - <<'PY'
           import json
           p='oriflamms_e1_metadata_inventory.json'
           d=json.load(open(p, encoding='utf-8'))
           assert d['effect_statistics_computed'] is False
+          assert d['association_authority']['all_first_pb_stems_match'] is True
           print(json.dumps({
-              'metadata_text_count': d['metadata_text_count'],
-              'word_text_count': d['word_text_count'],
+              'association_authority': d['association_authority'],
               'eligible_manuscript_count': d['eligible_manuscript_count'],
               'eligible_roster': d['eligible_roster'],
               'effect_statistics_computed': d['effect_statistics_computed'],
