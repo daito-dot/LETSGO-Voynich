@@ -1,0 +1,22 @@
+name: Issue182 Stage0-R1 synthetic preflight
+
+on:
+  push:
+    paths:
+      - '.github/workflows/issue182-stage0r1-synthetic.yml'
+      - 'experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run score-free synthetic Stage0-R1 preflight
+        run: python experiments/issue182-borg-source-attribution/issue182_lexical_restoration_stage0r1.py --synthetic-preflight
