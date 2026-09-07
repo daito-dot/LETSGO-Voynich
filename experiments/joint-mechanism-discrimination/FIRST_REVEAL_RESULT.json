@@ -1,0 +1,10 @@
+{
+  "classification": "INVALID / NON-COMPARABLE",
+  "error": "AttributeError: 'NoneType' object has no attribute 'get'",
+  "firewall": {
+    "post_failure_target_driven_repair_allowed": false
+  },
+  "issue": 172,
+  "schema": "issue172-historical-anchor-first-reveal-v1",
+  "scored": false
+}
