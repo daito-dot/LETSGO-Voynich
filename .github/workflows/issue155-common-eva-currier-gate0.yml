@@ -1,0 +1,172 @@
+name: Issue155 common-EVA Currier Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/common-eva-currier/ISSUE155_COMMON_EVA_CURRIER_PLAN.md'
+      - 'experiments/predictive-information/common-eva-currier/issue155_common_eva_currier_gate0.py'
+      - '.github/workflows/issue155-common-eva-currier-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue155_common_eva_currier_gate0.json
+  GATE: experiments/predictive-information/common-eva-currier/issue155_common_eva_currier_gate0.py
+
+jobs:
+  score-free-gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert entry ancestry and frozen blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 5562f966a5469e9da26406c23f47d60c8c2db17f HEAD
+          test "$(git hash-object "$GATE")" = "f5ab4fa31a92b3c303401da33611ffd5f77b402d"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE155_COMMON_EVA_CURRIER_PLAN.md)" = "1f30d7c62083dbff378612ce7bf177ee7d9fff80"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/issue151_shared_edge_gate0.py)" = "d5e3bd22501f8caebabc7c2728bc7f8d5cb59018"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/ISSUE151_GATE0_PROVENANCE.md)" = "609ee5f208cfdb3739749d8d82e34d68e4803dd6"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/issue151_shared_edge_first_reveal.py)" = "2dcd68c8fa68080552a8b90a81e118568b35f8ef"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/ISSUE151_FIRST_REVEAL_PROVENANCE.md)" = "b599d7a3b4a2c749262231f711c6f14aa6a0cb0e"
+          test "$(git hash-object experiments/predictive-information/phase3a/currier_gate0_audit.py)" = "015ee2cda0de53e14d82302aea7e639570db7242"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and target-free synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile "$GATE"
+          python "$GATE" --self-test
+
+      - name: Run score-free common-EVA Currier Gate0
+        id: gate
+        continue-on-error: true
+        shell: bash
+        run: |
+          python "$GATE" --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue155_common_eva_currier_gate0.sha256
+
+      - name: Preserve Gate output
+        if: always()
+        shell: bash
+        run: |
+          if test -f "$OUT"; then
+            sha256sum "$OUT" | tee issue155_common_eva_currier_gate0.sha256
+          else
+            echo "Gate produced no result JSON" >&2
+          fi
+
+      - name: Assert score-free Gate contract
+        if: steps.gate.outcome == 'success'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue155_common_eva_currier_gate0.json',encoding='utf-8'))
+          assert x['schema']=='issue155-common-eva-currier-gate0-v1'
+          assert x['issue']==155 and x['gate_pass'] is True
+          assert x['gate_disposition']=='PASS — PROCEED TO SEPARATELY COMMITTED COMMON-EVA CURRIER SCORER'
+          assert x['scientific_currier_transport_metrics_computed'] is False
+          a=x['entry_authority']
+          assert a['issue151_gate_reproduced'] is True
+          assert a['issue151_gate_result_sha256']=='bcc6c6bd5600ef9f74484807b51ef1db454613bae2bbd351d90f089c8693eea2'
+          assert a['issue151_gate_script_blob']=='d5e3bd22501f8caebabc7c2728bc7f8d5cb59018'
+          assert a['issue151_scorer_blob']=='2dcd68c8fa68080552a8b90a81e118568b35f8ef'
+          assert a['issue151_declared_first_reveal_result_sha256']=='cb7d88b88a65df58c8d93d047b8fbfe4d2eda20d4c7314713c9d44e31a9b7355'
+          assert a['phase3a_currier_reproduced'] is True
+          assert a['phase3a_currier_result_sha256']=='e970e83c8b6405fd224cef3c74f6c02ef430552fd1cd2b6aa969e89a475f258e'
+          assert a['phase3a_currier_script_blob']=='015ee2cda0de53e14d82302aea7e639570db7242'
+          assert a['fold_identity_sha256']=='cf2df8edcf2b25c2f6388c4a9e2c1ee58a24ae05a9cf489ff9a43d2d28f0b64b'
+          c=x['currier_physical_leaf_authority']
+          assert c['eligible_sets_disjoint'] is True
+          assert c['labels_derived_only_from_ZL3b_phase3a_authority'] is True
+          assert c['labels_reused_unchanged_for_IT2a'] is True
+          s=x['support_match_contract']
+          assert s['reading_weights_rational']=={'ZL3b':[1,2],'IT2a':[1,2]}
+          assert s['alpha_for_future_scorer']==[1,100]
+          assert s['V_for_future_scorer']==32
+          assert s['target_native_fallback'] is False
+          assert s['primary_rho_mixture_calibration'] is False
+          assert len(x['outer'])==5
+          summary=[]
+          for f,row in enumerate(x['outer']):
+              assert row['outer_fold']==f
+              assert row['all_reading_regime_training_union_heldout_overlap']==[]
+              m=row['matched_currier_tables']
+              assert m['exact_A_B_context_mass_equality'] is True
+              assert m['outcome_selected_subsampling'] is False
+              assert m['n_retained_previous_terminal_contexts']>=2
+              for cr in m['context_mass_audit']:
+                  assert cr['matched_mass'][1]>0
+              for reading in ('ZL3b','IT2a'):
+                  for regime in ('A','B'):
+                      t=row['target_context_support'][reading][regime]
+                      assert t['target_primary_run_body_targets']>=300
+                      assert t['matched_context_supported_primary_run_body_targets']>=300
+                      assert t['heldout_current_first_atom_used_for_context_selection'] is False
+              summary.append({
+                  'fold':f,
+                  'contexts':m['n_retained_previous_terminal_contexts'],
+                  'matched_mass':m['total_matched_effective_mass'],
+                  'A_cells':m['A_positive_context_outcome_cells'],
+                  'B_cells':m['B_positive_context_outcome_cells'],
+                  'coverage':{
+                      r:{q:row['target_context_support'][r][q]['matched_context_coverage_fraction'] for q in ('A','B')}
+                      for r in ('ZL3b','IT2a')
+                  },
+              })
+          assert x['synthetic_test']['uses_real_target_data'] is False
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({'gate_disposition':x['gate_disposition'],'folds':summary},indent=2,sort_keys=True))
+          PY
+
+      - name: Upload Gate0 authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue155-common-eva-currier-gate0-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: warn
+          path: |
+            issue155_common_eva_currier_gate0.json
+            issue155_common_eva_currier_gate0.sha256
+
+      - name: Preserve Gate failure status
+        if: steps.gate.outcome == 'failure'
+        shell: bash
+        run: exit 1
