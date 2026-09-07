@@ -1,0 +1,54 @@
+name: LM-A0 external E0 preflight
+
+on:
+  push:
+    paths:
+      - '.github/workflows/lm-a0-external-e0.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e0:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen repository head
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install frozen runtime dependency
+        run: python -m pip install 'lxml>=5,<6'
+
+      - name: Synthetic preflight
+        run: python experiments/lm-a0-external-preflight/lm_a0_external_e0.py --synthetic-preflight
+
+      - name: Fetch pinned external E0 authority
+        run: |
+          curl -L --fail --silent --show-error \
+            'https://raw.githubusercontent.com/michaelscho/transpy/7487dd18adb2bbb7194f3f4d32c03e04ac084626/new_file.xml' \
+            -o /tmp/bdd_bamberg_book07.xml
+          sha256sum /tmp/bdd_bamberg_book07.xml | tee external_source.sha256
+
+      - name: Run frozen E0 reveal
+        run: |
+          python experiments/lm-a0-external-preflight/lm_a0_external_e0.py \
+            /tmp/bdd_bamberg_book07.xml \
+            --out lm_a0_external_e0_result.json
+          sha256sum lm_a0_external_e0_result.json | tee lm_a0_external_e0_result.sha256
+          cat lm_a0_external_e0_result.json
+
+      - name: Upload E0 authority artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lm-a0-external-e0
+          path: |
+            lm_a0_external_e0_result.json
+            lm_a0_external_e0_result.sha256
+            external_source.sha256
+          if-no-files-found: error
+          retention-days: 90
