@@ -7,6 +7,7 @@ on:
     paths:
       - 'experiments/predictive-information/common-eva-currier/ISSUE161_OUTCOME_ONLY_CURRIER_FACTORIZATION_PLAN.md'
       - 'experiments/predictive-information/common-eva-currier/issue161_outcome_factor_gate0.py'
+      - 'experiments/predictive-information/common-eva-currier/ISSUE161_GATE0_PROVENANCE.md'
       - '.github/workflows/issue161-outcome-factor-gate0.yml'
 
 permissions:
@@ -36,6 +37,7 @@ jobs:
           git merge-base --is-ancestor 45d01bfcbed9c5307f823f8d23f59cdedcab35b0 HEAD
           test "$(git hash-object "$GATE")" = "00e5bddc0484b9472bb4fce9dadb89dd52bf578f"
           test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE161_OUTCOME_ONLY_CURRIER_FACTORIZATION_PLAN.md)" = "68cb29a11cb147c8ecd9e70b3349a4102744e0ed"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE161_GATE0_PROVENANCE.md)" = "67e91ba26a76898f679a5182828ab3e9f512d49a"
           test "$(git hash-object experiments/predictive-information/common-eva-currier/issue158_currier_gate_decomposition_gate0.py)" = "4dbc919f3e9ededa17d2e10f56de46c98456cdea"
           test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE158_GATE0_PROVENANCE.md)" = "07595bf7314cfb71763eba1a810bfd3aaa01a239"
           test "$(git hash-object experiments/predictive-information/common-eva-currier/issue158_currier_gate_first_reveal.py)" = "e7a70a10dd7b663f3482993b0adfa8f804816158"
