@@ -1,0 +1,54 @@
+name: Issue188 R4 Casebooks Gate0
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'research/ISSUE188_R4_CASEBOOKS_GATE0_PLAN_20260908.md'
+      - 'experiments/issue188-r4-casebooks/issue188_casebooks_gate0.py'
+      - '.github/workflows/issue188-r4-casebooks-gate0.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate0:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout pinned Casebooks authority
+        uses: actions/checkout@v4
+        with:
+          repository: CasebooksProject/casebooks-data
+          ref: 9d42295d72b5ba8889575a32d79311cc72bce73a
+          path: external/casebooks-data
+      - name: Verify authority
+        run: test "$(git -C external/casebooks-data rev-parse HEAD)" = "9d42295d72b5ba8889575a32d79311cc72bce73a"
+      - name: Run score-free support audit
+        run: |
+          python experiments/issue188-r4-casebooks/issue188_casebooks_gate0.py \
+            --casebooks external/casebooks-data \
+            > issue188_casebooks_gate0_summary.json
+      - name: Assert firewall and admission
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue188_casebooks_gate0_summary.json', encoding='utf-8'))
+          assert x['marker']=='NO ISSUE188 SCIENTIFIC S1 SCORE COMPUTED'
+          assert x['scientific_score_computed'] is False
+          assert x['casebooks_commit']=='9d42295d72b5ba8889575a32d79311cc72bce73a'
+          assert x['transport']['placeholder_unicode_category']=='Co'
+          assert x['admission']['stage1_licensed'] is True
+          print(x['marker'])
+          print('totals=', json.dumps(x['totals'], sort_keys=True))
+          print('admission=', json.dumps(x['admission'], sort_keys=True))
+          print('top_volumes=', list(x['support_by_volume'].items())[:15])
+          print('hands=', x['support_by_hand_set'])
+          print('practices=', x['support_by_practice'])
+          PY
+      - name: Upload Gate0 result
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue188-r4-casebooks-gate0
+          path: issue188_casebooks_gate0_summary.json

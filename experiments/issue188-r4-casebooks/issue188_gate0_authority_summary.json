@@ -1,0 +1,57 @@
+{
+  "admission": {
+    "all_files_parse": true,
+    "eligible_cases_ge_100": true,
+    "eligible_paragraphs_ge_100": true,
+    "five_volumes_ge_10": true,
+    "stage1_licensed": true,
+    "two_hand_sets_ge_20": true
+  },
+  "artifact": {
+    "artifact_id": 10034102947,
+    "artifact_name": "issue188-r4-casebooks-gate0",
+    "artifact_zip_sha256": "a431b35c80ce3a1511a83720c8ad8827a10e5cb0c3c15b408778982f10c0058f",
+    "job_id": 101876515916,
+    "raw_json_git_blob": "008634b2db4359bf1bb78b1bc31b30913836ff17",
+    "raw_json_sha256": "6273e7a2abf53a1a95d1bca51e4d19718d49b89d171e75e55ecb6a60c87359ef",
+    "run_id": 34165815876
+  },
+  "authorities": {
+    "casebooks_commit": "9d42295d72b5ba8889575a32d79311cc72bce73a",
+    "gate0_auditor_blob": "9792e32a0cb86bd293491701625e8fe2d530aacd",
+    "gate0_head": "e1346cde916480ae04db23dce80a008bb3df2c39",
+    "gate0_plan_blob": "41a4e1857d12876bedea69b0397f51e976b6ca2c",
+    "gate0_workflow_blob": "70f1e88db5871249f9b86d6f1db0572e09d20589"
+  },
+  "issue": 188,
+  "marker": "NO ISSUE188 SCIENTIFIC S1 SCORE COMPUTED",
+  "schema": "issue188-gate0-authority-summary-v1",
+  "scientific_score_computed": false,
+  "support": {
+    "case_files": 79881,
+    "cases_with_eligible_paragraph": 1050,
+    "eligible_paragraphs": 1082,
+    "hand_sets": 44,
+    "hand_sets_with_at_least_20_eligible": 4,
+    "opaque_entity_refs": 0,
+    "paragraphs": 89933,
+    "parse_failures": 0,
+    "parsed_cases": 79881,
+    "physical_lines": 311631,
+    "source_volumes": 67,
+    "source_volumes_with_at_least_10_eligible": 51,
+    "tokens": 1110748
+  },
+  "support_by_major_hand_set": {
+    "#gjames": 24,
+    "#rnapier": 866,
+    "#rruddle": 13,
+    "#rwallis": 17,
+    "#sforman": 108,
+    "#srnapier": 26
+  },
+  "support_by_practice": {
+    "forman": 114,
+    "napier": 968
+  }
+}
