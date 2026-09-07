@@ -1,0 +1,51 @@
+{
+  "issue": 176,
+  "parent_issue": 172,
+  "schema": "issue176-recovery-reveal-summary-v1",
+  "scientific_contract": "unchanged Issue172 historical-anchor contract",
+  "raw_result_sha256": "d6149607aa90530b02d440899d7abb23c28e44a51ff270205e919a3f00d17b35",
+  "run_id": 34114462636,
+  "job_id": 101717935665,
+  "artifact_id": 10015772712,
+  "head": "34bd6e0cba08441a61d79515a2bc6b36e93655d3",
+  "workflow_blob": "4a1cd0ae7c13b6ca4ef49a9b1edd5bf5cfe271cf",
+  "wrapper_blob": "cd79047d12244350fccc6130379fa2e5726bab76",
+  "frozen_v1_scorer_blob": "f90f194396acdc50599cf9713dbbeb3ab5b4bed3",
+  "scored": true,
+  "candidates": {
+    "A1": {
+      "role": "SURFACE GENERATOR ONLY",
+      "classification": "PARTIAL STRUCTURAL MODEL",
+      "R1": true,
+      "R2": false,
+      "R3": true,
+      "R4": true,
+      "R5": false,
+      "R6": false,
+      "R7": false,
+      "R8": false,
+      "R9": null,
+      "R10": true
+    },
+    "Naibbe_C1_E0": {
+      "role": "REVERSIBLE TRANSFORM / DECODER CANDIDATE",
+      "classification": "PARTIAL STRUCTURAL MODEL",
+      "R1": true,
+      "R2": true,
+      "R3": false,
+      "R4": false,
+      "R5": false,
+      "R6": false,
+      "R7": false,
+      "R8": true,
+      "R9": false,
+      "R10": true
+    }
+  },
+  "shared_success": ["R1"],
+  "A1_only_structural_success": ["R3", "R4"],
+  "Naibbe_only_structural_success": ["R2", "R8"],
+  "shared_failure": ["R5", "R6"],
+  "joint_structural_competitive_candidate": false,
+  "decoder_promotion": false
+}
