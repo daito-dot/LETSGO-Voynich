@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/lm-a0-oriflamms-e1-metadata.yml'
       - 'experiments/lm-a0-external-preflight/oriflamms_e1_metadata_inventory.py'
+      - 'experiments/lm-a0-external-preflight/oriflamms_e1_metadata_synthetic.py'
   workflow_dispatch:
 
 permissions:
@@ -26,7 +27,8 @@ jobs:
         run: python -m pip install 'lxml>=5,<6'
 
       - name: Synthetic metadata preflight
-        run: python experiments/lm-a0-external-preflight/oriflamms_e1_metadata_inventory.py --synthetic-preflight
+        working-directory: experiments/lm-a0-external-preflight
+        run: python oriflamms_e1_metadata_synthetic.py
 
       - name: Fetch pinned ORIFLAMMS authority
         run: |
