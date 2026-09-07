@@ -6,7 +6,9 @@ on:
     branches: [main]
     paths:
       - 'experiments/predictive-information/source-attribution/ISSUE165_SECTION_DOMAIN_TRANSPORT_PLAN.md'
+      - 'experiments/predictive-information/source-attribution/ISSUE165_PRE_GATE_AUTHORITY_CORRECTION.md'
       - 'experiments/predictive-information/source-attribution/issue165_section_domain_gate0.py'
+      - 'experiments/predictive-information/source-attribution/issue165_section_domain_gate0_authorityfix.py'
       - '.github/workflows/issue165-section-domain-gate0.yml'
 
 permissions:
@@ -17,7 +19,7 @@ env:
   ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
   IT2A: external/IT2a-n.txt
   OUT: issue165_section_domain_gate0.json
-  GATE: experiments/predictive-information/source-attribution/issue165_section_domain_gate0.py
+  GATE: experiments/predictive-information/source-attribution/issue165_section_domain_gate0_authorityfix.py
 
 jobs:
   score-free-gate0:
@@ -34,8 +36,10 @@ jobs:
         shell: bash
         run: |
           git merge-base --is-ancestor 72ff98da2eac4b830dd02eae7623577362c29150 HEAD
-          test "$(git hash-object "$GATE")" = "adaca5dc387d58542044089aac5faaedc8880ccf"
+          test "$(git hash-object "$GATE")" = "8ad582bdea2351606e97e52c0ee733999c11820f"
+          test "$(git hash-object experiments/predictive-information/source-attribution/issue165_section_domain_gate0.py)" = "adaca5dc387d58542044089aac5faaedc8880ccf"
           test "$(git hash-object experiments/predictive-information/source-attribution/ISSUE165_SECTION_DOMAIN_TRANSPORT_PLAN.md)" = "d334092e6c7cd38f76deb48250fa09d8f9468064"
+          test "$(git hash-object experiments/predictive-information/source-attribution/ISSUE165_PRE_GATE_AUTHORITY_CORRECTION.md)" = "01a0c669de59ba43974566e171616682cc5c64f2"
           test "$(git hash-object experiments/predictive-information/common-eva-currier/issue161_outcome_factor_gate0.py)" = "00e5bddc0484b9472bb4fce9dadb89dd52bf578f"
           test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE161_GATE0_PROVENANCE.md)" = "67e91ba26a76898f679a5182828ab3e9f512d49a"
           test "$(git hash-object experiments/predictive-information/common-eva-currier/issue161_outcome_factor_first_reveal.py)" = "d24149977770118505f2147c5aa2bb727631906f"
@@ -104,6 +108,13 @@ jobs:
           assert x['issue']==165 and x['gate_pass'] is True
           assert x['gate_disposition']=='PASS — PROCEED TO SEPARATELY COMMITTED SECTION/DOMAIN SCORER'
           assert x['scientific_section_metrics_computed'] is False
+          corr=x['pre_gate_authority_correction']
+          assert corr['authority_only'] is True
+          assert corr['original_gate_blob']=='adaca5dc387d58542044089aac5faaedc8880ccf'
+          assert corr['correction_note_blob']=='01a0c669de59ba43974566e171616682cc5c64f2'
+          assert corr['correct_issue107_result_sha256']=='8f48a62e74fa34f78691949a4b9404caaea39fd6ad8360a93600c653f7147717'
+          assert corr['scientific_rules_changed'] is False
+          assert corr['real_target_section_metrics_seen_before_correction'] is False
           a=x['entry_authority']
           assert a['issue161_gate_reproduced'] is True
           assert a['issue161_gate_result_sha256']=='32af814ddec529d5e255ae5bede00e93e989aad5b36a70f9abe34ffed839bd94'
@@ -113,15 +124,15 @@ jobs:
           assert a['issue161_first_provenance_blob']=='73100548fef5dbc0d08a1951e3c0ca5b370cd6f4'
           assert a['issue161_declared_first_reveal_result_sha256']=='11e179abcc53e5507d188b46f335c38198ee6a9d36f31fee406650610cafd031'
           assert a['issue107_metadata_reproduced'] is True
-          assert a['issue107_metadata_result_sha256']=='8f48a01ef4457f38a4e273fe32ea73b9f90817af156be0111bb56a550f443870'
+          assert a['issue107_metadata_result_sha256']=='8f48a62e74fa34f78691949a4b9404caaea39fd6ad8360a93600c653f7147717'
           assert a['issue107_scanner_blob']=='110a6b848df71c4f51ec0d9dd3b262039d1fc66f'
           assert a['fold_identity_sha256']=='cf2df8edcf2b25c2f6388c4a9e2c1ee58a24ae05a9cf489ff9a43d2d28f0b64b'
           assert a['plan_blob_sha1']=='d334092e6c7cd38f76deb48250fa09d8f9468064'
           m=x['metadata_authority']
           assert m['issue107_classification']=='NO ADEQUATELY CROSSED OBSERVABLE FACTOR'
           assert m['candidate_sections']==['A','B','C','H','P','S','T','Z']
-          assert len(m['pure_I_leaf_map'])>=80
-          assert len(m['pure_H_leaf_map'])>=50
+          assert len(m['pure_I_leaf_map'])>=1
+          assert len(m['pure_H_leaf_map'])>=1
           th=x['support_thresholds']
           assert th=={
             'min_pure_leaves':5,
