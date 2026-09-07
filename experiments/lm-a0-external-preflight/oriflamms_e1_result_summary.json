@@ -1,0 +1,82 @@
+{
+  "experiment": "LM-A0 ORIFLAMMS E1 external replication",
+  "classification": "E1_NO_REPLICATION",
+  "frozen_reveal": {
+    "workflow_run": 34121929341,
+    "workflow_head": "b991005c9b3a2a1ce5fb0f632e2480dbd0253075",
+    "checked_out_pre_reveal_commit": "38851d89248161353322870c524624cf26b8d3e4",
+    "artifact_id": 10018521627,
+    "artifact_zip_sha256": "56e71466ea00f9836435599ba96e3e20e3faf0ca6cbe03b33dff743338037cf7",
+    "full_result_json_sha256": "fe59e5588b08155f1378c0da2e376bcd8971071e5b126c70b673de39752f7880"
+  },
+  "external_authority": {
+    "repository": "oriflamms/Dated-and-Datable-Manuscripts_LIRIS",
+    "commit": "93de4af4a470aea3f3b23c2e8bafcfa2161c5438",
+    "abbreviations_dtd_sha256": "dac3775b16878f596cd51391ef3fdbac6238205c057ac209585245009461f0b2",
+    "word_tei_sha256": "d1ff8102e8c81f36d45a31143f9294cf5c061d55d879aed44244c858f65018e4"
+  },
+  "frozen_roster": {
+    "count": 23,
+    "text_n": ["61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","87","88","97"],
+    "roster_commit": "f370ed68982df9bfc56e68b30b519f247d8cd66e",
+    "roster_blob": "9a465e23e1efa78c9de504650f699e844a1daf5f",
+    "metadata_inventory_sha256": "540944b4c6f3a4ed8446ee5cec6df739681f3756b12ce9158f699478a26fc00e"
+  },
+  "extraction_totals": {
+    "raw_line_slots": 507,
+    "bad_line_slots": 156,
+    "eligible_nonempty_lines": 334,
+    "candidate_words": 2882,
+    "eligible_words": 2007,
+    "split_words_excluded": 90,
+    "internal_lb_break_no": 90,
+    "empty_render_words_excluded": 52,
+    "unresolved_choice_words_excluded": 18,
+    "words_with_del_excluded": 3
+  },
+  "primary_FINAL1": {
+    "informative_strata": 10,
+    "observed": 8,
+    "expected": 4.999999999999999,
+    "variance": 2.4444444444444446,
+    "z": 1.9188064472004942,
+    "p_one_sided_enrichment": 0.05251736111111111,
+    "p_two_sided_doubled_tail": 0.10503472222222222,
+    "raw_abbreviation_rate_final": 0.2964071856287425,
+    "raw_abbreviation_rate_nonfinal": 0.28332337118948,
+    "informative_manuscript_count": 6,
+    "positive_direction_manuscript_count": 5,
+    "positive_direction_fraction": 0.8333333333333334,
+    "manuscript_direction_diagnostics": {
+      "62": 0.8333333333333335,
+      "64": 0.5,
+      "71": 0.5,
+      "72": -0.5,
+      "73": 0.5,
+      "80": 1.1666666666666667
+    }
+  },
+  "sensitivity_FINAL2": {
+    "informative_strata": 14,
+    "observed": 9,
+    "expected": 6.642857142857142,
+    "variance": 3.3168934240362815,
+    "z": 1.2942558764785854,
+    "p_one_sided_enrichment": 0.15369233630952378,
+    "p_two_sided_doubled_tail": 0.30738467261904756,
+    "raw_abbreviation_rate_final": 0.2950075642965204,
+    "raw_abbreviation_rate_nonfinal": 0.28083209509658247,
+    "informative_manuscript_count": 9,
+    "positive_direction_manuscript_count": 6,
+    "positive_direction_fraction": 0.6666666666666666
+  },
+  "frozen_gate_evaluation": {
+    "at_least_3_eligible_manuscripts": true,
+    "FINAL1_observed_gt_expected": true,
+    "FINAL1_one_sided_p_le_0_05": false,
+    "at_least_two_thirds_informative_manuscripts_positive": true,
+    "FINAL2_observed_gt_expected": true,
+    "overall": "FAIL"
+  },
+  "consequence": "LM-A0 is not promoted to LM-A1. Do not relax p threshold, subset manuscripts, change positional windows, invert the mechanism, or run Issue #179 as a rescue. Return to Issue #172 architecture selection."
+}
