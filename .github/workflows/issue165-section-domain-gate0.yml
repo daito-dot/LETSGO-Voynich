@@ -1,0 +1,196 @@
+name: Issue165 section/domain source-attribution Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/source-attribution/ISSUE165_SECTION_DOMAIN_TRANSPORT_PLAN.md'
+      - 'experiments/predictive-information/source-attribution/ISSUE165_PRE_GATE_AUTHORITY_CORRECTION.md'
+      - 'experiments/predictive-information/source-attribution/issue165_section_domain_gate0.py'
+      - 'experiments/predictive-information/source-attribution/issue165_section_domain_gate0_authorityfix.py'
+      - '.github/workflows/issue165-section-domain-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue165_section_domain_gate0.json
+  GATE: experiments/predictive-information/source-attribution/issue165_section_domain_gate0_authorityfix.py
+
+jobs:
+  score-free-gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert entry ancestry and frozen blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 72ff98da2eac4b830dd02eae7623577362c29150 HEAD
+          test "$(git hash-object "$GATE")" = "8ad582bdea2351606e97e52c0ee733999c11820f"
+          test "$(git hash-object experiments/predictive-information/source-attribution/issue165_section_domain_gate0.py)" = "adaca5dc387d58542044089aac5faaedc8880ccf"
+          test "$(git hash-object experiments/predictive-information/source-attribution/ISSUE165_SECTION_DOMAIN_TRANSPORT_PLAN.md)" = "d334092e6c7cd38f76deb48250fa09d8f9468064"
+          test "$(git hash-object experiments/predictive-information/source-attribution/ISSUE165_PRE_GATE_AUTHORITY_CORRECTION.md)" = "01a0c669de59ba43974566e171616682cc5c64f2"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue161_outcome_factor_gate0.py)" = "00e5bddc0484b9472bb4fce9dadb89dd52bf578f"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE161_GATE0_PROVENANCE.md)" = "67e91ba26a76898f679a5182828ab3e9f512d49a"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue161_outcome_factor_first_reveal.py)" = "d24149977770118505f2147c5aa2bb727631906f"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE161_FIRST_REVEAL_PROVENANCE.md)" = "73100548fef5dbc0d08a1951e3c0ca5b370cd6f4"
+          test "$(git hash-object experiments/predictive-information/phase3b/metadata_gate0_audit.py)" = "110a6b848df71c4f51ec0d9dd3b262039d1fc66f"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and target-free synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile "$GATE"
+          python "$GATE" --self-test
+
+      - name: Run score-free section/domain Gate0
+        id: gate
+        continue-on-error: true
+        shell: bash
+        run: |
+          python "$GATE" --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue165_section_domain_gate0.sha256
+
+      - name: Preserve Gate output
+        if: always()
+        shell: bash
+        run: |
+          if test -f "$OUT"; then
+            cat "$OUT"
+            sha256sum "$OUT" | tee issue165_section_domain_gate0.sha256
+          else
+            echo "Gate produced no result JSON" >&2
+          fi
+
+      - name: Assert frozen score-free section contract
+        if: steps.gate.outcome == 'success'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue165_section_domain_gate0.json',encoding='utf-8'))
+          assert x['schema']=='issue165-section-domain-gate0-v1'
+          assert x['issue']==165 and x['gate_pass'] is True
+          assert x['gate_disposition']=='PASS — PROCEED TO SEPARATELY COMMITTED SECTION/DOMAIN SCORER'
+          assert x['scientific_section_metrics_computed'] is False
+          corr=x['pre_gate_authority_correction']
+          assert corr['authority_only'] is True
+          assert corr['original_gate_blob']=='adaca5dc387d58542044089aac5faaedc8880ccf'
+          assert corr['correction_note_blob']=='01a0c669de59ba43974566e171616682cc5c64f2'
+          assert corr['correct_issue107_result_sha256']=='8f48a62e74fa34f78691949a4b9404caaea39fd6ad8360a93600c653f7147717'
+          assert corr['scientific_rules_changed'] is False
+          assert corr['real_target_section_metrics_seen_before_correction'] is False
+          a=x['entry_authority']
+          assert a['issue161_gate_reproduced'] is True
+          assert a['issue161_gate_result_sha256']=='32af814ddec529d5e255ae5bede00e93e989aad5b36a70f9abe34ffed839bd94'
+          assert a['issue161_gate_blob']=='00e5bddc0484b9472bb4fce9dadb89dd52bf578f'
+          assert a['issue161_gate_provenance_blob']=='67e91ba26a76898f679a5182828ab3e9f512d49a'
+          assert a['issue161_scorer_blob']=='d24149977770118505f2147c5aa2bb727631906f'
+          assert a['issue161_first_provenance_blob']=='73100548fef5dbc0d08a1951e3c0ca5b370cd6f4'
+          assert a['issue161_declared_first_reveal_result_sha256']=='11e179abcc53e5507d188b46f335c38198ee6a9d36f31fee406650610cafd031'
+          assert a['issue107_metadata_reproduced'] is True
+          assert a['issue107_metadata_result_sha256']=='8f48a62e74fa34f78691949a4b9404caaea39fd6ad8360a93600c653f7147717'
+          assert a['issue107_scanner_blob']=='110a6b848df71c4f51ec0d9dd3b262039d1fc66f'
+          assert a['fold_identity_sha256']=='cf2df8edcf2b25c2f6388c4a9e2c1ee58a24ae05a9cf489ff9a43d2d28f0b64b'
+          assert a['plan_blob_sha1']=='d334092e6c7cd38f76deb48250fa09d8f9468064'
+          m=x['metadata_authority']
+          assert m['issue107_classification']=='NO ADEQUATELY CROSSED OBSERVABLE FACTOR'
+          assert m['candidate_sections']==['A','B','C','H','P','S','T','Z']
+          assert len(m['pure_I_leaf_map'])>=1
+          assert len(m['pure_H_leaf_map'])>=1
+          th=x['support_thresholds']
+          assert th=={
+            'min_pure_leaves':5,
+            'min_primary_run_body_targets_per_fold':300,
+            'required_folds_at_threshold':4,
+            'required_eligible_sections_per_currier':2,
+          }
+          assert x['scorable_currier_regimes']
+          for r in ('A','B'):
+              e=x['eligibility'][r]
+              assert e['scorable'] is (e['n_eligible_sections']>=2)
+              for s in e['eligible_sections']:
+                  d=e['diagnostics'][s]
+                  assert d['eligible'] is True
+                  assert d['n_pure_leaves']>=5
+                  assert d['ZL3b_folds_at_or_above_threshold']>=4
+                  assert d['IT2a_folds_at_or_above_threshold']>=4
+          assert x['scribe_identifiability']['classification'] in ('SCRIBE_IDENTIFIABLE','SCRIBE_NOT_IDENTIFIABLE')
+          assert len(x['placebo_outer'])==5
+          for f,row in enumerate(x['placebo_outer']):
+              assert row['outer_fold']==f
+              assert row['training_union_heldout_overlap']==[]
+              for r in ('A','B'):
+                  p=row['regimes'][r]
+                  if p['scorable']:
+                      assert p['n_training_leaves']>=2
+                      assert p['changed_leaves']>0
+                      assert p['mapping_sha256']
+                      assert p['invalid_all_labels_unchanged'] is False
+          s=x['synthetic_test']
+          assert s['ok'] is True and s['uses_real_target_likelihood'] is False
+          assert s['pure_I_rule'] is True and s['pure_H_rule'] is True
+          assert s['left_cyclic_one_leaf_placebo'] is True
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({
+              'gate_disposition':x['gate_disposition'],
+              'scorable_currier_regimes':x['scorable_currier_regimes'],
+              'eligible_sections':{r:x['eligibility'][r]['eligible_sections'] for r in ('A','B')},
+              'scribe':x['scribe_identifiability']['classification'],
+              'pure_I_sha':x['metadata_authority']['pure_I_leaf_map_sha256'],
+              'placebo_shas':[
+                {'fold':r['outer_fold'],'A':r['regimes']['A']['mapping_sha256'],'B':r['regimes']['B']['mapping_sha256']}
+                for r in x['placebo_outer']
+              ],
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload Gate0 authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue165-section-domain-gate0-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: warn
+          path: |
+            issue165_section_domain_gate0.json
+            issue165_section_domain_gate0.sha256
+
+      - name: Preserve Gate failure status
+        if: steps.gate.outcome == 'failure'
+        shell: bash
+        run: exit 1

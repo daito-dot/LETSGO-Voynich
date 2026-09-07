@@ -1,0 +1,93 @@
+name: Issue165 section/domain Gate0 exact-head revalidation
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/source-attribution/ISSUE165_GATE0_PROVENANCE.md'
+      - '.github/workflows/issue165-section-domain-gate0-exact-head.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue165_section_domain_gate0.json
+  GATE: experiments/predictive-information/source-attribution/issue165_section_domain_gate0_authorityfix.py
+
+jobs:
+  exact-head-gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert frozen Issue165 authority blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 72ff98da2eac4b830dd02eae7623577362c29150 HEAD
+          test "$(git hash-object "$GATE")" = "8ad582bdea2351606e97e52c0ee733999c11820f"
+          test "$(git hash-object experiments/predictive-information/source-attribution/issue165_section_domain_gate0.py)" = "adaca5dc387d58542044089aac5faaedc8880ccf"
+          test "$(git hash-object experiments/predictive-information/source-attribution/ISSUE165_SECTION_DOMAIN_TRANSPORT_PLAN.md)" = "d334092e6c7cd38f76deb48250fa09d8f9468064"
+          test "$(git hash-object experiments/predictive-information/source-attribution/ISSUE165_PRE_GATE_AUTHORITY_CORRECTION.md)" = "01a0c669de59ba43974566e171616682cc5c64f2"
+          test "$(git hash-object experiments/predictive-information/source-attribution/ISSUE165_GATE0_PROVENANCE.md)" = "15627264ce598c315810458a64482e8f60d9afeb"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Re-run frozen score-free Gate0
+        shell: bash
+        run: |
+          python -m py_compile "$GATE"
+          python "$GATE" --self-test > /dev/null
+          python "$GATE" --run "$ZL3B" "$IT2A" "$OUT"
+          test "$(sha256sum "$OUT" | awk '{print $1}')" = "3b6eededdfe197ed9152b9b0f756dffe34870eaf1a33b810d7e23f84d0d84f1a"
+          python - <<'PY'
+          import json
+          x=json.load(open('issue165_section_domain_gate0.json',encoding='utf-8'))
+          assert x['gate_pass'] is True
+          assert x['scientific_section_metrics_computed'] is False
+          assert x['scorable_currier_regimes']==['B']
+          assert x['eligibility']['A']['eligible_sections']==['H']
+          assert x['eligibility']['A']['scorable'] is False
+          assert x['eligibility']['B']['eligible_sections']==['B','S']
+          assert x['eligibility']['B']['scorable'] is True
+          assert x['scribe_identifiability']['classification']=='SCRIBE_NOT_IDENTIFIABLE'
+          assert x['metadata_authority']['pure_I_leaf_map_sha256']=='47ab536c6806eca5b037bc8cf81bae11069a153c92e4d17162c6381c92025eb1'
+          assert x['metadata_authority']['pure_H_leaf_map_sha256']=='88e3071a7c8c05d8e0791f24a7a7edfbc19a0c9f59668cd980ad1054a9b7540f'
+          assert all(v is False for v in x['firewall'].values())
+          PY
+
+      - name: Upload exact-head Gate0 authority
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue165-section-domain-gate0-exact-head-${{ github.event.pull_request.head.sha }}
+          path: |
+            issue165_section_domain_gate0.json
