@@ -1,0 +1,71 @@
+name: Issue182 Borg source-attribution alignment Stage0
+
+on:
+  push:
+    paths:
+      - '.github/workflows/issue182-borg-alignment-stage0.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  alignment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout research repository
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Re-run score-free synthetic alignment preflight
+        run: python experiments/issue182-borg-source-attribution/issue182_alignment_stage0.py --synthetic-preflight
+
+      - name: Fetch exact pinned Borg authority
+        run: |
+          rm -rf /tmp/cipher_benchmark
+          git init -q /tmp/cipher_benchmark
+          git -C /tmp/cipher_benchmark remote add origin https://github.com/matthewdgreen/cipher_benchmark.git
+          git -C /tmp/cipher_benchmark config core.sparseCheckout true
+          cat > /tmp/cipher_benchmark/.git/info/sparse-checkout <<'EOF'
+          benchmark/sources/borg/transcriptions/
+          benchmark/sources/borg/plaintext/
+          benchmark/sources/borg/metadata/
+          EOF
+          git -C /tmp/cipher_benchmark fetch -q --depth 1 origin 729aad62d12483c549e64a2541d4f9255538c8cf
+          git -C /tmp/cipher_benchmark checkout -q FETCH_HEAD
+          test "$(git -C /tmp/cipher_benchmark rev-parse HEAD)" = '729aad62d12483c549e64a2541d4f9255538c8cf'
+
+      - name: Execute Stage0 alignment audit only
+        run: |
+          python experiments/issue182-borg-source-attribution/issue182_alignment_stage0.py \
+            /tmp/cipher_benchmark \
+            --out issue182_alignment_stage0_result.json
+          sha256sum issue182_alignment_stage0_result.json | tee issue182_alignment_stage0_result.sha256
+          python - <<'PY'
+          import json
+          d=json.load(open('issue182_alignment_stage0_result.json'))
+          assert d['edge_gain_computed'] is False
+          print(json.dumps({
+            'classification': d['classification'],
+            'edge_gain_computed': d['edge_gain_computed'],
+            'page_population_observed': d['page_population_observed'],
+            'published_cipher_key_size': d['published_cipher_key_size'],
+            'key_covered_canonical_atom_count': d['key_covered_canonical_atom_count'],
+            'totals': d['totals'],
+            'boundary_totals': d['boundary_totals'],
+            'support_gate': d['support_gate'],
+          }, ensure_ascii=False, indent=2))
+          assert d['classification'] == 'ALIGNMENT_STAGE0_VALID'
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue182-borg-alignment-stage0
+          path: |
+            issue182_alignment_stage0_result.json
+            issue182_alignment_stage0_result.sha256
+          if-no-files-found: error
+          retention-days: 90
