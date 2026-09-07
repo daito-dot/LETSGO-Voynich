@@ -1,0 +1,183 @@
+name: Issue155 common-EVA Currier first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/common-eva-currier/issue155_common_eva_currier_first_reveal.py'
+      - '.github/workflows/issue155-common-eva-currier-first-reveal.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue155_common_eva_currier_first_reveal.json
+  SCORER: experiments/predictive-information/common-eva-currier/issue155_common_eva_currier_first_reveal.py
+
+jobs:
+  first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head with merged Gate ancestry
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert merged Gate ancestry and frozen scientific blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 920130f721b83902c000c48f951c499a660f0683 HEAD
+          test "$(git hash-object "$SCORER")" = "0d57fdd32d298773b5ee38f97c9f104d29fa8377"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue155_common_eva_currier_gate0.py)" = "f5ab4fa31a92b3c303401da33611ffd5f77b402d"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE155_GATE0_PROVENANCE.md)" = "ba2f443b24237ed5ee0dce127b1a43ad082481c4"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE155_COMMON_EVA_CURRIER_PLAN.md)" = "1f30d7c62083dbff378612ce7bf177ee7d9fff80"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/issue151_shared_edge_first_reveal.py)" = "2dcd68c8fa68080552a8b90a81e118568b35f8ef"
+          test "$(git hash-object experiments/predictive-information/phase3a/currier_gate0_audit.py)" = "015ee2cda0de53e14d82302aea7e639570db7242"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and target-free synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile "$SCORER"
+          python "$SCORER" --self-test
+
+      - name: Run frozen common-EVA Currier first reveal
+        id: scorer
+        continue-on-error: true
+        shell: bash
+        run: |
+          python "$SCORER" --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue155_common_eva_currier_first_reveal.sha256
+
+      - name: Preserve scorer output for chronology audit
+        if: always()
+        shell: bash
+        run: |
+          if test -f "$OUT"; then
+            sha256sum "$OUT" | tee issue155_common_eva_currier_first_reveal.sha256
+          else
+            echo "scorer produced no result JSON" >&2
+          fi
+
+      - name: Assert frozen decomposition and classification
+        if: steps.scorer.outcome == 'success'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue155_common_eva_currier_first_reveal.json',encoding='utf-8'))
+          assert x['schema']=='issue155-common-eva-currier-first-reveal-v1'
+          assert x['issue']==155 and x['scored'] is True
+          a=x['authority']
+          assert a['gate0_reproduced'] is True
+          assert a['gate0_result_sha256']=='01f96038407975bc4d7a5944082a5bd2af9137f105edc33bd529cfccd33362f3'
+          assert a['gate0_script_blob']=='f5ab4fa31a92b3c303401da33611ffd5f77b402d'
+          assert a['gate0_provenance_blob']=='ba2f443b24237ed5ee0dce127b1a43ad082481c4'
+          assert a['plan_blob']=='1f30d7c62083dbff378612ce7bf177ee7d9fff80'
+          assert a['gate0_merge']=='920130f721b83902c000c48f951c499a660f0683'
+          assert a['issue151_scorer_blob']=='2dcd68c8fa68080552a8b90a81e118568b35f8ef'
+          assert a['phase3a_currier_script_blob']=='015ee2cda0de53e14d82302aea7e639570db7242'
+          m=x['frozen_model']
+          assert m['reading_weights']=={'ZL3b':0.5,'IT2a':0.5}
+          assert m['context_by_context_A_B_effective_mass_matched'] is True
+          assert m['k']==2 and m['alpha']==0.01 and m['outcome_vocabulary_size']==32
+          assert m['target_native_fallback'] is False
+          assert m['primary_rho_mixture_calibration'] is False
+
+          passes={}
+          for reading in ('ZL3b','IT2a'):
+              assert set(x['readings'][reading])=={'A_to_B','B_to_A'}
+              for direction,target in (('A_to_B','B'),('B_to_A','A')):
+                  d=x['readings'][reading][direction]
+                  assert d['target_regime']==target
+                  assert len(d['outer'])==5
+                  gains=[]
+                  for f,row in enumerate(d['outer']):
+                      assert row['fold']==f
+                      assert row['n_scored_run_body_targets']>=300
+                      assert row['matched_context_supported_body_targets']>=300
+                      assert all(math.isfinite(row[k]) for k in (
+                          'bits_POS2_TARGET_REGIME','bits_XEDGE2_SOURCE_MATCHED','bits_EDGE2_TARGET_REGIME_MATCHED'))
+                      g=row['bits_POS2_TARGET_REGIME']-row['bits_XEDGE2_SOURCE_MATCHED']
+                      gn=row['bits_POS2_TARGET_REGIME']-row['bits_EDGE2_TARGET_REGIME_MATCHED']
+                      assert math.isclose(g,row['G_transport'],rel_tol=0.0,abs_tol=1e-12)
+                      assert math.isclose(gn,row['G_target_regime_native_matched'],rel_tol=0.0,abs_tol=1e-12)
+                      assert math.isclose(g-gn,row['transport_minus_target_native_matched_gain'],rel_tol=0.0,abs_tol=1e-12)
+                      gains.append(g)
+                  p=d['primary']
+                  assert p['G_transport_by_fold']==gains
+                  mean=sum(gains)/5; positive=sum(g>0 for g in gains)
+                  expected=(mean>0 and positive>=4)
+                  assert math.isclose(mean,p['mean_G_transport'],rel_tol=0.0,abs_tol=1e-15)
+                  assert positive==p['positive_folds']
+                  assert p['pass_within_reading'] is expected
+                  passes[(reading,direction)]=expected
+
+          a2b=passes[('ZL3b','A_to_B')] and passes[('IT2a','A_to_B')]
+          b2a=passes[('ZL3b','B_to_A')] and passes[('IT2a','B_to_A')]
+          if a2b and b2a:
+              expected_class='COMMON-EVA MATCHED CURRIER TABLE TRANSPORT: BIDIRECTIONAL'
+          elif a2b:
+              expected_class='COMMON-EVA MATCHED CURRIER TABLE TRANSPORT: A→B ONLY'
+          elif b2a:
+              expected_class='COMMON-EVA MATCHED CURRIER TABLE TRANSPORT: B→A ONLY'
+          else:
+              expected_class='COMMON-EVA MATCHED CURRIER TABLE TRANSPORT: NONE'
+          assert x['classification']==expected_class
+          assert x['primary_joint']['classification']==expected_class
+          assert x['primary_joint']['A_to_B_robust_in_both_readings'] is a2b
+          assert x['primary_joint']['B_to_A_robust_in_both_readings'] is b2a
+          print(json.dumps({
+              'classification':x['classification'],
+              'ZL3b':{d:x['readings']['ZL3b'][d]['primary'] for d in ('A_to_B','B_to_A')},
+              'IT2a':{d:x['readings']['IT2a'][d]['primary'] for d in ('A_to_B','B_to_A')},
+              'joint':x['primary_joint'],
+              'secondary_non_promoting':x['secondary_non_promoting'],
+          },indent=2,sort_keys=True,ensure_ascii=False))
+          PY
+
+      - name: Upload first-reveal authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue155-common-eva-currier-first-reveal-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: warn
+          path: |
+            issue155_common_eva_currier_first_reveal.json
+            issue155_common_eva_currier_first_reveal.sha256
+
+      - name: Preserve scorer failure status
+        if: steps.scorer.outcome == 'failure'
+        shell: bash
+        run: exit 1
