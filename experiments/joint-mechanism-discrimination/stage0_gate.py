@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -52,16 +51,6 @@ def check(name: str, condition: bool, detail: Any = None) -> dict[str, Any]:
     return {"name": name, "pass": bool(condition), "detail": detail}
 
 
-def walk_keys(value: Any):
-    if isinstance(value, dict):
-        for key, child in value.items():
-            yield key
-            yield from walk_keys(child)
-    elif isinstance(value, list):
-        for child in value:
-            yield from walk_keys(child)
-
-
 def run(manifest_path: Path, output_path: Path) -> int:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     checks: list[dict[str, Any]] = []
@@ -74,7 +63,8 @@ def run(manifest_path: Path, output_path: Path) -> int:
     plan_path = ROOT / plan["path"]
     checks.append(check("plan_exists", plan_path.is_file(), str(plan_path.relative_to(ROOT))))
     if plan_path.is_file():
-        checks.append(check("plan_blob", git_blob(plan_path) == plan["blob"], {"actual": git_blob(plan_path), "expected": plan["blob"]}))
+        actual_plan_blob = git_blob(plan_path)
+        checks.append(check("plan_blob", actual_plan_blob == plan["blob"], {"actual": actual_plan_blob, "expected": plan["blob"]}))
 
     authority_results = []
     for authority in manifest.get("authority_files", []):
@@ -145,11 +135,9 @@ def run(manifest_path: Path, output_path: Path) -> int:
     checks.append(check("chronology", manifest.get("chronology") == EXPECTED_CHRONOLOGY, manifest.get("chronology")))
 
     forbidden = set(manifest.get("forbidden_stage0_fields", []))
-    keys = list(walk_keys(manifest))
-    # The names are necessarily present in the declaration list. They must not
-    # appear as object keys anywhere in the manifest.
-    object_keys = []
-    def collect_object_keys(value: Any):
+    object_keys: list[str] = []
+
+    def collect_object_keys(value: Any) -> None:
         if isinstance(value, dict):
             for key, child in value.items():
                 object_keys.append(key)
@@ -157,18 +145,20 @@ def run(manifest_path: Path, output_path: Path) -> int:
         elif isinstance(value, list):
             for child in value:
                 collect_object_keys(child)
+
     collect_object_keys(manifest)
     leaked = sorted(forbidden.intersection(object_keys))
     checks.append(check("no_stage0_candidate_result_fields", not leaked, leaked))
 
     all_pass = all(c["pass"] for c in checks)
+    checked_out_head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     result = {
         "issue": 172,
         "stage": "stage0",
         "classification": "STAGE0 AUTHORITY READY" if all_pass else "STAGE0 AUTHORITY INVALID",
         "score_free": True,
         "candidate_target_scoring_performed": False,
-        "git_head": os.environ.get("GITHUB_SHA") or subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+        "git_head": checked_out_head,
         "manifest": {
             "path": str(manifest_path.relative_to(ROOT)),
             "git_blob": git_blob(manifest_path),
@@ -182,7 +172,7 @@ def run(manifest_path: Path, output_path: Path) -> int:
         "checks": checks,
     }
     output_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({"classification": result["classification"], "checks_passed": sum(c["pass"] for c in checks), "checks_total": len(checks), "score_free": True}, indent=2))
+    print(json.dumps({"classification": result["classification"], "checks_passed": sum(c["pass"] for c in checks), "checks_total": len(checks), "score_free": True, "git_head": checked_out_head}, indent=2))
     return 0 if all_pass else 1
 
 
