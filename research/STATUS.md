@@ -2,7 +2,8 @@
 
 Last consolidated: 2026-09-07
 
-Program authority: Issue #88 and `research/PREDICTIVE_INFORMATION_PROGRAM.md`.
+Current program authority: Issue #172.
+Completed predecessor program: Issue #88 / `research/PREDICTIVE_INFORMATION_PROGRAM_CLOSEOUT_20260907.md`.
 
 This file controls the **current accepted high-level interpretation**. Exact historical methods, first-reveal artifacts, hashes and frozen classifications remain controlled by phase/Issue-specific plans, reports and provenance files.
 
@@ -10,302 +11,182 @@ This file controls the **current accepted high-level interpretation**. Exact his
 
 The Voynich Manuscript is **not deciphered**.
 
-The strongest current structural picture is compact:
+The completed predictive-information program establishes a compact, multiscale surface-production constraint system. The active research question is no longer “what local predictive feature should be added next?” It is:
 
-1. certain visible spaces behave as reproducible construction/production boundaries in ZL3b and Takahashi/IT2a;
-2. each bounded unit has a compact token-internal construction grammar; a target-blind second-order occupied-slot successor model nearly reaches the empirical R1 ceiling;
-3. cross-unit predictive information is real but small relative to token-internal information;
-4. longer history is dominated by causal-prefix / prior-paragraph inventory rather than detailed long ordered memory;
-5. useful immediate raw context is localized to adjacent visible units inside the same source line and resets at line breaks;
-6. under fixed `k=2`, the previously flexible line-local expert is exactly represented by generic line-position/onset plus an explicit previous-terminal → next-initial edge;
-7. after corrected B3 is prospectively augmented with that observable edge, Issue #134 finds **`NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE`** and does not license rich latent-state escalation;
-8. Issues #139/#145 independently replicate the edge across ZL3b/IT2a under one common Basic-EVA representation;
-9. Issue #148 shows the literal common-EVA edge table transports bidirectionally across those reading lineages;
-10. Issue #151 shows **one reading-balanced common-EVA edge table suffices**; neither reading retains a robust table-specific residual;
-11. Issue #155 shows the stabilized literal table is not interchangeable across Currier A/B in either direction under support matching;
-12. Issue #158 shows the observable Currier A/B label adds robust held-out edge information in **both** A and B, independently in both readings;
-13. the active Issue #161 asks whether that Currier distinction can be compressed to a context-invariant next-initial bias or requires a genuine previous-terminal × next-initial interaction.
+> **What independently motivated bounded generative/reversible mechanism can jointly reproduce the accepted structural responsibilities without target-driven repair or excessive target access?**
 
-The current minimal edge responsibility is:
+Issue #172 governs that mechanism-discrimination phase.
 
-> **shared reading-independent terminal→initial architecture + explicit Currier-conditioned literal mapping.**
+## Current accepted structural picture
 
-None of this establishes plaintext, language, semantics, cipher identity, natural-language words, author/scribe causation, historical direction, hoax/artificial origin, historical production mechanism or decipherment.
+1. Certain visible spaces behave as reproducible production/construction boundaries in ZL3b and Takahashi/IT2a.
+2. Bounded-unit internal topology is largely captured by a target-blind second-order occupied-slot construction grammar.
+3. Cross-unit predictive information is real but information-light relative to token-internal information.
+4. Short edit-near recurrence/cache contributes local history.
+5. Useful immediate raw context is localized to adjacent visible units inside the same source line.
+6. Source-line breaks reset that useful immediate raw context.
+7. Under the frozen representation, generic line-position/onset plus immediate previous-terminal → next-initial identity accounts for the tested line-local expert.
+8. The terminal→initial architecture independently replicates across ZL3b/IT2a under common Basic-EVA.
+9. One reading-balanced common-EVA base table suffices across those readings; no robust reading-specific table residual remains.
+10. Currier A/B contributes robust incremental next-initial information.
+11. Issue #161 shows no robust Currier×previous-terminal-specific residual after a context-invariant Currier next-initial outcome bias is included.
+12. Issue #167 shows the Currier outcome bias is moderately broad: K=16 is the first tested preregistered sparse support rung sufficient in all four reading×Currier cells.
+13. Slower predictive structure is dominated by causal-prefix / prior-paragraph inventory rather than detailed long ordered memory.
+14. After observable augmentation, Issue #134 finds no robust flexible residual that licenses richer latent-state modeling.
 
-## 1. Certain visible spaces are validated production boundaries
+Compact shorthand:
 
-Phase 4 challenged whether transcription spaces are meaningful production cuts using representations independent of `SlotParser`.
+> **production boundary + compact within-unit grammar + local recurrence/cache + same-line terminal→initial edge with line-break reset + shared common-EVA base table + Currier-specific global next-initial bias + slower prior-paragraph inventory.**
 
-ZL3b:
+This is a predictive surface description, not a historical mechanism claim.
 
-- `D_RESET = +8.811905 bits/event`, positive 5/5;
-- exact observed cut beats one-atom-left and one-atom-right shifted cuts in 5/5 folds.
+## Issue #88 is complete
 
-Takahashi/IT2a:
+The completed #88 program answered its stopping question: once validated observable mechanisms are added, no tested stronger flexible challenger retains a robust held-out residual that justifies richer latent-state escalation.
 
-- `D_RESET = +8.092615`, positive 5/5;
-- exact observed cut again beats both shifted cuts in 5/5.
+Authoritative program closeout:
 
-Supported statement:
+`research/PREDICTIVE_INFORMATION_PROGRAM_CLOSEOUT_20260907.md`
 
-> **Visible certain spaces behave as transcription-lineage-robust construction/production boundaries under the tested representations.**
+Do not resume the old #161/#167 compression ladder as current work.
 
-They are not thereby proven natural-language word boundaries.
+## Issue #172 — current mechanism-discrimination program
 
-## 2. Token-internal construction is compact
+Issue #172 keeps the structural responsibilities separate rather than collapsing them into one average score.
 
-Issue #75 plus OGH-A/B/C establish that the replicated 66-edge R1 topology does not currently require a rich token-internal latent state.
+### R1 — production-boundary responsibility
 
-- target-blind second-order occupied-slot successor grammar;
-- 298 counted conditional probabilities;
-- median topology agreement `T≈0.948` on ZL3b and `0.962` on IT2a;
-- memoryless V2 code length `9.7089061 bits/token`;
-- approximate information split: shape `~7.0 bits/token`, values add `~2.7`.
+A candidate must reproduce the observed-cut reset/discontinuity and its specificity relative to nearby shifted cuts.
 
-Memoryless token generation does not recover the major cross-token responsibilities, so token-internal sufficiency is not manuscript-level sufficiency.
+### R2 — token-internal construction responsibility
 
-## 3. Corrected predictive-information budget
+A candidate must account for the accepted complete66 / compact construction topology without receiving the target token vocabulary as an uncharged lookup table.
 
-After source-order correction:
+### R3 — local recurrence/profile responsibility
 
-- B0 V2 `9.7089061 bits/token`;
-- B1 local history `9.5943670`;
-- B2 longer causal history `9.5461692`;
-- B3 + observable line/paragraph state `9.5172688`.
+A candidate must reproduce the accepted local near-family / recurrence package without passing merely by matching raw recurrence magnitude while violating other held-out structure.
 
-B3 improves V2 by about `0.19164 bit/token`. Cross-token structure is reproducible but information-light relative to each bounded unit's internal information.
+### R4 — signed paragraph-entry responsibility
 
-Longer-history gain is dominated by causal-prefix / prior-paragraph inventory; actual long ordered-memory residual is much smaller.
+Wrong-sign paragraph-entry behavior remains a hard failure.
 
-## 4. The short flexible residual localized to a same-line observable edge
+### R5 — same-line edge and line-break reset
 
-Issue #118:
+A candidate must reproduce the useful same-line previous-terminal → next-initial responsibility while not continuing that dependency robustly across source-line breaks.
 
-- `G_context = +0.0178533 bit/token`, positive 5/5;
-- `G_any = +0.0306054`, positive 5/5.
+### R6 — reading-stable common-EVA base edge
 
-Issue #121 fixed both raw-context arms to `k=2, alpha=.01` and retained `+0.0106322`, positive 5/5.
+A candidate must account for the edge across both ZL3b/IT2a without post-hoc reading-specific tuning.
 
-Issue #123:
+### R7 — Currier-conditioned global next-initial responsibility
 
-- same-line continuation `G_line = +0.0291614`, positive 5/5;
-- carrying context beyond a source-line break `G_beyond_line = -0.0185292`, positive 0/5.
+The accepted Currier form is one shared base edge plus a **context-invariant** Currier-specific next-initial bias. K=16 is the first tested preregistered sparse support rung that suffices.
 
-Issue #125:
+### R8 — slower prior-paragraph inventory responsibility
 
-- generic position/onset `+0.00889185`, positive 5/5;
-- terminal identity adds `+0.02026956`, positive 5/5;
-- EDGE2 and LINECONT2 have maximum token-logp difference `0.0`.
+A candidate must reproduce the accepted causal-prefix / prior-paragraph inventory gain in a way that cannot be reduced to merely increasing local Markov order.
 
-Supported statement:
+### R9 — reversibility/recoverability
 
-> **Useful immediate raw-surface context is line-local and, under the frozen representation, is fully represented by generic onset/position plus immediate previous-terminal identity.**
+Required only for decoder/reversible-transform promotion. A surface generator can be structurally competitive without being a decoder.
 
-## 5. Issue #134 closes the tested residual after observable augmentation
+### R10 — target-information / complexity accounting
 
-First reveal:
+A candidate must explicitly pay for trainable parameters, state, empirical vocabulary, target layout, metadata, codebooks, lookup tables, side information and repair rules.
 
-- corrected B3 mean `9.517268842963203 bits/token`;
-- augmented observable core mean `9.451900585480233`;
-- mean gain over B3 `+0.06536825748296984`, positive 5/5;
-- RESET selected final `w=0.0` in all five folds;
-- LINE selected final `w=0.0` in all five folds;
-- `G_residual=[0,0,0,0,0]`.
+## Historical-anchor calibration — complete
 
-Frozen classification:
+Issue #176 / PR #177 completed the first interpretable calibration of historical anchors under the frozen Issue #172 contract.
 
-> **`NO ROBUST RESIDUAL BEYOND AUGMENTED OBSERVABLE CORE`**
+### A1 / A1-R1
 
-Authority: run `34035108074`, artifact `9990011421`, result SHA-256 `6779c2ea135e63f0c9c5be3e6200e564c18225fb95bb344f5349f946d73b9698`.
+Role: `SURFACE GENERATOR ONLY`
 
-This does not prove hidden states do not exist. It says the tested residual does not justify adding one.
+Classification: **`PARTIAL STRUCTURAL MODEL`**
 
-## 6. The terminal→initial edge independently replicates
+- PASS: R1, R3, R4, R10
+- FAIL: R2, R5, R6, R7, R8
+- R9: N/A
 
-Issue #139 carried the fixed edge architecture to Takahashi/IT2a.
+A1 retains the boundary, recurrence/profile and paragraph-entry layer, but misses complete66 representation compatibility, the accepted same-line common-EVA edge/reset, Currier structure and the clean slow prior-paragraph inventory signature.
 
-Frozen classification:
+### Naibbe C1-E0
 
-> **`INDEPENDENT EDGE REPLICATION PASSES`**
+Role: `REVERSIBLE TRANSFORM / DECODER CANDIDATE`
 
-- fold gains `[+0.1604351582,+0.1236103876,+0.1553216897,+0.1739669556,+0.1472252361]`;
-- mean `+0.15211188542908544 bit/token`;
-- positive 5/5.
+Classification: **`PARTIAL STRUCTURAL MODEL`**
 
-Authority: run `34061721332`, artifact `9997679250`, result SHA-256 `ec07a86d1acc12169be4f5073882877f3c86f4c8932f2fed2629d09518c18a4d`.
+- PASS: R1, R2, R8, R10
+- FAIL: R3, R4, R5, R6, R7, R9
 
-## 7. One common representation preserves the edge in both readings
+Naibbe retains the production-boundary, complete66 residual geometry and slow prior-paragraph inventory layer, but misses the recurrence/profile and paragraph-entry layer, the accepted same-line common-EVA edge/Currier structure, and exact recoverability.
 
-Issue #145 froze one common Basic-EVA representation.
+Frozen result authority:
 
-Frozen classification:
+- calibration merge: `74d117e27e75e2594cebdf782ee506c77a1a762e`;
+- raw result SHA-256: `d6149607aa90530b02d440899d7abb23c28e44a51ff270205e919a3f00d17b35`;
+- detailed provenance: `experiments/joint-mechanism-discrimination/ISSUE176_RECOVERY_REVEAL_PROVENANCE.md`.
 
-> **`COMMON-EVA EDGE ROBUST IN BOTH READINGS`**
+No historical anchor is `JOINT-STRUCTURAL COMPETITIVE`. Naibbe does not receive decoder promotion.
 
-- ZL3b mean `G_common = +0.1336232955274749 bit/token`, positive 5/5;
-- IT2a mean `+0.16184998339508744`, positive 5/5;
-- EDGE2_COMMON equals full clean-run-contiguous k2 exactly in all ten reading×fold cells.
+## Strongest current discriminating result
 
-Authority: run `34062199123`, artifact `9997826217`, result SHA-256 `663f4b4f9f48992036c2517109f5b8efde459cbdd35d034b567233edbd2efdf2`.
+R1 is not strongly discriminating between the two historical anchors: both pass it.
 
-## 8. The literal common-EVA edge table transports across readings
+The strongest shared falsifier is **R5/R6**.
 
-Issue #148 transports only BODY `P(first_common_atom | previous_terminal_common_atom)`; all non-edge factors remain target-native.
+Both A1 and Naibbe:
 
-Frozen classification:
+- produce non-positive same-line previous-terminal gain under the frozen calibration;
+- preserve an unwanted robust continuation across line breaks.
 
-> **`COMMON-EVA LITERAL EDGE TABLE TRANSPORTS BOTH DIRECTIONS`**
+That is the opposite localization from the accepted Voynich surface structure.
 
-ZL3b→IT2a:
+This result means the next mechanism search cannot be satisfied by matching only token-internal grammar, boundary asymmetry, recurrence, or paragraph memory. It must also naturally express the line-local edge and its reset.
 
-- mean `G_transport = +0.15554823663346334`, positive 5/5;
-- retention ratio `0.9610642730420239`.
+## Current interpretation of scale
 
-IT2a→ZL3b:
+The accepted responsibilities live at several observable scopes:
 
-- mean `+0.13039023868507016`, positive 5/5;
-- retention ratio `0.9758046916172639`.
+- bounded-unit/token-internal construction;
+- adjacent-unit same-line dependence;
+- source-line reset;
+- paragraph-entry and prior-paragraph inventory;
+- Currier-level global outcome bias.
 
-Authority: run `34073660425`, artifact `10001309613`, result SHA-256 `305e6e4e6eb59dcc969f1d4075eb5b64b06621c7a0cac8077c4cdedd76874923`.
+This motivates asking whether the historical production process involved multiple operational timescales or nested state scopes. That is a **hypothesis-forming direction**, not an accepted historical conclusion.
 
-Supported interpretation:
+## Current frontier
 
-> **Under one frozen common-EVA representation, the concrete previous-terminal→next-initial predictive mapping is strongly shared across ZL3b/IT2a.**
+The active frontier is **architecture-class elimination and independently motivated new-candidate selection**.
 
-## 9. Issue #151 collapses the two reading-native tables to one shared table
+No new post-#176 candidate family is currently frozen.
 
-Issue #151 asks whether each reading still needs its own table after #148.
+The next phase must therefore remain pre-scoring while it:
 
-Frozen classification:
+1. surveys broad architecture classes from independent mathematical/historical/procedural motivation;
+2. asks which classes can or cannot structurally express R1–R8 before target fitting;
+3. eliminates classes that require target-specific repairs or cannot generate the line-local/reset structure;
+4. selects one or a very small number of new candidate families;
+5. freezes role, target access, complexity budget, trainable/fixed components, inverse contract and falsification conditions;
+6. only then builds target-free preflight and a new scientific reveal.
 
-> **`ONE SHARED COMMON-EVA EDGE TABLE SUFFICES`**
+Current handoff:
 
-A fixed `0.5/0.5` reading-balanced table constructed from training folds only is useful in both readings:
+`research/MECHANISM_DISCRIMINATION_FRONTIER_20260907.md`
 
-- ZL3b `G_shared` mean `+0.13564574057416792`, positive 5/5;
-- IT2a `+0.16380858130203818`, positive 5/5.
+## Interpretation boundary
 
-Reading-specific residuals fail:
+Nothing currently establishes:
 
-- ZL3b `G_specific` mean `-0.002022445046693022`, positive 3/5;
-- IT2a `-0.001958597906950743`, positive 1/5.
+- plaintext;
+- semantics;
+- natural-language wordhood;
+- a language family;
+- a cipher family;
+- authorship or scribe causation;
+- historical direction or historical production algorithm;
+- artificial/hoax origin;
+- decipherment.
 
-Authority: run `34074437422`, artifact `10001563139`, result SHA-256 `cb7d88b88a65df58c8d93d047b8fbfe4d2eda20d4c7314713c9d44e31a9b7355`, merged PR #154.
-
-Thus reading lineage no longer needs to be a model gate for this edge under the frozen common representation.
-
-## 10. Issue #155 shows Currier A/B remains a real literal-table distinction
-
-Issue #155 repeats Currier table transport under stabilized common-EVA, reading-balanced training tables and context-mass support matching.
-
-Frozen classification:
-
-> **`COMMON-EVA MATCHED CURRIER TABLE TRANSPORT: NONE`**
-
-Wrong-regime transport is strongly negative in all four reading×direction cells:
-
-- A→B: ZL3b mean `-0.2992311805`, IT2a `-0.2986494755`, positive 0/5 each;
-- B→A: ZL3b `-0.3753370873`, IT2a `-0.3873299031`, positive 0/5 each.
-
-Same-regime matched edge tables remain useful:
-
-- target A: ZL3b `+0.0568990376`, IT2a `+0.0769484203`;
-- target B: ZL3b `+0.1705252416`, IT2a `+0.2085317706`.
-
-Authority: run `34075146845`, artifact `10001781210`, result SHA-256 `041d7abe8f677da012ae143df9f4f372e88afc2e2b3cc7b359a58a4d7395b737`, PR #157 merge `6bd7c6fadb8fc590052496299c13da24f88585a2`.
-
-This current common-EVA result supersedes the older #130 B→A-only asymmetry as the live Currier transport picture. Neither result licenses historical direction.
-
-## 11. Issue #158 isolates robust incremental information from the Currier gate
-
-Issue #158 uses the exact support-matched A/B tables from #155 and constructs per fold:
-
-`C_POOL = 0.5*C_A^MATCH + 0.5*C_B^MATCH`.
-
-A/B/POOL have exactly equal effective mass inside every retained previous-terminal context. It compares the pooled table with the target Currier regime's own table while keeping all non-edge factors fixed.
-
-Frozen classification:
-
-> **`CURRIER GATE ADDS ROBUST EDGE INFORMATION IN BOTH A AND B`**
-
-Currier A incremental residual:
-
-- ZL3b `G_Currier` mean `+0.06327673406664047`, positive 4/5;
-- IT2a `+0.06782616617812458`, positive 4/5.
-
-Currier B:
-
-- ZL3b `+0.1012061292632481`, positive 5/5;
-- IT2a `+0.10456811219559015`, positive 5/5.
-
-Cross-reading differences are only:
-
-- A: `ZL3b-IT2a = -0.004549432111484106`;
-- B: `-0.0033619829323420503 bit/token`.
-
-Authority:
-
-- corrected score-free Gate result SHA-256 `605e0a82817f394176a3e19c972ed409dfb15df60c72df22db3c0cc765e31099`;
-- Gate merge / PR #159 `ca77b7030dec12778ffdeb1d04bee0b30fb00b65`;
-- scorer blob `e7a70a10dd7b663f3482993b0adfa8f804816158`;
-- first-reveal run `34076400927`;
-- artifact `10002205049`;
-- result SHA-256 `eef6aee7cb202d73a7090c7aca0e9a0df404b46373589a8203da2b80ec1c3107`;
-- PR #160 merge `1741bed875a582594dc797ef18e30dd2ef3351ce`.
-
-Supported interpretation:
-
-> **The boundary architecture is reading-independent, but its literal transition mapping contains robust Currier-conditioned information.**
-
-## 12. Current compact working model
-
-The most economical live **surface-production** description is:
-
-1. certain visible spaces delimit bounded production/construction episodes;
-2. inside each episode, a compact second-order occupied-slot grammar captures most topology;
-3. short edit-near recurrence/cache contributes very local history;
-4. within a source line, generic onset/position plus immediate previous-terminal → next-initial identity contributes a reproducible observable adjacency effect;
-5. source-line breaks reset that useful short raw context;
-6. the terminal→initial architecture and one reading-balanced common-EVA base table are stable across ZL3b/IT2a;
-7. the literal edge mapping is explicitly Currier-conditioned;
-8. slower causal-prefix / prior-paragraph family inventory contributes longer history;
-9. no separately frozen flexible RESET/LINE capacity is selected beyond the augmented observable core.
-
-This is a compact predictive surface model, not a decipherment.
-
-## 13. Current frontier — Issue #161 Currier edge factorization
-
-Issue #158 establishes that Currier conditioning matters. Issue #161 asks whether it matters only through a global next-initial outcome bias or through a genuine context-specific interaction.
-
-For each training fold and fixed outcome `y`:
-
-`G_R(y) = Σ_c C_R^MATCH(c,y)`
-
-`G_POOL(y) = Σ_c C_POOL(c,y)`
-
-with fixed multiplier:
-
-`W_R(y) = (G_R(y)+alpha)/(G_POOL(y)+alpha)`, `alpha=.01`.
-
-The frozen outcome-only model applies `W_R(y)` to the pooled conditional and renormalizes inside every previous-terminal context. This model has a Currier×outcome main effect but no Currier×previous-terminal×outcome interaction.
-
-Primary quantities:
-
-- `G_outcome[T,R,f] = bits(EDGE_POOL) - bits(EDGE_OUTCOME)`;
-- `G_interaction[T,R,f] = bits(EDGE_OUTCOME) - bits(EDGE_REGIME)`.
-
-A robust context-specific Currier residual requires mean `G_interaction > 0` and positive in at least 4/5 folds independently in both ZL3b and IT2a for the same regime.
-
-Frozen classifications:
-
-1. `CURRIER EDGE CONTRAST REQUIRES CONTEXT-SPECIFIC INTERACTION IN BOTH A AND B`
-2. `CURRIER EDGE CONTRAST REQUIRES CONTEXT-SPECIFIC INTERACTION IN A ONLY`
-3. `CURRIER EDGE CONTRAST REQUIRES CONTEXT-SPECIFIC INTERACTION IN B ONLY`
-4. `NO ROBUST CONTEXT-SPECIFIC CURRIER EDGE RESIDUAL`
-5. `INVALID CURRIER EDGE FACTORIZATION`
-
-The first #161 deliverable is **score-free Gate0**. No real-target `EDGE_OUTCOME` likelihood, `G_outcome`, `G_interaction` or classification may be inspected before merged #158 authority, aggregate mass equality, all 32 fixed multipliers, normalization, support/leakage and synthetic tests are frozen.
-
-If interaction remains, the next compression target should be a separately preregistered low-rank interaction model. If not, the edge can simplify to one shared terminal→initial table plus a Currier-specific global next-initial bias.
-
-Latent-state work remains **not licensed** by the current residual evidence.
+Structural fit is evidence about mechanism compatibility, not by itself evidence of semantic recovery.
