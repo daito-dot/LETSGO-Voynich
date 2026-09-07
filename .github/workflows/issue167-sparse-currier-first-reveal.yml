@@ -1,0 +1,217 @@
+name: Issue167 sparse Currier outcome first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/common-eva-currier/issue167_sparse_currier_first_reveal.py'
+      - '.github/workflows/issue167-sparse-currier-first-reveal.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue167_sparse_currier_first_reveal.json
+  SCORER: experiments/predictive-information/common-eva-currier/issue167_sparse_currier_first_reveal.py
+
+jobs:
+  first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact PR head with merged Gate ancestry
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert merged Gate ancestry and frozen blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor bb56158e907d7253758cc5a0d8bc4dfa2606f1c7 HEAD
+          test "$(git hash-object "$SCORER")" = "5e67cecc312b431791c6623d1077ac46533fce0a"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue167_sparse_currier_gate0.py)" = "5b3aac1a03ef087340f6e0ffd241a4909476c815"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE167_GATE0_PROVENANCE.md)" = "f76feea360417e52261bf69dc1425cfceb58963c"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE167_SPARSE_CURRIER_OUTCOME_PLAN.md)" = "d5b79c64ffc8297672f2de39f6478156ee3442b7"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue161_outcome_factor_first_reveal.py)" = "d24149977770118505f2147c5aa2bb727631906f"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE161_FIRST_REVEAL_PROVENANCE.md)" = "73100548fef5dbc0d08a1951e3c0ca5b370cd6f4"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and target-free synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile "$SCORER"
+          python "$SCORER" --self-test
+
+      - name: Run frozen sparse Currier first reveal
+        id: scorer
+        continue-on-error: true
+        shell: bash
+        run: |
+          python "$SCORER" --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue167_sparse_currier_first_reveal.sha256
+
+      - name: Preserve scorer output for chronology audit
+        if: always()
+        shell: bash
+        run: |
+          if test -f "$OUT"; then
+            cat "$OUT"
+            sha256sum "$OUT" | tee issue167_sparse_currier_first_reveal.sha256
+          else
+            echo "scorer produced no result JSON" >&2
+          fi
+
+      - name: Assert frozen sparse Currier classification contract
+        if: steps.scorer.outcome == 'success'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue167_sparse_currier_first_reveal.json',encoding='utf-8'))
+          assert x['schema']=='issue167-sparse-currier-outcome-first-reveal-v1'
+          assert x['issue']==167 and x['scored'] is True
+          a=x['authority']
+          assert a['gate0_reproduced'] is True
+          assert a['gate0_result_sha256']=='ff5dfe546333f6e454bb5a36907f88f30ade2ecb36354f20064879e16276484c'
+          assert a['gate0_script_blob']=='5b3aac1a03ef087340f6e0ffd241a4909476c815'
+          assert a['gate0_provenance_blob']=='f76feea360417e52261bf69dc1425cfceb58963c'
+          assert a['plan_blob']=='d5b79c64ffc8297672f2de39f6478156ee3442b7'
+          assert a['gate0_merge']=='bb56158e907d7253758cc5a0d8bc4dfa2606f1c7'
+          assert a['issue161_scorer_blob']=='d24149977770118505f2147c5aa2bb727631906f'
+          assert a['issue161_first_provenance_blob']=='73100548fef5dbc0d08a1951e3c0ca5b370cd6f4'
+          assert a['issue161_declared_first_reveal_result_sha256']=='11e179abcc53e5507d188b46f335c38198ee6a9d36f31fee406650610cafd031'
+          assert a['issue161_G_outcome_reproduced_foldwise'] is True
+          assert a['fold_identity_sha256']=='cf2df8edcf2b25c2f6388c4a9e2c1ee58a24ae05a9cf489ff9a43d2d28f0b64b'
+          m=x['frozen_family']
+          assert len(m['outcome_vocabulary'])==32
+          assert m['V']==32 and m['alpha']==[1,100]
+          assert m['K_ladder']==[1,2,4,8,16]
+          assert m['training_only_selection_reused_from_merged_Gate0'] is True
+          assert m['context_invariant_multiplier'] is True
+          assert m['currier_by_previous_terminal_interaction'] is False
+          assert m['target_native_fallback'] is False
+          assert m['retention_percentage_threshold'] is None
+
+          expected_go={
+            'ZL3b':{
+              'A':[0.12078128912468244,-0.02603704408305063,0.08226595907739487,0.08329802946018283,0.08155503804472986],
+              'B':[0.12111656997874753,0.0885340021846801,0.1112354582024313,0.10609089038895192,0.04290727111000869],
+            },
+            'IT2a':{
+              'A':[0.1284535332574741,-0.028767569702601747,0.08371366800487756,0.06642699141555042,0.12204272349820577],
+              'B':[0.11973209244976601,0.08641004635049399,0.11408234842922305,0.10975647381687814,0.04679266231023327],
+            },
+          }
+          ks=(1,2,4,8,16)
+          cells={}
+          for reading in ('ZL3b','IT2a'):
+              for regime in ('A','B'):
+                  c=x['cells'][reading][regime]
+                  assert len(c['outer'])==5
+                  assert set(c['K_summary'])==set(map(str,ks))
+                  cells[(reading,regime)]={}
+                  byk={k:{'gs':[],'gm':[]} for k in ks}
+                  for f,row in enumerate(c['outer']):
+                      assert row['fold']==f and row['reading']==reading and row['regime']==regime
+                      assert row['n_scored_run_body_targets']>=300
+                      assert row['matched_context_supported_body_targets']>=300
+                      assert row['matched_context_coverage_fraction']>0.99
+                      assert math.isclose(row['G_outcome_reproduced'],expected_go[reading][regime][f],rel_tol=0.0,abs_tol=1e-12)
+                      assert set(row['K'])==set(map(str,ks))
+                      for k in ks:
+                          r=row['K'][str(k)]
+                          for key in ('bits_EDGE_SPARSE','G_sparse','G_missing'):
+                              assert math.isfinite(r[key])
+                          assert len(r['selected_outcomes'])==k
+                          assert math.isclose(r['G_sparse']+r['G_missing'],row['G_outcome_reproduced'],rel_tol=0.0,abs_tol=1e-12)
+                          byk[k]['gs'].append(r['G_sparse'])
+                          byk[k]['gm'].append(r['G_missing'])
+                  for k in ks:
+                      s=c['K_summary'][str(k)]
+                      gs=byk[k]['gs']; gm=byk[k]['gm']
+                      mean_gs=sum(gs)/5; mean_gm=sum(gm)/5
+                      pos_gs=sum(v>0 for v in gs); pos_gm=sum(v>0 for v in gm)
+                      useful=(mean_gs>0 and pos_gs>=4)
+                      missing=(mean_gm>0 and pos_gm>=4)
+                      assert s['G_sparse_by_fold']==gs
+                      assert s['G_missing_by_fold']==gm
+                      assert math.isclose(s['mean_G_sparse'],mean_gs,rel_tol=0.0,abs_tol=1e-15)
+                      assert math.isclose(s['mean_G_missing'],mean_gm,rel_tol=0.0,abs_tol=1e-15)
+                      assert s['positive_G_sparse_folds']==pos_gs
+                      assert s['positive_G_missing_folds']==pos_gm
+                      assert s['required_positive_folds']==4
+                      assert s['useful'] is useful
+                      assert s['robust_full_over_sparse_residual'] is missing
+                      cells[(reading,regime)][k]=(useful,missing)
+
+          smallest=None
+          for k in ks:
+              all_useful=all(cells[cell][k][0] for cell in cells)
+              any_missing=any(cells[cell][k][1] for cell in cells)
+              sufficient=all_useful and not any_missing
+              p=x['primary_joint']['K'][str(k)]
+              assert p['all_four_cells_useful'] is all_useful
+              assert p['any_cell_robust_full_over_sparse_residual'] is any_missing
+              assert p['suffices_prospectively'] is sufficient
+              if sufficient and smallest is None:
+                  smallest=k
+          expected=('NO TESTED SPARSE CURRIER OUTCOME SUPPORT SUFFICES' if smallest is None else f'CURRIER OUTCOME BIAS SPARSE SUPPORT: K={smallest} SUFFICES')
+          assert x['classification']==expected
+          assert x['primary_joint']['classification']==expected
+          assert x['primary_joint']['smallest_sufficient_K']==smallest
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({
+              'classification':x['classification'],
+              'smallest_sufficient_K':smallest,
+              'K_joint':x['primary_joint']['K'],
+              'cell_summaries':{
+                  f'{r}/{g}':x['cells'][r][g]['K_summary']
+                  for r in ('ZL3b','IT2a') for g in ('A','B')
+              },
+          },indent=2,sort_keys=True,ensure_ascii=False))
+          PY
+
+      - name: Upload first-reveal authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue167-sparse-currier-first-reveal-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: warn
+          path: |
+            issue167_sparse_currier_first_reveal.json
+            issue167_sparse_currier_first_reveal.sha256
+
+      - name: Preserve scorer failure status
+        if: steps.scorer.outcome == 'failure'
+        shell: bash
+        run: exit 1
