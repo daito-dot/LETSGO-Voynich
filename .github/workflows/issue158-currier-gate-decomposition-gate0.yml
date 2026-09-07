@@ -1,0 +1,162 @@
+name: Issue158 Currier-gate decomposition Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/common-eva-currier/ISSUE158_CURRIER_GATE_DECOMPOSITION_PLAN.md'
+      - 'experiments/predictive-information/common-eva-currier/issue158_currier_gate_decomposition_gate0.py'
+      - '.github/workflows/issue158-currier-gate-decomposition-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue158_currier_gate_decomposition_gate0.json
+  GATE: experiments/predictive-information/common-eva-currier/issue158_currier_gate_decomposition_gate0.py
+
+jobs:
+  score-free-gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert entry ancestry and frozen blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 6bd7c6fadb8fc590052496299c13da24f88585a2 HEAD
+          test "$(git hash-object "$GATE")" = "7feb169377294144988aa1dcf8f1a40da9a5a924"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE158_CURRIER_GATE_DECOMPOSITION_PLAN.md)" = "9ae737e4d5c6b5e0a3ad483fa815d5968b486183"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue155_common_eva_currier_gate0.py)" = "f5ab4fa31a92b3c303401da33611ffd5f77b402d"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE155_GATE0_PROVENANCE.md)" = "ba2f443b24237ed5ee0dce127b1a43ad082481c4"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue155_common_eva_currier_first_reveal.py)" = "0d57fdd32d298773b5ee38f97c9f104d29fa8377"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE155_FIRST_REVEAL_PROVENANCE.md)" = "0e2fd1cbf35c2c64cfb5dcfa1529ed8dcc5292d9"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and target-free synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile "$GATE"
+          python "$GATE" --self-test
+
+      - name: Run score-free Currier-gate Gate0
+        id: gate
+        continue-on-error: true
+        shell: bash
+        run: |
+          python "$GATE" --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue158_currier_gate_decomposition_gate0.sha256
+
+      - name: Preserve Gate output
+        if: always()
+        shell: bash
+        run: |
+          if test -f "$OUT"; then
+            sha256sum "$OUT" | tee issue158_currier_gate_decomposition_gate0.sha256
+          else
+            echo "Gate produced no result JSON" >&2
+          fi
+
+      - name: Assert score-free Gate contract
+        if: steps.gate.outcome == 'success'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          x=json.load(open('issue158_currier_gate_decomposition_gate0.json',encoding='utf-8'))
+          assert x['schema']=='issue158-currier-gate-decomposition-gate0-v1'
+          assert x['issue']==158 and x['gate_pass'] is True
+          assert x['gate_disposition']=='PASS — PROCEED TO SEPARATELY COMMITTED CURRIER-GATE SCORER'
+          assert x['scientific_currier_gate_metrics_computed'] is False
+          a=x['entry_authority']
+          assert a['issue155_gate_reproduced'] is True
+          assert a['issue155_gate_result_sha256']=='01f96038407975bc4d7a5944082a5bd2af9137f105edc33bd529cfccd33362f3'
+          assert a['issue155_gate_script_blob']=='f5ab4fa31a92b3c303401da33611ffd5f77b402d'
+          assert a['issue155_gate_provenance_blob']=='ba2f443b24237ed5ee0dce127b1a43ad082481c4'
+          assert a['issue155_scorer_blob']=='0d57fdd32d298773b5ee38f97c9f104d29fa8377'
+          assert a['issue155_first_reveal_provenance_blob']=='0e2fd1cbf35c2c64cfb5dcfa1529ed8dcc5292d9'
+          assert a['issue155_declared_first_reveal_result_sha256']=='041d7abe8f677da012ae143df9f4f372e88afc2e2b3cc7b359a58a4d7395b737'
+          assert a['fold_identity_sha256']=='cf2df8edcf2b25c2f6388c4a9e2c1ee58a24ae05a9cf489ff9a43d2d28f0b64b'
+          c=x['pooled_table_contract']
+          assert c['weights_rational']=={'A':[1,2],'B':[1,2]}
+          assert c['same_retained_contexts_as_issue155'] is True
+          assert c['same_context_effective_mass_as_A_and_B'] is True
+          assert c['target_native_fallback'] is False
+          assert c['rho_temperature_calibration_interpolation_mixture'] is False
+          assert len(x['outer'])==5
+          summary=[]
+          for f,row in enumerate(x['outer']):
+              assert row['outer_fold']==f
+              assert row['training_union_heldout_overlap']==[]
+              p=row['pooled_table']
+              assert p['weights']=={'A':[1,2],'B':[1,2]}
+              assert p['exact_A_B_POOL_context_mass_equality'] is True
+              assert p['n_contexts']>=2
+              for mass in p['context_mass_audit']:
+                  assert mass['exact_equal_mass'] is True
+                  assert mass['A_mass']==mass['B_mass']==mass['POOL_mass']
+              for reading in ('ZL3b','IT2a'):
+                  for regime in ('A','B'):
+                      t=row['target_context_support'][reading][regime]
+                      assert t['target_primary_run_body_targets']>=300
+                      assert t['matched_context_supported_primary_run_body_targets']>=300
+                      assert t['heldout_current_first_atom_used_for_context_selection'] is False
+              summary.append({
+                  'fold':f,
+                  'contexts':p['n_contexts'],
+                  'pool_cells':p['n_positive_context_outcome_cells'],
+                  'pool_sha256':p['pooled_sparse_rational_table_sha256'],
+              })
+          assert x['synthetic_test']['uses_real_target_data'] is False
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({'gate_disposition':x['gate_disposition'],'folds':summary},indent=2,sort_keys=True))
+          PY
+
+      - name: Upload Gate0 authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue158-currier-gate-decomposition-gate0-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: warn
+          path: |
+            issue158_currier_gate_decomposition_gate0.json
+            issue158_currier_gate_decomposition_gate0.sha256
+
+      - name: Preserve Gate failure status
+        if: steps.gate.outcome == 'failure'
+        shell: bash
+        run: exit 1
