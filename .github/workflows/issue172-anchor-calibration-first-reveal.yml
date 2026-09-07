@@ -1,0 +1,139 @@
+name: Issue172 historical-anchor calibration first reveal
+
+on:
+  push:
+    branches:
+      - issue-172-anchor-calibration-first-reveal
+    paths:
+      - '.github/workflows/issue172-anchor-calibration-first-reveal.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  CREMMA: external/cremma
+  NAIBBE: external/naibbe
+  SCORER: experiments/joint-mechanism-discrimination/first_reveal_historical_anchor_scorer.py
+  OUT: issue172_anchor_calibration_first_reveal.json
+
+jobs:
+  first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact first-reveal head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Assert frozen scorer and chronology
+        shell: bash
+        run: |
+          git merge-base --is-ancestor dabcf1fe7ddd6df66d849c8e752e7e1245c9d52e HEAD
+          test "$(git hash-object "$SCORER")" = "f90f194396acdc50599cf9713dbbeb3ab5b4bed3"
+          test "$(git diff --name-only dabcf1fe7ddd6df66d849c8e752e7e1245c9d52e HEAD)" = ".github/workflows/issue172-anchor-calibration-first-reveal.yml"
+          git merge-base --is-ancestor 43f5e573d2ae0b621b1eba4495e29b3a4fb73bae HEAD
+          git merge-base --is-ancestor 53961dbe3a72ebb1c026079987d9a194ad0f0935 HEAD
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout exact published Naibbe source
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify frozen external authorities
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+          test "$(git -C "$CREMMA" rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C "$NAIBBE" rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C "$NAIBBE" hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C "$NAIBBE" hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+
+      - name: Install frozen analysis runtime
+        run: python -m pip install --disable-pip-version-check numpy pandas scipy
+
+      - name: Compile and target-free self-test
+        shell: bash
+        run: |
+          python -m py_compile "$SCORER"
+          python "$SCORER" --self-test > issue172_scorer_self_test.txt
+
+      - name: Record pre-reveal provenance
+        shell: bash
+        run: |
+          {
+            echo "workflow_head=$(git rev-parse HEAD)"
+            echo "scorer_blob=$(git hash-object "$SCORER")"
+            echo "workflow_blob=$(git hash-object .github/workflows/issue172-anchor-calibration-first-reveal.yml)"
+            echo "run_id=$GITHUB_RUN_ID"
+            echo "run_attempt=$GITHUB_RUN_ATTEMPT"
+            echo "repository=$GITHUB_REPOSITORY"
+            echo "zl3b_sha256=$(sha256sum "$ZL3B" | awk '{print $1}')"
+            echo "it2a_sha256=$(sha256sum "$IT2A" | awk '{print $1}')"
+            echo "cremma_commit=$(git -C "$CREMMA" rev-parse HEAD)"
+            echo "naibbe_commit=$(git -C "$NAIBBE" rev-parse HEAD)"
+            echo "pre_reveal_aborted_run_id=34112911527"
+            echo "pre_reveal_aborted_job_id=101712997832"
+            echo "pre_reveal_aborted_artifact_id=10015111916"
+            echo "pre_reveal_aborted_reason=workflow_wrapper_attempted_json_parse_of_human_prefixed_self_test_output"
+            echo "pre_reveal_candidate_target_scores_computed=false"
+          } > issue172_first_reveal_provenance.txt
+
+      - name: Run frozen historical-anchor first reveal
+        id: scorer
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          python "$SCORER" --run "$ZL3B" "$IT2A" "$CREMMA" "$NAIBBE" "$OUT" > issue172_scorer_stdout.txt
+          rc=$?
+          set -e
+          echo "$rc" > issue172_scorer_exit_code.txt
+          test -f "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" > issue172_anchor_calibration_first_reveal.sha256
+          exit "$rc"
+
+      - name: Upload raw first-reveal record before interpretation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue172-anchor-calibration-first-reveal
+          if-no-files-found: error
+          path: |
+            issue172_anchor_calibration_first_reveal.json
+            issue172_anchor_calibration_first_reveal.sha256
+            issue172_first_reveal_provenance.txt
+            issue172_scorer_exit_code.txt
+            issue172_scorer_self_test.txt
+            issue172_scorer_stdout.txt
