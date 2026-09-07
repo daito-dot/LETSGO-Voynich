@@ -1,0 +1,53 @@
+{
+  "experiment": "Issue #182 Borg source attribution Stage0 alignment audit",
+  "classification": "ALIGNMENT_STAGE0_VALID",
+  "edge_gain_computed": false,
+  "authority": {
+    "external_repository": "matthewdgreen/cipher_benchmark",
+    "external_commit": "729aad62d12483c549e64a2541d4f9255538c8cf",
+    "stage0_plan_commit": "b455a14a22e276ed931deef5e9262b7f3050a0b2",
+    "alignment_auditor_commit": "53a8fb3e2dcc0bc69cc59bff325e8124360f06d0"
+  },
+  "execution": {
+    "workflow_run": 34123660555,
+    "workflow_head": "82dfbe2e917ab32b1d2b272a840302d401889b7a",
+    "artifact_id": 10019196163,
+    "artifact_zip_sha256": "e532e1ae51ae02c5adc18418a8295995d4ee538c087bd41e580bb5d52c9fe3eb",
+    "full_result_json_sha256": "e3443bf753343eecea73dcd314bf6e78954b724945daa2a1d4eb8eb66704845e"
+  },
+  "population": {
+    "page_population_expected": 397,
+    "page_population_observed": 397,
+    "published_cipher_key_size": 22,
+    "key_covered_canonical_atom_count": 22,
+    "key_values_unique": true
+  },
+  "alignment_totals": {
+    "physical_line_count": 7195,
+    "cipher_group_count": 24501,
+    "keyed_group_count": 18201,
+    "unkeyed_group_count": 6300,
+    "plaintext_token_count": 27488,
+    "plaintext_character_count": 127484,
+    "global_matched_characters": 66990,
+    "global_matched_cipher_groups": 14461,
+    "global_matched_plaintext_tokens": 14369,
+    "stable_aligned_group_count": 14404,
+    "ambiguous_or_unassigned_group_count": 10097,
+    "groups_possibly_skipped_on_optimal_path": 10042,
+    "groups_with_multiple_possible_token_indices": 55
+  },
+  "boundary_totals": {
+    "SAME_PHYSICAL_LINE|LEXICAL_BOUNDARY": 6657,
+    "SAME_PHYSICAL_LINE|WITHIN_WORD_SPLIT": 92,
+    "SAME_PHYSICAL_LINE|UNALIGNED_OR_AMBIGUOUS": 10557,
+    "CROSS_PHYSICAL_LINE|LEXICAL_BOUNDARY": 1409,
+    "CROSS_PHYSICAL_LINE|UNALIGNED_OR_AMBIGUOUS": 5389
+  },
+  "support_gate": {
+    "same_physical_line_lexical_boundary_min_100": true,
+    "cross_physical_line_lexical_boundary_min_100": true,
+    "stage1_lexical_boundary_scoring_licensed_after_separate_scorer_freeze": true
+  },
+  "interpretation_boundary": "Stage0 establishes sufficient exact, all-optimal-path-stable plaintext lexical-boundary support for source-attribution scoring. It computes no edge likelihood and does not establish where the Issue #181 line-local edge originates."
+}
