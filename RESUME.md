@@ -2,49 +2,39 @@
 
 Last consolidated: 2026-09-07
 
-## Resume here — Issue #148 is closed; Issue #151 is next
+## Resume here — Issue #158 is closed; Issue #161 is next
 
-Do not reconstruct the project from old chat when GitHub contains a newer state.
+Do not reconstruct the project from old chat when GitHub contains a newer state. Current GitHub is descriptive authority; frozen Issue plans/artifacts/provenance control exact historical methods and numbers.
 
-Issue #148 has completed the cross-reading literal edge-table transport gate. The frozen classification is:
+The current compact result is:
 
-> **`COMMON-EVA LITERAL EDGE TABLE TRANSPORTS BOTH DIRECTIONS`**
+> **The tested same-line previous-terminal→next-initial boundary architecture is robust across ZL3b and Takahashi/IT2a, one reading-balanced common-EVA table suffices across those readings, but the literal table is Currier-regime dependent. Explicitly supplying Currier A/B adds robust held-out edge information in both A and B, independently in both readings.**
 
-Under the frozen common Basic-EVA representation, the BODY table `P(first_common_atom | previous_terminal_common_atom)` learned from either reading predicts the other reading's untouched physical-leaf fold:
-
-- ZL3b→IT2a mean `G_transport = +0.15554823663346334 bit/token`, positive `5/5`;
-- IT2a→ZL3b mean `G_transport = +0.13039023868507016`, positive `5/5`;
-- transport retains `96.106%` and `97.580%` of the corresponding target-native edge gain;
-- minimum previous-terminal context coverage is `0.99935469993547` and `0.9988499137435307`.
-
-This promotes the same-line terminal→initial mechanism from architecture-only replication to a **bidirectionally transportable literal predictive mapping across ZL3b and IT2a under the common-EVA representation**.
-
-The manuscript is not deciphered. ZL3b and IT2a are two readings of the same physical manuscript, not independent manuscripts. This result does not establish words, plaintext, language, cipher family, historical direction, authorship, artificiality/hoax or a production algorithm.
+The manuscript is not deciphered. Visible certain spaces are validated production/construction boundaries under tested representations, not proven linguistic words. ZL3b and IT2a are two reading/transcription lineages of the same physical manuscript, not independent manuscripts.
 
 ### First sentence a future agent should be able to say
 
-> The tested short sequence residual beyond corrected B3 is closed by a compact observable same-line edge; that edge independently replicates on IT2a, remains robust under one common-EVA representation, and its literal previous-terminal→next-initial table transports in both directions between ZL3b and IT2a with about 96–98% retention of target-native gain. The next gate asks whether separate reading-native edge tables are still needed at all.
+> Corrected B3 plus a compact observable same-line edge closes the tested flexible residual; the edge independently replicates across ZL3b/IT2a, collapses to one reading-shared common-EVA table, and then splits reproducibly by Currier A/B. The next gate asks whether that Currier split is only a global next-initial bias or a genuine previous-terminal × next-initial interaction.
 
 ## Read in this order
 
 1. `README.md`
 2. `research/STATUS.md`
 3. `ROADMAP.md`
-4. Issue #151
-5. Issue #148 and merged PR #150 for exact transport chronology
-6. `research/PREDICTIVE_INFORMATION_PROGRAM.md`
-7. `research/HYPOTHESIS_LEDGER.md`
-8. `research/RESEARCH_PROTOCOL.md`
-9. Issue-specific plans/provenance under `experiments/predictive-information/`
-
-For exact historical numbers or methods, open the relevant frozen plan, report and first-reveal provenance. Superseded current-state snapshots are historical only.
+4. Issue #161
+5. Issue #158 and merged PRs #159/#160 for the current Currier-gate authority
+6. Issue #155 and PR #157 for cross-Currier transport failure
+7. Issue #151 and PR #154 for reading-shared table consolidation
+8. `research/PREDICTIVE_INFORMATION_PROGRAM.md`
+9. `research/HYPOTHESIS_LEDGER.md`
+10. `research/RESEARCH_PROTOCOL.md`
 
 ## Authority hierarchy
 
 1. phase/Issue-specific frozen plan + exact first-reveal artifact/provenance control historical method, hashes and frozen classification;
 2. `research/STATUS.md` controls the current accepted high-level interpretation;
 3. `research/PREDICTIVE_INFORMATION_PROGRAM.md` controls the Issue #88 program and latent-state licensing rule;
-4. `research/HYPOTHESIS_LEDGER.md` controls current hypothesis status/history;
+4. `research/HYPOTHESIS_LEDGER.md` controls hypothesis status/history;
 5. `research/RESEARCH_PROTOCOL.md` controls evidential discipline;
 6. `ROADMAP.md` controls current sequencing;
 7. old chats and archived snapshots are non-authoritative where later repository evidence conflicts.
@@ -64,7 +54,7 @@ Do not reopen an occupancy-only R1 ladder without a new falsification reason.
 
 ### 2. Certain visible spaces are production/construction boundaries
 
-Independent ZL3b and IT2a tests support exact visible cuts over nearby shifted cuts. This validates the tested production boundary, not a linguistic word interpretation.
+Independent ZL3b and IT2a tests support exact visible cuts over nearby shifted cuts. This validates the tested production boundary, not a natural-language word interpretation.
 
 ### 3. Corrected observable predictive ladder
 
@@ -98,82 +88,144 @@ No current residual-based license exists for a rich latent-state escalation.
 
 ### 6. The edge independently replicates and survives common representation
 
-Issue #139 Takahashi/IT2a replication:
+Issue #139 Takahashi/IT2a:
 
-- classification **`INDEPENDENT EDGE REPLICATION PASSES`**;
-- mean gain `+0.15211188542908544`, positive 5/5;
-- run `34061721332`, artifact `9997679250`, result SHA-256 `ec07a86d1acc12169be4f5073882877f3c86f4c8932f2fed2629d09518c18a4d`.
+- **`INDEPENDENT EDGE REPLICATION PASSES`**;
+- mean `+0.15211188542908544 bit/token`, positive 5/5.
 
-Issue #145 common Basic-EVA dual-reading test:
+Issue #145 common Basic-EVA:
 
-- classification **`COMMON-EVA EDGE ROBUST IN BOTH READINGS`**;
+- **`COMMON-EVA EDGE ROBUST IN BOTH READINGS`**;
 - ZL3b mean `+0.1336232955274749`, positive 5/5;
-- IT2a mean `+0.16184998339508744`, positive 5/5;
-- EDGE2_COMMON equals full clean-run-contiguous k2 at token-logp level in all reading×fold cells;
-- run `34062199123`, artifact `9997826217`, result SHA-256 `663f4b4f9f48992036c2517109f5b8efde459cbdd35d034b567233edbd2efdf2`.
+- IT2a mean `+0.16184998339508744`, positive 5/5.
 
-### 7. Issue #148 shows the concrete common-EVA table is shared across readings
+Authority: run `34062199123`, artifact `9997826217`, result SHA-256 `663f4b4f9f48992036c2517109f5b8efde459cbdd35d034b567233edbd2efdf2`.
 
-Authoritative run `34073660425` at pre-merge head `e08e682c9be91ee9cec97dedd66dd2dc3549eac1` completed all frozen assertions.
+### 7. Issue #148 shows the concrete table transports across readings
 
-- classification **`COMMON-EVA LITERAL EDGE TABLE TRANSPORTS BOTH DIRECTIONS`**;
-- ZL3b→IT2a fold gains `[0.16617550444405893, 0.13437428362215265, 0.16077057068791767, 0.1796534044981435, 0.13676741991504393]`, mean `+0.15554823663346334`, positive 5/5;
-- IT2a→ZL3b fold gains `[0.13208421050786257, 0.10700594617669168, 0.12950827390527841, 0.1397962031635096, 0.14355655967200853]`, mean `+0.13039023868507016`, positive 5/5;
-- target-native retention `0.9610642730420239` / `0.9758046916172639`.
+Frozen classification:
+
+> **`COMMON-EVA LITERAL EDGE TABLE TRANSPORTS BOTH DIRECTIONS`**
+
+- ZL3b→IT2a mean `+0.15554823663346334`, positive 5/5, retention `0.9610642730420239`;
+- IT2a→ZL3b mean `+0.13039023868507016`, positive 5/5, retention `0.9758046916172639`.
+
+Authority: run `34073660425`, artifact `10001309613`, result SHA-256 `305e6e4e6eb59dcc969f1d4075eb5b64b06621c7a0cac8077c4cdedd76874923`.
+
+### 8. Issue #151 removes reading-specific edge responsibility
+
+Frozen classification:
+
+> **`ONE SHARED COMMON-EVA EDGE TABLE SUFFICES`**
+
+A fixed `0.5/0.5` reading-balanced training-fold table remains useful in both readings, while neither reading retains a robust native-over-shared residual.
+
+- ZL3b `G_shared` mean `+0.13564574057416792`, positive 5/5; `G_specific` mean `-0.002022445046693022`, positive 3/5 — FAIL;
+- IT2a `G_shared` mean `+0.16380858130203818`, positive 5/5; `G_specific` mean `-0.001958597906950743`, positive 1/5 — FAIL.
+
+Authority: run `34074437422`, artifact `10001563139`, result SHA-256 `cb7d88b88a65df58c8d93d047b8fbfe4d2eda20d4c7314713c9d44e31a9b7355`.
+
+### 9. Issue #155 shows Currier literal tables are not interchangeable
+
+Under the stabilized common-EVA, reading-balanced, support-matched family:
+
+> **`COMMON-EVA MATCHED CURRIER TABLE TRANSPORT: NONE`**
+
+Wrong-regime literal table transport is strongly harmful in both readings and directions:
+
+- A→B mean `G_transport`: ZL3b `-0.2992311805`, IT2a `-0.2986494755`, positive 0/5 each;
+- B→A: ZL3b `-0.3753370873`, IT2a `-0.3873299031`, positive 0/5 each.
+
+The corresponding same-regime matched tables remain useful:
+
+- target A: ZL3b `+0.0568990376`, IT2a `+0.0769484203`;
+- target B: ZL3b `+0.1705252416`, IT2a `+0.2085317706`.
+
+Authority: run `34075146845`, artifact `10001781210`, result SHA-256 `041d7abe8f677da012ae143df9f4f372e88afc2e2b3cc7b359a58a4d7395b737`, PR #157 merge `6bd7c6fadb8fc590052496299c13da24f88585a2`.
+
+This supersedes any attempt to treat the older #130 B→A-only result as current common-EVA Currier behavior.
+
+### 10. Issue #158 proves the Currier label adds robust edge information
+
+Issue #158 compares one fixed regime-neutral pooled table with the target Currier regime's own matched table while holding support, effective mass, representation and non-edge factors fixed.
+
+Frozen classification:
+
+> **`CURRIER GATE ADDS ROBUST EDGE INFORMATION IN BOTH A AND B`**
+
+Currier A:
+
+- ZL3b mean `G_Currier = +0.06327673406664047`, positive 4/5;
+- IT2a `+0.06782616617812458`, positive 4/5.
+
+Currier B:
+
+- ZL3b `+0.1012061292632481`, positive 5/5;
+- IT2a `+0.10456811219559015`, positive 5/5.
+
+Cross-reading mean differences are small: A `-0.004549432111484106`, B `-0.0033619829323420503 bit/token`.
 
 Authority:
 
-- Gate0 result SHA-256 `f324264b814ef02d8de70b804754750ec579f8a9e0d8dffb0f1575439867d1bf`;
-- scorer blob `7847c0fea1dcfc4ace5752d0188d70e3739679d3`;
-- run `34073660425`;
-- artifact `10001309613`;
-- ZIP digest `sha256:cfefd670b00ebb3eae3020a4b5308115ec9172b793ed1fe4b598928718f5c622`;
-- result JSON SHA-256 `305e6e4e6eb59dcc969f1d4075eb5b64b06621c7a0cac8077c4cdedd76874923`;
-- PR #150 merged as `b7e643a0d3075a9f09dbd9ec3a8f50149cb4a131`.
+- corrected Gate0 merge / PR #159 `ca77b7030dec12778ffdeb1d04bee0b30fb00b65`;
+- Gate result SHA-256 `605e0a82817f394176a3e19c972ed409dfb15df60c72df22db3c0cc765e31099`;
+- scorer blob `e7a70a10dd7b663f3482993b0adfa8f804816158`;
+- run `34076400927`;
+- artifact `10002205049`;
+- result SHA-256 `eef6aee7cb202d73a7090c7aca0e9a0df404b46373589a8203da2b80ec1c3107`;
+- PR #160 merge `1741bed875a582594dc797ef18e30dd2ef3351ce`.
 
-PR #150 also records the authority-repair chronology. Do not rewrite that history as a perfectly clean single attempt: run `34073482403` entered the scorer but aborted at a mis-copied Issue #145 authority constant and emitted no transport metric/classification; the existing frozen #145 artifact was then used to correct only the authority constants. No #148 scientific rule changed.
+Accepted responsibility:
 
-### 8. Currier A/B remains a separate regime question
+> **reading-independent terminal→initial boundary architecture + explicit Currier-conditioned literal mapping.**
 
-Issue #130 support-matched literal table transport remains **B→A ONLY** under its frozen representation. #148 cross-reading bidirectional transport does not imply Currier universality or historical direction.
+## Next scientific move — Issue #161
 
-## Next scientific move — Issue #151
+Issue #161 asks whether the Currier-conditioned mapping really needs a context-specific terminal×initial interaction.
 
-Issue #151 asks whether the two reading-native common-EVA edge tables can be collapsed into one table without losing reproducible held-out information.
+Frozen training-only factorization:
 
-Frozen shared table per outer fold:
+`G_R(y) = Σ_c C_R^MATCH(c,y)`
 
-`C_SHARED = 0.5 * C_ZL3b + 0.5 * C_IT2a`
+`G_POOL(y) = Σ_c C_POOL(c,y)`
 
-using training leaves outside the untouched physical-leaf fold in **both** readings. The `0.5/0.5` weights are fixed to avoid making the same manuscript evidence artificially twice as sharp merely because two transcriptions are pooled.
+`W_R(y) = (G_R(y)+alpha)/(G_POOL(y)+alpha)`, with fixed `alpha=.01`.
+
+The outcome-only model applies this Currier-specific next-initial multiplier to the pooled conditional distribution and renormalizes within each previous-terminal context. It has Currier×outcome main effects but no Currier×previous-terminal×outcome interaction.
 
 Primary quantities:
 
-- `G_shared[T] = bits(POS2_TARGET) - bits(EDGE2_SHARED)`;
-- `G_specific[T] = bits(EDGE2_SHARED) - bits(EDGE2_NATIVE_T)`.
+- `G_outcome = bits(EDGE_POOL) - bits(EDGE_OUTCOME)`;
+- `G_interaction = bits(EDGE_OUTCOME) - bits(EDGE_REGIME)`.
 
-A reading-specific residual requires mean `G_specific > 0` and positive in at least 4/5 folds. The shared table must itself be useful in both readings or the consolidation is INVALID.
+A context-specific interaction residual passes only if mean `G_interaction > 0` and positive in at least 4/5 folds, independently in both readings for the same Currier regime.
+
+Frozen classes:
+
+1. `CURRIER EDGE CONTRAST REQUIRES CONTEXT-SPECIFIC INTERACTION IN BOTH A AND B`
+2. `CURRIER EDGE CONTRAST REQUIRES CONTEXT-SPECIFIC INTERACTION IN A ONLY`
+3. `CURRIER EDGE CONTRAST REQUIRES CONTEXT-SPECIFIC INTERACTION IN B ONLY`
+4. `NO ROBUST CONTEXT-SPECIFIC CURRIER EDGE RESIDUAL`
+5. `INVALID CURRIER EDGE FACTORIZATION`
 
 ### First deliverable
 
-**Score-free Gate0 only.** Freeze and audit:
+**Score-free Gate0 only.** Before real-target `EDGE_OUTCOME` likelihood:
 
-- exact #145/#148 authorities;
-- physical-leaf folds and zero held-out leaf use in either reading's shared-table training counts;
-- exact target support reproduction;
-- per-reading edge counts and context support;
-- deterministic fractional `0.5/0.5` consensus arithmetic;
-- finite support and target-free synthetic tests;
-- no held-out shared-table likelihood, `G_shared`, `G_specific` or classification inspected.
+- reproduce exact merged #158 authority and A/B/POOL tables;
+- construct all aggregate outcome counts and fixed multipliers from training data only;
+- prove exact aggregate mass equality and finite normalization over all 32 outcomes for every retained context;
+- reproduce all support/leakage cells;
+- run target-free synthetic factorization tests;
+- freeze all identities/classes;
+- prove no real-target `G_outcome`, `G_interaction` or classification was computed.
 
 ## Do not
 
 - reopen rich latent-state work after #134 without a new prospectively defined residual;
-- tune #151 reading weights, normalization, exclusions, mapping, folds, smoothing or fallback after target reveal;
+- tune #161 atoms, contexts, multipliers, smoothing, temperature, interpolation, exclusions or fallback after target reveal;
 - treat ZL3b and IT2a as independent manuscripts;
-- erase the distinct Currier A/B asymmetry from #130;
+- infer historical direction from predictive transport;
 - reopen token-internal R1 ladders without a new falsification reason;
 - treat visible spaces as proven natural-language words;
-- infer plaintext, language, semantics, cipher identity, author, historical direction, hoax/artificial origin or historical production mechanism from predictive fit;
-- call a non-reversible surface generator a decipherment;
-- append another current resume beneath this file; replace it and archive superseded snapshots where appropriate.
+- infer plaintext, language, semantics, cipher identity, author, historical mechanism, hoax/artificial origin or decipherment from predictive fit.
