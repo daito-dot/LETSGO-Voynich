@@ -33,8 +33,9 @@ jobs:
       - name: Assert frozen scorer and chronology
         shell: bash
         run: |
-          test "$(git rev-parse HEAD^)" = "dabcf1fe7ddd6df66d849c8e752e7e1245c9d52e"
+          git merge-base --is-ancestor dabcf1fe7ddd6df66d849c8e752e7e1245c9d52e HEAD
           test "$(git hash-object "$SCORER")" = "f90f194396acdc50599cf9713dbbeb3ab5b4bed3"
+          test "$(git diff --name-only dabcf1fe7ddd6df66d849c8e752e7e1245c9d52e HEAD)" = ".github/workflows/issue172-anchor-calibration-first-reveal.yml"
           git merge-base --is-ancestor 43f5e573d2ae0b621b1eba4495e29b3a4fb73bae HEAD
           git merge-base --is-ancestor 53961dbe3a72ebb1c026079987d9a194ad0f0935 HEAD
 
@@ -85,8 +86,7 @@ jobs:
         shell: bash
         run: |
           python -m py_compile "$SCORER"
-          python "$SCORER" --self-test > issue172_scorer_self_test.json
-          python -m json.tool issue172_scorer_self_test.json > /dev/null
+          python "$SCORER" --self-test > issue172_scorer_self_test.txt
 
       - name: Record pre-reveal provenance
         shell: bash
@@ -102,6 +102,11 @@ jobs:
             echo "it2a_sha256=$(sha256sum "$IT2A" | awk '{print $1}')"
             echo "cremma_commit=$(git -C "$CREMMA" rev-parse HEAD)"
             echo "naibbe_commit=$(git -C "$NAIBBE" rev-parse HEAD)"
+            echo "pre_reveal_aborted_run_id=34112911527"
+            echo "pre_reveal_aborted_job_id=101712997832"
+            echo "pre_reveal_aborted_artifact_id=10015111916"
+            echo "pre_reveal_aborted_reason=workflow_wrapper_attempted_json_parse_of_human_prefixed_self_test_output"
+            echo "pre_reveal_candidate_target_scores_computed=false"
           } > issue172_first_reveal_provenance.txt
 
       - name: Run frozen historical-anchor first reveal
@@ -130,5 +135,5 @@ jobs:
             issue172_anchor_calibration_first_reveal.sha256
             issue172_first_reveal_provenance.txt
             issue172_scorer_exit_code.txt
-            issue172_scorer_self_test.json
+            issue172_scorer_self_test.txt
             issue172_scorer_stdout.txt
