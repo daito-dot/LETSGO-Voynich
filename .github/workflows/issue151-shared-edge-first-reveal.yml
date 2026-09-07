@@ -1,0 +1,199 @@
+name: Issue151 shared common-EVA edge first reveal
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/common-eva-edge/issue151_shared_edge_first_reveal.py'
+      - '.github/workflows/issue151-shared-edge-first-reveal.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue151_shared_edge_first_reveal.json
+  SCORER: experiments/predictive-information/common-eva-edge/issue151_shared_edge_first_reveal.py
+
+jobs:
+  first-reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head with merged Gate ancestry
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert merged Gate ancestry and frozen scientific blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor dea1fc30e9e426adaee290bd1cb357478edf96bf HEAD
+          test "$(git hash-object "$SCORER")" = "2dcd68c8fa68080552a8b90a81e118568b35f8ef"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/issue151_shared_edge_gate0.py)" = "d5e3bd22501f8caebabc7c2728bc7f8d5cb59018"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/ISSUE151_GATE0_PROVENANCE.md)" = "609ee5f208cfdb3739749d8d82e34d68e4803dd6"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/ISSUE151_SHARED_EDGE_CONSOLIDATION_PLAN.md)" = "e903bfbdd3742e578f784dc9c358f98f44ad42d2"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/issue145_common_eva_first_reveal.py)" = "ce8a167c607fbcf2807f567439ab6837471f4f07"
+          test "$(git hash-object experiments/predictive-information/common-eva-edge/issue148_common_eva_table_first_reveal.py)" = "7847c0fea1dcfc4ace5752d0188d70e3739679d3"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and target-free synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile "$SCORER"
+          python "$SCORER" --self-test
+
+      - name: Run frozen shared-table first reveal
+        id: scorer
+        continue-on-error: true
+        shell: bash
+        run: |
+          python "$SCORER" --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue151_shared_edge_first_reveal.sha256
+
+      - name: Preserve scorer output for chronology audit
+        if: always()
+        shell: bash
+        run: |
+          if test -f "$OUT"; then
+            cat "$OUT"
+            sha256sum "$OUT" | tee issue151_shared_edge_first_reveal.sha256
+          else
+            echo "scorer produced no result JSON" >&2
+          fi
+
+      - name: Assert frozen support decomposition and classification
+        if: steps.scorer.outcome == 'success'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, math
+          x=json.load(open('issue151_shared_edge_first_reveal.json',encoding='utf-8'))
+          assert x['schema']=='issue151-shared-edge-first-reveal-v1'
+          assert x['issue']==151 and x['scored'] is True
+          a=x['authority']
+          assert a['gate0_reproduced'] is True
+          assert a['gate0_result_sha256']=='bcc6c6bd5600ef9f74484807b51ef1db454613bae2bbd351d90f089c8693eea2'
+          assert a['gate0_script_blob']=='d5e3bd22501f8caebabc7c2728bc7f8d5cb59018'
+          assert a['gate0_provenance_blob']=='609ee5f208cfdb3739749d8d82e34d68e4803dd6'
+          assert a['plan_blob']=='e903bfbdd3742e578f784dc9c358f98f44ad42d2'
+          assert a['gate0_merge']=='dea1fc30e9e426adaee290bd1cb357478edf96bf'
+          assert a['issue145_scorer_blob']=='ce8a167c607fbcf2807f567439ab6837471f4f07'
+          assert a['issue148_scorer_blob']=='7847c0fea1dcfc4ace5752d0188d70e3739679d3'
+          c=x['frozen_shared_table']
+          assert c['weights']=={'ZL3b':0.5,'IT2a':0.5}
+          assert c['k']==2 and c['alpha']==0.01 and c['outcome_vocabulary_size']==32
+          assert c['target_native_fallback'] is False
+          assert c['scalar_temperature_calibration_interpolation_mixture'] is False
+
+          expected_native={
+            'ZL3b':[0.1401857712184782,0.11070803603016977,0.13822277815269501,0.14814594340112208,0.13085394883490942],
+            'IT2a':[0.16849676408952696,0.13944957574347505,0.16568837114283141,0.1803439402500029,0.15527126574960093],
+          }
+          expected_body={
+            'ZL3b':[3122,3478,4073,3976,3605],
+            'IT2a':[4031,4483,5220,5093,4649],
+          }
+          expected_supported={
+            'ZL3b':[3122,3478,4073,3976,3605],
+            'IT2a':[4031,4483,5218,5093,4649],
+          }
+          passes={}
+          specifics={}
+          for label in ('ZL3b','IT2a'):
+              d=x['readings'][label]
+              assert len(d['outer'])==5
+              gs=[]; gr=[]
+              for f,row in enumerate(d['outer']):
+                  assert row['fold']==f
+                  assert row['n_scored_run_body_targets']==expected_body[label][f]
+                  assert row['consensus_context_supported_body_targets']==expected_supported[label][f]
+                  assert row['consensus_context_unsupported_body_targets']==expected_body[label][f]-expected_supported[label][f]
+                  assert all(math.isfinite(row[k]) for k in ('bits_POS2_TARGET','bits_EDGE2_NATIVE_TARGET','bits_EDGE2_SHARED'))
+                  native=row['bits_POS2_TARGET']-row['bits_EDGE2_NATIVE_TARGET']
+                  shared=row['bits_POS2_TARGET']-row['bits_EDGE2_SHARED']
+                  specific=row['bits_EDGE2_SHARED']-row['bits_EDGE2_NATIVE_TARGET']
+                  assert math.isclose(native,row['G_native'],rel_tol=0.0,abs_tol=1e-12)
+                  assert math.isclose(native,expected_native[label][f],rel_tol=0.0,abs_tol=1e-12)
+                  assert math.isclose(shared,row['G_shared'],rel_tol=0.0,abs_tol=1e-12)
+                  assert math.isclose(specific,row['G_specific_native_over_shared'],rel_tol=0.0,abs_tol=1e-12)
+                  assert math.isclose(native,shared+specific,rel_tol=0.0,abs_tol=1e-12)
+                  gs.append(shared); gr.append(specific)
+              p=d['primary']
+              assert p['G_shared_by_fold']==gs
+              assert p['G_specific_by_fold']==gr
+              mean_s=sum(gs)/5; pos_s=sum(g>0 for g in gs)
+              mean_r=sum(gr)/5; pos_r=sum(g>0 for g in gr)
+              shared_useful=(mean_s>0 and pos_s>=4)
+              residual=(mean_r>0 and pos_r>=4)
+              assert math.isclose(mean_s,p['mean_G_shared'],rel_tol=0.0,abs_tol=1e-15)
+              assert math.isclose(mean_r,p['mean_G_specific'],rel_tol=0.0,abs_tol=1e-15)
+              assert pos_s==p['positive_G_shared_folds']
+              assert pos_r==p['positive_G_specific_folds']
+              assert p['shared_useful'] is shared_useful
+              assert p['reading_specific_residual_robust'] is residual
+              passes[label]=shared_useful; specifics[label]=residual
+
+          if not (passes['ZL3b'] and passes['IT2a']):
+              expected_class='INVALID SHARED EDGE CONSOLIDATION'
+          elif specifics['ZL3b'] and specifics['IT2a']:
+              expected_class='BOTH READINGS RETAIN READING-SPECIFIC EDGE INFORMATION'
+          elif specifics['ZL3b']:
+              expected_class='ZL3B RETAINS READING-SPECIFIC EDGE INFORMATION'
+          elif specifics['IT2a']:
+              expected_class='IT2A RETAINS READING-SPECIFIC EDGE INFORMATION'
+          else:
+              expected_class='ONE SHARED COMMON-EVA EDGE TABLE SUFFICES'
+          assert x['classification']==expected_class
+          assert x['primary_joint']['classification']==expected_class
+          print(json.dumps({
+            'classification':x['classification'],
+            'ZL3b':x['readings']['ZL3b']['primary'],
+            'IT2a':x['readings']['IT2a']['primary'],
+            'secondary_non_promoting':x['secondary_non_promoting'],
+          },indent=2,sort_keys=True,ensure_ascii=False))
+          PY
+
+      - name: Upload first-reveal authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue151-shared-edge-first-reveal-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: warn
+          path: |
+            issue151_shared_edge_first_reveal.json
+            issue151_shared_edge_first_reveal.sha256
+
+      - name: Preserve scorer failure status
+        if: steps.scorer.outcome == 'failure'
+        shell: bash
+        run: exit 1
