@@ -1,0 +1,39 @@
+{
+  "experiment": "LM-A0 ORIFLAMMS E1 frozen roster",
+  "source_inventory_sha256": "540944b4c6f3a4ed8446ee5cec6df739681f3756b12ce9158f699478a26fc00e",
+  "source_repository_commit": "93de4af4a470aea3f3b23c2e8bafcfa2161c5438",
+  "selection_rule": "closed date interval fully contained in 1375-1450 plus unique manuscript identity and structural presence of lb/w/valid choice",
+  "effect_statistics_computed": false,
+  "association_authority": {
+    "metadata_count": 102,
+    "word_tei_count": 102,
+    "all_first_pb_stems_match": true,
+    "matched_pair_count": 102
+  },
+  "eligible_manuscript_count": 23,
+  "eligible_roster": [
+    {"text_n":"61","ordinal_1based":61,"settlement":"Metz","repository":"Bibliothèque municipale","idno":"460","earliest":1400,"latest":1400,"scripts":["Cursiva Textualis"],"association_pb_stem":"IRHT_P_002221"},
+    {"text_n":"62","ordinal_1based":62,"settlement":"Cambrai","repository":"Bibliothèque municipale","idno":"97","earliest":1400,"latest":1402,"scripts":["Textualis"],"association_pb_stem":"IRHT_P_000302"},
+    {"text_n":"63","ordinal_1based":63,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 5126","earliest":1401,"latest":1401,"scripts":["Rotunda"],"association_pb_stem":"IRHT_P_006943"},
+    {"text_n":"64","ordinal_1based":64,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 6459","earliest":1401,"latest":1401,"scripts":["Hybrida"],"association_pb_stem":"IRHT_P_007137"},
+    {"text_n":"65","ordinal_1based":65,"settlement":"Reims","repository":"Bibliothèque municipale","idno":"403","earliest":1401,"latest":1401,"scripts":["Textualis"],"association_pb_stem":"IRHT_P_002725"},
+    {"text_n":"66","ordinal_1based":66,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 5888","earliest":1401,"latest":1403,"scripts":["Semitextualis"],"association_pb_stem":"IRHT_P_004814"},
+    {"text_n":"67","ordinal_1based":67,"settlement":"Nancy","repository":"Bibliothèque municipale","idno":"(1307) [1-141]","earliest":1403,"latest":1403,"scripts":["Hybrida"],"association_pb_stem":"IRHT_P_002376"},
+    {"text_n":"68","ordinal_1based":68,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 5848","earliest":1403,"latest":1403,"scripts":["Cursiva"],"association_pb_stem":"IRHT_P_007033"},
+    {"text_n":"69","ordinal_1based":69,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 14890","earliest":1403,"latest":1403,"scripts":["Cursiva"],"association_pb_stem":"IRHT_P_008158"},
+    {"text_n":"70","ordinal_1based":70,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 5741","earliest":1405,"latest":1405,"scripts":["Hybrida"],"association_pb_stem":"IRHT_P_007009"},
+    {"text_n":"71","ordinal_1based":71,"settlement":"Toulouse","repository":"Bibliothèque municipale","idno":"219","earliest":1405,"latest":1405,"scripts":["Semihybrida"],"association_pb_stem":"IRHT_P_003602"},
+    {"text_n":"72","ordinal_1based":72,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 12432","earliest":1406,"latest":1406,"scripts":["Cursiva"],"association_pb_stem":"IRHT_P_007943"},
+    {"text_n":"73","ordinal_1based":73,"settlement":"Paris","repository":"Bibliothèque Mazarine","idno":"415","earliest":1407,"latest":1407,"scripts":["Textualis"],"association_pb_stem":"IRHT_P_009180"},
+    {"text_n":"74","ordinal_1based":74,"settlement":"Tours","repository":"Bibliothèque municipale","idno":"926","earliest":1409,"latest":1409,"scripts":["Hybrida"],"association_pb_stem":"IRHT_P_003817"},
+    {"text_n":"75","ordinal_1based":75,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 7626","earliest":1412,"latest":1412,"scripts":["Semitextualis"],"association_pb_stem":"IRHT_P_007305"},
+    {"text_n":"76","ordinal_1based":76,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 14732","earliest":1412,"latest":1412,"scripts":["Cursiva"],"association_pb_stem":"IRHT_P_008142"},
+    {"text_n":"77","ordinal_1based":77,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Nouv. Acq. Lat. 3043","earliest":1412,"latest":1415,"scripts":["Textualis"],"association_pb_stem":"IRHT_P_008816"},
+    {"text_n":"78","ordinal_1based":78,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 6830 F ff. 81-95","earliest":1414,"latest":1414,"scripts":["Humanistique"],"association_pb_stem":"IRHT_P_007204"},
+    {"text_n":"79","ordinal_1based":79,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 8537","earliest":1415,"latest":1415,"scripts":["Humanistique"],"association_pb_stem":"IRHT_P_007486"},
+    {"text_n":"80","ordinal_1based":80,"settlement":"Reims","repository":"Bibliothèque municipale","idno":"1111","earliest":1415,"latest":1416,"scripts":["Cursiva"],"association_pb_stem":"IRHT_P_002810"},
+    {"text_n":"87","ordinal_1based":87,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 6834","earliest":1450,"latest":1450,"scripts":["Humanistique_cursive"],"association_pb_stem":"IRHT_P_007208"},
+    {"text_n":"88","ordinal_1based":88,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 10336","earliest":1450,"latest":1450,"scripts":["Semitextualis"],"association_pb_stem":"IRHT_P_007688"},
+    {"text_n":"97","ordinal_1based":97,"settlement":"Paris","repository":"Bibliothèque nationale de France","idno":"Latin 8123","earliest":1380,"latest":1400,"scripts":["Rotunda"],"association_pb_stem":"IRHT_P_007384"}
+  ]
+}
