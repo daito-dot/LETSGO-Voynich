@@ -1,0 +1,77 @@
+name: Issue184 reversible constrained-code S0
+
+on:
+  push:
+    paths:
+      - '.github/workflows/issue184-s0-capacity.yml'
+      - 'experiments/issue184-reversible-constrained-code/issue184_s0_capacity.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  s0:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen S0 state
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install adapter runtime dependencies
+        run: python -m pip install 'numpy>=2,<3' 'scipy>=1.14,<2'
+
+      - name: Synthetic preflight
+        run: python experiments/issue184-reversible-constrained-code/issue184_s0_capacity.py --synthetic-preflight
+
+      - name: Run score-free full frozen-language capacity audit
+        run: |
+          python experiments/issue184-reversible-constrained-code/issue184_s0_capacity.py \
+            experiments/issue184-reversible-constrained-code/issue184_s0_capacity_result.json
+          sha256sum experiments/issue184-reversible-constrained-code/issue184_s0_capacity_result.json \
+            > experiments/issue184-reversible-constrained-code/issue184_s0_capacity_result.sha256
+          python - <<'PY'
+          import json
+          p='experiments/issue184-reversible-constrained-code/issue184_s0_capacity_result.json'
+          d=json.load(open(p, encoding='utf-8'))
+          assert d['voynich_corpus_accessed'] is False
+          assert d['g7a_v2_probabilities_accessed'] is False
+          assert d['r1_r8_scientific_score_computed'] is False
+          print(json.dumps({
+            'raw_structural_path_count': d['raw_structural_path_count'],
+            'distinct_literal_surface_count': d['distinct_literal_surface_count'],
+            'ambiguous_literal_surface_count': d['ambiguous_literal_surface_count'],
+            'support_capacity_floor_bits_per_token': d['support_capacity_floor_bits_per_token'],
+            'classification': d['classification'],
+            'exhaustive_fixed_block_view': d['exhaustive_fixed_block_view'],
+          }, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Commit exact S0 authority
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/issue184-reversible-constrained-code/issue184_s0_capacity_result.json \
+                  experiments/issue184-reversible-constrained-code/issue184_s0_capacity_result.sha256
+          git commit -m 'Issue #184: freeze reversible surface-capacity S0 result'
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Enforce frozen S0 closure gate after authority commit
+        run: |
+          python - <<'PY'
+          import json
+          p='experiments/issue184-reversible-constrained-code/issue184_s0_capacity_result.json'
+          d=json.load(open(p, encoding='utf-8'))
+          assert d['classification'] in {
+            'S0_CAPACITY_16PLUS_EXACT',
+            'S0_CAPACITY_8_TO_15_EXACT',
+            'S0_INSUFFICIENT_BYTE_CAPACITY',
+          }, d['classification']
+          PY
