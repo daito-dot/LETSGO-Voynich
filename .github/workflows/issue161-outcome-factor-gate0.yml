@@ -1,0 +1,192 @@
+name: Issue161 outcome-only Currier factorization Gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'experiments/predictive-information/common-eva-currier/ISSUE161_OUTCOME_ONLY_CURRIER_FACTORIZATION_PLAN.md'
+      - 'experiments/predictive-information/common-eva-currier/issue161_outcome_factor_gate0.py'
+      - '.github/workflows/issue161-outcome-factor-gate0.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  OUT: issue161_outcome_factor_gate0.json
+  GATE: experiments/predictive-information/common-eva-currier/issue161_outcome_factor_gate0.py
+
+jobs:
+  score-free-gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Assert entry ancestry and frozen blobs
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 45d01bfcbed9c5307f823f8d23f59cdedcab35b0 HEAD
+          test "$(git hash-object "$GATE")" = "00e5bddc0484b9472bb4fce9dadb89dd52bf578f"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE161_OUTCOME_ONLY_CURRIER_FACTORIZATION_PLAN.md)" = "68cb29a11cb147c8ecd9e70b3349a4102744e0ed"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue158_currier_gate_decomposition_gate0.py)" = "4dbc919f3e9ededa17d2e10f56de46c98456cdea"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE158_GATE0_PROVENANCE.md)" = "07595bf7314cfb71763eba1a810bfd3aaa01a239"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/issue158_currier_gate_first_reveal.py)" = "e7a70a10dd7b663f3482993b0adfa8f804816158"
+          test "$(git hash-object experiments/predictive-information/common-eva-currier/ISSUE158_FIRST_REVEAL_PROVENANCE.md)" = "0f3c14d2f592dea020c180669670cafca5ba1b05"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Verify frozen sources
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+
+      - name: Install frozen parser runtime
+        run: python -m pip install --disable-pip-version-check numpy scipy
+
+      - name: Compile and target-free synthetic self-test
+        shell: bash
+        run: |
+          python -m py_compile "$GATE"
+          python "$GATE" --self-test
+
+      - name: Run score-free outcome-factor Gate0
+        id: gate
+        continue-on-error: true
+        shell: bash
+        run: |
+          python "$GATE" --run "$ZL3B" "$IT2A" "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" | tee issue161_outcome_factor_gate0.sha256
+
+      - name: Preserve Gate output
+        if: always()
+        shell: bash
+        run: |
+          if test -f "$OUT"; then
+            cat "$OUT"
+            sha256sum "$OUT" | tee issue161_outcome_factor_gate0.sha256
+          else
+            echo "Gate produced no result JSON" >&2
+          fi
+
+      - name: Assert frozen score-free factorization contract
+        if: steps.gate.outcome == 'success'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from fractions import Fraction
+
+          x=json.load(open('issue161_outcome_factor_gate0.json',encoding='utf-8'))
+          assert x['schema']=='issue161-outcome-factor-gate0-v1'
+          assert x['issue']==161 and x['gate_pass'] is True
+          assert x['gate_disposition']=='PASS — PROCEED TO SEPARATELY COMMITTED OUTCOME-FACTOR SCORER'
+          assert x['scientific_outcome_factor_metrics_computed'] is False
+
+          a=x['entry_authority']
+          assert a['issue158_gate_reproduced'] is True
+          assert a['issue158_gate_result_sha256']=='605e0a82817f394176a3e19c972ed409dfb15df60c72df22db3c0cc765e31099'
+          assert a['issue158_gate_script_blob']=='4dbc919f3e9ededa17d2e10f56de46c98456cdea'
+          assert a['issue158_gate_provenance_blob']=='07595bf7314cfb71763eba1a810bfd3aaa01a239'
+          assert a['issue158_scorer_blob']=='e7a70a10dd7b663f3482993b0adfa8f804816158'
+          assert a['issue158_first_provenance_blob']=='0f3c14d2f592dea020c180669670cafca5ba1b05'
+          assert a['issue158_declared_first_reveal_result_sha256']=='eef6aee7cb202d73a7090c7aca0e9a0df404b46373589a8203da2b80ec1c3107'
+          assert a['issue158_merge']=='1741bed875a582594dc797ef18e30dd2ef3351ce'
+          assert a['fold_identity_sha256']=='cf2df8edcf2b25c2f6388c4a9e2c1ee58a24ae05a9cf489ff9a43d2d28f0b64b'
+          assert a['issue161_plan_blob_sha1']=='68cb29a11cb147c8ecd9e70b3349a4102744e0ed'
+
+          c=x['frozen_factorization']
+          assert len(c['outcomes'])==32 and len(set(c['outcomes']))==32
+          assert c['V']==32 and c['alpha']==[1,100]
+          assert c['context_invariant_multiplier'] is True
+          assert c['currier_by_previous_terminal_interaction'] is False
+          assert c['target_native_fallback'] is False
+          assert c['temperature_interpolation_calibration_mixture'] is False
+
+          expected_pool_sha=[
+            'c03cf03a317f8531b84f12b6214e06bfe402a67776733c993fb01fda8d8725fa',
+            '4e72f0b05561684844af1f22e58988592bdf6c3c92088b00e96412110d439cf6',
+            '96fe6cbe449cd0f3916aaeb7d20952bd992f0d88f6bd6019dd4dccb48041f029',
+            'f8049dfc7a2d2041e119c671812ca4a1da29e4078166288200cd52bbf23551e5',
+            '83e91653b34891b1aa83df0fd64c085847eed3861a9ba1cee29e8ae2a9eb5a89',
+          ]
+          assert len(x['outer'])==5
+          for f,row in enumerate(x['outer']):
+              assert row['outer_fold']==f
+              assert row['training_union_heldout_overlap']==[]
+              assert row['POOL_table_sha256']==expected_pool_sha[f]
+              assert len(row['aggregate_A_counts'])==32
+              assert len(row['aggregate_B_counts'])==32
+              assert len(row['aggregate_POOL_counts'])==32
+              assert len(row['W_A'])==32 and len(row['W_B'])==32
+              outcomes=[r[0] for r in row['W_A']]
+              assert outcomes==c['outcomes']
+              assert [r[0] for r in row['W_B']]==outcomes
+              end_i=outcomes.index('<END_TOKEN>')
+              assert Fraction(row['W_A'][end_i][1],row['W_A'][end_i][2])==1
+              assert Fraction(row['W_B'][end_i][1],row['W_B'][end_i][2])==1
+              for key in ('outcome_only_A_audit','outcome_only_B_audit'):
+                  q=row[key]
+                  assert q['all_contexts_exactly_normalized'] is True
+                  assert q['n_contexts']>=19
+                  assert q['n_context_outcome_cells']==32*q['n_contexts']
+                  assert Fraction(*q['min_probability'])>0
+                  assert Fraction(*q['max_probability'])<1
+              for reading in ('ZL3b','IT2a'):
+                  for regime in ('A','B'):
+                      t=row['target_context_support'][reading][regime]
+                      assert t['target_primary_run_body_targets']>=300
+                      assert t['matched_context_supported_primary_run_body_targets']>=300
+                      assert t['heldout_current_first_atom_used_for_context_selection'] is False
+
+          s=x['synthetic_test']
+          assert s['ok'] is True and s['uses_real_target_data'] is False
+          assert s['global_outcome_shift_represented'] is True
+          assert s['context_specific_contrast_not_absorbed_by_global_multiplier'] is True
+          assert all(v is False for v in x['firewall'].values())
+          print(json.dumps({
+              'gate_disposition':x['gate_disposition'],
+              'fold_multiplier_shas':[
+                  {'fold':r['outer_fold'],'W_A':r['W_A_sha256'],'W_B':r['W_B_sha256']}
+                  for r in x['outer']
+              ],
+          },indent=2,sort_keys=True))
+          PY
+
+      - name: Upload Gate0 authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue161-outcome-factor-gate0-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: warn
+          path: |
+            issue161_outcome_factor_gate0.json
+            issue161_outcome_factor_gate0.sha256
+
+      - name: Preserve Gate failure status
+        if: steps.gate.outcome == 'failure'
+        shell: bash
+        run: exit 1
