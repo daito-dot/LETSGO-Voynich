@@ -1,0 +1,324 @@
+{
+  "schema_version": 1,
+  "issue": 172,
+  "stage": "stage0_authority_only",
+  "base_main": "a1001cefaab1d3f7f1ef808af3f4614fe8bf7f3b",
+  "plan": {
+    "path": "experiments/joint-mechanism-discrimination/STAGE0_AUTHORITY_PLAN.md",
+    "commit": "ece76bfe57203a0ed630774984c52f35bfbc2d17",
+    "blob": "638e212e22aaa313fd85ab80103528ce4cfada9f"
+  },
+  "forbidden_stage0_fields": [
+    "issue172_candidate_scores",
+    "issue172_candidate_target_likelihoods",
+    "issue172_candidate_classifications",
+    "post_reveal_repairs"
+  ],
+  "authority_files": [
+    {
+      "path": "experiments/occupancy-generation-hierarchy/PLAN_B.md",
+      "blob": "8768a8a795224fd90dd976435ac0f6699dc106ad"
+    },
+    {
+      "path": "experiments/occupancy-generation-hierarchy/REPORT_B.md",
+      "blob": "ecdbd8f1136b7c7f7aba42c6a5eac7c08df6ba54"
+    },
+    {
+      "path": "experiments/cross-token-memory/PLAN_A.md",
+      "blob": "3c020804c050fc7aa449d6a1ede091f755929ca3"
+    },
+    {
+      "path": "experiments/predictive-information/common-eva-edge/ISSUE145_FIRST_REVEAL_PROVENANCE.md",
+      "blob": "1cbb43381c57726ecc3a5b5dc5e8efc0c7b732f6"
+    },
+    {
+      "path": "experiments/predictive-information/common-eva-currier/ISSUE161_FIRST_REVEAL_PROVENANCE.md",
+      "blob": "73100548fef5dbc0d08a1951e3c0ca5b370cd6f4"
+    },
+    {
+      "path": "experiments/predictive-information/common-eva-currier/ISSUE167_FIRST_REVEAL_PROVENANCE.md",
+      "blob": "65e6fd6862a0ebd2ec44d275cb62f309cd8b4e75"
+    },
+    {
+      "path": "experiments/predictive-information/order-correction/CORRECTED_HIERARCHY_REPORT.md",
+      "blob": "04e9c8a69e1eea462439f40d82f726f1c9d06f70"
+    },
+    {
+      "path": "experiments/joint-constraint-tournament/PLAN_A.md",
+      "blob": "c6c79431fbff0a4dc045ec08d05bfad48c36cb2b"
+    }
+  ],
+  "responsibilities": {
+    "R1": {
+      "name": "production_boundary",
+      "replay_classes": ["DIRECT_REPLAY", "SEPARATE_ARM"],
+      "readings": ["ZL3b", "IT2a"],
+      "historical_authority": {
+        "issues": [112, 115],
+        "it2a_scientific_head": "c134560f071a89f77c751878f3f096ce6cb2ac63",
+        "it2a_run": 34024979238,
+        "it2a_artifact": 9986755320,
+        "it2a_zip_sha256": "9969915558dec9880c5a980f697759cb5357e92cdd5fcfcb693abcb7f4d1c0e4",
+        "it2a_result_sha256": "3e9651c733a956b7507a71d169555de1904fe11924fc08b30a3a548b5b29be29",
+        "zl3b_d_reset": 8.8119054250,
+        "it2a_d_reset": 8.092615
+      },
+      "hard_gate": {
+        "observed_reset_mean_gt": 0.0,
+        "observed_reset_positive_folds_min": 4,
+        "shift_direction": "observed_minus_shift_negative",
+        "shift_direction_folds_min": 4,
+        "same_parameterization_across_readings": true
+      }
+    },
+    "R2": {
+      "name": "token_internal_construction",
+      "replay_classes": ["FROZEN_ADAPTER", "SEPARATE_ARM"],
+      "historical_authority": {
+        "issues": [68, 75],
+        "compact_model": "G7A_second_order_occupied_slot_successor",
+        "nominal_counted_probabilities": 298,
+        "first_reveal_aggregate_sha256": "b6bb8c3e124e9adb3d7af38c58d28c4cdc3e404f5059525c4128c9762ef204be",
+        "median_T_zl3b": 0.9481,
+        "median_T_it2a": 0.9617,
+        "ceiling_T_zl3b": 0.9646,
+        "ceiling_T_it2a": 0.9695
+      },
+      "hard_gate": {
+        "slotparser_policy": "min",
+        "coverage_min": 0.60,
+        "valid_reliability_folds_min": 4,
+        "reliability_min": 0.50,
+        "existence_maxT_p_max": 0.01,
+        "pearson_min_each_reading": 0.70,
+        "pearson_maxT_p_max": 0.01,
+        "sign_agreement_min": 50,
+        "edge_count": 66,
+        "sign_maxT_p_max": 0.01,
+        "stochastic_realizations_required": 3,
+        "all_realizations_must_pass": true
+      }
+    },
+    "R3": {
+      "name": "local_near_family_recurrence",
+      "replay_classes": ["FROZEN_ADAPTER", "SEPARATE_ARM"],
+      "historical_authority": {
+        "issue": 81,
+        "run": 33612699253,
+        "stage1_sha256": "b7c3de603c2bed9a26ae9cc896bea69c88ff0f58bba1bab6b170cbda8032e584",
+        "final_sha256": "98aaabefec0409763f07e41badba3aff10027cc59b68cdcd73c66e2927ebb68e"
+      },
+      "hard_gate": {
+        "s2_ratio_min": 0.5,
+        "s2_ratio_max": 2.0,
+        "h62_raw_ratio_min": 0.5,
+        "profile_comparator": "A1-R1_frozen_mean",
+        "profile_metrics": ["D_profile", "abs_C_short_diff"]
+      }
+    },
+    "R4": {
+      "name": "signed_paragraph_entry",
+      "replay_classes": ["DIRECT_REPLAY", "SEPARATE_ARM"],
+      "hard_gate": {
+        "same_sign_required": true,
+        "mean_ratio_min": 0.5,
+        "mean_ratio_max": 2.0,
+        "wrong_sign_is_automatic_failure": true
+      }
+    },
+    "R5": {
+      "name": "same_line_edge_and_line_break_reset",
+      "replay_classes": ["FROZEN_ADAPTER", "SEPARATE_ARM"],
+      "historical_authority": {
+        "issue123_same_line_gain": 0.0291614,
+        "issue123_beyond_line_gain": -0.0185292,
+        "issue125_position_gain": 0.00889185,
+        "issue125_terminal_identity_gain": 0.02026956,
+        "edge2_equals_linecont2": true,
+        "common_eva_zl3b_gain": 0.1336232955274749,
+        "common_eva_it2a_gain": 0.16184998339508744,
+        "issue145_run": 34062199123,
+        "issue145_result_sha256": "663f4b4f9f48992036c2517109f5b8efde459cbdd35d034b567233edbd2efdf2"
+      },
+      "hard_gate": {
+        "edge_positive_folds_min_each_reading": 4,
+        "edge_gain_ratio_min": 0.5,
+        "edge_gain_ratio_max": 2.0,
+        "beyond_line_must_not_be_robust_positive": true,
+        "robust_positive_folds_min": 4
+      }
+    },
+    "R6": {
+      "name": "reading_stable_shared_common_eva_base_edge",
+      "replay_classes": ["ACCESS_CONSTRAINT", "SEPARATE_ARM"],
+      "historical_authority": {
+        "issue": 151,
+        "run": 34074437422,
+        "scorer_blob": "2dcd68c8fa68080552a8b90a81e118568b35f8ef",
+        "artifact": 10001563139,
+        "result_sha256": "cb7d88b88a65df58c8d93d047b8fbfe4d2eda20d4c7314713c9d44e31a9b7355",
+        "shared_gain_zl3b": 0.13564574057416792,
+        "shared_gain_it2a": 0.16380858130203818
+      },
+      "hard_gate": {
+        "per_reading_posthoc_tuning": false,
+        "same_parameterization_across_readings": true,
+        "shared_useful_folds_min_each_reading": 4,
+        "reading_specific_over_shared_must_not_be_robust": true
+      }
+    },
+    "R7": {
+      "name": "currier_global_next_initial_bias",
+      "replay_classes": ["FROZEN_ADAPTER", "ACCESS_CONSTRAINT", "SEPARATE_ARM"],
+      "historical_authority": {
+        "issue158_run": 34076400927,
+        "issue158_result_sha256": "eef6aee7cb202d73a7090c7aca0e9a0df404b46373589a8203da2b80ec1c3107",
+        "currier_gain": {
+          "A_ZL3b": 0.0632767341,
+          "A_IT2a": 0.0678261662,
+          "B_ZL3b": 0.1012061293,
+          "B_IT2a": 0.1045681122
+        },
+        "issue161_result_sha256": "11e179abcc53e5507d188b46f335c38198ee6a9d36f31fee406650610cafd031",
+        "accepted_factorization": "shared_terminal_to_initial_base_plus_currier_global_next_initial_bias",
+        "issue167_result_sha256": "a532136b821d3c42f7b340729961da438f1f7cbd9bf20afb73408261d8d7befd",
+        "k_ladder": [1, 2, 4, 8, 16],
+        "first_sufficient_k": 16
+      },
+      "hard_gate": {
+        "gain_positive_folds_min_each_cell": 4,
+        "gain_ratio_min": 0.5,
+        "gain_ratio_max": 2.0,
+        "context_specific_interaction_must_not_replicate_both_readings": true,
+        "k16_must_suffice": true,
+        "k_le_8_must_not_suffice_both_regimes": true,
+        "allowed_access_classes": ["ENDOGENOUS_STATE", "EXOGENOUS_CURRIER_SIDEINFO", "SCORING_ONLY_METADATA"]
+      }
+    },
+    "R8": {
+      "name": "slower_previous_paragraph_inventory",
+      "replay_classes": ["FROZEN_ADAPTER", "SEPARATE_ARM"],
+      "historical_authority": {
+        "issue": 100,
+        "corrected_order": "raw_page_first_occurrence_then_numeric_paragraph_rank",
+        "scientific_head": "4bbd0a994dcc7307038b1b16c7726cffca5f3f65",
+        "run": 34020290736,
+        "artifact": 9985268839,
+        "result_sha256": "d0ffb426ca268cea3c6c4090aaaac48f260dd4832e8806fbf20419f6f638c014",
+        "previous_paragraph_gain": 0.0414587,
+        "same_line_inventory_gain": 0.0,
+        "previous_paragraph_order_residual": 0.0043079
+      },
+      "hard_gate": {
+        "previous_paragraph_positive_folds_min": 4,
+        "previous_paragraph_gain_min": 0.02072935,
+        "previous_paragraph_gain_max": 0.0829174,
+        "same_line_inventory_must_not_be_robust_positive": true,
+        "no_future_tokens": true
+      }
+    },
+    "R9": {
+      "name": "reversibility_recoverability",
+      "replay_classes": ["ACCESS_CONSTRAINT"],
+      "hard_gate": {
+        "decoder_exact_recovery_fraction": 1.0,
+        "ambiguous_truth_contained_does_not_pass": true,
+        "message_length_scaling_side_information_forbidden": true,
+        "surface_generator_decoder_eligible": false
+      }
+    },
+    "R10": {
+      "name": "target_information_and_complexity_accounting",
+      "replay_classes": ["ACCESS_CONSTRAINT"],
+      "required_candidate_fields": [
+        "role",
+        "trainable_scalars",
+        "empirical_table_dimensions",
+        "state_count",
+        "transition_table_dimensions",
+        "empirical_vocabulary_dependence",
+        "target_token_identity_access",
+        "layout_access",
+        "currier_access",
+        "section_folio_scribe_access",
+        "target_derived_lookup_tables",
+        "external_corpus_plaintext_assumptions",
+        "inverse_side_information",
+        "candidate_specific_repairs",
+        "per_reading_tuning",
+        "heldout_item_fitting"
+      ],
+      "automatic_violation_if": [
+        "heldout_target_identity_or_statistic_used_for_fitting",
+        "per_heldout_item_parameter_fitting",
+        "post_reveal_representation_view_or_seed_selection",
+        "new_codebook_or_repair_selected_from_issue172_performance"
+      ]
+    }
+  },
+  "candidate_roster": [
+    {
+      "id": "N0",
+      "role": "CONTROL / NULL",
+      "promotion_eligible": false,
+      "historical_fixed": true,
+      "currier_access": "SCORING_ONLY_METADATA"
+    },
+    {
+      "id": "C0-4",
+      "role": "CONTROL / NULL",
+      "promotion_eligible": false,
+      "historical_fixed": true,
+      "reversibility": "exact_structured",
+      "currier_access": "SCORING_ONLY_METADATA"
+    },
+    {
+      "id": "A1/A1-R1",
+      "role": "SURFACE GENERATOR ONLY",
+      "promotion_eligible": true,
+      "historical_fixed": true,
+      "known_frozen_failure": "slotparser_coverage_0.388394_below_0.60",
+      "per_reading_tuning": false,
+      "heldout_item_fitting": false,
+      "currier_access": "SCORING_ONLY_METADATA"
+    },
+    {
+      "id": "Naibbe C1-E0",
+      "role": "REVERSIBLE TRANSFORM / DECODER CANDIDATE",
+      "promotion_eligible": true,
+      "historical_fixed": true,
+      "known_frozen_failure": "normalized_unique_decoder_closure_0.656355_below_1.0",
+      "per_reading_tuning": false,
+      "heldout_item_fitting": false,
+      "currier_access": "SCORING_ONLY_METADATA"
+    },
+    {
+      "id": "OBSERVABLE-CORE REPLAY",
+      "role": "CONTROL / NULL",
+      "promotion_eligible": false,
+      "historical_fixed": true,
+      "target_derived_positive_control": true,
+      "currier_access": "EXOGENOUS_CURRIER_SIDEINFO"
+    }
+  ],
+  "overall_classes": [
+    "JOINT-STRUCTURAL COMPETITIVE",
+    "PARTIAL STRUCTURAL MODEL",
+    "OVERFIT / EXCESS-TARGET-ACCESS",
+    "NOT COMPETITIVE",
+    "INVALID / NON-COMPARABLE"
+  ],
+  "chronology": [
+    "plan_commit",
+    "manifest_commit",
+    "stage0_checker_commit",
+    "stage0_workflow_commit",
+    "exact_head_green_gate0",
+    "stage0_merge",
+    "fresh_target_plan_branch",
+    "target_plan_commit",
+    "scorer_only_commit",
+    "workflow_after_scorer_commit",
+    "single_first_target_reveal"
+  ]
+}
