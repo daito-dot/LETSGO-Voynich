@@ -1,0 +1,156 @@
+name: Issue176 runtime-recovery preflight
+
+on:
+  push:
+    branches:
+      - issue-176-anchor-runtime-recovery
+    paths:
+      - '.github/workflows/issue176-runtime-recovery-preflight.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONHASHSEED: '0'
+  ZL3B: external/cipher-benchmark/benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt
+  IT2A: external/IT2a-n.txt
+  CREMMA: external/cremma
+  NAIBBE: external/naibbe
+  WRAPPER: experiments/joint-mechanism-discrimination/issue176_recovery_wrapper.py
+  V1: experiments/joint-mechanism-discrimination/first_reveal_historical_anchor_scorer.py
+  PLAN: experiments/joint-mechanism-discrimination/ISSUE176_RECOVERY_EXECUTION_PLAN.md
+  OUT: issue176_recovery_preflight.json
+
+jobs:
+  preflight-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout exact preflight head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Assert frozen recovery chronology
+        shell: bash
+        run: |
+          test "$(git hash-object "$WRAPPER")" = "e1c352f407e8889717065ce32ff0d649aa8665da"
+          test "$(git hash-object "$V1")" = "f90f194396acdc50599cf9713dbbeb3ab5b4bed3"
+          test "$(git hash-object "$PLAN")" = "6b05aa0dbe9dc57e55527b2123806c8d2d6582b9"
+          git merge-base --is-ancestor 54fb4f9a5122dfc64ae3fbf24633bb80380a5365 HEAD
+          git merge-base --is-ancestor 4c67a5b047609b631cf6eb583f2c1dd253ada478 HEAD
+          test "$(git diff --name-only 4c67a5b047609b631cf6eb583f2c1dd253ada478 HEAD)" = ".github/workflows/issue176-runtime-recovery-preflight.yml"
+
+      - name: Checkout frozen ZL3b mirror
+        uses: actions/checkout@v4
+        with:
+          repository: matthewdgreen/cipher_benchmark
+          ref: 315f0cad4de3d021bd4185765c037cf2a28d341c
+          path: external/cipher-benchmark
+
+      - name: Retrieve exact IT2a authority
+        shell: bash
+        run: |
+          mkdir -p external
+          curl --fail --location --retry 3 --retry-delay 2 --output "$IT2A" https://www.voynich.nu/data/IT2a-n.txt
+
+      - name: Checkout frozen CREMMA corpus
+        uses: actions/checkout@v4
+        with:
+          repository: HTR-United/CREMMA-Medieval-LAT
+          ref: 292525969ad98380b398e6606a9c2a36d51913ae
+          path: external/cremma
+
+      - name: Checkout exact published Naibbe source
+        uses: actions/checkout@v4
+        with:
+          repository: greshko/naibbe-cipher
+          ref: f2675ec5dd275268bc64dd48ea64fc0e0e9827a2
+          path: external/naibbe
+
+      - name: Verify frozen external authorities
+        shell: bash
+        run: |
+          test "$(git -C external/cipher-benchmark rev-parse HEAD)" = "315f0cad4de3d021bd4185765c037cf2a28d341c"
+          test "$(git -C external/cipher-benchmark hash-object benchmark/unsolved/sources/voynich/transcriptions/ZL3b-n.txt)" = "2a4533ab9bdfa85db9bad602d590978953055df1"
+          test "$(sha256sum "$ZL3B" | awk '{print $1}')" = "bf5b6d4ac1e3a51b1847a9c388318d609020441ccd56984c901c32b09beccafc"
+          test "$(git hash-object "$IT2A")" = "4d6d3f2537b1f507a257529b49c94af7d6e03446"
+          test "$(sha256sum "$IT2A" | awk '{print $1}')" = "7f27a8b0feed8f6de0a99900df6bf912dd1d295c38e5f830bac8b41c3f536fb5"
+          test "$(git -C "$CREMMA" rev-parse HEAD)" = "292525969ad98380b398e6606a9c2a36d51913ae"
+          test "$(git -C "$NAIBBE" rev-parse HEAD)" = "f2675ec5dd275268bc64dd48ea64fc0e0e9827a2"
+          test "$(git -C "$NAIBBE" hash-object naibbe_v2.py)" = "b566ad82e4b6ff0782ecdddebf77718dac44f292"
+          test "$(git -C "$NAIBBE" hash-object references/naibbe_tables.csv)" = "5cd34fb81d80faf3b4d57dbf1719c05ffde25302"
+
+      - name: Install analysis runtime
+        run: python -m pip install --disable-pip-version-check numpy pandas scipy
+
+      - name: Compile and target-free wrapper self-test
+        shell: bash
+        run: |
+          python -m py_compile "$WRAPPER"
+          python "$WRAPPER" --self-test > issue176_wrapper_self_test.json
+          python -m json.tool issue176_wrapper_self_test.json > /dev/null
+
+      - name: Record preflight provenance
+        shell: bash
+        run: |
+          {
+            echo "workflow_head=$(git rev-parse HEAD)"
+            echo "recovery_plan_blob=$(git hash-object "$PLAN")"
+            echo "wrapper_blob=$(git hash-object "$WRAPPER")"
+            echo "frozen_v1_blob=$(git hash-object "$V1")"
+            echo "workflow_blob=$(git hash-object .github/workflows/issue176-runtime-recovery-preflight.yml)"
+            echo "run_id=$GITHUB_RUN_ID"
+            echo "run_attempt=$GITHUB_RUN_ATTEMPT"
+            echo "repository=$GITHUB_REPOSITORY"
+            echo "zl3b_sha256=$(sha256sum "$ZL3B" | awk '{print $1}')"
+            echo "it2a_sha256=$(sha256sum "$IT2A" | awk '{print $1}')"
+            echo "cremma_commit=$(git -C "$CREMMA" rev-parse HEAD)"
+            echo "naibbe_commit=$(git -C "$NAIBBE" rev-parse HEAD)"
+            echo "scientific_candidate_scores_computed=false"
+          } > issue176_recovery_preflight_provenance.txt
+
+      - name: Run score-free exact-source preflight
+        id: preflight
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          python "$WRAPPER" --preflight-only "$ZL3B" "$IT2A" "$CREMMA" "$NAIBBE" "$OUT" > issue176_preflight_stdout.txt
+          rc=$?
+          set -e
+          echo "$rc" > issue176_preflight_exit_code.txt
+          test -f "$OUT"
+          python -m json.tool "$OUT" > /dev/null
+          sha256sum "$OUT" > issue176_recovery_preflight.sha256
+          exit "$rc"
+
+      - name: Upload score-free preflight authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue176-runtime-recovery-preflight
+          if-no-files-found: error
+          path: |
+            issue176_recovery_preflight.json
+            issue176_recovery_preflight.sha256
+            issue176_recovery_preflight_provenance.txt
+            issue176_preflight_exit_code.txt
+            issue176_preflight_stdout.txt
+            issue176_wrapper_self_test.json
+
+      - name: Enforce accepted score-free preflight
+        if: always()
+        shell: bash
+        run: |
+          test -f issue176_preflight_exit_code.txt
+          test "$(cat issue176_preflight_exit_code.txt)" = "0"
+          python - <<'PY'
+          import json
+          p=json.load(open('issue176_recovery_preflight.json', encoding='utf-8'))
+          assert p['ok'] is True
+          assert p['mode'] == 'preflight-only'
+          assert p['scientific_candidate_scores_computed'] is False
+          assert p['preflight']['scientific_candidate_scores_computed'] is False
+          PY
