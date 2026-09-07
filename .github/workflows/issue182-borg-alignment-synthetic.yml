@@ -1,0 +1,22 @@
+name: Issue182 Borg alignment synthetic preflight
+
+on:
+  push:
+    paths:
+      - '.github/workflows/issue182-borg-alignment-synthetic.yml'
+      - 'experiments/issue182-borg-source-attribution/issue182_alignment_stage0.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run target-free synthetic alignment preflight
+        run: python experiments/issue182-borg-source-attribution/issue182_alignment_stage0.py --synthetic-preflight
