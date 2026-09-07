@@ -1,0 +1,70 @@
+{
+  "artifact": {
+    "artifact_id": 10034216152,
+    "artifact_name": "issue188-r4-casebooks-stage1",
+    "artifact_zip_sha256": "c9f52459c19eef54cd24c5ed1c6c77a6957ec2501685cd4ed39d22e1944c4368",
+    "job_id": 101877469075,
+    "raw_json_git_blob": "fde5b2896687affefae453c514e9b11efd501307",
+    "raw_json_sha256": "40a20c56c242a51d42b70f3e7633f4908b83b7d82dddf5dc784c2cc8f81718db",
+    "run_id": 34166155488
+  },
+  "authorities": {
+    "casebooks_commit": "9d42295d72b5ba8889575a32d79311cc72bce73a",
+    "gate0_extractor_blob": "9792e32a0cb86bd293491701625e8fe2d530aacd",
+    "phase62b_blob": "e0ada366845c7a6c5a5dd75de91fe262b72a94b6",
+    "stage1_head": "839b4dbe165a8773eb5c23c6da900f81200d1715",
+    "stage1_plan_blob": "763b2a8c8f5661745a1024d2109b8df8ae9a6a0b",
+    "stage1_scorer_blob": "0e3053b7ea2d110e938aef32b2e2e5acac0bc051",
+    "stage1_workflow_blob": "465a9773b6bd96ce76094c86c5711cc7d1516823",
+    "zl3b_blob": "2a4533ab9bdfa85db9bad602d590978953055df1"
+  },
+  "classification": "MIXED_OR_UNSTABLE",
+  "issue": 188,
+  "magnitude_classification": "NOT_APPLICABLE_DIRECTION_NOT_REPLICATED",
+  "pooled_all_eligible": {
+    "folds": [0.5842475352449014, 0.5690596665410887, 0.5926081442963385, 0.5991785776283466, 0.5866940625879413],
+    "mean": 0.5863575972597233,
+    "n_items": 1082,
+    "positive_folds": 5
+  },
+  "practices": {
+    "forman": {
+      "folds": [-0.3058126684136094, -0.2995958900335419, -0.30689716549060503, -0.3136917919647241, -0.3215267308588351],
+      "mean": -0.3095048493522631,
+      "n_items": 114,
+      "positive_folds": 0
+    },
+    "napier": {
+      "folds": [0.6890686749319572, 0.6713600110137208, 0.6985416208621562, 0.7066860385101754, 0.6936539494194827],
+      "mean": 0.6918620589474985,
+      "n_items": 968,
+      "positive_folds": 5
+    }
+  },
+  "primary_equal_volume": {
+    "folds": [0.6376471288662856, 0.6180059262676693, 0.6405584615798502, 0.6531544574509416, 0.633664514849947],
+    "mean": 0.6366060978029389,
+    "n_volumes": 51,
+    "positive_folds": 5,
+    "ratio_to_voynich": 0.7267241591969684,
+    "stable_negative_volumes": 14,
+    "stable_positive_volumes": 36,
+    "stable_threshold": 31
+  },
+  "principal_hands": {
+    "#rnapier": {
+      "folds": [0.6077851978131867, 0.5970534131956575, 0.6132990426501838, 0.6207193954998346, 0.6101439255066371],
+      "mean": 0.6098001949330999,
+      "n_items": 866,
+      "positive_folds": 5
+    },
+    "#sforman": {
+      "folds": [-0.3556586198766136, -0.3551427012108231, -0.3614755261459801, -0.3661547683716295, -0.37562044323643184],
+      "mean": -0.36281041176829565,
+      "n_items": 108,
+      "positive_folds": 0
+    }
+  },
+  "schema": "issue188-stage1-result-summary-v1",
+  "target_mean": 0.8759941302988878
+}
