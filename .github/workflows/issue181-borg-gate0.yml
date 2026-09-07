@@ -1,0 +1,74 @@
+name: Issue181 Borg external R5 Gate0
+
+on:
+  push:
+    paths:
+      - '.github/workflows/issue181-borg-gate0.yml'
+      - 'experiments/issue181-real-cipher-edge/issue181_borg_gate0.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate0:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout research repository
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Synthetic score-free preflight
+        run: python experiments/issue181-real-cipher-edge/issue181_borg_gate0.py --synthetic-preflight
+
+      - name: Fetch pinned external benchmark transcription authority only
+        run: |
+          rm -rf /tmp/cipher_benchmark
+          git init -q /tmp/cipher_benchmark
+          git -C /tmp/cipher_benchmark remote add origin https://github.com/matthewdgreen/cipher_benchmark.git
+          git -C /tmp/cipher_benchmark config core.sparseCheckout true
+          printf 'benchmark/sources/borg/transcriptions/\n' > /tmp/cipher_benchmark/.git/info/sparse-checkout
+          git -C /tmp/cipher_benchmark fetch -q --depth 1 origin 729aad62d12483c549e64a2541d4f9255538c8cf
+          git -C /tmp/cipher_benchmark checkout -q FETCH_HEAD
+          test "$(git -C /tmp/cipher_benchmark rev-parse HEAD)" = '729aad62d12483c549e64a2541d4f9255538c8cf'
+
+      - name: Run Gate0 without likelihood
+        run: |
+          python experiments/issue181-real-cipher-edge/issue181_borg_gate0.py \
+            /tmp/cipher_benchmark/benchmark/sources/borg/transcriptions \
+            --out issue181_borg_gate0.json
+          sha256sum issue181_borg_gate0.json | tee issue181_borg_gate0.sha256
+          python - <<'PY'
+          import json
+          d=json.load(open('issue181_borg_gate0.json'))
+          assert d['edge_likelihood_computed'] is False
+          print(json.dumps({
+            'gate0_classification': d['gate0_classification'],
+            'canonical_file_count': d['canonical_file_count'],
+            'nonempty_page_count': d['nonempty_page_count'],
+            'empty_page_count': d['empty_page_count'],
+            'physical_nonempty_line_count': d['physical_nonempty_line_count'],
+            'unit_count': d['unit_count'],
+            'atom_count': d['atom_count'],
+            'same_line_edge_count': d['same_line_edge_count'],
+            'cross_line_edge_count': d['cross_line_edge_count'],
+            'atom_vocabulary_size': d['atom_vocabulary_size'],
+            'atom_vocabulary': d['atom_vocabulary'],
+            'malformed_count': d['malformed_count'],
+            'folds': d['folds'],
+            'edge_likelihood_computed': d['edge_likelihood_computed'],
+          }, ensure_ascii=False, indent=2))
+          assert d['gate0_classification'] == 'GATE0_VALID'
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue181-borg-gate0
+          path: |
+            issue181_borg_gate0.json
+            issue181_borg_gate0.sha256
+          if-no-files-found: error
+          retention-days: 90
