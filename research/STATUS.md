@@ -114,7 +114,7 @@ This completes the currently selected clean R5 source-attribution corpus with a 
 
 Issue #183 classified the 1463 Milanese mixed-granularity family as `H0_ARCHITECTURE_PARTIAL`. The family is historically real, but the exact sign-count authority and, more importantly, the encoder choice policy for letters/digrams/doubles/nomenclator/homophones/nulls/spacing could not be recovered. Inventing those policies would create a modern mechanism and is prohibited.
 
-### TP1518-WA0 — bounded architecture recovered
+### TP1518-WA0 — architecture recovered, full target admission stopped
 
 Issue #207 selected the Trithemius `Polygraphia` sequential word-alphabet strict core prospectively and without Voynich scoring. The 1518 `Clavis Polygraphiae` specifies the core choices missing in T1463: one code-bearing table word per secret Roman letter, consecutive alphabet advance without skipping, explicit non-code filler words, documented restart/continuation rules and positional inverse lookup.
 
@@ -128,7 +128,17 @@ H0 is **`H0_ARCHITECTURE_RECOVERED`** for the bounded first-pass code-bearing st
 
 Exact recoverability is limited to the 24-letter hidden Roman-letter stream; hidden lexical spaces/punctuation are not encoded by the strict core.
 
-A public automated full-table parser exists in the Trithemius Corpus, but it is deliberately OCR-tolerant and admits partly populated columns. It is useful acquisition infrastructure, not yet an exact scientific codebook. Priority 4 is therefore complete at selection/external-executability level without manually reconstructing hundreds of alphabets. TP1518-WA0 receives no Voynich score until a separate admission step freezes a sufficiently long source-verifiable executable table corpus and its R10 cost.
+Issue #209 then tested whether existing public machine-readable data could supply a complete, exact historical restart cycle without manual repair. It ended **`MACHINE_EXTRACTION_PARTIAL`** before any Voynich reveal:
+
+- pinned JSON: 895 emitted columns;
+- 723 are 24/24 populated;
+- 172 are incomplete;
+- 52 emitted columns contain exact within-column duplicate output words;
+- 40 of those collisions occur even in nominally complete 24/24 columns;
+- 41 of 63 emitted chunks show observable single-letter column-label gaps;
+- none of the three source-cross-checked #207 initial alphabet prefixes occurs exactly in the emitted column set.
+
+The public extraction is useful acquisition infrastructure but is not a complete exact Book-I restart cycle. Per the preregistered stop rule, the project will not manually repair hundreds of cells or sequence relations to force TP1518-WA0 into the tournament. TP1518-WA0 remains a valid historical architecture/control; its current target-admission lane is closed.
 
 ### Issue #184 — mathematical control only
 
@@ -156,7 +166,9 @@ The fixed order remains:
 4. select one independently documented historical mechanism whose ciphertext/output itself has multi-glyph construction and whose encoder/inverse is sufficiently specified;
 5. only then run a new Issue #172 joint tournament.
 
-Priorities 1–4 are now complete at their currently frozen scope. Priority 4 selected TP1518-WA0 and verified its bounded external round trip. The next main-lane item is **Priority 5 admission/tournament design**. Before any TP1518-WA0 target score, that admission step must freeze a sufficiently long source-verifiable executable table corpus and its R10 cost; it may use the existing mechanized Trithemius extraction only after an authority audit. If such a corpus cannot be obtained without manual or lexical repair, do not force TP1518-WA0 into the tournament.
+Priorities 1–4 are complete at their currently frozen scope. TP1518-WA0 satisfied the Priority-4 architecture/external-executability requirement but failed the first Priority-5 full-table admission gate because current machine-readable source data are incomplete/ambiguous. No target reveal occurred.
+
+The next main-lane decision is therefore **prospective candidate replacement versus no-new-entrant tournament closeout**. A replacement must satisfy the same Priority-4 criteria from external authority and must be executable without a large manual reconstruction. The Bacon biliteral family remains an externally motivated fallback/control noted in #207, but it requires its own frozen admission issue before any target score. Do not reopen TP1518 source repair simply because its admission failed.
 
 Another R5 source requires a new prospective roadmap/admission decision rather than tuning the completed Dee/Borg analyses.
 
@@ -174,8 +186,10 @@ Full sequencing authority:
 - automatic Issue #184 S1 distribution matching;
 - Issue #179 target scoring without new independent external support;
 - post-hoc rescue of Dee #203 or permissive repair of Borg #182;
-- TP1518-WA0 Voynich scoring before a separately frozen source-table/R10 admission artifact;
+- TP1518-WA0 Voynich scoring under the failed #209 full-cycle admission;
+- manual/lexical repair of TP1518-WA0 table cells or sequence identity to force admission;
 - cycling the three-alphabet TP1518-WA0 H1 excerpt for target use;
+- target scoring of any replacement historical mechanism before a new prospective admission freeze;
 - rich latent-state escalation without a newly preregistered held-out residual;
 - further representation tweaking on the exhausted local pharmaceutical image↔text population;
 - treating production boundaries as proven natural-language words;
