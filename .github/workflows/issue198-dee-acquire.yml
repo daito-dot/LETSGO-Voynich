@@ -31,6 +31,11 @@ jobs:
           curl --fail --location --silent --show-error \
             "https://raw.githubusercontent.com/RichardBean/ArthurDee/${SOURCE_COMMIT}/dee-text.zip" \
             --output dee-text.zip
+          curl --fail --location --silent --show-error \
+            "https://richardbean.id.au/papers/2-1.pdf" \
+            --output histocrypt-2022-frozen.pdf
+          sha256sum histocrypt-2022-frozen.pdf > histocrypt-2022-frozen.sha256
+          wc -c histocrypt-2022-frozen.pdf > histocrypt-2022-frozen.size
 
       - name: Verify exact Git blob identity
         shell: bash
@@ -81,6 +86,9 @@ jobs:
           name: issue198-dee-fixed-source
           path: |
             dee-text.zip
+            histocrypt-2022-frozen.pdf
+            histocrypt-2022-frozen.sha256
+            histocrypt-2022-frozen.size
             archive-manifest.txt
             extracted-sha256.txt
             extracted-sizes.txt
