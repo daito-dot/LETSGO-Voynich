@@ -1,0 +1,92 @@
+name: issue196-mary-stuart-s0d
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'research/ISSUE196_MARY_STUART_S0D_SOURCE_ACCESS_PLAN_20260908.md'
+      - 'research/ISSUE196_MARY_STUART_S0D_IMPLEMENTATION_FREEZE_20260908.md'
+      - 'experiments/issue196-corpus-screening/issue196_mary_s0d.py'
+      - '.github/workflows/issue196-mary-s0d.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CTTS_COMMIT: 'd8b7d77b4e12e7a22d3980f8b5fb4e44c773287b'
+
+jobs:
+  score-free-source-locator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact screening head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout pinned CTTS authority
+        uses: actions/checkout@v4
+        with:
+          repository: CrypToolProject/CTTS
+          ref: ${{ env.CTTS_COMMIT }}
+          path: external/CTTS
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compile and synthetic self-test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/issue196-corpus-screening/issue196_mary_s0d.py
+          python experiments/issue196-corpus-screening/issue196_mary_s0d.py --self-test
+          test "$(git -C external/CTTS rev-parse HEAD)" = "$CTTS_COMMIT"
+
+      - name: Run score-free public source locator
+        shell: bash
+        env:
+          GH_DISCOVERY_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python experiments/issue196-corpus-screening/issue196_mary_s0d.py --run \
+            --ctts-root external/CTTS \
+            --output issue196_mary_s0d_results.json
+          python -m json.tool issue196_mary_s0d_results.json > /dev/null
+          python - <<'PY'
+          import json
+          x=json.load(open('issue196_mary_s0d_results.json', encoding='utf-8'))
+          assert x['schema']=='issue196-mary-stuart-s0d-v1'
+          assert x['r5_score_computed'] is False
+          assert x['voynich_data_accessed'] is False
+          assert x['manuscript_ocr_performed'] is False
+          print('classification =', x.get('classification'))
+          print('next_step =', x.get('next_step'))
+          print('required_channel_success =', json.dumps(x.get('required_channel_success'), sort_keys=True))
+          print('positive_candidate_count =', len(x.get('positive_candidates', [])))
+          print('publisher_ok =', x.get('channels',{}).get('publisher',{}).get('ok'))
+          c=x.get('channels',{}).get('ctts',{})
+          print('ctts_commit =', c.get('actual_commit'))
+          print('ctts_path_hits =', json.dumps(c.get('path_hits'), ensure_ascii=False))
+          print('ctts_content_hit_count =', len(c.get('content_hits', [])))
+          g=x.get('channels',{}).get('github',{})
+          print('github_query_status =', json.dumps({q.get('query'):q.get('ok') for q in g.get('queries',[])}, sort_keys=True))
+          print('github_hit_count =', sum(len(q.get('items',[])) for q in g.get('queries',[])))
+          z=x.get('channels',{}).get('zenodo',{})
+          print('zenodo_ok =', z.get('ok'))
+          print('zenodo_record_count =', len(z.get('records', [])))
+          if x.get('positive_candidates'):
+              print('positive_candidates =', json.dumps(x['positive_candidates'], sort_keys=True, ensure_ascii=False))
+          PY
+          sha256sum issue196_mary_s0d_results.json
+
+      - name: Upload score-free locator artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue196-mary-stuart-s0d
+          path: issue196_mary_s0d_results.json
+          if-no-files-found: warn
