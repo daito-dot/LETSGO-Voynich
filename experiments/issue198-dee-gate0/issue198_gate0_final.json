@@ -34,7 +34,7 @@
     "ambix_literal_transcription_capture_sha256": "e8abb3f74a603e466180599ebed883100216937b7d4eba176f85f76f6f9e1555",
     "histocrypt_plain_surface_capture_sha256": "6b8effc8db2b0009aa68283bbca91d2ab639424376460d936731f96655585d2b",
     "histocrypt_corrected_cipher_capture_sha256": "3e0fcbfbbc875e437a3aebdab26bf01649085e298d4d1dbf3e301162c27632c4",
-    "event_ledger_sha256": "913a1d84f3a05a9a8d061963d7e09ae5b2e7204632d4ee3404c63ae888a6f3ae"
+    "event_ledger_sha256": "362bcd4a4edbbc5e93559b11a2e495ee71e897bdb97b28f1802b8a9df647edd5"
   },
   "layers": {
     "ciphertext_symbols": {
