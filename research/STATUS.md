@@ -114,6 +114,22 @@ This completes the currently selected clean R5 source-attribution corpus with a 
 
 Issue #183 classified the 1463 Milanese mixed-granularity family as `H0_ARCHITECTURE_PARTIAL`. The family is historically real, but the exact sign-count authority and, more importantly, the encoder choice policy for letters/digrams/doubles/nomenclator/homophones/nulls/spacing could not be recovered. Inventing those policies would create a modern mechanism and is prohibited.
 
+### TP1518-WA0 — bounded architecture recovered
+
+Issue #207 selected the Trithemius `Polygraphia` sequential word-alphabet strict core prospectively and without Voynich scoring. The 1518 `Clavis Polygraphiae` specifies the core choices missing in T1463: one code-bearing table word per secret Roman letter, consecutive alphabet advance without skipping, explicit non-code filler words, documented restart/continuation rules and positional inverse lookup.
+
+H0 is **`H0_ARCHITECTURE_RECOVERED`** for the bounded first-pass code-bearing stream. A source-cross-checked three-alphabet prefix then passed an external-only round trip:
+
+- `ABC → Deus / Clementissimus / Conservans → ABC`;
+- 72 frozen table cells;
+- 1,151 UTF-8 bytes / 9,208 bits under the frozen canonical serialization;
+- SHA-256 `ddfbecb0666b4d840a384e0dbf8ae1937769c609a95d538a8a21a27a28a50ad4`;
+- no cycling, filler, restart or target access.
+
+Exact recoverability is limited to the 24-letter hidden Roman-letter stream; hidden lexical spaces/punctuation are not encoded by the strict core.
+
+A public automated full-table parser exists in the Trithemius Corpus, but it is deliberately OCR-tolerant and admits partly populated columns. It is useful acquisition infrastructure, not yet an exact scientific codebook. Priority 4 is therefore complete at selection/external-executability level without manually reconstructing hundreds of alphabets. TP1518-WA0 receives no Voynich score until a separate admission step freezes a sufficiently long source-verifiable executable table corpus and its R10 cost.
+
 ### Issue #184 — mathematical control only
 
 Issue #184 is a target-aware constrained-code upper-bound/control lane. Its already-frozen S0/control calculations may finish and be archived. The proposed S1 distribution-matching extension is **not** an automatic next step under the current roadmap.
@@ -140,7 +156,9 @@ The fixed order remains:
 4. select one independently documented historical mechanism whose ciphertext/output itself has multi-glyph construction and whose encoder/inverse is sufficiently specified;
 5. only then run a new Issue #172 joint tournament.
 
-Priority 3 is now complete for the selected Dee complete-preservation corpus. The next unresolved main-lane item under this sequencing is **Priority 4**; another R5 source requires a new prospective roadmap/admission decision rather than tuning the completed Dee/Borg analyses.
+Priorities 1–4 are now complete at their currently frozen scope. Priority 4 selected TP1518-WA0 and verified its bounded external round trip. The next main-lane item is **Priority 5 admission/tournament design**. Before any TP1518-WA0 target score, that admission step must freeze a sufficiently long source-verifiable executable table corpus and its R10 cost; it may use the existing mechanized Trithemius extraction only after an authority audit. If such a corpus cannot be obtained without manual or lexical repair, do not force TP1518-WA0 into the tournament.
+
+Another R5 source requires a new prospective roadmap/admission decision rather than tuning the completed Dee/Borg analyses.
 
 Parallel content lane: after an identifiability gate, test page/paragraph inventory composition against externally defined subject/illustration classes while controlling Currier/section/hand. Do not reopen the exhausted local pharmaceutical morphology↔token representation search.
 
@@ -156,6 +174,8 @@ Full sequencing authority:
 - automatic Issue #184 S1 distribution matching;
 - Issue #179 target scoring without new independent external support;
 - post-hoc rescue of Dee #203 or permissive repair of Borg #182;
+- TP1518-WA0 Voynich scoring before a separately frozen source-table/R10 admission artifact;
+- cycling the three-alphabet TP1518-WA0 H1 excerpt for target use;
 - rich latent-state escalation without a newly preregistered held-out residual;
 - further representation tweaking on the exhausted local pharmaceutical image↔text population;
 - treating production boundaries as proven natural-language words;

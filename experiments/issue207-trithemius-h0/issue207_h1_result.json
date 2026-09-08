@@ -1,0 +1,23 @@
+{
+  "issue": 207,
+  "stage": "H1_EXTERNAL_ROUNDTRIP",
+  "target_accessed": false,
+  "input": "ABC",
+  "cipher_units": [
+    "Deus",
+    "Clementissimus",
+    "Conservans"
+  ],
+  "recovered": "ABC",
+  "roundtrip_pass": true,
+  "alphabet_count": 3,
+  "table_cells": 72,
+  "canonical_serialization": "UTF-8 JSON; ensure_ascii=false; sort_keys=true; separators=(comma,colon)",
+  "serialized_table_bytes": 1151,
+  "serialized_table_bits": 9208,
+  "serialized_table_sha256": "ddfbecb0666b4d840a384e0dbf8ae1937769c609a95d538a8a21a27a28a50ad4",
+  "cycling_used": false,
+  "filler_used": false,
+  "restart_used": false,
+  "interpretation": "The frozen three-alphabet source prefix is mechanically reversible for its licensed bounded first-pass scope. This does not license Voynich scoring or cyclic reuse of the excerpt."
+}
