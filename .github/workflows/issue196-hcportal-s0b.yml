@@ -1,0 +1,81 @@
+name: issue196-hcportal-s0b
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'research/ISSUE196_HCPORTAL_S0B_POPULATION_METADATA_PLAN_20260908.md'
+      - 'experiments/issue196-corpus-screening/issue196_hcportal_s0b.py'
+      - '.github/workflows/issue196-hcportal-s0b.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  score-free-population-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compile and synthetic self-test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/issue196-corpus-screening/issue196_hcportal_s0b.py
+          python experiments/issue196-corpus-screening/issue196_hcportal_s0b.py --self-test
+
+      - name: Run score-free postcard population metadata audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/issue196-corpus-screening/issue196_hcportal_s0b.py --run \
+            --output issue196_hcportal_s0b_results.json
+          python -m json.tool issue196_hcportal_s0b_results.json > /dev/null
+          python - <<'PY'
+          import json
+          x=json.load(open('issue196_hcportal_s0b_results.json', encoding='utf-8'))
+          assert x['schema']=='issue196-hcportal-s0b-v1'
+          assert x['r5_score_computed'] is False
+          assert x['voynich_data_accessed'] is False
+          assert x['attachment_targets_fetched'] is False
+          p=x.get('population', {})
+          print('classification =', x.get('classification'))
+          print('next_step =', x.get('next_step'))
+          print('total_public_cryptograms_received =', x.get('total_public_cryptograms_received'))
+          print('api_reported_total =', x.get('api_reported_total'))
+          print('postcard_count =', p.get('postcard_count'))
+          print('solution_labels =', json.dumps(p.get('solution_labels'), sort_keys=True, ensure_ascii=False))
+          print('paired_cipher_key_count =', p.get('paired_cipher_key_count'))
+          print('text_attachment_record_count =', p.get('text_attachment_record_count'))
+          print('link_attachment_record_count =', p.get('link_attachment_record_count'))
+          print('text_or_link_attachment_record_count =', p.get('text_or_link_attachment_record_count'))
+          print('image_attachment_record_count =', p.get('image_attachment_record_count'))
+          ints=p.get('predeclared_intersections', {})
+          print('paired_key_and_text_count =', len(ints.get('paired_key_and_text', [])))
+          print('paired_key_and_link_count =', len(ints.get('paired_key_and_link', [])))
+          print('paired_key_and_text_or_link_count =', len(ints.get('paired_key_and_text_or_link', [])))
+          print('solution_label_x_paired_key_counts =', json.dumps({k:len(v) for k,v in p.get('solution_label_x_paired_key',{}).items()}, sort_keys=True, ensure_ascii=False))
+          print('solution_label_x_text_or_link_counts =', json.dumps({k:len(v) for k,v in p.get('solution_label_x_text_or_link',{}).items()}, sort_keys=True, ensure_ascii=False))
+          print('solution_label_x_paired_key_x_text_or_link_counts =', json.dumps({k:len(v) for k,v in p.get('solution_label_x_paired_key_x_text_or_link',{}).items()}, sort_keys=True, ensure_ascii=False))
+          if x.get('transport_error'):
+              print('transport_error =', x['transport_error'])
+          PY
+          sha256sum issue196_hcportal_s0b_results.json
+
+      - name: Upload score-free population audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue196-hcportal-s0b
+          path: issue196_hcportal_s0b_results.json
+          if-no-files-found: warn
