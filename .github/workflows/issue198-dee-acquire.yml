@@ -80,6 +80,7 @@ jobs:
         with:
           name: issue198-dee-fixed-source
           path: |
+            dee-text.zip
             archive-manifest.txt
             extracted-sha256.txt
             extracted-sizes.txt
