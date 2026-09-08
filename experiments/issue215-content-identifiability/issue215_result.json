@@ -1,0 +1,53 @@
+{
+  "issue": 215,
+  "parent": 172,
+  "stage": "METADATA_ONLY_IDENTIFIABILITY_GATE",
+  "classification": "IDENTIFIABLE_FOR_HELDOUT_TEST",
+  "text_or_vocabulary_features_accessed": false,
+  "source": {
+    "repository": "noah-chelednik/voynich-data",
+    "commit": "472ef7366606a799fc8f1044c037e06b413f6ddd",
+    "path": "output/metadata/pages.jsonl",
+    "git_blob_sha1": "f4ec667cd6b0e214eb755ccdc0c48d3d1c20d384",
+    "bytes": 112121,
+    "sha256": "cf4f60f1e2b2ace3789924d04765a83a005850a1dda3d7bfde6312931562ccf3"
+  },
+  "execution": {
+    "run_id": 34233511565,
+    "head_sha": "25fa170651befc5b28ed637bf790aad462185a3b",
+    "artifact_id": 10058806692,
+    "artifact_digest": "sha256:2d5be54e5b0e252ad6e9a2381d6dcb15b20a59fa53995aa915d74302576354e3",
+    "result_json_sha256": "8b80672300913b9cf238ffc98dbc30b9cfe1c16975c0f68f4981799fc1f8b18c",
+    "canonical_manifest_sha256": "2076c324d8f2425ef21bdaaf9fd05dca29354965e0923070d601b0c3e193e5e3"
+  },
+  "counts": {
+    "all_pages": 226,
+    "text_bearing": 206,
+    "complete_text_bearing": 195,
+    "missing_currier": 11,
+    "complete_by_illustration": {"B":19,"C":2,"H":127,"P":16,"S":25,"T":6},
+    "confounder_strata": 11,
+    "mixed_strata": 5,
+    "mixed_pages": 106,
+    "mixed_by_illustration": {"B":19,"C":2,"H":63,"P":16,"T":6},
+    "confounder_tuple_majority_accuracy": 0.9230769230769231
+  },
+  "mixed_strata": [
+    {"section":"biological","currier":"B","hand":"2","counts":{"B":19,"T":1}},
+    {"section":"cosmological","currier":"B","hand":"2","counts":{"C":2,"T":3}},
+    {"section":"herbal_a","currier":"A","hand":"1","counts":{"H":47,"T":1}},
+    {"section":"herbal_b","currier":"B","hand":"5","counts":{"H":6,"T":1}},
+    {"section":"pharmaceutical","currier":"A","hand":"1","counts":{"H":10,"P":16}}
+  ],
+  "prospective_followup_stratum": {
+    "section": "pharmaceutical",
+    "currier": "A",
+    "hand": "1",
+    "pages": 26,
+    "folios": 10,
+    "H_folios": ["f87","f90","f93","f96"],
+    "P_folios": ["f88","f89","f99","f100","f101","f102"],
+    "selection_basis": "metadata support only; frozen before any inventory/text feature"
+  },
+  "next_action": "Preregister a folio-grouped inventory-composition test on the exact pharmaceutical/A/hand1 H-vs-P stratum before accessing token/vocabulary features."
+}
