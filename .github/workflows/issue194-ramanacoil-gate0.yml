@@ -1,0 +1,108 @@
+name: issue194-ramanacoil-gate0
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'research/ISSUE194_RAMANACOIL_GATE0_PLAN_20260908.md'
+      - 'research/ISSUE194_GATE0_IMPLEMENTATION_FREEZE_20260908.md'
+      - 'experiments/issue194-ramanacoil/issue194_gate0.py'
+      - '.github/workflows/issue194-ramanacoil-gate0.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TRANSCRIPTION_URL: 'https://de-crypt.org/decrypt-custom/filesrv/?file=DOC_1564_2026-Feb-20-08-49-57_21421.txt'
+  KEY_URL: 'https://de-crypt.org/decrypt-custom/filesrv/?file=DOC_1564_2026-Feb-20-08-50-13_65682.txt'
+  DECRYPTION_URL: 'https://de-crypt.org/decrypt-custom/filesrv/?file=DOC_1564_2026-Feb-20-08-50-33_79896.txt'
+
+jobs:
+  score-free-gate0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compile and synthetic self-test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/issue194-ramanacoil/issue194_gate0.py
+          python experiments/issue194-ramanacoil/issue194_gate0.py --self-test
+
+      - name: Double-download frozen DECODE authorities
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p external/a external/b
+          : > download_failures.txt
+          fetch_one() {
+            url="$1"
+            out="$2"
+            label="$3"
+            if ! curl --fail --location --retry 3 --retry-delay 2 --connect-timeout 20 --max-time 180 --silent --show-error "$url" --output "$out"; then
+              rm -f "$out"
+              echo "$label" >> download_failures.txt
+            fi
+          }
+          fetch_one "$TRANSCRIPTION_URL" external/a/transcription.txt transcription-a
+          fetch_one "$TRANSCRIPTION_URL" external/b/transcription.txt transcription-b
+          fetch_one "$KEY_URL" external/a/key.txt key-a
+          fetch_one "$KEY_URL" external/b/key.txt key-b
+          fetch_one "$DECRYPTION_URL" external/a/decryption.txt decryption-a
+          fetch_one "$DECRYPTION_URL" external/b/decryption.txt decryption-b
+          echo 'download failures:'
+          cat download_failures.txt
+
+      - name: Run score-free composability Gate 0
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/issue194-ramanacoil/issue194_gate0.py --run \
+            --transcription-a external/a/transcription.txt \
+            --transcription-b external/b/transcription.txt \
+            --key-a external/a/key.txt \
+            --key-b external/b/key.txt \
+            --decryption-a external/a/decryption.txt \
+            --decryption-b external/b/decryption.txt \
+            --output issue194_gate0_results.json
+          python -m json.tool issue194_gate0_results.json > /dev/null
+          python - <<'PY'
+          import json
+          x=json.load(open('issue194_gate0_results.json', encoding='utf-8'))
+          assert x['schema'] == 'issue194-ramanacoil-gate0-v1'
+          assert x['scientific_score_computed'] is False
+          assert x['r5_score_computed'] is False
+          assert x['voynich_data_accessed'] is False
+          print('classification =', x['classification'])
+          print('layers =', json.dumps(x['layers'], sort_keys=True))
+          print('stage1_licensed =', x['stage1_licensed'])
+          for name in ('transcription','key','decryption'):
+              y=x['authority'][name]
+              print(name, 'stable=', y.get('stable'), 'sha256=', y.get('sha256'), 'bytes=', y.get('bytes'), 'newline=', y.get('newline'))
+          if 'transcription_audit' in x:
+              print('boundary_channels =', json.dumps(x['transcription_audit']['boundary_channel_counts'], sort_keys=True))
+              print('boundary_events =', x['transcription_audit']['boundary_event_total'])
+              print('boundary_lines =', x['transcription_audit']['boundary_bearing_lines'])
+          PY
+          sha256sum issue194_gate0_results.json
+
+      - name: Upload score-free Gate0 artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue194-ramanacoil-gate0
+          path: |
+            issue194_gate0_results.json
+            download_failures.txt
+          if-no-files-found: warn
