@@ -1,0 +1,78 @@
+name: Issue203 Dee Stage1 frozen reveal
+
+on:
+  push:
+    branches: [issue203-dee-stage1-reveal]
+    paths:
+      - '.github/workflows/issue203-dee-stage1-reveal.yml'
+
+permissions:
+  contents: read
+
+env:
+  PREREG_COMMIT: 1ef994ddd53f8e74f62fe0642dbfb86fa38abe37
+  DEE_XLSX_SHA256: c339aeac63da1b81560e63b02abb807a187a4003d3df44ebf389d3934055605d
+  SCORER_SHA256: b59b8fdf1e7923a9fd7e5ecdc2f1bae7c5165a14713f2601818533b265849476
+
+jobs:
+  reveal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact merged preregistration
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PREREG_COMMIT }}
+
+      - name: Assert frozen scorer identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PREREG_COMMIT"
+          test "$(sha256sum experiments/issue203-dee-stage1/issue203_dee_stage1_scorer.py | awk '{print $1}')" = "$SCORER_SHA256"
+          test ! -e experiments/issue203-dee-stage1/issue203_dee_stage1_result.json
+
+      - name: Retrieve exact author spreadsheet
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            'https://docs.google.com/spreadsheets/d/1SIB59QxKms1ka8KCQtXwLYEOujf7tI5a/export?format=xlsx' \
+            --output dee.xlsx
+          ACTUAL="$(sha256sum dee.xlsx | awk '{print $1}')"
+          echo "dee_xlsx_sha256=$ACTUAL"
+          test "$ACTUAL" = "$DEE_XLSX_SHA256"
+
+      - name: Execute frozen external-only reveal once
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/issue203-dee-stage1/issue203_dee_stage1_scorer.py \
+            --xlsx dee.xlsx \
+            --ledger experiments/issue198-dee-gate0/issue198_gate0_event_ledger.csv \
+            --gate0-json experiments/issue198-dee-gate0/issue198_gate0_final.json \
+            --out issue203_dee_stage1_result.json
+          sha256sum issue203_dee_stage1_result.json > issue203_dee_stage1_result.sha256
+
+      - name: Archive reveal provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "prereg_commit=$PREREG_COMMIT"
+            echo "scorer_sha256=$SCORER_SHA256"
+            echo "dee_xlsx_sha256=$DEE_XLSX_SHA256"
+            echo "gate0_ledger_sha256=$(sha256sum experiments/issue198-dee-gate0/issue198_gate0_event_ledger.csv | awk '{print $1}')"
+            echo "result_sha256=$(awk '{print $1}' issue203_dee_stage1_result.sha256)"
+            echo "voynich_accessed=false"
+          } > issue203_dee_stage1_reveal_provenance.txt
+
+      - name: Upload one-shot reveal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue203-dee-stage1-reveal
+          path: |
+            issue203_dee_stage1_result.json
+            issue203_dee_stage1_result.sha256
+            issue203_dee_stage1_reveal_provenance.txt
+          if-no-files-found: error
