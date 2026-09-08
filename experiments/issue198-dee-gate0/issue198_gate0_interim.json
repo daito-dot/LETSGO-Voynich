@@ -1,0 +1,94 @@
+{
+  "issue": 198,
+  "parent": 172,
+  "audit_date": "2026-09-08",
+  "status": "INTERIM_GATE0_AUDIT",
+  "stage1_licensed": false,
+  "score_firewall": {
+    "r5_score_computed": false,
+    "voynich_target_accessed": false,
+    "terminal_initial_likelihood_computed": false
+  },
+  "authorities": {
+    "literal_boundary": {
+      "citation": "Piorko, Lang, Bean, Ambix 2023, DOI 10.1080/00026980.2023.2201744",
+      "url": "https://richardbean.id.au/papers/ambix_hermeticae.pdf"
+    },
+    "cryptanalytic": {
+      "citation": "Bean, Lang, Piorko, HistoCrypt 2022, DOI 10.3384/ecp188388",
+      "url": "https://richardbean.id.au/papers/2-1.pdf"
+    },
+    "public_code": {
+      "repository": "RichardBean/ArthurDee",
+      "commit": "6bc46f0947b2a4e7f2dee9006899931361165a76",
+      "tree": "6ed19dcbcf77eaa463979064fa06334867d9e196"
+    },
+    "author_alignment_sheet": {
+      "url": "https://docs.google.com/spreadsheets/d/1SIB59QxKms1ka8KCQtXwLYEOujf7tI5a/edit?usp=sharing",
+      "downloaded_filename": "dee.xlsx",
+      "sha256": "c339aeac63da1b81560e63b02abb807a187a4003d3df44ebf389d3934055605d"
+    }
+  },
+  "literal_boundary_audit": {
+    "physical_pages": 2,
+    "physical_lines": 38,
+    "page1_lines": 18,
+    "page2_lines": 20,
+    "literal_spaced_groups": 189,
+    "same_physical_line_source_space_boundaries": 151,
+    "cross_physical_line_transitions": 37,
+    "line_final_continuation_markers": 10,
+    "line_final_continuation_lines": [6, 15, 16, 20, 21, 28, 29, 30, 32, 36],
+    "cross_line_transitions_without_line_final_continuation_marker": 27,
+    "annotation_bearing_groups": 3,
+    "annotation_locations": [
+      "line 9: ouat[^a]qx",
+      "line 20: [h]woruuod",
+      "line 32: wu[y]"
+    ],
+    "alphabetic_atom_count_sensitivity": {
+      "strip_all_bracket_annotations": 1099,
+      "retain_superscript_a_only": 1100,
+      "retain_all_bracket_letters": 1102
+    }
+  },
+  "histo_working_transcription_audit": {
+    "physical_lines": 38,
+    "spaced_groups": 189,
+    "per_line_group_counts_match_ambix_literal": true,
+    "lines_with_textual_difference_vs_ambix_literal": 12,
+    "lines_with_textual_difference": [2, 4, 6, 7, 9, 14, 19, 20, 23, 32, 33, 37],
+    "published_corrected_frequency_total_atoms": 1099,
+    "boundary_change_detected_at_line_or_source_space_level": false
+  },
+  "author_alignment_sheet_audit": {
+    "sheet_name": "testing fixes",
+    "key_phrase": "sicalteriasonaureafeliciportabisuelleracolcho",
+    "key_length": 45,
+    "cipher_atom_count": 1099,
+    "plaintext_atom_count": 1099,
+    "cipher_stream_sha256": "3e0aab0f59160896fa8fdf088c7ee15af2c9bad1eced404f8ed7b6d020a56446",
+    "plaintext_stream_sha256": "21458f41a44a4ec45938f84bd6c341b0e695bb9f8b2c6fb3afee14bea61d4c27",
+    "mechanical_sheet_formula_reproduction_exact": true,
+    "mechanical_sheet_formula_mismatch_count": 0
+  },
+  "published_plaintext_audit": {
+    "paper_statement_word_count": 177,
+    "surface_token_count_under_frozen_no_repair_parse": 178,
+    "surface_parse_rules": [
+      "exclude editorial <ac>",
+      "join only typographic line-break hyphenation",
+      "retain displayed ignis-beneficio as one surface token",
+      "do not apply Latin footnote corrections"
+    ],
+    "surface_parse_matches_paper_statement": false
+  },
+  "current_blockers": [
+    "The literal bracket annotations do not yet have one frozen atom-retention rule supported across all authorities.",
+    "The 1099-atom author spreadsheet is internally reproducible but is not text-identical to the HistoCrypt working transcription under the current no-repair normalization.",
+    "The displayed HistoCrypt plaintext states 177 words while the frozen surface-only parse yields 178; no dictionary or Latin repair is allowed.",
+    "The fixed public dee-text.zip archive may contain the missing corrected transport, but its binary contents were not inspected in this execution environment."
+  ],
+  "gate0_class": null,
+  "next_gate0_action": "Inspect the pinned dee-text.zip corrected transport outside the UTF-8-only connector path, then test exact identity against the 1099-atom author sheet and the HistoCrypt corrected-frequency authority without changing any source boundary. Until then, keep Issue #198 open and Stage 1 unlicensed."
+}
