@@ -1,0 +1,83 @@
+name: Issue198 Dee fixed-source acquisition
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [issue198-dee-gate0]
+    paths:
+      - '.github/workflows/issue198-dee-acquire.yml'
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_COMMIT: 6bc46f0947b2a4e7f2dee9006899931361165a76
+  SOURCE_BLOB: a6752544e40704ccb3e1fe82d670cceb35301ba5
+  SOURCE_SIZE: '1345486'
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Download exact frozen source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            "https://raw.githubusercontent.com/RichardBean/ArthurDee/${SOURCE_COMMIT}/dee-text.zip" \
+            --output dee-text.zip
+
+      - name: Verify exact Git blob identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, os
+          p='dee-text.zip'
+          data=open(p,'rb').read()
+          size=len(data)
+          blob=hashlib.sha1(b'blob '+str(size).encode()+b'\0'+data).hexdigest()
+          print('size', size)
+          print('git_blob_sha1', blob)
+          assert size == int(os.environ['SOURCE_SIZE'])
+          assert blob == os.environ['SOURCE_BLOB']
+          PY
+
+      - name: Inventory and extract transport files only
+        shell: bash
+        run: |
+          set -euo pipefail
+          unzip -Z1 dee-text.zip | LC_ALL=C sort > archive-manifest.txt
+          mkdir extracted
+          python - <<'PY'
+          import os, zipfile
+          wanted={'dee2','dex','dee2.words','dee2fix','key','key.23'}
+          with zipfile.ZipFile('dee-text.zip') as z:
+              names=z.namelist()
+              chosen=[]
+              for name in names:
+                  base=name.rstrip('/').split('/')[-1]
+                  if base in wanted and not name.endswith('/'):
+                      out=os.path.join('extracted',base)
+                      with z.open(name) as src, open(out,'wb') as dst:
+                          dst.write(src.read())
+                      chosen.append((name,base))
+              for src,base in sorted(chosen):
+                  print(src,'->',base)
+              missing=sorted(wanted-{b for _,b in chosen})
+              print('missing:', ','.join(missing) if missing else 'none')
+          PY
+          sha256sum extracted/* > extracted-sha256.txt
+          wc -c extracted/* > extracted-sizes.txt
+
+      - name: Upload acquisition artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue198-dee-fixed-source
+          path: |
+            archive-manifest.txt
+            extracted-sha256.txt
+            extracted-sizes.txt
+            extracted/
+          if-no-files-found: error
