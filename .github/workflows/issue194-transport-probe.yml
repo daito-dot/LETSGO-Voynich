@@ -1,0 +1,94 @@
+name: issue194-transport-probe
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Probe DECODE document transport
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p probe
+          page='https://de-crypt.org/decrypt-web/RecordsView/1564'
+          ua='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36'
+
+          curl --fail --location --silent --show-error \
+            -A "$ua" -c probe/cookies.txt -D probe/record.headers \
+            "$page" -o probe/record.html
+
+          python - <<'PY'
+          from pathlib import Path
+          import html, re
+          text = Path('probe/record.html').read_text('utf-8', errors='replace')
+          print('record_bytes', len(Path('probe/record.html').read_bytes()))
+          for label in ['Transcription','key_CT2','decryption_CT2']:
+              # show the nearest href before the link text, without assuming the filename is authoritative
+              m = re.search(r'href=["\']([^"\']+)["\'][^>]*>\s*'+re.escape(label)+r'\b', text, re.I)
+              print('href', label, html.unescape(m.group(1)) if m else 'NOT_FOUND')
+          PY
+
+          python - <<'PY' > probe/urls.tsv
+          from pathlib import Path
+          import html, re
+          from urllib.parse import urljoin
+          text=Path('probe/record.html').read_text('utf-8', errors='replace')
+          base='https://de-crypt.org/decrypt-web/RecordsView/1564'
+          for key,label in [('transcription','Transcription'),('key','key_CT2'),('decryption','decryption_CT2')]:
+              m=re.search(r'href=["\']([^"\']+)["\'][^>]*>\s*'+re.escape(label)+r'\b', text, re.I)
+              if not m:
+                  raise SystemExit(f'missing link for {label}')
+              print(key+'\t'+urljoin(base, html.unescape(m.group(1))))
+          PY
+
+          while IFS=$'\t' read -r key url; do
+            echo "=== $key ==="
+            echo "URL=$url"
+
+            # Mode A: cold direct request, reproducing the first Gate0 assumption.
+            curl --location --silent --show-error \
+              -A "$ua" -D "probe/${key}.cold.headers" \
+              -w 'cold_http=%{http_code} cold_type=%{content_type} cold_final=%{url_effective}\n' \
+              "$url" -o "probe/${key}.cold.body"
+
+            # Mode B: browser-like navigation from the record page with the session cookie + Referer.
+            curl --location --silent --show-error \
+              -A "$ua" -b probe/cookies.txt -c probe/cookies.txt -e "$page" \
+              -D "probe/${key}.session.headers" \
+              -w 'session_http=%{http_code} session_type=%{content_type} session_final=%{url_effective}\n' \
+              "$url" -o "probe/${key}.session.body"
+
+            for mode in cold session; do
+              f="probe/${key}.${mode}.body"
+              printf '%s_%s_bytes=' "$key" "$mode"; wc -c < "$f"
+              printf '%s_%s_sha256=' "$key" "$mode"; sha256sum "$f" | awk '{print $1}'
+              printf '%s_%s_prefix=' "$key" "$mode"
+              python - "$f" <<'PY'
+          import sys
+          b=open(sys.argv[1],'rb').read(240)
+          print(repr(b))
+          PY
+              echo "${key}_${mode}_headers:"
+              grep -Ei '^(HTTP/|content-type:|content-length:|content-disposition:|location:|set-cookie:)' "probe/${key}.${mode}.headers" || true
+            done
+          done < probe/urls.tsv
+
+          echo '=== cross-document equality ==='
+          sha256sum probe/*.cold.body probe/*.session.body
+
+      - name: Upload transport probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue194-transport-probe
+          path: |
+            probe/urls.tsv
+            probe/*.headers
