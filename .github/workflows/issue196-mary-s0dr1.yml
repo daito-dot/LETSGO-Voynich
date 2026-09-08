@@ -1,0 +1,95 @@
+name: issue196-mary-stuart-s0dr1
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'research/ISSUE196_MARY_STUART_S0DR1_TRANSPORT_RECOVERY_PLAN_20260908.md'
+      - 'research/ISSUE196_MARY_STUART_S0DR1_IMPLEMENTATION_FREEZE_20260908.md'
+      - 'experiments/issue196-corpus-screening/issue196_mary_s0d.py'
+      - 'experiments/issue196-corpus-screening/issue196_mary_s0dr1.py'
+      - '.github/workflows/issue196-mary-s0dr1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CTTS_COMMIT: 'd8b7d77b4e12e7a22d3980f8b5fb4e44c773287b'
+
+jobs:
+  transport-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact screening head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Checkout pinned CTTS authority
+        uses: actions/checkout@v4
+        with:
+          repository: CrypToolProject/CTTS
+          ref: ${{ env.CTTS_COMMIT }}
+          path: external/CTTS
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compile and synthetic self-test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/issue196-corpus-screening/issue196_mary_s0d.py
+          python -m py_compile experiments/issue196-corpus-screening/issue196_mary_s0dr1.py
+          python experiments/issue196-corpus-screening/issue196_mary_s0dr1.py --self-test
+          test "$(git -C external/CTTS rev-parse HEAD)" = "$CTTS_COMMIT"
+
+      - name: Run transport-only recovery
+        shell: bash
+        env:
+          GH_DISCOVERY_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python experiments/issue196-corpus-screening/issue196_mary_s0dr1.py --run \
+            --ctts-root external/CTTS \
+            --work-root issue196_mary_s0dr1_work \
+            --output issue196_mary_s0dr1_results.json
+          python -m json.tool issue196_mary_s0dr1_results.json > /dev/null
+          python - <<'PY'
+          import json
+          x=json.load(open('issue196_mary_s0dr1_results.json', encoding='utf-8'))
+          assert x['schema']=='issue196-mary-stuart-s0dr1-v1'
+          assert x['recovery_scope']=='transport_only'
+          assert x['r5_score_computed'] is False
+          assert x['voynich_data_accessed'] is False
+          assert x['manuscript_ocr_performed'] is False
+          print('classification =', x.get('classification'))
+          print('next_step =', x.get('next_step'))
+          print('required_channel_success =', json.dumps(x.get('required_channel_success'), sort_keys=True))
+          print('positive_candidate_count =', len(x.get('positive_candidates', [])))
+          g=x.get('channels',{}).get('github',{})
+          print('github_ok =', g.get('ok'))
+          print('github_repository_count =', g.get('repository_count'))
+          print('github_status_counts =', json.dumps({s:sum(r.get('status')==s for r in g.get('repositories',[])) for s in sorted({r.get('status') for r in g.get('repositories',[]) if r.get('status')})}, sort_keys=True))
+          print('github_path_hit_count =', sum(len(r.get('path_hits',[])) for r in g.get('repositories',[])))
+          print('github_content_hit_count =', sum(len(r.get('content_hits',[])) for r in g.get('repositories',[])))
+          z=x.get('channels',{}).get('zenodo',{})
+          print('zenodo_ok =', z.get('ok'))
+          print('zenodo_queries =', json.dumps([{ 'identifier':q.get('identifier'), 'ok':q.get('ok'), 'attempts':[(a.get('mode'),a.get('status')) for a in q.get('attempts',[])] } for q in z.get('queries',[])], ensure_ascii=False))
+          print('zenodo_record_count =', len(z.get('records', [])))
+          if x.get('positive_candidates'):
+              print('positive_candidates =', json.dumps(x['positive_candidates'], sort_keys=True, ensure_ascii=False))
+          PY
+          sha256sum issue196_mary_s0dr1_results.json
+
+      - name: Upload transport-recovery artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue196-mary-stuart-s0dr1
+          path: issue196_mary_s0dr1_results.json
+          if-no-files-found: warn
