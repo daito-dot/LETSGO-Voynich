@@ -21,9 +21,21 @@
   },
   "scorer": {
     "path": "experiments/issue203-dee-stage1/issue203_dee_stage1_scorer.py",
-    "source_commit": "2606bc5beedef3ce29aa9b29cede2f22ef4990b4",
-    "sha256": "b59b8fdf1e7923a9fd7e5ecdc2f1bae7c5165a14713f2601818533b265849476",
-    "git_blob_sha1": "3210c45883d9949479d379e96540efcb5ff703f4"
+    "authority_commit": "1ef994ddd53f8e74f62fe0642dbfb86fa38abe37",
+    "sha256": "8e373ffccb7871c94f8178daa56d987ba7b94342bbdd5ceb3aec160d61860ec4",
+    "git_blob_sha1": "fa75a4dd8c1f7b39cc340fea5e1bd65fc4d19ba0"
+  },
+  "prereveal_authority_correction": {
+    "reason": "The preregistration text recorded a pre-commit local scorer hash rather than the exact scorer blob merged to main. The first reveal workflow halted at the scorer-identity assertion before retrieving dee.xlsx or executing the scorer.",
+    "failed_prereveal_run_id": 34219716706,
+    "failed_prereveal_job_id": 102039708392,
+    "xlsx_retrieved": false,
+    "result_emitted": false,
+    "authority_audit_run_id": 34219807961,
+    "authority_audit_artifact_id": 10053242584,
+    "authority_audit_artifact_sha256": "85e5f6fd567963888982c1367b06aefdee763fefaf80387efa5b569c64c0cd3e",
+    "authority_audit_payload_sha256": "ffdbaf24e1faea31e0e36ba379e4a20fb08519b824a2c29ac177cd72aab09e95",
+    "scientific_contract_changed": false
   },
   "authorities": {
     "dee_xlsx_sha256": "c339aeac63da1b81560e63b02abb807a187a4003d3df44ebf389d3934055605d",
