@@ -1,0 +1,75 @@
+name: issue196-hcportal-s0c
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'research/ISSUE196_HCPORTAL_S0C_DETAIL_PLAN_20260908.md'
+      - 'experiments/issue196-corpus-screening/issue196_hcportal_s0c.py'
+      - '.github/workflows/issue196-hcportal-s0c.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  score-free-detail-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compile and synthetic self-test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/issue196-corpus-screening/issue196_hcportal_s0c.py
+          python experiments/issue196-corpus-screening/issue196_hcportal_s0c.py --self-test
+
+      - name: Run score-free detail five-layer audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/issue196-corpus-screening/issue196_hcportal_s0c.py --run \
+            --output issue196_hcportal_s0c_results.json
+          python -m json.tool issue196_hcportal_s0c_results.json > /dev/null
+          python - <<'PY'
+          import json
+          x=json.load(open('issue196_hcportal_s0c_results.json', encoding='utf-8'))
+          assert x['schema']=='issue196-hcportal-s0c-v1'
+          assert x['r5_score_computed'] is False
+          assert x['voynich_data_accessed'] is False
+          assert x['attachment_targets_fetched'] is False
+          assert x['image_pixels_accessed'] is False
+          print('classification =', x.get('classification'))
+          print('next_step =', x.get('next_step'))
+          print('stage1_gate0_candidate_ids =', x.get('stage1_gate0_candidate_ids'))
+          for r in x.get('records', []):
+              ident=r.get('identity', {})
+              print('record', ident.get('id'), ident.get('name'),
+                    'valid=', r.get('valid'),
+                    'solution=', r.get('solution_label'),
+                    'cipher_key_id=', r.get('cipher_key_id'),
+                    'cipher_text_sources=', r.get('cipher_text_source_count'),
+                    'plaintext_sources=', r.get('plaintext_source_count'),
+                    'layers=', json.dumps(r.get('layers'), sort_keys=True))
+          if x.get('transport_error'):
+              print('transport_error =', x['transport_error'])
+          PY
+          sha256sum issue196_hcportal_s0c_results.json
+
+      - name: Upload score-free detail artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue196-hcportal-s0c
+          path: issue196_hcportal_s0c_results.json
+          if-no-files-found: warn
