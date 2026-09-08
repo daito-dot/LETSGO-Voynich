@@ -1,0 +1,32 @@
+name: Issue203 Dee Stage1 prereg preflight
+
+on:
+  push:
+    branches: [issue203-dee-stage1-prereg]
+    paths:
+      - 'experiments/issue203-dee-stage1/**'
+      - '.github/workflows/issue203-dee-stage1-prereg.yml'
+  pull_request:
+    paths:
+      - 'experiments/issue203-dee-stage1/**'
+      - '.github/workflows/issue203-dee-stage1-prereg.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert no result artifact is present in prereg phase
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e experiments/issue203-dee-stage1/issue203_dee_stage1_result.json
+      - name: Run synthetic-only scorer preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/issue203-dee-stage1/issue203_dee_stage1_scorer.py --synthetic-preflight

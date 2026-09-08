@@ -1,0 +1,71 @@
+{
+  "issue": 203,
+  "status": "FROZEN_BEFORE_DEE_EDGE_REVEAL",
+  "parent": 172,
+  "follows": [181, 182, 196, 198],
+  "voynich_access_licensed": false,
+  "dee_edge_reveal_licensed_before_merge": false,
+  "alpha": 0.01,
+  "fold_rule": "(right_physical_line - 1) mod 5",
+  "page_carry_exclusion": {
+    "left_line": 18,
+    "right_line": 19
+  },
+  "primary_population": {
+    "boundary_class": "LEXICAL_BOUNDARY",
+    "same_physical_line_events": 147,
+    "cross_physical_line_events_before_page_exclusion": 26,
+    "cross_physical_line_events_after_page_exclusion": 25,
+    "within_word_split_primary": false,
+    "ambiguous_primary": false
+  },
+  "scorer": {
+    "path": "experiments/issue203-dee-stage1/issue203_dee_stage1_scorer.py",
+    "source_commit": "2606bc5beedef3ce29aa9b29cede2f22ef4990b4",
+    "sha256": "b59b8fdf1e7923a9fd7e5ecdc2f1bae7c5165a14713f2601818533b265849476",
+    "git_blob_sha1": "3210c45883d9949479d379e96540efcb5ff703f4"
+  },
+  "authorities": {
+    "dee_xlsx_sha256": "c339aeac63da1b81560e63b02abb807a187a4003d3df44ebf389d3934055605d",
+    "cipher_stream_sha256": "3e0aab0f59160896fa8fdf088c7ee15af2c9bad1eced404f8ed7b6d020a56446",
+    "plain_stream_sha256": "21458f41a44a4ec45938f84bd6c341b0e695bb9f8b2c6fb3afee14bea61d4c27",
+    "gate0_event_ledger_sha256": "362bcd4a4edbbc5e93559b11a2e495ee71e897bdb97b28f1802b8a9df647edd5"
+  },
+  "pass_rule": {
+    "mean_fold_gain_gt_zero": true,
+    "minimum_positive_folds": 4,
+    "fold_count": 5
+  },
+  "primary_stream_labels": [
+    "LINE_LOCAL",
+    "EDGE_WITH_CROSS_LINE_CONTINUATION",
+    "NO_ROBUST_LINE_EDGE",
+    "CROSS_ONLY_OR_UNSTABLE"
+  ],
+  "joint_classes": [
+    "LINE_LOCAL_PRESENT_BEFORE_AND_AFTER_CIPHER",
+    "CIPHER_STREAM_ONLY_LINE_LOCAL",
+    "PLAINTEXT_ONLY_LINE_LOCAL",
+    "NO_SHARED_LINE_LOCAL_TOPOLOGY",
+    "INVALID"
+  ],
+  "secondary_non_gating": [
+    "paired_transform_shift",
+    "all_aligned_boundaries",
+    "within_word_split_counts_only"
+  ],
+  "synthetic_preflight": {
+    "workflow": ".github/workflows/issue203-dee-stage1-prereg.yml",
+    "run_id": 34219515357,
+    "conclusion": "success",
+    "marker": "ISSUE203_SYNTHETIC_PREFLIGHT_OK"
+  },
+  "forbidden_before_reveal": [
+    "Voynich target scoring",
+    "Dee edge-gain inspection before prereg merge",
+    "post-reveal boundary or alignment repair",
+    "post-reveal alpha or fold changes",
+    "post-reveal line/event/symbol subsetting",
+    "replacing lexical primary with within-word or all-boundary score"
+  ]
+}
