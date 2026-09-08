@@ -1,0 +1,94 @@
+name: issue196-hcportal-s0a
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [main]
+    paths:
+      - 'research/ISSUE196_COMPLETE_PRESERVATION_SCREENING_PLAN_20260908.md'
+      - 'experiments/issue196-corpus-screening/issue196_hcportal_s0a.py'
+      - '.github/workflows/issue196-hcportal-s0a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  RECORD_URL: 'https://api.hcportal.eu/api/cryptograms/1454'
+
+jobs:
+  score-free-source-inspection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Compile and synthetic self-test
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/issue196-corpus-screening/issue196_hcportal_s0a.py
+          python experiments/issue196-corpus-screening/issue196_hcportal_s0a.py --self-test
+
+      - name: Double-fetch publication-fixed HCPortal record 1454
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p external/a external/b
+          : > download_failures.txt
+          fetch_one() {
+            out="$1"
+            label="$2"
+            if ! curl --fail --location --retry 3 --retry-delay 2 --connect-timeout 20 --max-time 120 --silent --show-error \
+              -H 'Accept: application/json' "$RECORD_URL" --output "$out"; then
+              rm -f "$out"
+              echo "$label" >> download_failures.txt
+            fi
+          }
+          fetch_one external/a/record1454.json fetch-a
+          fetch_one external/b/record1454.json fetch-b
+          echo 'download failures:'
+          cat download_failures.txt
+
+      - name: Run score-free schema inspection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experiments/issue196-corpus-screening/issue196_hcportal_s0a.py --run \
+            --a external/a/record1454.json \
+            --b external/b/record1454.json \
+            --output issue196_hcportal_s0a_results.json
+          python -m json.tool issue196_hcportal_s0a_results.json > /dev/null
+          python - <<'PY'
+          import json
+          x=json.load(open('issue196_hcportal_s0a_results.json', encoding='utf-8'))
+          assert x['schema']=='issue196-hcportal-s0a-v1'
+          assert x['r5_score_computed'] is False
+          assert x['voynich_data_accessed'] is False
+          print('classification =', x.get('classification'))
+          print('next_step =', x.get('next_step'))
+          print('transport =', json.dumps(x.get('transport'), sort_keys=True))
+          print('metadata =', json.dumps(x.get('metadata'), sort_keys=True, ensure_ascii=False))
+          print('screening_flags =', json.dumps(x.get('screening_flags'), sort_keys=True))
+          if x.get('datagroups'):
+              d=x['datagroups']
+              print('datagroups =', json.dumps({k:d.get(k) for k in ('present','group_count','total_items','text_items','link_items','image_items')}, sort_keys=True))
+          PY
+          sha256sum issue196_hcportal_s0a_results.json
+
+      - name: Upload score-free inspection artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue196-hcportal-s0a
+          path: |
+            issue196_hcportal_s0a_results.json
+            download_failures.txt
+          if-no-files-found: warn
