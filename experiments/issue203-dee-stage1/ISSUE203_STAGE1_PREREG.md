@@ -130,10 +130,18 @@ Scorer:
 
 `experiments/issue203-dee-stage1/issue203_dee_stage1_scorer.py`
 
-Pre-commit source identities:
+Exact scorer identity on the merged preregistration authority commit `1ef994ddd53f8e74f62fe0642dbfb86fa38abe37`:
 
-- scorer SHA-256: `b59b8fdf1e7923a9fd7e5ecdc2f1bae7c5165a14713f2601818533b265849476`
-- scorer Git-blob SHA-1: `3210c45883d9949479d379e96540efcb5ff703f4`
+- scorer SHA-256: `8e373ffccb7871c94f8178daa56d987ba7b94342bbdd5ceb3aec160d61860ec4`
+- scorer Git-blob SHA-1: `fa75a4dd8c1f7b39cc340fea5e1bd65fc4d19ba0`
+
+### Prereveal authority correction
+
+The original preregistration text accidentally recorded the hash of a local pre-commit scorer copy instead of the exact scorer blob that was merged to main. This was detected by reveal run `34219716706`, job `102039708392`, at the scorer-identity assertion. That run stopped before `dee.xlsx` retrieval and before scorer execution; no Dee edge result was emitted.
+
+A separate authority-only run `34219807961` checked out the exact merged preregistration commit and measured the identities above. Artifact `10053242584` records `result_emitted=false` and `dee_xlsx_retrieved=false`. Artifact digest is `sha256:85e5f6fd567963888982c1367b06aefdee763fefaf80387efa5b569c64c0cd3e`; the authority payload SHA-256 is `ffdbaf24e1faea31e0e36ba379e4a20fb08519b824a2c29ac177cd72aab09e95`.
+
+This correction changes only scorer identity metadata. The scorer file, event population, page exclusion, folds, `alpha`, vocabulary rule, pair definition, pass rule, topology labels and joint classes are unchanged.
 
 The scorer reads XLSX cached values with Python stdlib only; it does not evaluate spreadsheet formulas or invoke Latin/text repair.
 
@@ -153,17 +161,17 @@ Only after this preregistration/scorer is committed and merged, and the syntheti
 
 The reveal transport must:
 
-1. check out the exact merged preregistration commit;
+1. check out the exact merged preregistration authority;
 2. retrieve `dee.xlsx` and assert its frozen SHA before scoring;
 3. use the #198 ledger/final JSON from that exact checkout;
 4. emit one result JSON and provenance record;
 5. archive the full result SHA before interpretation.
 
-A transport failure before result emission permits only transport repair. Population, page exclusion, folds, alpha, vocabulary rule, pair definition, pass rule and classes cannot change.
+A transport failure before result emission permits only transport/authority repair. Population, page exclusion, folds, alpha, vocabulary rule, pair definition, pass rule and classes cannot change.
 
 ## Firewall
 
-Before the preregistration merge there is no authorized Dee edge result.
+Before the authorized reveal there is no Dee edge result.
 
 After reveal, do not:
 
