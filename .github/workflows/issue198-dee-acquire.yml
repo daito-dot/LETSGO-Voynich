@@ -1,6 +1,10 @@
 name: Issue198 Dee fixed-source acquisition
 
 on:
+  push:
+    branches: [issue198-dee-acquire]
+    paths:
+      - '.github/workflows/issue198-dee-acquire.yml'
   pull_request:
     types: [opened, reopened, synchronize]
     branches: [issue198-dee-gate0]
