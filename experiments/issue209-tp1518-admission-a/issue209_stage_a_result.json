@@ -1,0 +1,69 @@
+{
+  "issue": 209,
+  "parent": 172,
+  "candidate_id": "TP1518-WA0",
+  "stage": "PRIORITY5_ADMISSION_STAGE_A_EXTERNAL_TABLE_AUDIT",
+  "target_accessed": false,
+  "classification": "MACHINE_EXTRACTION_PARTIAL",
+  "stage_b_licensed": false,
+  "source": {
+    "repository": "Trithemius-Corpus/Trithemius-Corpus",
+    "commit": "0e38a37671a5e3b5decd11c19fe82de79883cae7",
+    "path": "site/static/cipher-data.json",
+    "parser_path": "scripts/build_cipher_data.py",
+    "bytes": 708505,
+    "sha256": "c7c9b78d8ab3ecfcb6bb1b9b77e9763610663f05702cc77fa0c8e18aad522db5"
+  },
+  "workflow_provenance": {
+    "run_id": 34222568186,
+    "head_sha": "664bf4711167e4f48a2e446c141c0690e6493f9b",
+    "artifact_id": 10054344940,
+    "artifact_sha256": "d85749cdef1d667f1bb2690af295f9df45158adfcb45913dc5a2b694be719666",
+    "raw_audit_json_sha256": "cc57a644d56452148d16dff932f7b2010cb9efbb7359cdc80f8a282b9abee315",
+    "canonical_audit_manifest_sha256": "90c729aae56758b584573e12bd32d9a2392d60a0344bda0984ac5c2d7d1445c0"
+  },
+  "machine_extraction": {
+    "parser_reported_chunk_count": 64,
+    "distinct_emitted_chunks": 63,
+    "emitted_column_count": 895,
+    "populated_cell_histogram": {
+      "12": 1,
+      "13": 2,
+      "17": 2,
+      "20": 2,
+      "21": 2,
+      "22": 21,
+      "23": 142,
+      "24": 723
+    },
+    "full_24_cell_columns": 723,
+    "partial_columns": 172,
+    "columns_with_exact_within_column_duplicate_words": 52,
+    "full_24_cell_columns_with_exact_duplicate_words": 40,
+    "chunks_with_observable_single_letter_column_label_gaps": 41,
+    "emitted_chunks_considered_for_gap_audit": 63
+  },
+  "frozen_prefix_crosscheck": {
+    "h0_alphabet_1_prefix": {"A": "Deus", "B": "Creator", "C": "Conditor"},
+    "h0_alphabet_2_prefix": {"A": "Clemens", "B": "Clementissimus", "C": "Pius"},
+    "h0_alphabet_3_prefix": {"A": "Creans", "B": "Regens", "C": "Conservans"},
+    "exact_prefix_mapping_matches_in_emitted_columns": [0, 0, 0],
+    "first_emitted_column": {
+      "name": "full_chunk_0018 · col A",
+      "cells": 24,
+      "A": "vitam",
+      "B": "amenitatem",
+      "C": "iocunditatem"
+    }
+  },
+  "duplicate_examples_in_full_columns": [
+    {"index": 15, "name": "full_chunk_0019 · col B", "duplicate": "divitias"},
+    {"index": 27, "name": "full_chunk_0019 · col N", "duplicate": "carnales"},
+    {"index": 57, "name": "full_chunk_0022 · col B", "duplicate": "tonitrus"},
+    {"index": 81, "name": "full_chunk_0023 · col L", "duplicate": "societas"},
+    {"index": 90, "name": "full_chunk_0024 · col H", "duplicate": "mundi"}
+  ],
+  "reason": "The pinned public machine extraction is useful but cannot supply the complete exact restart cycle required by the preregistered admission gate without additional source repair/mapping. It contains 172 incomplete columns, exact inverse collisions even among 40 nominally complete 24-cell columns, many observable omitted column labels, and does not contain exact matches for the three source-cross-checked initial alphabets frozen in Issue #207. The emitted 895-column sequence also is not itself demonstrated to be the single Book-I cycle described by the H0 authority.",
+  "stop_rule_applied": true,
+  "next_action": "Stop TP1518-WA0 target admission. Retain it as a documented historical architecture/control from Issue #207. Do not manually repair hundreds of table cells or expose the candidate to Voynich scores under the current roadmap."
+}
