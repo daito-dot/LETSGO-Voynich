@@ -1,0 +1,117 @@
+{
+  "issue": 207,
+  "parent": 172,
+  "candidate_id": "TP1518-WA0",
+  "candidate_name": "Trithemius Polygraphia sequential word-alphabet strict core",
+  "stage": "H0_EXTERNAL_AUTHORITY_PREFLIGHT",
+  "target_accessed": false,
+  "classification": "H0_ARCHITECTURE_RECOVERED",
+  "classification_scope": "bounded first-pass code-bearing stream; no Voynich scoring licensed",
+  "source_authorities": [
+    {
+      "type": "primary_source_witness_with_modern_reading_layer",
+      "work": "Johannes Trithemius, Clavis Polygraphiae",
+      "edition": "Basel, 1518",
+      "provider": "Herzog August Bibliothek witness via Trithemius Corpus",
+      "corpus_repository": "Trithemius-Corpus/Trithemius-Corpus",
+      "corpus_commit": "0e38a37671a5e3b5decd11c19fe82de79883cae7",
+      "source_metadata_path": "works/prdl-70282_clavis-polygraphiae-ioannis-trithemii-abbatis-diui/metadata.json",
+      "relevant_reading_chunks": [
+        "works/prdl-70282_clavis-polygraphiae-ioannis-trithemii-abbatis-diui/chunks/full_chunk_0108.md",
+        "works/prdl-70282_clavis-polygraphiae-ioannis-trithemii-abbatis-diui/chunks/full_chunk_0109.md",
+        "works/prdl-70282_clavis-polygraphiae-ioannis-trithemii-abbatis-diui/chunks/full_chunk_0110.md",
+        "works/prdl-70282_clavis-polygraphiae-ioannis-trithemii-abbatis-diui/chunks/full_chunk_0111.md"
+      ],
+      "source_scan_url": "http://diglib.hab.de/drucke/fb-128/start.htm",
+      "authority_note": "The 1518 scan is the primary witness. The corpus reading text is a navigation/reading layer and must not be used to silently repair table cells."
+    },
+    {
+      "type": "historical_secondary_crosscheck",
+      "work": "John Falconer, Cryptomenysis Patefacta",
+      "year": 1685,
+      "repository": "uwgraphics/VEP2_TCP_SimpleText",
+      "commit": "7f17f7ab87560c8ea24a82d35789a11fd7e03e53",
+      "path": "A4/A40781.txt",
+      "authority_note": "Falconer independently describes the ordered use of Trithemius alphabets and reproduces several complete initial alphabets."
+    }
+  ],
+  "recovered_architecture": {
+    "plaintext_inventory": {
+      "size": 24,
+      "letters": ["a","b","c","d","e","f","g","h","i","k","l","m","n","o","p","q","r","s","t","v","w","x","y","z"],
+      "j_distinct": false,
+      "u_distinct": false,
+      "note": "Table labels in the authority control lookup. No modern normalization beyond the documented 24-letter inventory is licensed."
+    },
+    "code_unit": "one table word",
+    "code_unit_is_multi_glyph": true,
+    "code_unit_boundary": "visible word separation in the public Latin cover stream",
+    "encoder_step": "For plaintext letter position t, take the word labelled by that letter from the next alphabet in sequence; do not skip an alphabet.",
+    "first_pass_start": "alphabet 1",
+    "table_scale_reported": "more than 9000 Latin words under almost 400 alphabets in Book I",
+    "same_alphabet_reuse_within_pass": false,
+    "skip_alphabet_allowed": false,
+    "restart": {
+      "documented": true,
+      "rule": "For long hidden matter the source permits beginning again from the head as often as necessary; continuation from the end of Book I into Book II is also documented.",
+      "h0_bounded_policy": "No restart is exercised in the bounded H1 preflight; H1 must remain within the frozen consecutive table prefix."
+    },
+    "out_of_sequence_words": {
+      "encode_hidden_letter": false,
+      "historical_role": "optional/auxiliary public-discourse completion where the table lacks sufficient synonymous connective material",
+      "choice_is_unique": false,
+      "strict_core_policy": "Exclude them from the code-bearing representation. H1 may not select or tune filler words."
+    },
+    "plaintext_spaces_and_punctuation": {
+      "encoded": false,
+      "recoverability": "The inverse recovers the hidden Roman-letter stream. Hidden lexical spacing/punctuation is not encoded by the word-alphabet stream and therefore is outside exact recoverability."
+    },
+    "double_letters": "encoded as two successive letter positions using two successive alphabets",
+    "inverse": "At each code-bearing position, use the corresponding alphabet to map the observed table word back to its labelled plaintext letter; concatenate recovered letters.",
+    "within_alphabet_collision_policy": "The Clavis warns that duplicate or missing words within an alphabet cause confusion and requires corrected copies; a frozen executable table must reject within-alphabet duplicate mappings.",
+    "cross_alphabet_collisions": "Permitted in principle because alphabet position is part of decoder state; must be audited in the frozen executable prefix.",
+    "recoverability_level": "EXACT_ROMAN_LETTER_STREAM_WITH_TABLE_AND_POSITION; NO_HIDDEN_LEXICAL_BOUNDARY_RECOVERY"
+  },
+  "historical_crosscheck_prefix": {
+    "source": "Falconer 1685 transcription of Trithemius alphabets",
+    "complete_consecutive_alphabets": 3,
+    "alphabet_1": {
+      "A":"Deus","B":"Creator","C":"Conditor","D":"Opifex","E":"Dominus","F":"Dominator","G":"Consolator","H":"Arbiter","I":"Judex","K":"Illuminator","L":"Illustrator","M":"Rector","N":"Rex","O":"Imperator","P":"Gubernator","Q":"Factor","R":"Fabricator","S":"Conservator","T":"Redemptor","V":"Auctor","W":"Princeps","X":"Pastor","Y":"Moderator","Z":"Salvator"
+    },
+    "alphabet_2": {
+      "A":"Clemens","B":"Clementissimus","C":"Pius","D":"Piissimus","E":"Magnus","F":"Excelsus","G":"Maximus","H":"Optimus","I":"Sapientissimus","K":"Invisibilis","L":"Immortalis","M":"Aeternus","N":"Sempiternus","O":"Gloriosus","P":"Fortissimus","Q":"Sanctissimus","R":"Incomprehensibilis","S":"Omnipotens","T":"Pacificus","V":"Misericors","W":"Misericordissimus","X":"Cunctipotens","Y":"Magnificus","Z":"Excellentissimus"
+    },
+    "alphabet_3": {
+      "A":"Creans","B":"Regens","C":"Conservans","D":"Moderans","E":"Gubernans","F":"Ordinans","G":"Ornans","H":"Exornans","I":"Constituens","K":"Dirigens","L":"Producens","M":"Decorans","N":"Stabiliens","O":"Illustrans","P":"Intuens","Q":"Movens","R":"Confirmans","S":"Custodiens","T":"Cernens","V":"Discernens","W":"Illuminans","X":"Fabricans","Y":"Salvificans","Z":"Faciens"
+    },
+    "use_constraint": "This prefix may support only a bounded external round-trip preflight of at most three code-bearing positions unless additional consecutive source-verified alphabets are frozen first. No cyclic reuse of this three-alphabet excerpt is allowed."
+  },
+  "r10_accounting": {
+    "historical_table_is_not_target_vocabulary": true,
+    "not_free_if_materialized_as_model_side_information": true,
+    "charge_components": [
+      "exact serialized table cells used by the executable candidate",
+      "table/source edition identifier and frozen hash",
+      "start alphabet index if other than the documented first position",
+      "book/mode identifier",
+      "24-letter input normalization policy",
+      "restart/termination policy",
+      "filler treatment",
+      "any table transposition or private permutation"
+    ],
+    "h1_rule": "The H1 artifact must serialize and hash the exact bounded table prefix and report its byte/bit cost. No table byte may be selected from Voynich behavior.",
+    "future_tournament_rule": "A full-corpus target tournament is not licensed until the exact full table actually used is source-verified, serialized, hashed and charged."
+  },
+  "h1_license": {
+    "licensed": true,
+    "scope": "external-only bounded encode/decode round trip",
+    "voynich_scoring": false,
+    "maximum_positions_under_current_frozen_prefix": 3,
+    "no_prefix_cycling": true,
+    "no_filler_tuning": true,
+    "no_target_vocabulary_lookup": true,
+    "success_condition": "deterministic encode and inverse reproduce the input 24-letter stream exactly using only the frozen consecutive source tables"
+  },
+  "reason_for_classification": "The historical mechanism no longer has the T1463-style missing encoder-choice problem: source authority specifies one codeword per secret-letter position from consecutive alphabets, forbids skipping alphabets, explains non-code filler words, documents restart/continuation options, and states the inverse reading procedure. Full overt-style generation remains non-unique because filler and long-message restart choices exist, but a bounded first-pass code-bearing encoder/inverse is fully specified without inventing target-conditioned rules.",
+  "next_action": "Run one bounded external-only H1 round-trip using the frozen three-alphabet prefix; if it passes, freeze whether additional source-table digitization is scientifically worth the cost before any Voynich exposure."
+}
