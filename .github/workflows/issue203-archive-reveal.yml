@@ -1,0 +1,55 @@
+name: Issue203 archive exact Dee reveal
+
+on:
+  push:
+    branches: [issue203-dee-stage1-result]
+    paths:
+      - '.github/workflows/issue203-archive-reveal.yml'
+
+permissions:
+  actions: read
+  contents: write
+
+env:
+  SOURCE_ARTIFACT_ID: '10053352051'
+  EXPECTED_RESULT_SHA256: 89023bdcdc5142f8dedc6012b16b18d2e0f4e2c58a33dbb5d3c4d8fa6d2f2b7f
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: issue203-dee-stage1-result
+          fetch-depth: 0
+
+      - name: Download exact reveal artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${SOURCE_ARTIFACT_ID}/zip" \
+            > reveal-artifact.zip
+          mkdir reveal
+          unzip -q reveal-artifact.zip -d reveal
+          test "$(sha256sum reveal/issue203_dee_stage1_result.json | awk '{print $1}')" = "$EXPECTED_RESULT_SHA256"
+          grep -Fx "result_sha256=$EXPECTED_RESULT_SHA256" reveal/issue203_dee_stage1_reveal_provenance.txt
+
+      - name: Commit exact result payloads to archive branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          dest='experiments/issue203-dee-stage1/result'
+          mkdir -p "$dest"
+          cp reveal/issue203_dee_stage1_result.json "$dest/issue203_dee_stage1_result.json"
+          cp reveal/issue203_dee_stage1_result.sha256 "$dest/issue203_dee_stage1_result.sha256"
+          cp reveal/issue203_dee_stage1_reveal_provenance.txt "$dest/issue203_dee_stage1_reveal_provenance.txt"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$dest"
+          git commit -m 'Issue #203: archive exact Dee Stage 1 reveal result'
+          git push origin HEAD:issue203-dee-stage1-result
