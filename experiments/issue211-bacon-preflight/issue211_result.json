@@ -1,0 +1,92 @@
+{
+  "issue": 211,
+  "parent": 172,
+  "candidate_id": "B1623-BL0",
+  "candidate_name": "Bacon biliteral / omnia-per-omnia core",
+  "target_score_computed": false,
+  "historical_core": {
+    "classification": "H0_ARCHITECTURE_RECOVERED",
+    "plaintext_classes": ["A","B","C","D","E","F","G","H","I/J","K","L","M","N","O","P","Q","R","S","T","U/V","W","X","Y","Z"],
+    "code_unit": "five ordered binary positions over a/b per plaintext letter class",
+    "segmentation": "5 positions per hidden-letter class; decoder must know the starting phase",
+    "table_file": "bacon_biliteral_table.txt",
+    "table_bytes": 192,
+    "table_sha256": "191bdb4787baa75011634085700b2e216d234d6ff732f48683d836ef698fdf7a",
+    "inverse": "partition the synchronized a/b stream into consecutive 5-position groups and invert the unique table codeword",
+    "recoverability": "EXACT_24_CLASS_LETTER_STREAM_WITH_5_POSITION_SYNCHRONIZATION; I/J AND U/V ARE NOT DISTINCT; HIDDEN SPACES/PUNCTUATION ARE NOT ENCODED BY THE TABLE"
+  },
+  "authorities": [
+    {
+      "type": "primary_bibliographic_witness",
+      "work": "Francis Bacon, De dignitate et augmentis scientiarum",
+      "year": 1623,
+      "edition": "London, L. Haviland",
+      "bhl_doi": "10.5962/bhl.title.39021",
+      "internet_archive_id": "operafrancisciba00baco",
+      "note": "The 1623 work is the primary historical source for the biliteral/omnia-per-omnia mechanism."
+    },
+    {
+      "type": "historical_english_translation",
+      "work": "Gilbert Wats translation of De Augmentis Scientiarum",
+      "year": 1640,
+      "section": "Book VI, chapter 1",
+      "note": "States the five-place two-letter construction, 24-letter alphabet, bi-formed exterior carrier, and the historical FUGE example."
+    },
+    {
+      "type": "historical_secondary_crosscheck",
+      "work": "John Falconer, Cryptomenysis Patefacta",
+      "year": 1685,
+      "repository": "uwgraphics/VEP2_TCP_SimpleText",
+      "commit": "7f17f7ab87560c8ea24a82d35789a11fd7e03e53",
+      "path": "A4/A40781.txt",
+      "note": "Reproduces the 24-entry biliteral table and states that a bi-formed exterior alphabet carries a/b letter-for-letter."
+    }
+  ],
+  "external_roundtrip": {
+    "classification": "PASS_EXTERNAL_ROUNDTRIP",
+    "input": "BACON",
+    "groups": ["aaaab","aaaaa","aaaba","abbab","abbaa"],
+    "concatenated": "aaaabaaaaaaaabaabbababbaa",
+    "decoded": "BACON",
+    "exact": true,
+    "target_accessed": false
+  },
+  "carrier_rule": {
+    "historical_property": "The interior a/b stream is carried letter-for-letter by an exterior stream whose objects have two distinguishable forms; the exterior message/content may otherwise be chosen independently.",
+    "carrier_base_identity_encodes_hidden_letter": false,
+    "binary_form_encodes_hidden_letter": true,
+    "minimum_capacity_relation": "at least five exterior positions per hidden letter",
+    "surface_prediction_problem": "The mechanism does not determine the exterior base-letter/object sequence, its word boundaries, lineation, paragraph structure, recurrence, inventory, or other surface organization. Those can be imported by the chosen carrier."
+  },
+  "target_adapter": {
+    "classification": "HISTORICAL_CORE_ONLY_TARGET_ADAPTER_UNDERSPECIFIED",
+    "stage_b_or_target_plan_licensed": false,
+    "reasons": [
+      "The historically visible bi-formed carrier requires a choice of exterior carrier identities/content that is not fixed by the biliteral cipher.",
+      "Mapping Voynich glyphs or tokens into the a-form versus b-form would require an externally unlicensed binary partition unless independently documented before target inspection.",
+      "Using literal a/b as the overt surface would expose the analytical interior labels rather than Bacon's bi-formed carrier and still supplies no historically visible word boundary every five bits.",
+      "Treating each 5-bit hidden-letter group as a Voynich-like visible bounded unit would introduce analyst boundaries that the historical carrier need not display.",
+      "Allowing arbitrary carrier choice would let R1-R8 structure be imported through the carrier rather than predicted by B1623-BL0 itself."
+    ],
+    "score_free_composability_authority": "experiments/joint-mechanism-discrimination/FIRST_REVEAL_TARGET_PLAN.md",
+    "relevant_contract_facts": [
+      "R1 is defined on candidate-visible boundaries.",
+      "R2 is defined on candidate token-internal surface construction under the frozen SlotParser representation.",
+      "R5-R8 require a single immutable candidate surface/hierarchy rather than an arbitrary post-hoc carrier."
+    ]
+  },
+  "r10": {
+    "frozen_table_serialization_bytes": 192,
+    "frozen_table_serialization_bits": 1536,
+    "additional_cost_if_carrier_used": [
+      "entire exterior carrier text/object sequence or an independently fixed carrier generator",
+      "the two-form classifier/alphabet defining a-form versus b-form for every exterior object",
+      "five-position synchronization/start phase",
+      "any carrier word/line/paragraph layout",
+      "any mapping from historical exterior forms to target surface atoms"
+    ],
+    "consequence": "Because the carrier is an independent high-capacity surface channel, it cannot be treated as free or chosen from target resemblance."
+  },
+  "stop_rule_applied": true,
+  "next_action": "Do not expose B1623-BL0 to Voynich R1-R10. Retain it as a clean historical reversibility/steganography control. Close the replacement-search lane unless a new candidate is independently motivated before any target-guided search."
+}
