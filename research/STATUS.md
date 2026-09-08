@@ -16,6 +16,8 @@ The completed work establishes a compact multiscale surface-production constrain
 
 > **Which independently documented production/encoding mechanisms can jointly account for the accepted bounded-unit construction, signed paragraph entry, thin cross-unit information, line-local edge behavior, slow inventory memory and recoverability where claimed?**
 
+The current near-term historical-candidate search is now **closed with no new target entrant** after prospective admission gates on T1463, TP1518-WA0 and B1623-BL0. The R1–R10 contract remains an admission/falsification battery. A future candidate requires new independent external motivation and a new prospective admission decision before target scoring.
+
 ## Accepted structural picture
 
 At the resolution of the frozen tests:
@@ -140,6 +142,45 @@ Issue #209 then tested whether existing public machine-readable data could suppl
 
 The public extraction is useful acquisition infrastructure but is not a complete exact Book-I restart cycle. Per the preregistered stop rule, the project will not manually repair hundreds of cells or sequence relations to force TP1518-WA0 into the tournament. TP1518-WA0 remains a valid historical architecture/control; its current target-admission lane is closed.
 
+### B1623-BL0 — reversible core, target adapter underspecified
+
+Issue #211 tested Bacon's biliteral / `omnia per omnia` mechanism as the prospectively named fallback after TP1518 admission failed.
+
+The historical core is **`H0_ARCHITECTURE_RECOVERED`**:
+
+- 24 hidden letter classes;
+- five ordered `a/b` positions per class;
+- exact inverse with known five-position synchronization;
+- merged `I/J` and `U/V` classes;
+- frozen 24-entry table serialization 192 UTF-8 bytes / 1,536 bits;
+- SHA-256 `191bdb4787baa75011634085700b2e216d234d6ff732f48683d836ef698fdf7a`.
+
+External-only round trip passed:
+
+`BACON → aaaab aaaaa aaaba abbab abbaa → BACON`.
+
+The target-adapter audit ended **`HISTORICAL_CORE_ONLY_TARGET_ADAPTER_UNDERSPECIFIED`** before any Voynich score. Bacon specifies the hidden binary form channel but intentionally leaves the exterior carrier content broad. It does not independently determine visible token identities, spaces, lineation, paragraph hierarchy, recurrence/inventory structure, or a Basic-EVA mapping. Choosing those from Voynich would create an additional target-derived surface generator; allowing an arbitrary carrier would import surface structure through an uncharged high-capacity side channel.
+
+B1623-BL0 therefore remains a clean historical reversibility/steganography control and is not admitted to the #172 target battery.
+
+### Priority 5 — no-new-entrant closeout
+
+Issue #213 closes the current near-term replacement-search lane with **no new target entrant**.
+
+The admission failures are complementary and therefore informative:
+
+- T1463: historical family real, encoder policy underdetermined;
+- TP1518-WA0: bounded historical architecture/inverse recovered, but no complete exact machine-readable historical cycle without extensive repair;
+- B1623-BL0: exact reversible core recovered, but visible surface/carrier mechanism underdetermined for the #172 contract.
+
+A future candidate must independently specify both a recoverable information mechanism and the visible surface-production mechanism strongly enough to support the frozen R1–R10 responsibilities. Historical authenticity or reversibility alone is insufficient.
+
+Do not continue historical candidate fishing under the current roadmap. A future entrant requires new independent external evidence, a prospective roadmap/admission revision, and a score-free composability freeze before any target reveal.
+
+Full closeout authority:
+
+`research/PRIORITY5_NO_NEW_ENTRANT_CLOSEOUT_20260908.md`
+
 ### Issue #184 — mathematical control only
 
 Issue #184 is a target-aware constrained-code upper-bound/control lane. Its already-frozen S0/control calculations may finish and be archived. The proposed S1 distribution-matching extension is **not** an automatic next step under the current roadmap.
@@ -158,7 +199,7 @@ Reasons:
 
 ## Fixed near-term sequencing
 
-The fixed order remains:
+The fixed roadmap was:
 
 1. R4/S1 external mechanism attribution;
 2. productive/open-vocabulary audit, with a possible future R11 only after separate preregistration;
@@ -166,17 +207,23 @@ The fixed order remains:
 4. select one independently documented historical mechanism whose ciphertext/output itself has multi-glyph construction and whose encoder/inverse is sufficiently specified;
 5. only then run a new Issue #172 joint tournament.
 
-Priorities 1–4 are complete at their currently frozen scope. TP1518-WA0 satisfied the Priority-4 architecture/external-executability requirement but failed the first Priority-5 full-table admission gate because current machine-readable source data are incomplete/ambiguous. No target reveal occurred.
+Priorities 1–4 are complete at their currently frozen scope. Priority 5 admission is also complete for the current near-term search, with **no new candidate admitted** and no new target reveal.
 
-The next main-lane decision is therefore **prospective candidate replacement versus no-new-entrant tournament closeout**. A replacement must satisfy the same Priority-4 criteria from external authority and must be executable without a large manual reconstruction. The Bacon biliteral family remains an externally motivated fallback/control noted in #207, but it requires its own frozen admission issue before any target score. Do not reopen TP1518 source repair simply because its admission failed.
+Do not run a joint tournament merely because the roadmap reached Priority 5: there is no scientifically admitted new entrant to score. A1/Naibbe remain the frozen #176 historical-anchor calibration, not a roster to rerun ceremonially.
 
-Another R5 source requires a new prospective roadmap/admission decision rather than tuning the completed Dee/Borg analyses.
+The mechanism-candidate lane is now paused pending genuinely new independent historical/mathematical evidence. Any future entrant requires a new prospective roadmap/admission decision before target scoring.
+
+Another R5 source likewise requires a new prospective roadmap/admission decision rather than tuning the completed Dee/Borg analyses.
 
 Parallel content lane: after an identifiability gate, test page/paragraph inventory composition against externally defined subject/illustration classes while controlling Currier/section/hand. Do not reopen the exhausted local pharmaceutical morphology↔token representation search.
 
 Full sequencing authority:
 
 `research/NEAR_TERM_RESEARCH_ROADMAP_20260908.md`
+
+Priority-5 closeout:
+
+`research/PRIORITY5_NO_NEW_ENTRANT_CLOSEOUT_20260908.md`
 
 ## Explicitly not licensed
 
@@ -189,7 +236,10 @@ Full sequencing authority:
 - TP1518-WA0 Voynich scoring under the failed #209 full-cycle admission;
 - manual/lexical repair of TP1518-WA0 table cells or sequence identity to force admission;
 - cycling the three-alphabet TP1518-WA0 H1 excerpt for target use;
-- target scoring of any replacement historical mechanism before a new prospective admission freeze;
+- B1623-BL0 Voynich scoring under the failed #211 target-adapter admission;
+- a Voynich-derived Bacon `a/b` partition, paired-allograph classifier, five-position alignment, carrier generator, or surface mapping;
+- opening another historical candidate merely as a reaction to the T1463/TP1518/Bacon failure sequence;
+- target scoring of any future replacement historical mechanism before a new prospective admission freeze;
 - rich latent-state escalation without a newly preregistered held-out residual;
 - further representation tweaking on the exhausted local pharmaceutical image↔text population;
 - treating production boundaries as proven natural-language words;
