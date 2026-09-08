@@ -1,0 +1,180 @@
+name: issue199-decode-transport-probe
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Probe acquisition routes from Record 1564
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p probe/bodies probe/headers
+          page='https://de-crypt.org/decrypt-web/RecordsView/1564'
+          ua='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36'
+          nav_accept='text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
+
+          # Acquisition root: establish the public record page and its session first.
+          curl --fail --location --silent --show-error \
+            -A "$ua" -c probe/cookies.txt -b probe/cookies.txt \
+            -D probe/headers/record.headers \
+            "$page" -o probe/record.html
+
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import urljoin
+          import json, re
+
+          class P(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.href=None; self.text=[]; self.links=[]
+              def handle_starttag(self, tag, attrs):
+                  if tag.lower()=='a':
+                      self.href=dict(attrs).get('href'); self.text=[]
+              def handle_data(self, data):
+                  if self.href is not None: self.text.append(data)
+              def handle_endtag(self, tag):
+                  if tag.lower()=='a' and self.href is not None:
+                      txt=' '.join(''.join(self.text).split())
+                      self.links.append((txt,self.href)); self.href=None; self.text=[]
+
+          raw=Path('probe/record.html').read_bytes()
+          text=raw.decode('utf-8')
+          p=P(); p.feed(text)
+          wanted={'transcription':'Transcription','key':'key_CT2','decryption':'decryption_CT2'}
+          out={}
+          for key,label in wanted.items():
+              matches=[(t,h) for t,h in p.links if t.lower().startswith(label.lower())]
+              if len(matches)!=1:
+                  raise SystemExit(f'{key}: expected exactly one matching anchor, got {matches}')
+              t,h=matches[0]
+              out[key]={'label':t,'href':urljoin('https://de-crypt.org/decrypt-web/RecordsView/1564',h)}
+          Path('probe/links.json').write_text(json.dumps(out,indent=2,sort_keys=True),encoding='utf-8')
+          print('record_bytes=',len(raw))
+          print(json.dumps(out,sort_keys=True))
+          PY
+
+          python - <<'PY' > probe/urls.tsv
+          import json
+          x=json.load(open('probe/links.json',encoding='utf-8'))
+          for key in ('transcription','key','decryption'):
+              print(key+'\t'+x[key]['href'])
+          PY
+
+          fetch_mode() {
+            key="$1"; url="$2"; mode="$3"; rep="$4"
+            body="probe/bodies/${key}.${mode}.${rep}.body"
+            head="probe/headers/${key}.${mode}.${rep}.headers"
+            case "$mode" in
+              cold)
+                curl --location --silent --show-error -A "$ua" \
+                  -D "$head" -w '%{http_code}\t%{content_type}\t%{url_effective}\n' \
+                  "$url" -o "$body" > "probe/${key}.${mode}.${rep}.meta"
+                ;;
+              session)
+                curl --location --silent --show-error -A "$ua" \
+                  -b probe/cookies.txt -c probe/cookies.txt -e "$page" \
+                  -D "$head" -w '%{http_code}\t%{content_type}\t%{url_effective}\n' \
+                  "$url" -o "$body" > "probe/${key}.${mode}.${rep}.meta"
+                ;;
+              session_navigation)
+                curl --location --silent --show-error -A "$ua" \
+                  -H "Accept: $nav_accept" -H 'Sec-Fetch-Dest: document' -H 'Sec-Fetch-Mode: navigate' -H 'Sec-Fetch-Site: same-origin' \
+                  -b probe/cookies.txt -c probe/cookies.txt -e "$page" \
+                  -D "$head" -w '%{http_code}\t%{content_type}\t%{url_effective}\n' \
+                  "$url" -o "$body" > "probe/${key}.${mode}.${rep}.meta"
+                ;;
+            esac
+          }
+
+          while IFS=$'\t' read -r key url; do
+            for mode in cold session session_navigation; do
+              fetch_mode "$key" "$url" "$mode" 1
+              fetch_mode "$key" "$url" "$mode" 2
+            done
+          done < probe/urls.tsv
+
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,re,struct
+
+          def hdr(path,name):
+              text=Path(path).read_text('latin1',errors='replace')
+              vals=[]
+              for line in text.splitlines():
+                  if ':' in line and line.split(':',1)[0].strip().lower()==name.lower():
+                      vals.append(line.split(':',1)[1].strip())
+              return vals[-1] if vals else None
+
+          def sig(b):
+              if b.startswith(b'\x89PNG\r\n\x1a\n'):
+                  dims=None
+                  if len(b)>=24 and b[12:16]==b'IHDR': dims=struct.unpack('>II',b[16:24])
+                  return {'kind':'PNG','dimensions':dims}
+              if b.startswith(b'%PDF-'): return {'kind':'PDF'}
+              try:
+                  b.decode('utf-8'); return {'kind':'UTF8_TEXT'}
+              except UnicodeDecodeError: return {'kind':'BINARY'}
+
+          result={'schema':'issue199-decode-transport-probe-v1','scientific_score_computed':False,'r5_score_computed':False,'voynich_data_accessed':False,'documents':{},'modes':{}}
+          links=json.load(open('probe/links.json',encoding='utf-8'))
+          result['links']=links
+          for key in ('transcription','key','decryption'):
+              result['documents'][key]={}
+              for mode in ('cold','session','session_navigation'):
+                  reps=[]
+                  for rep in (1,2):
+                      b=Path(f'probe/bodies/{key}.{mode}.{rep}.body').read_bytes()
+                      meta=Path(f'probe/{key}.{mode}.{rep}.meta').read_text().rstrip('\n').split('\t',2)
+                      hpath=f'probe/headers/{key}.{mode}.{rep}.headers'
+                      reps.append({
+                          'http_code':int(meta[0]),'curl_content_type':meta[1] or None,'final_url':meta[2],
+                          'header_content_type':hdr(hpath,'Content-Type'),'content_disposition':hdr(hpath,'Content-Disposition'),
+                          'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'signature':sig(b),
+                          'prefix_hex':b[:32].hex()
+                      })
+                  result['documents'][key][mode]={'stable':reps[0]['sha256']==reps[1]['sha256'],'rep1':reps[0],'rep2':reps[1]}
+
+          selected=None
+          for mode in ('session_navigation','session','cold'):
+              rows=[result['documents'][k][mode]['rep1'] for k in ('transcription','key','decryption')]
+              stable=all(result['documents'][k][mode]['stable'] for k in ('transcription','key','decryption'))
+              text=all(r['http_code']==200 and r['signature']['kind']=='UTF8_TEXT' for r in rows)
+              distinct=len({r['sha256'] for r in rows})==3
+              result['modes'][mode]={'stable':stable,'all_utf8_text':text,'three_distinct_payloads':distinct}
+              if selected is None and stable and text and distinct:
+                  selected=mode
+          if selected:
+              result['acquisition_status']='CORRECTED_TEXT_ROUTE_FOUND'; result['selected_mode']=selected
+          else:
+              result['acquisition_status']='DECODE_FILESRV_TRANSPORT_UNRESOLVED'; result['selected_mode']=None
+
+          Path('issue199_transport_probe.json').write_text(json.dumps(result,indent=2,sort_keys=True),encoding='utf-8')
+          print(json.dumps({'acquisition_status':result['acquisition_status'],'selected_mode':result['selected_mode'],'modes':result['modes']},sort_keys=True))
+          for key in ('transcription','key','decryption'):
+              for mode in ('cold','session','session_navigation'):
+                  r=result['documents'][key][mode]['rep1']
+                  print(key,mode,r['http_code'],r['curl_content_type'],r['bytes'],r['sha256'],r['signature'],r['content_disposition'])
+          PY
+
+          sha256sum issue199_transport_probe.json
+
+      - name: Upload score-free transport probe
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue199-decode-transport-probe
+          path: |
+            issue199_transport_probe.json
+            probe/links.json
+            probe/headers/*.headers
