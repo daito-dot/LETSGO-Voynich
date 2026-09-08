@@ -49,7 +49,7 @@ Phase69–70 showed that exactly recoverable meaningful plaintext can coexist wi
 
 The same constructions did **not** reproduce the Voynich signed paragraph-entry effect strongly enough. This keeps R4/S1 comparatively discriminating.
 
-### R5 is no longer a standalone anti-cipher discriminator
+### R5 is a compatibility responsibility, with one clean negative source-attribution result
 
 Issue #181 found `EXTERNAL LINE-LOCAL EDGE` in the solved Borg monoalphabetic ciphertext:
 
@@ -60,7 +60,16 @@ Therefore a real historical ciphertext document can exhibit the same qualitative
 
 Issue #182 attempted source attribution but found the benchmark plaintext transport destroys some physical line-split lexical information. On the compatible population, 260 cross-line events were independently reclassified as within-word splits. Full-corpus attribution remained `INDETERMINATE` and no Stage-1 edge score was revealed.
 
-**Program consequence:** R5 remains a hard compatibility responsibility, but not the leading standalone anti-cipher falsifier.
+Issue #198 then established a complete-preservation Gate 0 for Arthur Dee / Sloane MS 1902, and Issue #203 ran the preregistered plaintext→cipher source-attribution test on the frozen 1:1 mapping. The primary class was **`NO_SHARED_LINE_LOCAL_TOPOLOGY`**:
+
+- solved plaintext `G_line = -2.330193` bits/event, `0/5` positive folds;
+- corrected ciphertext `G_line = -3.345904` bits/event, `0/5` positive folds;
+- plaintext primary cross-line score passed (`+0.432332`, `4/5`) but the preregistered all-aligned replay did not (`+0.087548`, `2/5`);
+- ciphertext cross-line score also failed (`-1.014850`, `2/5`).
+
+The paired non-gating transform shift was negative for line events in all five folds (`D_line` mean `-1.015710` bits/event). In this clean document the cipher transform weakens rather than creates the tested terminal→initial predictability.
+
+**Program consequence:** Borg proves R5-like topology is compatible with a real historical ciphertext, but Dee supplies no positive source mechanism for it. Current clean evidence does not support ordinary plaintext lexical structure or this documented historical cipher transform as a generic generator of Voynich R5. Do not tune Dee or reopen Borg transport.
 
 ## Historical-anchor calibration
 
@@ -93,7 +102,13 @@ Issue #180 externally tested a line-managed scribal/allographic family. The prer
 
 ### Borg external control — compatible, source unresolved
 
-Issue #181 weakened the interpretation of R5 as cipher-discriminating. Issue #182 could not cleanly assign the effect to plaintext versus physical/grouping structure. The correct response is a cleaner independent source-attribution corpus, not permissive repair of Borg transport.
+Issue #181 weakened the interpretation of R5 as cipher-discriminating. Issue #182 could not cleanly assign the effect to plaintext versus physical/grouping structure. Borg transport remains closed to permissive repair.
+
+### Dee / Sloane MS 1902 — clean attribution, wrong topology
+
+Issue #198 ended `COMPOSABLE_AND_STAGE1_SUPPORT_LICENSED`. Issue #203 then produced `NO_SHARED_LINE_LOCAL_TOPOLOGY` under the frozen lexical-boundary scorer. Neither solved plaintext nor ciphertext has a positive same-line edge in any held-out fold. The all-aligned secondary replay also leaves both streams without a robust line edge.
+
+This completes the currently selected clean R5 source-attribution corpus with a negative/wrong-topology result.
 
 ### T1463 — historically real, encoder underdetermined
 
@@ -105,26 +120,27 @@ Issue #184 is a target-aware constrained-code upper-bound/control lane. Its alre
 
 ## Current leading discriminator
 
-The current near-term priority is **R4 / signed paragraph-entry specialization (S1)**, not another refinement of R5.
+R4 / signed paragraph-entry specialization (S1) remains more discriminating than R5.
 
 Reasons:
 
 - A1 reproduces R4 while Naibbe does not;
 - exactly reversible meaningful-plaintext Phase69/70 constructions reproduce local recurrence but leave S1 far below the Voynich regime;
 - the frozen Alberti paragraph-boundary mechanism produced the wrong S1 direction;
-- unlike R5, no real historical external control has yet shown that the correct signed S1 topology is common across unrelated mechanisms.
-
-The next scientific move is therefore external **mechanism attribution for R4/S1** before another Voynich candidate reveal.
+- Borg weakened R5 as a standalone anti-cipher discriminator;
+- the clean Dee attribution did not reproduce R5 in either plaintext or ciphertext and therefore does not provide a positive R5-generating mechanism.
 
 ## Fixed near-term sequencing
 
-The current order is:
+The fixed order remains:
 
 1. R4/S1 external mechanism attribution;
 2. productive/open-vocabulary audit, with a possible future R11 only after separate preregistration;
 3. clean R5 source attribution on an independent corpus preserving plaintext, cipher groups, physical lineation and key/alignment;
 4. select one independently documented historical mechanism whose ciphertext/output itself has multi-glyph construction and whose encoder/inverse is sufficiently specified;
 5. only then run a new Issue #172 joint tournament.
+
+Priority 3 is now complete for the selected Dee complete-preservation corpus. The next unresolved main-lane item under this sequencing is **Priority 4**; another R5 source requires a new prospective roadmap/admission decision rather than tuning the completed Dee/Borg analyses.
 
 Parallel content lane: after an identifiability gate, test page/paragraph inventory composition against externally defined subject/illustration classes while controlling Currier/section/hand. Do not reopen the exhausted local pharmaceutical morphology↔token representation search.
 
@@ -139,6 +155,7 @@ Full sequencing authority:
 - invented T1463 encoder rules;
 - automatic Issue #184 S1 distribution matching;
 - Issue #179 target scoring without new independent external support;
+- post-hoc rescue of Dee #203 or permissive repair of Borg #182;
 - rich latent-state escalation without a newly preregistered held-out residual;
 - further representation tweaking on the exhausted local pharmaceutical image↔text population;
 - treating production boundaries as proven natural-language words;
