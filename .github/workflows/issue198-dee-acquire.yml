@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Download exact frozen source archive
+      - name: Download exact frozen source authorities
         shell: bash
         run: |
           set -euo pipefail
@@ -34,8 +34,11 @@ jobs:
           curl --fail --location --silent --show-error \
             "https://richardbean.id.au/papers/2-1.pdf" \
             --output histocrypt-2022-frozen.pdf
-          sha256sum histocrypt-2022-frozen.pdf > histocrypt-2022-frozen.sha256
-          wc -c histocrypt-2022-frozen.pdf > histocrypt-2022-frozen.size
+          curl --fail --location --silent --show-error \
+            "https://richardbean.id.au/papers/ambix_hermeticae.pdf" \
+            --output ambix-2023-frozen.pdf
+          sha256sum histocrypt-2022-frozen.pdf ambix-2023-frozen.pdf > paper-sha256.txt
+          wc -c histocrypt-2022-frozen.pdf ambix-2023-frozen.pdf > paper-sizes.txt
 
       - name: Verify exact Git blob identity
         shell: bash
@@ -87,8 +90,9 @@ jobs:
           path: |
             dee-text.zip
             histocrypt-2022-frozen.pdf
-            histocrypt-2022-frozen.sha256
-            histocrypt-2022-frozen.size
+            ambix-2023-frozen.pdf
+            paper-sha256.txt
+            paper-sizes.txt
             archive-manifest.txt
             extracted-sha256.txt
             extracted-sizes.txt
