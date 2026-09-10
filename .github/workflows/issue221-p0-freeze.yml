@@ -1,0 +1,34 @@
+name: Issue 221 P0 payload freeze
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/issue221-p0-freeze.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  freeze-payload:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.10'
+      - name: Target-free CCDM self-test
+        run: python experiments/issue221-reversible-distribution-match/ccdm_core.py
+      - name: Freeze external compressed payload
+        run: python experiments/issue221-reversible-distribution-match/p0_freeze.py
+      - name: Commit immutable P0 result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experiments/issue221-reversible-distribution-match/P0_PAYLOAD.json \
+                  experiments/issue221-reversible-distribution-match/P0_PAYLOAD.zlib.b64
+          git commit -m 'Issue #221 P0: freeze target-blind external payload'
+          git pull --rebase origin main
+          git push origin HEAD:main
