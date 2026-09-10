@@ -1,6 +1,6 @@
 # Current research status
 
-Last consolidated: 2026-09-08
+Last consolidated: 2026-09-10
 
 Current program authority: **Issue #172**.  
 Current sequencing authority: `ROADMAP.md` and `research/NEAR_TERM_RESEARCH_ROADMAP_20260908.md`.  
@@ -12,11 +12,13 @@ This file controls the **current accepted high-level interpretation**. Exact his
 
 The Voynich Manuscript is **not deciphered**.
 
-The completed work establishes a compact multiscale surface-production constraint system. The project is no longer primarily asking which extra local statistic improves prediction. The current question is:
+The completed work establishes a compact multiscale surface-production constraint system. The project is no longer primarily asking which extra local statistic improves prediction. The current mechanism question is:
 
 > **Which independently documented production/encoding mechanisms can jointly account for the accepted bounded-unit construction, signed paragraph entry, thin cross-unit information, line-local edge behavior, slow inventory memory and recoverability where claimed?**
 
-The current near-term historical-candidate search is now **closed with no new target entrant** after prospective admission gates on T1463, TP1518-WA0 and B1623-BL0. The R1–R10 contract remains an admission/falsification battery. A future candidate requires new independent external motivation and a new prospective admission decision before target scoring.
+The current near-term historical-candidate search is **closed with no new target entrant** after prospective admission gates on T1463, TP1518-WA0 and B1623-BL0. The R1–R10 contract remains an admission/falsification battery. A future candidate requires new independent external motivation and a new prospective admission decision before target scoring.
+
+A parallel content lane has now produced one new replicated result under an externally supplied illustration label: within the exact `pharmaceutical / Currier A / hand 1` stratum, H-versus-P folios differ in running-text visible-token inventory composition in both ZL3b and IT2a. The result is group-level, not a decipherment or semantic identification, and the frozen LOFO classifier does not predict individual folios above chance. No second comparably supported confounder-controlled stratum was prospectively identified by the metadata gate, so this content lane is now **on hold pending a genuinely new external label population** rather than representation tuning or subset search.
 
 ## Accepted structural picture
 
@@ -181,6 +183,51 @@ Full closeout authority:
 
 `research/PRIORITY5_NO_NEW_ENTRANT_CLOSEOUT_20260908.md`
 
+## Parallel content lane — Issues #215 and #217
+
+Issue #215 was a metadata-only identifiability gate. It did not access Voynich token identities, vocabulary features or content-association scores. Using the pinned external page metadata, it found five mixed exact `(section, Currier, hand)` strata, but four are too imbalanced for a useful independent H/P-style follow-up (`B=19,T=1`; `C=2,T=3`; `H=47,T=1`; `H=6,T=1`). The one prospectively supported comparison was:
+
+- section `pharmaceutical`;
+- Currier `A`;
+- Davis hand `1`;
+- 10 physical folios / 26 text-bearing pages;
+- H folios `f87`, `f90`, `f93`, `f96`;
+- P folios `f88`, `f89`, `f99`, `f100`, `f101`, `f102`.
+
+Issue #217 froze that population, a generic running-text visible-token inventory representation, Jensen-Shannon folio distances, an exact physical-folio permutation null over all `C(10,4)=210` H/P assignments, ZL3b as primary, IT2a as independent-reading replication, and a leave-one-folio-out nearest-centroid corroboration before first reveal.
+
+Authoritative first reveal: Actions run `34466585648`, artifact `10147759045`. Classification:
+
+**`REPLICATED_PAGE_INVENTORY_ASSOCIATION`**
+
+Primary group-level result:
+
+- ZL3b: `T = 0.06491162853291865` bits, exact one-sided `p = 2/210 = 0.0095238095`;
+- IT2a: `T = 0.055276765337913814` bits, exact one-sided `p = 2/210 = 0.0095238095`.
+
+The frozen LOFO nearest-centroid corroboration did not pass:
+
+- ZL3b balanced accuracy `0.50`, exact `p = 0.4571428571`;
+- IT2a balanced accuracy `0.50`, exact `p = 0.4619047619`.
+
+Accepted interpretation: within one exact production-background stratum, externally labelled H-versus-P folios differ in the composition of visible running-text token inventories in a way that replicates across the two frozen readings. The evidence is for a distributed class-level association, not a simple folio-level classifier.
+
+This does **not** establish the meaning of either text class, causality from illustration to text, plaintext wordhood, topic vocabulary, plant identity, language identity, cipher identity or decipherment.
+
+A post-result `push` accidentally triggered a second Actions run (`34466745784`). It is excluded from first-reveal authority. It reproduced the classification, p-values, decisions, LOFO results, counts and vocabulary sizes; only last-bit floating-point values moved by about `1e-16` because `js_bits()` sums over an unordered Python set. The frozen scientific result remains run `34466585648`; no post-reveal feature/population/statistic/classifier changes were made.
+
+The temporary workflow has been removed. The Issue #217 no-rescue boundary remains active: do not tune token representation, frequency filters, n-grams, distance metrics, folio inclusion, H/P labels or classifier family on this revealed population.
+
+Because #215 prospectively identified no second comparably supported exact-confounder stratum, the content lane status is:
+
+**`HOLD_FOR_NEW_EXTERNAL_LABEL_POPULATION`**
+
+A future content experiment requires a genuinely new externally motivated label/population and a new prospective freeze before text-feature access. Do not manufacture a replication set from the four highly imbalanced #215 mixed strata after seeing #217.
+
+Full result authority:
+
+`experiments/issue217-page-inventory/ISSUE217_FIRST_REVEAL_RESULT.md`
+
 ### Issue #184 — mathematical control only
 
 Issue #184 is a target-aware constrained-code upper-bound/control lane. Its already-frozen S0/control calculations may finish and be archived. The proposed S1 distribution-matching extension is **not** an automatic next step under the current roadmap.
@@ -211,11 +258,11 @@ Priorities 1–4 are complete at their currently frozen scope. Priority 5 admiss
 
 Do not run a joint tournament merely because the roadmap reached Priority 5: there is no scientifically admitted new entrant to score. A1/Naibbe remain the frozen #176 historical-anchor calibration, not a roster to rerun ceremonially.
 
-The mechanism-candidate lane is now paused pending genuinely new independent historical/mathematical evidence. Any future entrant requires a new prospective roadmap/admission decision before target scoring.
+The mechanism-candidate lane is paused pending genuinely new independent historical/mathematical evidence. Any future entrant requires a new prospective roadmap/admission decision before target scoring.
 
 Another R5 source likewise requires a new prospective roadmap/admission decision rather than tuning the completed Dee/Borg analyses.
 
-Parallel content lane: after an identifiability gate, test page/paragraph inventory composition against externally defined subject/illustration classes while controlling Currier/section/hand. Do not reopen the exhausted local pharmaceutical morphology↔token representation search.
+The parallel content lane has completed its only prospectively supported exact-confounder H/P test in #217. It is now on hold pending a new externally supplied label population; no same-population rescue, representation search or post-hoc construction of a weak second stratum is licensed.
 
 Full sequencing authority:
 
@@ -242,5 +289,8 @@ Priority-5 closeout:
 - target scoring of any future replacement historical mechanism before a new prospective admission freeze;
 - rich latent-state escalation without a newly preregistered held-out residual;
 - further representation tweaking on the exhausted local pharmaceutical image↔text population;
+- post-reveal rescue/tuning of the #217 pharmaceutical/A/hand1 H-vs-P inventory result;
+- constructing a nominal #217 replication by selecting from the four highly imbalanced #215 mixed strata after seeing the result;
+- treating the #217 H/P association as semantic identification, causal illustration→text evidence, language/cipher identification or decipherment;
 - treating production boundaries as proven natural-language words;
 - inferring plaintext, language, semantics, cipher identity, authorship, historical mechanism, hoax/artificial origin or decipherment from structural fit alone.
