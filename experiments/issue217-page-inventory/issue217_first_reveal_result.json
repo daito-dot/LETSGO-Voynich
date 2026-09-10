@@ -1,0 +1,109 @@
+{
+  "issue": 217,
+  "population": {
+    "section": "pharmaceutical",
+    "currier": "A",
+    "hand": "1",
+    "H_folios": [
+      "f87",
+      "f90",
+      "f93",
+      "f96"
+    ],
+    "P_folios": [
+      "f88",
+      "f89",
+      "f99",
+      "f100",
+      "f101",
+      "f102"
+    ],
+    "permutation_unit": "physical_folio"
+  },
+  "tokenization": "Issue #217 frozen generic IVTFF paragraph-token cleaner",
+  "classification": "REPLICATED_PAGE_INVENTORY_ASSOCIATION",
+  "ZL3b": {
+    "reading": "ZL3b",
+    "comparable": true,
+    "folio_token_counts": {
+      "f87": 192,
+      "f90": 278,
+      "f93": 237,
+      "f96": 141,
+      "f88": 269,
+      "f89": 648,
+      "f99": 311,
+      "f100": 171,
+      "f101": 401,
+      "f102": 528
+    },
+    "folio_paragraph_loci": {
+      "f87": 32,
+      "f90": 33,
+      "f93": 42,
+      "f96": 26,
+      "f88": 33,
+      "f89": 56,
+      "f99": 37,
+      "f100": 19,
+      "f101": 19,
+      "f102": 59
+    },
+    "union_vocabulary_types": 1241,
+    "primary": {
+      "mean_cross_js_bits": 0.7029621572027999,
+      "mean_within_js_bits": 0.6380505286698812,
+      "T": 0.06491162853291865,
+      "exact_assignments": 210,
+      "exact_one_sided_p": 0.009523809523809525,
+      "pass": true
+    },
+    "lofo_nearest_centroid": {
+      "balanced_accuracy": 0.5,
+      "exact_assignments": 210,
+      "exact_one_sided_p": 0.45714285714285713
+    }
+  },
+  "IT2a": {
+    "reading": "IT2a",
+    "comparable": true,
+    "folio_token_counts": {
+      "f87": 187,
+      "f90": 280,
+      "f93": 239,
+      "f96": 147,
+      "f88": 266,
+      "f89": 647,
+      "f99": 309,
+      "f100": 168,
+      "f101": 375,
+      "f102": 510
+    },
+    "folio_paragraph_loci": {
+      "f87": 32,
+      "f90": 33,
+      "f93": 42,
+      "f96": 26,
+      "f88": 33,
+      "f89": 56,
+      "f99": 37,
+      "f100": 19,
+      "f101": 19,
+      "f102": 59
+    },
+    "union_vocabulary_types": 1259,
+    "primary": {
+      "mean_cross_js_bits": 0.7090101817212675,
+      "mean_within_js_bits": 0.6537334163833537,
+      "T": 0.055276765337913814,
+      "exact_assignments": 210,
+      "exact_one_sided_p": 0.009523809523809525,
+      "pass": true
+    },
+    "lofo_nearest_centroid": {
+      "balanced_accuracy": 0.5,
+      "exact_assignments": 210,
+      "exact_one_sided_p": 0.46190476190476193
+    }
+  }
+}
