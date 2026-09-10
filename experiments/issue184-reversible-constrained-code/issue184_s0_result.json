@@ -1,0 +1,129 @@
+{
+  "canonical_result_sha256": "c7a673d20a18ed70b8b4872bc2756dc9fc9e4dcf64e1c5c8883339954bdb0277",
+  "classification": "S0_CAPACITY_16PLUS_EXACT",
+  "codebook_first": [
+    "a",
+    "ad",
+    "ady",
+    "ai",
+    "aid",
+    "aidy",
+    "aii",
+    "aiid",
+    "aiidy",
+    "aiii"
+  ],
+  "codebook_last": [
+    "dkchctheaiir",
+    "dkchctheaiiry",
+    "dkchctheaiiy",
+    "dkchctheail",
+    "dkchctheaily",
+    "dkchctheaim",
+    "dkchctheaimy",
+    "dkchctheain",
+    "dkchctheainy",
+    "dkchctheair"
+  ],
+  "codebook_sha256": "2f7f4154508ba70226f6d4ad06b455e1ecd5de2f71d51869f37ef277e10b14c1",
+  "codebook_size": 65536,
+  "codebook_view_bits": 16,
+  "collision_count": 22132,
+  "distinct_literal_surfaces": 4643467,
+  "distinct_surface_length_distribution": {
+    "1": 16,
+    "10": 450614,
+    "11": 599466,
+    "12": 700116,
+    "13": 711096,
+    "14": 621912,
+    "15": 457984,
+    "16": 276096,
+    "17": 131456,
+    "18": 44416,
+    "19": 7680,
+    "2": 178,
+    "3": 1237,
+    "4": 5464,
+    "5": 17302,
+    "6": 43745,
+    "7": 94491,
+    "8": 179191,
+    "9": 301007
+  },
+  "floor_log2_distinct_surfaces": 22,
+  "g7a_v2_probabilities_accessed": false,
+  "issue": 184,
+  "max_structural_parse_multiplicity": 4,
+  "multi_parse_surface_count": 21996,
+  "multi_parse_surface_fraction": 0.0047369777797494845,
+  "n_paths": 4665599,
+  "parse_multiplicity_histogram": {
+    "1": 4621471,
+    "2": 21873,
+    "3": 110,
+    "4": 13
+  },
+  "parser_acceptance_ok": 65536,
+  "parser_validation": {
+    "chedy": {
+      "max": "4-6-10-11",
+      "min": "4-6-7-11"
+    },
+    "d": {
+      "max": "10",
+      "min": "0"
+    },
+    "daiin": {
+      "max": "7-8-9-10",
+      "min": "0-8-9-10"
+    },
+    "dain": {
+      "max": "7-8-9-10",
+      "min": "0-8-9-10"
+    },
+    "okal": {
+      "max": "1-3-8-10",
+      "min": "1-3-8-10"
+    },
+    "okol": {
+      "max": "1-3-8-10",
+      "min": "1-3-8-10"
+    },
+    "otchdy": {
+      "max": "1-3-4-10-11",
+      "min": "1-3-4-7-11"
+    },
+    "otedy": {
+      "max": "1-3-6-10-11",
+      "min": "1-3-6-7-11"
+    },
+    "qokedy": {
+      "max": "0-1-3-6-10-11",
+      "min": "0-1-3-6-7-11"
+    },
+    "y": {
+      "max": "11",
+      "min": "1"
+    }
+  },
+  "r1_r8_scientific_score_computed": false,
+  "roundtrip_ok": 65536,
+  "slot_cardinalities": [
+    3,
+    2,
+    2,
+    4,
+    2,
+    4,
+    3,
+    2,
+    2,
+    3,
+    5,
+    1
+  ],
+  "slot_value_total": 33,
+  "voynich_corpus_accessed": false,
+  "working_identifier": "RC-A0"
+}
